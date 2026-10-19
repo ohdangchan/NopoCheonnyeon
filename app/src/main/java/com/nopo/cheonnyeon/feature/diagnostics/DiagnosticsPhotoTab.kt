@@ -75,6 +75,7 @@ fun DiagnosticsPhotoTab() {
             modifier = Modifier.fillMaxWidth().aspectRatio(4f / 3f),
             loading = { Text(stringResource(R.string.diag_photo_loading), color = c.ink2) },
             error = { Text(stringResource(R.string.diag_photo_error), color = c.ink) },
+            onError = { android.util.Log.e("Nopo", "사진 불러오기 실패: " + it.result.throwable) },
             success = { SubcomposeAsyncImageContent() },
         )
         Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
