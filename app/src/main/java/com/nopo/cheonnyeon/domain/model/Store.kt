@@ -23,6 +23,8 @@ data class Store(
     val summary: String? = null,
     val generation: Int? = null,
     val sourceUrl: String? = null,
+    /** 공식 대표 사진 주소 (백년가게 상세 페이지, 없으면 빈 목록) */
+    val photoUrls: List<String> = emptyList(),
     val isTest: Boolean = false,
 ) {
     /** 이름과 별칭 전부 (영수증·간판 글자와 맞춰 볼 후보) */

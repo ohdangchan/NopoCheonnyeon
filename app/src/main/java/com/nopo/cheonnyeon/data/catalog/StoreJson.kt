@@ -30,11 +30,12 @@ data class StoreJson(
     val summary: String? = null,
     val generation: Int? = null,
     val sourceUrl: String? = null,
+    val photoUrls: List<String> = emptyList(),
 ) {
     fun toDomain() = Store(
         id = id, name = name, aliases = aliases, programs = programs, categoryGroup = categoryGroup, isFood = isFood,
         sido = sido, sigungu = sigungu, address = address.orEmpty(), phone = phone, foundedYear = foundedYear,
         foundedDate = foundedDate, lat = lat, lng = lng, menuItems = menuItems, hours = hours, amenities = amenities,
-        summary = summary, generation = generation, sourceUrl = sourceUrl,
+        summary = summary, generation = generation, sourceUrl = sourceUrl, photoUrls = photoUrls,
     )
 }

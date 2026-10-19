@@ -171,4 +171,16 @@
     <string name="placeholder_splash">노포천년</string>
     <string name="placeholder_login">로그인 화면 (준비 중)</string>
     <string name="placeholder_home">홈 화면 (준비 중)</string>
+
+    <!-- 진단 사진 탭 (공식 사진 시험) -->
+    <string name="diag_tab_photo">사진</string>
+    <string name="diag_photo_loading">불러오는 중…</string>
+    <string name="diag_photo_none">사진이 있는 가게가 없어요</string>
+    <string name="diag_photo_error">사진을 불러오지 못했어요</string>
+    <string name="diag_photo_count">사진이 있는 가게 %1$d곳</string>
+    <string name="diag_photo_position">가게 %1$d / %2$d · 사진 %3$d / %4$d</string>
+    <string name="diag_photo_prev_store">이전 가게</string>
+    <string name="diag_photo_next_store">다음 가게</string>
+    <string name="diag_photo_next_photo">같은 가게 다음 사진</string>
+    <string name="cd_diag_photo">%1$s 공식 사진</string>
 </resources>

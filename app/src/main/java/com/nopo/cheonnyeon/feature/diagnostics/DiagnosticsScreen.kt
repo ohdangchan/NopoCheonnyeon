@@ -39,6 +39,7 @@ private enum class DiagTab(@param:StringRes val label: Int) {
     Ocr(R.string.diag_tab_ocr),
     Location(R.string.diag_tab_location),
     Firebase(R.string.diag_tab_firebase),
+    Photo(R.string.diag_tab_photo),
     Design(R.string.diag_tab_design),
 }
 
@@ -102,6 +103,7 @@ fun DiagnosticsScreen(modifier: Modifier = Modifier) {
                 DiagTab.Ocr -> DiagnosticsOcrTab()
                 DiagTab.Location -> DiagnosticsLocationTab()
                 DiagTab.Map -> DiagnosticsMapTab()
+                DiagTab.Photo -> DiagnosticsPhotoTab()
             }
         }
     }

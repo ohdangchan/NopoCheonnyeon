@@ -234,6 +234,13 @@ def main():
                 except (KeyError, ValueError):
                     pass
 
+    photos = {}
+    ppath = os.path.join(a.out, "photo_cache.csv")   # tools/fetch_photos.py 가 채운다
+    if os.path.exists(ppath):
+        with open(ppath, encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                photos[row["store_id"]] = [u for u in row["photo_urls"].split("|") if u]
+
     stores = []
     for rid, l in by_id.items():
         d = det.get(rid, {})
@@ -464,6 +471,7 @@ def main():
             "summary": (s["intro"] or s["intro_snippet"]) or None,
             "generation": s["generation"] if isinstance(s["generation"], int) else None,
             "sourceUrl": s["source_url"] or None,
+            "photoUrls": photos.get(s["id"], []),
         })
     with open(os.path.join(a.assets, "stores.json"), "w", encoding="utf-8") as f:
         json.dump({"version": a.version, "generatedAt": datetime.datetime.now().isoformat(timespec="seconds"),

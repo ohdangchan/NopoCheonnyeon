@@ -31,18 +31,19 @@ data class StoreEntity(
     val summary: String?,
     val generation: Int?,
     val sourceUrl: String?,
+    val photoUrls: List<String>,
     val isTest: Boolean = false,
 ) {
     fun toDomain() = Store(
         id, name, aliases, programs, categoryGroup, isFood, sido, sigungu, address, phone, foundedYear, foundedDate,
-        lat, lng, menuItems, hours, amenities, summary, generation, sourceUrl, isTest,
+        lat, lng, menuItems, hours, amenities, summary, generation, sourceUrl, photoUrls, isTest,
     )
 
     companion object {
         fun from(s: Store) = StoreEntity(
             s.id, s.name, s.aliases, s.programs, s.categoryGroup, s.isFood, s.sido, s.sigungu, s.address, s.phone,
             s.foundedYear, s.foundedDate, s.lat, s.lng, s.menuItems, s.hours, s.amenities, s.summary, s.generation,
-            s.sourceUrl, s.isTest,
+            s.sourceUrl, s.photoUrls, s.isTest,
         )
     }
 }
