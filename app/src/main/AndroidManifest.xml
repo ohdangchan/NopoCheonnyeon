@@ -20,6 +20,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NopoCheonnyeon">
+        <meta-data
+            android:name="com.naver.maps.map.NCP_KEY_ID"
+            android:value="${NAVER_MAP_KEY_ID}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

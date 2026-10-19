@@ -1,7 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
+}
+
+// 키는 local.properties(git 제외)에서만 읽는다
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
 }
 
 android {
@@ -16,6 +24,10 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
+
+        manifestPlaceholders["NAVER_MAP_KEY_ID"] = localProps.getProperty("NAVER_MAP_KEY_ID", "")
+        buildConfigField("String", "NAVER_MAP_KEY_ID", "\"${localProps.getProperty("NAVER_MAP_KEY_ID", "")}\"")
+        buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", "\"${localProps.getProperty("NAVER_MAP_CLIENT_SECRET", "")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,6 +71,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.play.services.location)
     implementation(libs.mlkit.text.korean)
+    implementation(libs.naver.map)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

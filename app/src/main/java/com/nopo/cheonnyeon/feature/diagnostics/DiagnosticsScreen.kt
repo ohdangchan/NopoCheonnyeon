@@ -101,7 +101,7 @@ fun DiagnosticsScreen(modifier: Modifier = Modifier) {
                 DiagTab.Camera -> DiagnosticsCameraTab()
                 DiagTab.Ocr -> DiagnosticsOcrTab()
                 DiagTab.Location -> DiagnosticsLocationTab()
-                else -> Preparing()
+                DiagTab.Map -> DiagnosticsMapTab()
             }
         }
     }
@@ -118,17 +118,6 @@ private fun DeviceInfo() {
         style = style,
         color = color,
     )
-}
-
-@Composable
-private fun Preparing() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = stringResource(R.string.diag_preparing),
-            style = NopoTheme.typography.bodyLarge,
-            color = NopoTheme.colors.ink2,
-        )
-    }
 }
 
 @NopoPreviews

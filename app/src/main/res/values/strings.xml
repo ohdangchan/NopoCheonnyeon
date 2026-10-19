@@ -59,7 +59,6 @@
     <string name="diag_tab_ocr">글자 인식</string>
     <string name="diag_tab_location">위치</string>
     <string name="diag_tab_design">디자인</string>
-    <string name="diag_preparing">준비 중</string>
     <string name="diag_tab_firebase">Firebase</string>
 
     <!-- 진단 Firebase 탭 (SPK-5) -->
@@ -122,4 +121,22 @@
     <string name="diag_loc_pass">30m 이내 · 정확도 30m 이하 → 통과</string>
     <string name="diag_loc_fail">조건 미달 → 재측정</string>
     <string name="diag_loc_none">아직 측정하지 않았어요</string>
+
+    <!-- 진단 지도 탭 (SPK-1) -->
+    <string name="diag_map_markers_1000">마커 1,000개</string>
+    <string name="diag_map_markers_clear">마커 지우기</string>
+    <string name="diag_map_my_location">내 위치 찾기</string>
+    <string name="diag_map_locating">위치 찾는 중 · ±%1$s m</string>
+    <string name="diag_map_ready">지도 준비 %1$d ms</string>
+    <string name="diag_map_auth_failed">지도 인증 실패 · 오류 %1$s</string>
+    <string name="diag_map_auth_hint">401 패키지명 · 429 Dynamic Map 미선택 · 800 키 미지정</string>
+    <string name="diag_map_markers_done">마커 %1$d개 · %2$d ms</string>
+    <string name="diag_map_latlng">위도 %1$.6f · 경도 %2$.6f · ±%3$.0f m</string>
+    <string name="diag_map_road">도로명 %1$s</string>
+    <string name="diag_map_building">건물 %1$s</string>
+    <string name="diag_map_jibun">지번 %1$s</string>
+    <string name="diag_map_no_road">도로명 주소가 없는 곳이에요</string>
+    <string name="diag_map_addr_loading">주소 찾는 중…</string>
+    <string name="diag_map_addr_error">주소를 찾지 못했어요 · %1$s</string>
+    <string name="diag_map_city_hall">서울시청</string>
 </resources>

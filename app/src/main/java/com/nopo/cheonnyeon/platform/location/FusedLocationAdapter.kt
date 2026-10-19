@@ -16,6 +16,8 @@ import com.nopo.cheonnyeon.domain.rule.VerificationConfig
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.tasks.await
 
 /** 한 번 받은 위치값. 좌표는 기기 안에서만 쓰고 서버·로그로 보내지 않는다. */
@@ -61,6 +63,29 @@ class FusedLocationAdapter(context: Context) {
         }
         client.requestLocationUpdates(request, callback, Looper.getMainLooper())
         awaitClose { client.removeLocationUpdates(callback) }
+    }
+
+    /**
+     * 최대 [timeoutMs] 동안 받아 가장 정확한 값을 고른다. 정확도가 [earlyStopM] 이하면 일찍 끝낸다.
+     * 끝나면 업데이트를 해제한다. 아무 값도 못 받으면 null.
+     */
+    suspend fun bestFix(
+        timeoutMs: Long = VerificationConfig.LOCATION_TIMEOUT_MS,
+        earlyStopM: Double = VerificationConfig.LOCATION_EARLY_STOP_ACCURACY_M,
+        onProgress: (best: Fix) -> Unit = {},
+    ): Fix? {
+        var best: Fix? = null
+        withTimeoutOrNull(timeoutMs) {
+            updates()
+                .takeWhile { (best?.accuracyM ?: Double.MAX_VALUE) > earlyStopM }
+                .collect { fix ->
+                    if (best == null || fix.accuracyM < best!!.accuracyM) {
+                        best = fix
+                        onProgress(fix)
+                    }
+                }
+        }
+        return best
     }
 }
 
