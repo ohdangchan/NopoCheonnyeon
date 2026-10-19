@@ -4,7 +4,7 @@ Stitch 프로젝트 `3905731688785616669`에서 `tools/fetch_stitch.py`로 받�
 
 - 색·글꼴·간격의 기준은 `reference/*DESIGN.md*`와 PRD 10.1이다. 화면 HTML 안의 Tailwind 색(Stitch 자동 생성 M3 팔레트)은 레이아웃 참고용이며 토큰으로 옮기지 않는다.
 - 각 폴더: `screen.png`(스크린샷), `code.html`(Stitch HTML), `meta.json`.
-- 우선순위 `PRD 외`·`확인 필요`는 Stitch에서 추가로 그린 화면이라 PRD·스토리에 없거나 범위가 불분명하다. 구현 전에 범위를 정한다.
+- 우선순위는 PRD 4장·5장 기준. `확장`은 기획안의 확장 계획, `PRD 외`·`확인 필요`는 Stitch에서 추가로 그린 화면이라 PRD·스토리에 없거나 범위가 불분명하다. 구현 전에 범위를 정한다.
 
 ## 앱 화면
 
@@ -23,16 +23,16 @@ Stitch 프로젝트 `3905731688785616669`에서 `tools/fetch_stitch.py`로 받�
 | `feature/map` | `location_permission` | 위치 권한 안내 및 대략적 위치 경고 | S-502 | P0 | [screens/map/location_permission](screens/map/location_permission/screen.png) |
 | `feature/map` | `map` | 지도 탐색 및 노포 발견 | S-502 | P0 | [screens/map/map](screens/map/map/screen.png) |
 | `feature/map` | `map_fallback_list` | 지도 오류 대체 목록 및 오프라인 탐색 | S-504 | P0 | [screens/map/map_fallback_list](screens/map/map_fallback_list/screen.png) |
-| `feature/map` | `map_filter` | 노포 지도 필터 및 정렬 상세 설정 | S-504 | 확인 필요 | [screens/map/map_filter](screens/map/map_filter/screen.png) |
+| `feature/map` | `map_filter` | 노포 지도 필터 및 정렬 상세 설정 | S-502 | P0 | [screens/map/map_filter](screens/map/map_filter/screen.png) |
 | `feature/map` | `store_list` | 노포 검색 및 목록 보기 | S-504 | P0 | [screens/map/store_list](screens/map/store_list/screen.png) |
 | `feature/passport` | `chronicle_stats` | 식객 미식 여정 통계 및 연대기 결산 | - | PRD 외 | [screens/passport/chronicle_stats](screens/passport/chronicle_stats/screen.png) |
-| `feature/passport` | `collections` | 지역 컬렉션 및 테마 미식 퀘스트 | - | PRD 외 | [screens/passport/collections](screens/passport/collections/screen.png) |
+| `feature/passport` | `collections` | 지역 컬렉션 및 테마 미식 퀘스트 | - | 확장 | [screens/passport/collections](screens/passport/collections/screen.png) |
 | `feature/passport` | `gold_certificate` | 100년 노포 황금 도장 상세 및 인증서 | S-703 | 확인 필요 | [screens/passport/gold_certificate](screens/passport/gold_certificate/screen.png) |
 | `feature/passport` | `hall_of_fame` | 식객 명예의 전당 및 칭호 순위 | - | PRD 외 | [screens/passport/hall_of_fame](screens/passport/hall_of_fame/screen.png) |
 | `feature/passport` | `my_reviews` | 내 패스포트 - 내 작성 리뷰 목록 | S-704 | P0 | [screens/passport/my_reviews](screens/passport/my_reviews/screen.png) |
 | `feature/passport` | `passport` | 내 패스포트 및 미식 연대기 | S-702 | P0 | [screens/passport/passport](screens/passport/passport/screen.png) |
 | `feature/passport` | `passport_empty` | 내 패스포트 (도장 0개 첫 시작) | S-702 | P0 | [screens/passport/passport_empty](screens/passport/passport_empty/screen.png) |
-| `feature/passport` | `share_card` | 미식 패스포트 공유 카드 생성기 | - | PRD 외 | [screens/passport/share_card](screens/passport/share_card/screen.png) |
+| `feature/passport` | `share_card` | 미식 패스포트 공유 카드 생성기 | - | P2 | [screens/passport/share_card](screens/passport/share_card/screen.png) |
 | `feature/passport` | `stamp_detail` | 도장 상세 및 방문 각인 기록 | S-703 | P0 | [screens/passport/stamp_detail](screens/passport/stamp_detail/screen.png) |
 | `feature/profile` | `user_profile` | 타 유저 미식가 공인 프로필 | S-804 | P0 | [screens/profile/user_profile](screens/profile/user_profile/screen.png) |
 | `feature/review` | `review_edit` | 공인 리뷰 수정 및 삭제 에디터 | S-802 | P0 | [screens/review/review_edit](screens/review/review_edit/screen.png) |
@@ -44,14 +44,14 @@ Stitch 프로젝트 `3905731688785616669`에서 `tools/fetch_stitch.py`로 받�
 | `feature/settings` | `logout_warning` | 식객 로그아웃 및 미전송 대기열 경고 | S-407 | P0 | [screens/settings/logout_warning](screens/settings/logout_warning/screen.png) |
 | `feature/settings` | `notifications` | 식객 알림 및 세월 동기화 센터 | - | PRD 외 | [screens/settings/notifications](screens/settings/notifications/screen.png) |
 | `feature/settings` | `offline_queue` | 오프라인 모드 및 대기열 동기화 | S-609 | P0 | [screens/settings/offline_queue](screens/settings/offline_queue/screen.png) |
-| `feature/settings` | `privacy_policy` | 개인정보 및 위치정보 처리방침 고지 | S-903 | 확인 필요 | [screens/settings/privacy_policy](screens/settings/privacy_policy/screen.png) |
-| `feature/settings` | `privacy_settings` | 방문 기록 비공개 및 프라이버시 설정 | - | 확인 필요 | [screens/settings/privacy_settings](screens/settings/privacy_settings/screen.png) |
+| `feature/settings` | `privacy_policy` | 개인정보 및 위치정보 처리방침 고지 | S-903 | P0 | [screens/settings/privacy_policy](screens/settings/privacy_policy/screen.png) |
+| `feature/settings` | `privacy_settings` | 방문 기록 비공개 및 프라이버시 설정 | - | P1 | [screens/settings/privacy_settings](screens/settings/privacy_settings/screen.png) |
 | `feature/settings` | `settings` | 설정 및 데이터 출처 안내 | S-903 | P0 | [screens/settings/settings](screens/settings/settings/screen.png) |
 | `feature/settings` | `sync_restore` | 서버 방문 기록 복원 및 동기화 | S-307 | P0 | [screens/settings/sync_restore](screens/settings/sync_restore/screen.png) |
 | `feature/stamp` | `stamp_ceremony` | 도장 획득 및 세월 적립 연출 | S-701 | P0 | [screens/stamp/stamp_ceremony](screens/stamp/stamp_ceremony/screen.png) |
 | `feature/stamp` | `title_promotion` | 칭호 승급 축하 연출 | S-705 | P1 | [screens/stamp/title_promotion](screens/stamp/title_promotion/screen.png) |
-| `feature/store` | `closed_memorial` | 사라진 노포 추모관 및 맛의 기억 | - | PRD 외 | [screens/store/closed_memorial](screens/store/closed_memorial/screen.png) |
-| `feature/store` | `directions` | 노포 길찾기 및 대중교통 안내 | S-505 | 확인 필요 | [screens/store/directions](screens/store/directions/screen.png) |
+| `feature/store` | `closed_memorial` | 사라진 노포 추모관 및 맛의 기억 | - | 확장 | [screens/store/closed_memorial](screens/store/closed_memorial/screen.png) |
+| `feature/store` | `directions` | 노포 길찾기 및 대중교통 안내 | S-505 | P0 | [screens/store/directions](screens/store/directions/screen.png) |
 | `feature/store` | `report` | 노포 정보 수정 제보 및 리뷰 신고 | S-805 | P1 | [screens/store/report](screens/store/report/screen.png) |
 | `feature/store` | `store_detail` | 노포 상세 및 인증 자격 | S-505 | P0 | [screens/store/store_detail](screens/store/store_detail/screen.png) |
 | `feature/store` | `store_reviews` | 노포 공인 미식가 리뷰 목록 | S-506 | P0 | [screens/store/store_reviews](screens/store/store_reviews/screen.png) |
