@@ -54,9 +54,11 @@ def main():
     mapping = json.load(open(os.path.join(ROOT, "tools", "stitch_screen_map.json"), encoding="utf-8"))
     screens = call(key, "list_screens", {"projectId": a.project})["screens"]
 
-    if os.path.isdir(a.out):
-        shutil.rmtree(a.out)
-    os.makedirs(a.out)
+    # 내려받는 폴더만 지운다. 직접 쓴 문서(PRD-차이점.md 등)는 남긴다
+    for sub in ("screens", "reference"):
+        if os.path.isdir(os.path.join(a.out, sub)):
+            shutil.rmtree(os.path.join(a.out, sub))
+    os.makedirs(a.out, exist_ok=True)
 
     rows, refs = [], []
     for s in screens:
@@ -99,6 +101,8 @@ def main():
         "",
         f"Stitch 프로젝트 `{a.project}`에서 `tools/fetch_stitch.py`로 받은 원본. 직접 고치지 말고 다시 받는다.",
         "",
+        "> ⚠️ **기준은 PRD다. 화면을 만들기 전에 [`PRD-차이점.md`](PRD-차이점.md)에서 해당 화면을 먼저 확인한다.**",
+        "",
         "- 색·글꼴·간격의 기준은 `reference/*DESIGN.md*`와 PRD 10.1이다. 화면 HTML 안의 Tailwind 색(Stitch 자동 생성 M3 팔레트)은 레이아웃 참고용이며 토큰으로 옮기지 않는다.",
         "- 각 폴더: `screen.png`(스크린샷), `code.html`(Stitch HTML), `meta.json`.",
         "- 우선순위 `PRD 외`·`확인 필요`는 Stitch에서 추가로 그린 화면이라 PRD·스토리에 없거나 범위가 불분명하다. 구현 전에 범위를 정한다.",
@@ -109,7 +113,9 @@ def main():
         "|---|---|---|---|---|---|",
     ]
     lines += [f"| `feature/{f}` | `{sl}` | {t} | {st} | {p} | [{pa}]({pa}/screen.png) |" for f, sl, t, st, p, pa in rows]
-    lines += ["", "## 참고 문서 (데스크톱 가이드·문서 사본)", ""]
+    lines += ["", "## 참고 문서 (데스크톱 가이드·문서 사본)", "",
+              "> ⚠️ 검증된 적 없는 '완료·통과' 주장과 존재하지 않는 파일을 전제로 한 문서들이다. 스크립트를 실행하지 않는다. 자세한 내용은 `PRD-차이점.md` 6장.",
+              "> `76404327_노포천년미식가_기획안_v0.4.html`은 구버전이다 (최신: `docs/nopo-planning.html`).", ""]
     lines += [f"- [{t}]({pa})" for t, pa in sorted(refs)]
     open(os.path.join(a.out, "README.md"), "w", encoding="utf-8").write("\n".join(lines) + "\n")
     print(f"\n화면 {len(rows)}개, 참고 {len(refs)}개 → {a.out}")

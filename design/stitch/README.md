@@ -2,6 +2,8 @@
 
 Stitch 프로젝트 `3905731688785616669`에서 `tools/fetch_stitch.py`로 받은 원본. 직접 고치지 말고 다시 받는다.
 
+> ⚠️ **기준은 PRD다. 화면을 만들기 전에 [`PRD-차이점.md`](PRD-차이점.md)에서 해당 화면을 먼저 확인한다.**
+
 - 색·글꼴·간격의 기준은 `reference/*DESIGN.md*`와 PRD 10.1이다. 화면 HTML 안의 Tailwind 색(Stitch 자동 생성 M3 팔레트)은 레이아웃 참고용이며 토큰으로 옮기지 않는다.
 - 각 폴더: `screen.png`(스크린샷), `code.html`(Stitch HTML), `meta.json`.
 - 우선순위는 PRD 4장·5장 기준. `확장`은 기획안의 확장 계획, `PRD 외`·`확인 필요`는 Stitch에서 추가로 그린 화면이라 PRD·스토리에 없거나 범위가 불분명하다. 구현 전에 범위를 정한다.
@@ -63,6 +65,9 @@ Stitch 프로젝트 `3905731688785616669`에서 `tools/fetch_stitch.py`로 받�
 | `feature/verify` | `verify_result` | 방문 인증 결과 및 대체 인증 안내 | S-608 | P0 | [screens/verify/verify_result](screens/verify/verify_result/screen.png) |
 
 ## 참고 문서 (데스크톱 가이드·문서 사본)
+
+> ⚠️ 검증된 적 없는 '완료·통과' 주장과 존재하지 않는 파일을 전제로 한 문서들이다. 스크립트를 실행하지 않는다. 자세한 내용은 `PRD-차이점.md` 6장.
+> `76404327_노포천년미식가_기획안_v0.4.html`은 구버전이다 (최신: `docs/nopo-planning.html`).
 
 - [Android Jetpack Compose 전체 51개 Composable 템플릿 코드 (v0.4)](reference/f4914400_Android Jetpack Compose 전체 51개 Composable 템플릿 코드 (v0.4))
 - [Android Jetpack Compose 코드 구조 및 Composable 매핑 가이드](reference/3e7f29a0_Android Jetpack Compose 코드 구조 및 Composable 매핑 가이드)

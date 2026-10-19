@@ -13,6 +13,8 @@
 - 할 일(스토리): `docs/nopo-03-stories.md`
 - 테스트 항목: `docs/nopo-04-dev-qa-checklist.md`
 - 1일차 기능 검증: `docs/nopo-06-spike-plan.md`
+- **기준 우선순위: PRD → 아키텍처 → 스토리·체크리스트 → 기획안(`docs/nopo-planning.html`) → Stitch 시안.** 충돌하면 앞의 것을 따른다. 구버전 목록: `docs/archive/README.md` (구버전 파일은 참조하지 않는다)
+- Stitch 시안이 PRD와 다른 점: `design/stitch/PRD-차이점.md` — 화면을 만들기 전에 반드시 확인
 - 화면 디자인: `design/stitch/README.md` (Stitch 화면 51개 → 기능 패키지·스토리 매핑, 화면마다 `screen.png`·`code.html`). 화면을 만들 때 해당 폴더를 먼저 본다. 색·글꼴은 HTML의 Tailwind 값이 아니라 `core/designsystem/theme` 토큰을 쓴다
 - 디자인 다시 받기: `$env:STITCH_API_KEY="…"; python tools/fetch_stitch.py`
 
