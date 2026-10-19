@@ -60,4 +60,25 @@
     <string name="diag_tab_location">위치</string>
     <string name="diag_tab_design">디자인</string>
     <string name="diag_preparing">준비 중</string>
+    <string name="diag_tab_firebase">Firebase</string>
+
+    <!-- 진단 Firebase 탭 (SPK-5) -->
+    <string name="diag_fb_email">테스트 이메일</string>
+    <string name="diag_fb_password">비밀번호 (영문+숫자 8자 이상)</string>
+    <string name="diag_fb_sign_up">가입</string>
+    <string name="diag_fb_sign_in">로그인</string>
+    <string name="diag_fb_sign_out">로그아웃</string>
+    <string name="diag_fb_write_read">쓰기 → 서버 읽기</string>
+    <string name="diag_fb_signed_in">로그인됨 · uid %1$s</string>
+    <string name="diag_fb_signed_out">로그인 안 됨</string>
+    <string name="diag_fb_running">진행 중…</string>
+    <string name="diag_fb_ok">성공</string>
+    <string name="diag_fb_fail">실패</string>
+    <string name="diag_fb_line">%1$s · %2$s · %3$d ms</string>
+    <string name="diag_fb_hint">쓰기·읽기 왕복 2초 이내면 통과. 비행기 모드에서 쓰기 후 복귀하면 서버에 반영되는지 확인.</string>
+    <string name="diag_step_sign_up">가입</string>
+    <string name="diag_step_sign_in">로그인</string>
+    <string name="diag_step_sign_out">로그아웃</string>
+    <string name="diag_step_write">쓰기</string>
+    <string name="diag_step_read">서버 읽기</string>
 </resources>
