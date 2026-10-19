@@ -317,4 +317,23 @@
     <string name="method_receipt">영수증</string>
     <string name="method_photo">가게 사진</string>
     <string name="method_location_only">위치 확인</string>
+
+    <!-- 평점·리뷰 (E8) -->
+    <string name="reviews_title">평점과 리뷰</string>
+    <string name="reviews_none">아직 평점이 없어요</string>
+    <string name="reviews_summary">%1$.1f · 평점 %2$d개</string>
+    <string name="reviews_need_visit">이 가게를 방문 인증한 사람만 평점을 남길 수 있어요.</string>
+    <string name="reviews_write">평점 남기기</string>
+    <string name="reviews_edit">내 평점 수정</string>
+    <string name="reviews_more">리뷰 더보기</string>
+    <string name="reviews_visit_count">단골 %1$d회</string>
+    <string name="reviews_editor_title">평점 남기기</string>
+    <string name="reviews_text_hint">한 줄 리뷰 (선택, 별점만 남겨도 돼요)</string>
+    <string name="reviews_too_long">%1$d자까지 쓸 수 있어요</string>
+    <string name="reviews_too_many_lines">%1$d줄까지 쓸 수 있어요</string>
+    <string name="reviews_save">저장</string>
+    <string name="reviews_delete">삭제</string>
+
+    <string name="signout_warn_title">아직 올라가지 않은 기록이 있어요</string>
+    <string name="signout_warn_body">서버에 올라가지 않은 방문 기록 %1$d개가 있어요. 지금 로그아웃하면 이 기록은 사라져요.</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
@@ -45,7 +46,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onDiagnos
                         NopoButton(stringResource(R.string.diag_title), onDiagnostics)
                         TestStoreButton(container)
                     }
-                    NopoButton(stringResource(R.string.auth_sign_out), { container.auth.signOut() })
+                    SignOutButton(container)
                 }
             }
         }
@@ -98,4 +99,21 @@ private fun TestStoreButton(container: AppContainer) {
         }
     })
     message?.let { Text(stringResource(it), color = NopoTheme.colors.ink2) }
+}
+
+/** 올라가지 않은 기록이 있으면 경고한 뒤 로그아웃 (FR-AUTH-05) */
+@Composable
+private fun SignOutButton(container: AppContainer) {
+    val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
+    var confirm by androidx.compose.runtime.remember { mutableStateOf(false) }
+    NopoButton(stringResource(R.string.auth_sign_out), { if (pending > 0) confirm = true else container.signOut() })
+    if (confirm) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirm = false },
+            title = { Text(stringResource(R.string.signout_warn_title)) },
+            text = { Text(stringResource(R.string.signout_warn_body, pending)) },
+            confirmButton = { androidx.compose.material3.TextButton({ confirm = false; container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
+            dismissButton = { androidx.compose.material3.TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
+        )
+    }
 }

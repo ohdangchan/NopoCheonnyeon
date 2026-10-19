@@ -38,6 +38,8 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.createSavedStateHandle
 import com.nopo.cheonnyeon.feature.store.StoreDetailScreen
 import com.nopo.cheonnyeon.feature.store.StoreDetailViewModel
+import com.nopo.cheonnyeon.feature.store.ReviewsViewModel
+import com.nopo.cheonnyeon.feature.store.StoreReviewsSection
 import com.nopo.cheonnyeon.core.common.factoryOf
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -77,14 +79,17 @@ fun NopoNavHost(container: AppContainer) {
         }
         composable(Routes.SIGN_UP) { SignUpScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
-        composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.auth.signOut() }) }
+        composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.signOut() }) }
         composable(Routes.HOME) {
             MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
-            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) })
+            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) }, reviews = { store ->
+                val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
+                StoreReviewsSection(reviewsVm)
+            })
         }
         composable(Routes.VERIFY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()

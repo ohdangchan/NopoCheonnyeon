@@ -139,6 +139,45 @@ class VisitRepository(
         pendingDao.all().size
     }
 
+    /**
+     * 서버의 방문 기록을 기기로 내려받는다 (S-307, FR-AUTH-10). 재설치·다른 기기에서 로그인했을 때 세월과 도장을 되살린다.
+     * 기기에 이미 있는 가게는 건드리지 않는다. @return 새로 채운 도장 수, 실패하면 null
+     */
+    suspend fun restoreFromServer(): Int? {
+        val user = uid() ?: return null
+        return try {
+            val docs = withTimeout(SYNC_TIMEOUT_MS) { db().collection("users").document(user).collection("visits").get().await() }
+            var added = 0
+            for (d in docs.documents) {
+                if (visitDao.byStore(d.id) != null) continue
+                val first = d.getTimestamp("firstVisitedAt")?.toDate()?.time ?: continue
+                visitDao.put(
+                    com.nopo.cheonnyeon.data.local.MyVisitEntity(
+                        storeId = d.id,
+                        yearsAwarded = (d.getLong("yearsAwarded") ?: continue).toInt(),
+                        method = d.getString("method") ?: VerifyMethod.RECEIPT.name,
+                        firstVisitedAt = first,
+                        lastVisitedAt = d.getTimestamp("lastVisitedAt")?.toDate()?.time ?: first,
+                        visitCount = (d.getLong("visitCount") ?: 1L).toInt(),
+                        synced = true,
+                    ),
+                )
+                added++
+            }
+            added
+        } catch (e: CancellationException) {
+            if (e is TimeoutCancellationException) null else throw e
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /** 로그아웃 때 이 기기의 사용자 데이터를 지운다 (카탈로그는 유지, FR-AUTH-05). 다른 계정에 이전 기록이 보이면 안 된다. */
+    suspend fun clearUserData() {
+        visitDao.clear()
+        pendingDao.clear()
+    }
+
     private suspend fun commit(uid: String, v: PendingVisit) {
         val firestore = db()
         val seoulMidnight = Date.from(Instant.ofEpochMilli(v.atMillis).atZone(SeoulZone).toLocalDate().atStartOfDay(SeoulZone).toInstant())

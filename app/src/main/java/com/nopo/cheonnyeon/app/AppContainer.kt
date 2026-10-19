@@ -36,6 +36,7 @@ class AppContainer(
     val catalog = CatalogRepository(database.storeDao(), dispatchers)
     val auth = AuthRepository()
     val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers)
+    val reviews = com.nopo.cheonnyeon.data.remote.ReviewRepository({ FirebaseFirestore.getInstance() }, { auth.currentUid })
     val syncScheduler = SyncScheduler(appContext)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
@@ -50,6 +51,26 @@ class AppContainer(
 
     /** 앱을 켤 때 올라가지 못한 기록이 있으면 다시 보낸다 */
     fun syncPending() = syncScheduler.enqueue()
+
+    init {
+        // 로그인되면 서버 기록으로 기기를 채우고(재설치 복원), 대기열을 보낸다
+        scope.launch {
+            auth.sessionState.collect { st ->
+                if (st == SessionState.SignedIn) {
+                    visits.restoreFromServer()
+                    syncScheduler.enqueue()
+                }
+            }
+        }
+    }
+
+    /** 로그아웃: 이 기기의 사용자 데이터를 지우고 나간다 (대기열 경고는 화면이 먼저 보여 준다) */
+    fun signOut() {
+        scope.launch {
+            visits.clearUserData()
+            auth.signOut()
+        }
+    }
 
     /** 내비게이션이 보는 로그인 게이트 상태 */
     val sessionState: StateFlow<SessionState> = auth.sessionState.stateIn(scope, SharingStarted.Eagerly, SessionState.Loading)
