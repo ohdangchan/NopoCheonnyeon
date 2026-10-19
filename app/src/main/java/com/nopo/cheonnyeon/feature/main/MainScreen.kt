@@ -25,6 +25,8 @@ import com.nopo.cheonnyeon.core.common.factoryOf
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.feature.map.MapScreen
+import com.nopo.cheonnyeon.feature.passport.PassportScreen
+import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 import com.nopo.cheonnyeon.feature.map.MapViewModel
 
 /** 로그인 뒤 첫 화면: 아래 탭 3개 (지도 탐색 / 내 패스포트 / 설정). 패스포트·설정은 E7·E9에서 채운다. */
@@ -32,11 +34,12 @@ import com.nopo.cheonnyeon.feature.map.MapViewModel
 fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onDiagnostics: () -> Unit) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
+    val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.weight(1f)) {
             when (tab) {
                 0 -> MapScreen(mapVm, onOpenStore)
-                1 -> TabPlaceholder(R.string.tab_passport_placeholder)
+                1 -> PassportScreen(passportVm, onOpenStore)
                 else -> TabPlaceholder(R.string.tab_settings_placeholder) {
                     if (BuildConfig.DEBUG) {
                         NopoButton(stringResource(R.string.diag_title), onDiagnostics)

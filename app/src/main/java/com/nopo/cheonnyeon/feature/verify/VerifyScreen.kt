@@ -14,6 +14,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -167,7 +175,22 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
     val c = NopoTheme.colors
     val award = state.award ?: return
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
-        StampView(years = award.years, grade = award.grade, size = com.nopo.cheonnyeon.core.designsystem.component.StampSize.Ceremony)
+        // 도장 연출 (FR-STP-02): 380ms 안에 찍히고 숫자는 600ms 동안 올라가며 진동은 한 번. 애니메이션을 끄면 바로 정적으로 보인다.
+        val context = LocalContext.current
+        val animate = remember { animationsEnabled(context) }
+        var started by remember { mutableStateOf(!animate) }
+        LaunchedEffect(Unit) {
+            if (animate) {
+                started = true
+                vibrateOnce(context)
+            }
+        }
+        val scale by animateFloatAsState(if (started) 1f else 2.2f, tween(if (animate) 380 else 0), label = "stampScale")
+        val shownYears by animateIntAsState(if (started) award.years else 0, tween(if (animate) 600 else 0), label = "stampYears")
+        StampView(
+            years = shownYears, grade = award.grade, size = com.nopo.cheonnyeon.core.designsystem.component.StampSize.Ceremony,
+            modifier = Modifier.graphicsLayer { scaleX = scale; scaleY = scale; alpha = if (started) 1f else 0.2f },
+        )
         Text(stringResource(R.string.verify_done_title), style = NopoTheme.typography.headlineMedium, color = c.ink)
         Text(
             stringResource(if (award.firstVisit) R.string.verify_done_years else R.string.verify_done_revisit, award.years),
@@ -190,4 +213,17 @@ private fun titleLabel(t: com.nopo.cheonnyeon.domain.model.Title): Int = when (t
     com.nopo.cheonnyeon.domain.model.Title.ELDER -> R.string.title_elder
     com.nopo.cheonnyeon.domain.model.Title.ARTISAN -> R.string.title_artisan
     com.nopo.cheonnyeon.domain.model.Title.MASTER -> R.string.title_master
+}
+
+private fun animationsEnabled(context: android.content.Context): Boolean =
+    android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
+
+@Suppress("DEPRECATION")
+private fun vibrateOnce(context: android.content.Context) {
+    val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+        (context.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager).defaultVibrator
+    } else {
+        context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
+    }
+    vibrator.vibrate(android.os.VibrationEffect.createOneShot(40, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
 }
