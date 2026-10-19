@@ -37,6 +37,7 @@ class AppContainer(
     val auth = AuthRepository()
     val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers)
     val reviews = com.nopo.cheonnyeon.data.remote.ReviewRepository({ FirebaseFirestore.getInstance() }, { auth.currentUid })
+    val profiles = com.nopo.cheonnyeon.data.remote.ProfileRepository({ FirebaseFirestore.getInstance() }, reviews)
     val syncScheduler = SyncScheduler(appContext)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 

@@ -33,6 +33,8 @@ import com.nopo.cheonnyeon.feature.auth.ResetPasswordScreen
 import com.nopo.cheonnyeon.feature.auth.SignUpScreen
 import com.nopo.cheonnyeon.feature.diagnostics.DiagnosticsScreen
 import com.nopo.cheonnyeon.feature.main.MainScreen
+import com.nopo.cheonnyeon.feature.profile.ProfileScreen
+import com.nopo.cheonnyeon.feature.profile.ProfileViewModel
 import com.nopo.cheonnyeon.feature.verify.VerifyScreen
 import com.nopo.cheonnyeon.feature.verify.VerifyViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -72,7 +74,7 @@ fun NopoNavHost(container: AppContainer) {
                 else -> Routes.LOGIN
             }
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }
@@ -94,14 +96,14 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.signOut() }) }
         composable(Routes.HOME) {
-            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) })
+            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
             StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) }, reviews = { store ->
                 val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
-                StoreReviewsSection(reviewsVm)
+                StoreReviewsSection(reviewsVm, onOpenProfile = { nav.navigate(Routes.profile(it)) })
             })
         }
         composable(Routes.VERIFY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
@@ -112,6 +114,11 @@ fun NopoNavHost(container: AppContainer) {
                     VerifyViewModel(container, id, extras.createSavedStateHandle()) as T
             })
             VerifyScreen(vm, onClose = { nav.popBackStack() })
+        }
+        composable(Routes.PROFILE, arguments = listOf(navArgument("uid") { type = NavType.StringType })) { entry ->
+            val uid = entry.arguments?.getString("uid").orEmpty()
+            val vm: ProfileViewModel = viewModel(key = "profile_$uid", factory = factoryOf { ProfileViewModel(container, uid) })
+            ProfileScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen() }
     }

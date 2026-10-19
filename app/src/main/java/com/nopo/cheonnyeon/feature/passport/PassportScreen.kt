@@ -47,6 +47,7 @@ import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
 
@@ -56,7 +57,19 @@ data class PassportStamp(val visit: MyVisitEntity, val store: Store?) {
 
 data class PassportUiState(val loading: Boolean = true, val stamps: List<PassportStamp> = emptyList(), val totalYears: Int = 0)
 
-class PassportViewModel(container: AppContainer) : ViewModel() {
+class PassportViewModel(private val container: AppContainer) : ViewModel() {
+    private val _reviews = kotlinx.coroutines.flow.MutableStateFlow<List<com.nopo.cheonnyeon.data.remote.ReviewItem>?>(null)
+
+    /** 내가 남긴 리뷰 (null = 아직 안 불러옴). 온라인에서만 불러온다 */
+    val reviews: StateFlow<List<com.nopo.cheonnyeon.data.remote.ReviewItem>?> = _reviews
+
+    fun loadReviews() {
+        val uid = container.auth.currentUid ?: return
+        viewModelScope.launch { _reviews.value = container.reviews.byUser(uid).valueOrNull.orEmpty() }
+    }
+
+    val myUid: String? get() = container.auth.currentUid
+
     val state: StateFlow<PassportUiState> = combine(
         container.database.myVisitDao().observeAll(),
         container.catalog.changes,
@@ -72,10 +85,12 @@ class PassportViewModel(container: AppContainer) : ViewModel() {
 
 /** 내 패스포트 (S-702·S-703, FR-PAS-01~03): 세월 게이지, 칭호, 3열 도장 격자, 도장 상세 */
 @Composable
-fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit) {
+fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
+    var reviewsTab by rememberSaveable { mutableStateOf(false) }
+    val myReviews by vm.reviews.collectAsStateWithLifecycle()
     val title = TitlePolicy.titleFor(state.totalYears)
 
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
@@ -84,7 +99,31 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit) {
             TitleBadge(title)
         }
         YearsGauge(totalYears = state.totalYears, yearsToNextTitle = TitlePolicy.yearsToNext(state.totalYears))
-        if (state.stamps.isEmpty()) {
+        Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
+            androidx.compose.material3.FilterChip(!reviewsTab, { reviewsTab = false }, label = { Text(stringResource(R.string.passport_tab_stamps)) })
+            androidx.compose.material3.FilterChip(reviewsTab, { reviewsTab = true; vm.loadReviews() }, label = { Text(stringResource(R.string.passport_tab_reviews)) })
+            vm.myUid?.let { uid -> TextButton({ onOpenProfile(uid) }) { Text(stringResource(R.string.passport_my_profile)) } }
+        }
+        if (reviewsTab) {
+            val list = myReviews
+            when {
+                list == null -> Text(stringResource(R.string.list_loading), color = c.ink2)
+                list.isEmpty() -> Text(stringResource(R.string.profile_no_reviews), color = c.ink2)
+                else -> androidx.compose.foundation.lazy.LazyColumn(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                    items(list.size) { i ->
+                        val r = list[i]
+                        Column(
+                            Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
+                            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
+                        ) {
+                            Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
+                            com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
+                            if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
+        } else if (state.stamps.isEmpty()) {
             EmptyState(
                 title = stringResource(R.string.passport_empty_title),
                 body = stringResource(R.string.passport_empty_body),

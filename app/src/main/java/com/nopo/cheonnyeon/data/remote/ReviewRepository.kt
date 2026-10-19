@@ -22,6 +22,8 @@ import kotlinx.coroutines.withTimeout
 
 data class ReviewItem(
     val id: String,
+    val storeId: String,
+    val storeName: String,
     val uid: String,
     val nickname: String,
     val titleId: String,
@@ -58,6 +60,11 @@ class ReviewRepository(
         after?.last?.let { q = q.startAfter(it) }
         val snap = q.get().await()
         ReviewPage(snap.documents.map(::toItem), snap.documents.lastOrNull(), snap.size() == ReviewRules.PAGE_SIZE)
+    }
+
+    /** 한 사용자가 남긴 리뷰 최신순 (프로필·내 리뷰 탭) */
+    suspend fun byUser(uid: String, limit: Long = 60): AppResult<List<ReviewItem>> = call {
+        reviews().whereEqualTo("uid", uid).orderBy("updatedAt", Query.Direction.DESCENDING).limit(limit).get().await().documents.map(::toItem)
     }
 
     suspend fun mine(storeId: String): AppResult<ReviewItem?> = call {
@@ -104,6 +111,8 @@ class ReviewRepository(
 
     private fun toItem(d: DocumentSnapshot) = ReviewItem(
         id = d.id,
+        storeId = d.getString("storeId").orEmpty(),
+        storeName = d.getString("storeName").orEmpty(),
         uid = d.getString("uid").orEmpty(),
         nickname = d.getString("nickname").orEmpty(),
         titleId = d.getString("titleId").orEmpty(),

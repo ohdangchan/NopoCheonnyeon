@@ -1,6 +1,7 @@
 package com.nopo.cheonnyeon.feature.store
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -133,7 +134,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
 
 /** 평점 요약 + 리뷰 목록 + 평점 남기기 (S-506, S-802, FR-STORE-03·04) */
 @Composable
-fun StoreReviewsSection(vm: ReviewsViewModel) {
+fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var editing by rememberSaveable { mutableStateOf(false) }
@@ -163,7 +164,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel) {
             )
         }
 
-        state.items.forEach { ReviewCard(it) }
+        state.items.forEach { ReviewCard(it, onOpenProfile) }
         if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }
 
@@ -180,13 +181,13 @@ fun StoreReviewsSection(vm: ReviewsViewModel) {
 }
 
 @Composable
-private fun ReviewCard(r: ReviewItem) {
+private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit) {
     val c = NopoTheme.colors
     Column(
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Row(Modifier.clickable { onOpenProfile(r.uid) }, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             Text(r.nickname, style = NopoTheme.typography.titleSmall, color = c.ink)
             Text(stringResource(R.string.reviews_visit_count, r.visitCount), style = NopoTheme.typography.bodySmall, color = c.ink2)
         }

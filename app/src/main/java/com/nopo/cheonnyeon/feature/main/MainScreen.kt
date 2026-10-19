@@ -33,7 +33,7 @@ import com.nopo.cheonnyeon.feature.map.MapViewModel
 
 /** 로그인 뒤 첫 화면: 아래 탭 3개 (지도 탐색 / 내 패스포트 / 설정). 패스포트·설정은 E7·E9에서 채운다. */
 @Composable
-fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onDiagnostics: () -> Unit) {
+fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onDiagnostics: () -> Unit) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
@@ -41,7 +41,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onDiagnos
         Column(Modifier.weight(1f)) {
             when (tab) {
                 0 -> MapScreen(mapVm, onOpenStore)
-                1 -> PassportScreen(passportVm, onOpenStore)
+                1 -> PassportScreen(passportVm, onOpenStore, onOpenProfile)
                 else -> SettingsScreen(
                     container,
                     signOutButton = { SignOutButton(container) },
