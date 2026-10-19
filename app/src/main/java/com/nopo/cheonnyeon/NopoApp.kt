@@ -13,6 +13,6 @@ class NopoApp : Application() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectNetwork().penaltyLog().build())
         }
-        container = AppContainer()
+        container = AppContainer(this)
     }
 }
