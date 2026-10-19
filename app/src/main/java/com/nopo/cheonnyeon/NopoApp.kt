@@ -18,6 +18,8 @@ class NopoApp : Application(), SingletonImageLoader.Factory {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectNetwork().penaltyLog().build())
         }
+        // 크래시 수집은 릴리스에서만 (FR-SYS-03). 사용자 정보·위치·영수증은 보내지 않는다
+        com.google.firebase.crashlytics.FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
         container = AppContainer(this)
         container.syncPending()
     }

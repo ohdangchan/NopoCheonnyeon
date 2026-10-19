@@ -27,7 +27,7 @@
 | `keystore.properties` (프로젝트 루트) + 키 파일 | 릴리스 서명 (`storeFile=C:/Users/HB_OPERATION_NICK/AndroidStudioProjects/jks/nopo_release_key`) | 릴리스가 디버그 키로 서명됨 |
 
 ## 3. 명령 (Windows)
-- 단위 테스트: `.\gradlew.bat testDebugUnitTest` (현재 130개 이상 통과)
+- 단위 테스트: `.\gradlew.bat testDebugUnitTest` (현재 145개 통과)
 - 디버그 설치: `.\gradlew.bat installDebug` (폰 R5KL806MA4W, USB)
 - 릴리스 빌드: `.\gradlew.bat assembleRelease` → `app/build/outputs/apk/release/app-release.apk` (arm64-v8a만, 약 47MB)
 - 디버그와 릴리스는 서명이 달라 폰에서 서로 덮어쓸 수 없다 (한쪽을 지우고 설치).
@@ -38,15 +38,19 @@ E0 진단(SPK-0~6) · E1 기반(S-101~106) · E2 도메인 규칙 전부(테스�
 세부는 `git log` 참고 (커밋 메시지 `S-xxx: 요약`).
 
 ## 5. 남은 일 (우선순위 순)
-1. S-804 유저 프로필 + S-803 리뷰→프로필 이동 + S-704 내 리뷰 탭
-2. 지도 줌아웃 시 지역별 개수 원 (FR-MAP-04 클러스터)
-3. P1: S-408 닉네임 변경·탈퇴, S-705 칭호 승급 연출, S-805 리뷰 신고
-4. S-1001 카탈로그 최종 점검 (좌표 없는 96곳은 영수증 인증만 가능, `E_NO_COORD`)
-5. S-1004 안정성 (Monkey 5,000회, 회전·백그라운드·권한 철회)
-6. S-1003 QA 문서 `docs/qa-report.md` (자동 검증 결과 + 사용자 수동 시험 항목)
-7. 시연 준비: 릴리스 APK 설치 안내 `docs/demo-guide.md`
+(2026-10-20 현재 PRD의 P0·P1 기능은 모두 구현됨. 아래는 마무리·개선)
+1. 사용자 수동 QA (docs/qa-report.md 5장): 영수증 실촬영, 실제 가게 앞 30m 인증, 오프라인 전송, 구형 기기
+2. Monkey 5,000회 완주 — 개인 폰에서는 앱 밖으로 나가 위험하니 전용 기기/에뮬레이터에서만 (PC 메모리 부족으로 에뮬레이터 불가)
+3. 사진 확대: 공식 사진 86곳 외에는 글자 카드. 웹 사진 내려받기 또는 구글 Places API 검토
+4. 좌표 없는 가게 96곳 보강(카카오 키 필요) → `python tools/geocode.py --provider kakao` → `python tools/build_catalog.py`
+5. 출시 전: Room 정식 마이그레이션, 네이버 Client Secret 한도·교체, 서명 키 백업
+6. 영수증 인증 화면에 가이드 틀(overlay) 추가(FR-VER-03 보조), 정보 오류 신고(FR-STORE-06, P1)
+7. 문서 정리: `docs/nopo-03-stories.md` 체크 표시, PRD에 결정 사항(D-15 등) 반영
 
 ## 6. 알려진 문제·결정
+- **R8**: 최적화를 켜면 Crashlytics와 충돌해 릴리스가 시작 시 종료됨 → `rules.keep`의 `-dontoptimize`를 지우지 말 것. 릴리스는 반드시 폰에 설치해 확인한다.
+- **Monkey**: 개인 폰에서 돌리면 포커스가 앱 밖(런처)으로 나가 다른 앱이 열릴 수 있다. 쓰지 말 것.
+- 디버그 전용 도구: 설정 > 앱 정보 5번 탭 > 개발자 도구(진단, 테스트 가게, 디버그 가상 방문). 가상 방문은 서버에 실제 방문 문서를 만든다(시험 계정으로만).
 - 사진 서버(sbiz24.kr)는 `Accept` 헤더 없는 요청에 500 → `NopoApp.newImageLoader`가 헤더를 붙임.
 - Room은 개발 중이라 `fallbackToDestructiveMigration` 사용 (`AppDatabase.kt`). 출시 전 정식 마이그레이션으로 교체할 것 (스키마를 바꿀 때마다 버전 올리기).
 - 네이버 Client Secret이 APK에 들어간다 → 공개 배포 전 콘솔에서 사용 한도 설정 또는 교체.

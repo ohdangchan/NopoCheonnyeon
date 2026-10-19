@@ -16,3 +16,6 @@
 # Firestore toObject()로 매핑하는 클래스를 쓰는 경우
 -keepclassmembers class com.nopo.cheonnyeon.data.remote.dto.** { *; }
 # 네이버 지도·ML Kit·Firebase는 라이브러리에 포함된 규칙을 쓴다. 릴리스에서 문제가 생기면 SDK 문서의 규칙을 추가
+
+# R8 최적화(클래스 병합·접근 수정)가 Crashlytics와 충돌해 시작 시 IllegalAccessError가 나서 최적화는 끄고 축소·난독화만 쓴다 (2026-10-20 릴리스 실기기 확인)
+-dontoptimize

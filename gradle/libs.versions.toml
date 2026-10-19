@@ -1,4 +1,5 @@
 [versions]
+crashlyticsPlugin = "3.0.8"
 coil = "3.3.0"
 ksp = "2.3.4"
 room = "2.8.5"
@@ -28,6 +29,7 @@ coroutinesTest = "1.11.0"
 leakcanary = "2.14"
 
 [libraries]
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -70,6 +72,7 @@ mlkit-text-korean = { group = "com.google.mlkit", name = "text-recognition-korea
 kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutinesPlayServices" }
 
 [plugins]
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlyticsPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
