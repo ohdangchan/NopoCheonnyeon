@@ -81,4 +81,45 @@
     <string name="diag_step_sign_out">로그아웃</string>
     <string name="diag_step_write">쓰기</string>
     <string name="diag_step_read">서버 읽기</string>
+    <!-- 권한 안내 (공통) -->
+    <string name="perm_camera_needed">사진을 찍으려면 카메라 권한이 필요해요</string>
+    <string name="perm_location_needed">가게 근처인지 확인하려면 위치 권한이 필요해요</string>
+    <string name="perm_location_precise">정확한 위치를 허용해 주세요</string>
+    <string name="perm_request">권한 허용</string>
+    <string name="perm_open_settings">설정 열기</string>
+    <string name="perm_denied_forever">권한이 꺼져 있어요. 설정에서 직접 허용해 주세요.</string>
+
+    <!-- 진단 카메라 탭 (SPK-2) -->
+    <string name="diag_cam_memory">메모리로 촬영</string>
+    <string name="diag_cam_file">파일로 촬영</string>
+    <string name="diag_cam_preview_ms">미리보기 첫 화면 %1$d ms</string>
+    <string name="diag_cam_memory_result">메모리 촬영 %1$d×%2$d · 회전 %3$d° · 파일 없음</string>
+    <string name="diag_cam_file_result">파일 저장 %1$d ms · %2$s</string>
+    <string name="diag_cam_error">촬영 실패 · %1$s</string>
+    <string name="cd_diag_cam_thumb">방금 파일로 저장한 사진</string>
+
+    <!-- 진단 글자 인식 탭 (SPK-3) -->
+    <string name="diag_ocr_capture">찍어서 글자 인식</string>
+    <string name="diag_ocr_running">글자 읽는 중…</string>
+    <string name="diag_ocr_summary">%1$d줄 · %2$d ms · 긴 변 %3$dpx</string>
+    <string name="diag_ocr_phone">전화번호: %1$s</string>
+    <string name="diag_ocr_paid_at">결제일시: %1$s</string>
+    <string name="diag_ocr_none">못 찾음</string>
+    <string name="diag_ocr_hint">영수증·간판을 화면에 꽉 차게. 이미지는 저장하지 않아요.</string>
+
+    <!-- 진단 위치 탭 (SPK-4) -->
+    <string name="diag_loc_measure">측정 (최대 15초)</string>
+    <string name="diag_loc_measuring">측정 중 · %1$d초 남음 · 최선 ±%2$s m</string>
+    <string name="diag_loc_result">정확도 ±%1$.1f m · 첫 값까지 %2$d ms · 받은 값 %3$d개</string>
+    <string name="diag_loc_coords">위도 %1$.6f · 경도 %2$.6f</string>
+    <string name="diag_loc_mock">모의 위치 감지됨</string>
+    <string name="diag_loc_not_mock">모의 위치 아님</string>
+    <string name="diag_loc_timeout">위치를 찾지 못했어요. 가게 밖 하늘이 보이는 곳에서 다시 시도해 주세요</string>
+    <string name="diag_loc_settings_off">기기 위치가 꺼져 있어요</string>
+    <string name="diag_loc_target_lat">목표 위도</string>
+    <string name="diag_loc_target_lng">목표 경도</string>
+    <string name="diag_loc_distance">목표까지 %1$.1f m</string>
+    <string name="diag_loc_pass">30m 이내 · 정확도 30m 이하 → 통과</string>
+    <string name="diag_loc_fail">조건 미달 → 재측정</string>
+    <string name="diag_loc_none">아직 측정하지 않았어요</string>
 </resources>

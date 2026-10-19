@@ -44,7 +44,7 @@ private enum class DiagTab(@param:StringRes val label: Int) {
 
 /**
  * 1일차 기능 검증용 진단 화면 (SPK-0). 최종 앱에도 설정 → 앱 정보 5회 탭으로 남는다.
- * SPK-1~4에서 각 탭 내용을 채운다. Firebase 탭은 SPK-5.
+ * 지도 탭은 SPK-1(네이버 지도 키 필요), 나머지는 SPK-2~5.
  */
 @Composable
 fun DiagnosticsScreen(modifier: Modifier = Modifier) {
@@ -98,6 +98,9 @@ fun DiagnosticsScreen(modifier: Modifier = Modifier) {
             when (tabs[selected]) {
                 DiagTab.Design -> DesignCatalogScreen(contentPadding = PaddingValues(NopoTheme.spacing.lg))
                 DiagTab.Firebase -> DiagnosticsFirebaseTab()
+                DiagTab.Camera -> DiagnosticsCameraTab()
+                DiagTab.Ocr -> DiagnosticsOcrTab()
+                DiagTab.Location -> DiagnosticsLocationTab()
                 else -> Preparing()
             }
         }
