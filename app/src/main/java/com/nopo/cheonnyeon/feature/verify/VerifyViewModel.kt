@@ -144,7 +144,8 @@ class VerifyViewModel(
         if (_state.value.busy) return
         _state.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
-            val lines = readText(camera) ?: emptyList()
+            val proof = java.io.File(container.appContext.filesDir, "proofs/" + store.id + ".jpg")
+            val lines = readText(camera, proof) ?: emptyList()
             val visits = container.visits.visitRefs()
             val limit = DailyLimitPolicy.check(visits, store.id, store.isTest, container.clock.now())
             if (limit != null) {
@@ -154,6 +155,7 @@ class VerifyViewModel(
             when (PhotoMatcher.matchText(lines, store)) {
                 is AppResult.Success -> finish(store, VerifyMethod.PHOTO, photoVerified = true, hash = null)
                 is AppResult.Failure -> {
+                    proof.delete()
                     val attempts = _state.value.failedPhotoAttempts + 1
                     saved[KEY_ATTEMPTS] = attempts
                     _state.update { it.copy(busy = false, error = AppError.E_PHOTO_NO_MATCH, failedPhotoAttempts = attempts) }
@@ -183,10 +185,15 @@ class VerifyViewModel(
     }
 
     /** 촬영 → 글자 줄 목록. 10초 제한, 이미지는 변환 직후 버린다. 실패하면 null */
-    private suspend fun readText(camera: CameraController): List<String>? = try {
+    private suspend fun readText(camera: CameraController, proofFile: java.io.File? = null): List<String>? = try {
         val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
         withContext(Dispatchers.Default) {
             try {
+                // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
+                proofFile?.let { f ->
+                    f.parentFile?.mkdirs()
+                    f.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }
+                }
                 withTimeout(OCR_TIMEOUT_MS) { recognizer.read(bitmap).lines }
             } finally {
                 bitmap.recycle()

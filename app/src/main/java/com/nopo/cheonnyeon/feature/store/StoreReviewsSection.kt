@@ -221,6 +221,10 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
         Row(Modifier.clickable { onOpenProfile(r.uid) }, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             Text(r.nickname, style = NopoTheme.typography.titleSmall, color = c.ink)
             Text(stringResource(R.string.reviews_visit_count, r.visitCount), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            Text(
+                java.time.Instant.ofEpochMilli(r.updatedAtMillis).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate().toString(),
+                style = NopoTheme.typography.bodySmall, color = c.ink2,
+            )
         }
         StarRating(r.rating.toFloat())
         if (r.text.isNotBlank()) Text(r.text, style = NopoTheme.typography.bodyMedium, color = c.ink)

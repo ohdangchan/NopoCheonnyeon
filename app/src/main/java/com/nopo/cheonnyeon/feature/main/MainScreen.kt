@@ -3,6 +3,7 @@ package com.nopo.cheonnyeon.feature.main
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -37,7 +38,11 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
+    val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
+    val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
+    androidx.compose.runtime.LaunchedEffect(online) { if (online) container.syncScheduler.enqueue() }
     Column(Modifier.fillMaxSize()) {
+        com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(visible = !online, pendingCount = pending, modifier = Modifier.fillMaxWidth())
         Column(Modifier.weight(1f)) {
             when (tab) {
                 0 -> MapScreen(mapVm, onOpenStore)

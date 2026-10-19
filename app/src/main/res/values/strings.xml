@@ -384,4 +384,11 @@
     <string name="settings_delete_account">회원 탈퇴</string>
     <string name="settings_delete_warn">내 리뷰, 방문 기록, 프로필이 모두 삭제되고 되돌릴 수 없어요. 확인을 위해 비밀번호를 입력해 주세요.</string>
     <string name="settings_delete_confirm">탈퇴하기</string>
+
+    <string name="stamp_pending">확인 중</string>
+    <string name="detail_years_checking">업력 확인 중</string>
+    <string name="settings_account_info">내 계정</string>
+    <string name="settings_nickname">닉네임 %1$s</string>
+    <string name="settings_email">이메일 %1$s</string>
+    <string name="stamp_proof_photo">인증샷 (이 기기에만 저장돼요)</string>
 </resources>

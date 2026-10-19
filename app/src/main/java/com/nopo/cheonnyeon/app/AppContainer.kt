@@ -38,6 +38,7 @@ class AppContainer(
     val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers)
     val reviews = com.nopo.cheonnyeon.data.remote.ReviewRepository({ FirebaseFirestore.getInstance() }, { auth.currentUid })
     val profiles = com.nopo.cheonnyeon.data.remote.ProfileRepository({ FirebaseFirestore.getInstance() }, reviews)
+    val connectivity = com.nopo.cheonnyeon.platform.network.ConnectivityMonitor(appContext)
     val syncScheduler = SyncScheduler(appContext)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
@@ -68,9 +69,15 @@ class AppContainer(
     /** 로그아웃: 이 기기의 사용자 데이터를 지우고 나간다 (대기열 경고는 화면이 먼저 보여 준다) */
     fun signOut() {
         scope.launch {
-            visits.clearUserData()
+            clearLocalUserData()
             auth.signOut()
         }
+    }
+
+    /** 방문 기록·대기열·인증샷 삭제 (로그아웃·탈퇴 때). 카탈로그는 남긴다 */
+    suspend fun clearLocalUserData() {
+        visits.clearUserData()
+        java.io.File(appContext.filesDir, "proofs").deleteRecursively()
     }
 
     /** 내비게이션이 보는 로그인 게이트 상태 */

@@ -42,6 +42,11 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
     var showLicenses by rememberSaveable { mutableStateOf(false) }
     val version = remember { runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty() }
 
+    var nickname by remember { mutableStateOf<String?>(null) }
+    val email = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email }
+    LaunchedEffect(Unit) {
+        nickname = container.auth.currentNickname()
+    }
     LaunchedEffect(Unit) {
         catalogInfo = container.settings.catalogVersion() to container.catalog.all().size
     }
@@ -52,6 +57,10 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
     ) {
         Text(stringResource(R.string.tab_settings), style = NopoTheme.typography.headlineMedium, color = c.primary)
 
+        Section(stringResource(R.string.settings_account_info)) {
+            Text(stringResource(R.string.settings_nickname, nickname ?: "-"), color = c.ink)
+            Text(stringResource(R.string.settings_email, email ?: "-"), color = c.ink2, style = NopoTheme.typography.bodySmall)
+        }
         Section(stringResource(R.string.settings_app_info)) {
             Text(
                 stringResource(R.string.settings_version, version),
@@ -162,7 +171,7 @@ private fun AccountSection(container: AppContainer, c: com.nopo.cheonnyeon.core.
                             error = r.errorOrNull
                             if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) {
                                 deleteDialog = false
-                                container.visits.clearUserData()
+                                container.clearLocalUserData()
                             }
                         }
                     },

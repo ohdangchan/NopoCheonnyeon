@@ -143,6 +143,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                     ) {
                         StampView(s.visit.yearsAwarded, StampGradePolicy.gradeFor(s.visit.yearsAwarded), size = StampSize.Grid)
                         Text(s.store?.name ?: s.visit.storeId, style = NopoTheme.typography.labelMedium, color = c.ink, maxLines = 1)
+                        if (!s.visit.synced && !s.isTest) Text(stringResource(R.string.stamp_pending), style = NopoTheme.typography.labelMedium, color = c.stamp)
                     }
                 }
                 // 빈 칸: 다음에 갈 노포 자리
@@ -180,6 +181,14 @@ private fun StampDetail(stamp: PassportStamp, onDismiss: () -> Unit, onOpenStore
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                 StampView(v.yearsAwarded, StampGradePolicy.gradeFor(v.yearsAwarded), size = StampSize.Grid)
+                val proof = java.io.File(androidx.compose.ui.platform.LocalContext.current.filesDir, "proofs/" + v.storeId + ".jpg")
+                if (proof.exists()) {
+                    coil3.compose.AsyncImage(
+                        model = proof, contentDescription = stringResource(R.string.stamp_proof_photo),
+                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        modifier = Modifier.fillMaxWidth().height(160.dp),
+                    )
+                }
                 Text(stringResource(R.string.stamp_first_visit, first.toString()))
                 Text(stringResource(R.string.stamp_years, v.yearsAwarded))
                 Text(stringResource(R.string.stamp_method, stringResource(method)))

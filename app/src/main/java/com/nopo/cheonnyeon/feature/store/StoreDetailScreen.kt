@@ -48,7 +48,10 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Photos(store)
             Column(Modifier.padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
-                Text(stringResource(R.string.years_value, state.years), style = NopoTheme.typography.displayMedium, color = c.stamp)
+                Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = androidx.compose.ui.Alignment.Bottom) {
+                    Text(stringResource(R.string.years_value, state.years), style = NopoTheme.typography.displayMedium, color = c.stamp)
+                    if (store.foundedYear == null) Text(stringResource(R.string.detail_years_checking), style = NopoTheme.typography.bodySmall, color = c.ink2)
+                }
                 Text(store.name, style = NopoTheme.typography.headlineMedium, color = c.ink)
                 ProgramBadges(store)
                 store.summary?.let { Text(it, style = NopoTheme.typography.bodyMedium, color = c.ink2) }
