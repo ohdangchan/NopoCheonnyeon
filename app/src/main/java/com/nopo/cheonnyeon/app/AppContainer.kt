@@ -22,17 +22,17 @@ import kotlinx.coroutines.launch
 
 /** 직접 만드는 의존성 모음 (아키텍처 3장). 동기화·방문 저장소는 E3 뒷부분부터 여기에 추가한다. */
 class AppContainer(
-    context: Context,
+    val appContext: Context,
     val clock: Clock = SystemClock,
     val dispatchers: DispatcherProvider = DefaultDispatchers,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    val database: AppDatabase = AppDatabase.create(context)
-    val settings = SettingsStore(context)
+    val database: AppDatabase = AppDatabase.create(appContext)
+    val settings = SettingsStore(appContext)
     val catalog = CatalogRepository(database.storeDao(), dispatchers)
     val auth = AuthRepository()
-    private val catalogSeeder = CatalogSeeder(context, database.storeDao(), settings, dispatchers)
+    private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {
         // 카탈로그 적재는 백그라운드에서. 실패하면 이전 데이터를 쓰고 다음 실행에 다시 시도한다

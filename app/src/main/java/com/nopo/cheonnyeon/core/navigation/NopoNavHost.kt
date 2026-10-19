@@ -30,6 +30,12 @@ import com.nopo.cheonnyeon.feature.auth.NicknameSetupScreen
 import com.nopo.cheonnyeon.feature.auth.ResetPasswordScreen
 import com.nopo.cheonnyeon.feature.auth.SignUpScreen
 import com.nopo.cheonnyeon.feature.diagnostics.DiagnosticsScreen
+import com.nopo.cheonnyeon.feature.main.MainScreen
+import com.nopo.cheonnyeon.feature.store.StoreDetailScreen
+import com.nopo.cheonnyeon.feature.store.StoreDetailViewModel
+import com.nopo.cheonnyeon.core.common.factoryOf
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
@@ -49,7 +55,7 @@ fun NopoNavHost(container: AppContainer) {
             SessionState.Loading -> Routes.SPLASH
             SessionState.SignedOut -> if (current in Routes.signedOutRoutes) current else Routes.LOGIN
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS) current else Routes.HOME
+            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }
@@ -68,10 +74,12 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.auth.signOut() }) }
         composable(Routes.HOME) {
-            Placeholder(R.string.placeholder_home, extra = {
-                if (BuildConfig.DEBUG) NopoButton(stringResource(R.string.diag_title), { nav.navigate(Routes.DIAGNOSTICS) })
-                NopoButton(stringResource(R.string.auth_sign_out), { container.auth.signOut() })
-            })
+            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) })
+        }
+        composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            val id = entry.arguments?.getString("id").orEmpty()
+            val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
+            StoreDetailScreen(vm, onBack = { nav.popBackStack() })
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen() }
     }

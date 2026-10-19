@@ -8,6 +8,8 @@ object Routes {
     const val RESET = "reset"
     const val NICKNAME = "nickname"
     const val HOME = "home"
+    const val STORE = "store/{id}"
+    fun store(id: String) = "store/$id"
     const val DIAGNOSTICS = "diagnostics"
 
     /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
