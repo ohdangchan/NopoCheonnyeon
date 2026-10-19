@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-18T22:52:58",
+ "generated_at": "2026-10-19T21:14:21",
  "baeknyeon_total": 1139,
  "baeknyeon_official_only": 0,
  "baeknyeon_not_in_official": 0,
@@ -18,7 +18,7 @@
  "orae_in_app": 151,
  "orae_flagged": 22,
  "catalog_food": 839,
- "with_coords": 0,
+ "with_coords": 1183,
  "by_category": {
   "음식점업": 751,
   "도소매업": 252,
