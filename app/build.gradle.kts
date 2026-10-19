@@ -38,11 +38,12 @@ android {
 
     signingConfigs {
         create("release") {
+            // 값 끝의 공백·줄바꿈이 섞여 들어가도 읽히도록 trim 한다
             if (keystoreProps.isNotEmpty()) {
-                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
-                storePassword = keystoreProps.getProperty("storePassword")
-                keyAlias = keystoreProps.getProperty("keyAlias")
-                keyPassword = keystoreProps.getProperty("keyPassword")
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile").trim())
+                storePassword = keystoreProps.getProperty("storePassword").trim()
+                keyAlias = keystoreProps.getProperty("keyAlias").trim()
+                keyPassword = keystoreProps.getProperty("keyPassword").trim()
             }
         }
     }
