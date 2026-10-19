@@ -22,7 +22,10 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time;   // FieldValue.serverTimestamp()
       allow update: if isMe(uid)
         && request.resource.data.keys().hasOnly(userKeys())
-        && request.resource.data.nickname == resource.data.nickname
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 12
+        && request.resource.data.nicknameLower == request.resource.data.nickname.lower()
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.totalYears >= resource.data.totalYears
         && request.resource.data.totalYears <= resource.data.totalYears + 200

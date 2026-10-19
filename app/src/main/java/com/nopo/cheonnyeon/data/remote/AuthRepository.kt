@@ -116,6 +116,56 @@ class AuthRepository(
         return if (r.errorOrNull == AppError.E_NETWORK) r else Unit.asSuccess()
     }
 
+    /** 내 닉네임 (프로필 문서). 못 읽으면 null */
+    suspend fun currentNickname(): String? = try {
+        val me = auth.currentUser?.uid ?: return null
+        withTimeout(TIMEOUT_MS) { db.collection("users").document(me).get().await().getString("nickname") }
+    } catch (e: CancellationException) {
+        if (e is TimeoutCancellationException) null else throw e
+    } catch (_: Exception) {
+        null
+    }
+
+    /** 닉네임 변경 (S-408): 새 닉네임 확보 → 옛 닉네임 해제 → 내 리뷰의 닉네임 일괄 갱신, 한 묶음으로 */
+    suspend fun changeNickname(newNick: String): AppResult<Unit> = call {
+        val me = auth.currentUser?.uid ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
+        val old = db.collection("users").document(me).get().await().getString("nickname").orEmpty()
+        if (AuthValidation.nicknameKey(old) != AuthValidation.nicknameKey(newNick) && isNicknameAvailable(newNick) == false) {
+            return@call AppError.AUTH_NICK_TAKEN.asFailure()
+        }
+        val batch = db.batch()
+        if (AuthValidation.nicknameKey(old) != AuthValidation.nicknameKey(newNick)) {
+            if (old.isNotEmpty()) batch.delete(db.collection("nicknames").document(AuthValidation.nicknameKey(old)))
+            batch.set(db.collection("nicknames").document(AuthValidation.nicknameKey(newNick)), mapOf("uid" to me))
+        }
+        batch.update(
+            db.collection("users").document(me),
+            mapOf("nickname" to newNick, "nicknameLower" to AuthValidation.nicknameKey(newNick), "updatedAt" to FieldValue.serverTimestamp()),
+        )
+        db.collection("reviews").whereEqualTo("uid", me).get().await().documents.forEach { d ->
+            batch.update(d.reference, mapOf("nickname" to newNick))
+        }
+        batch.commit().await()
+        Unit.asSuccess()
+    }
+
+    /** 회원 탈퇴 (S-408): 비밀번호로 다시 인증 → 내 리뷰·방문·프로필·닉네임 삭제 → 계정 삭제 */
+    suspend fun deleteAccount(password: String): AppResult<Unit> = call {
+        val user = auth.currentUser ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
+        val email = user.email ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
+        user.reauthenticate(com.google.firebase.auth.EmailAuthProvider.getCredential(email, password)).await()
+        val me = user.uid
+        val nick = db.collection("users").document(me).get().await().getString("nickname")
+        val batch = db.batch()
+        db.collection("reviews").whereEqualTo("uid", me).get().await().documents.forEach { batch.delete(it.reference) }
+        db.collection("users").document(me).collection("visits").get().await().documents.forEach { batch.delete(it.reference) }
+        nick?.let { batch.delete(db.collection("nicknames").document(AuthValidation.nicknameKey(it))) }
+        batch.delete(db.collection("users").document(me))
+        batch.commit().await()
+        user.delete().await()
+        Unit.asSuccess()
+    }
+
     fun signOut() = auth.signOut()
 
     private suspend fun call(block: suspend () -> AppResult<Unit>): AppResult<Unit> = try {

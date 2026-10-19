@@ -22,6 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import com.nopo.cheonnyeon.core.common.message
+import kotlinx.coroutines.launch
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
@@ -78,7 +80,96 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
                 devTools()
             }
         }
+        AccountSection(container, c)
         signOutButton()
+    }
+}
+
+/** 닉네임 변경·회원 탈퇴 (S-408, FR-AUTH-08·09). 온라인에서만 된다. */
+@Composable
+private fun AccountSection(container: AppContainer, c: com.nopo.cheonnyeon.core.designsystem.theme.NopoColors) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val context = LocalContext.current
+    var nickDialog by rememberSaveable { mutableStateOf(false) }
+    var deleteDialog by rememberSaveable { mutableStateOf(false) }
+    var nick by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var busy by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<com.nopo.cheonnyeon.core.common.AppError?>(null) }
+    val nickInvalid = com.nopo.cheonnyeon.domain.rule.AuthValidation.nickname(nick).takeIf { nick.isNotEmpty() }
+
+    Section(stringResource(R.string.settings_account)) {
+        NopoButton(stringResource(R.string.settings_change_nick), { error = null; nick = ""; nickDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        NopoButton(stringResource(R.string.settings_delete_account), { error = null; password = ""; deleteDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+    }
+
+    if (nickDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { if (!busy) nickDialog = false },
+            title = { Text(stringResource(R.string.settings_change_nick)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                    androidx.compose.material3.OutlinedTextField(
+                        value = nick, onValueChange = { nick = it }, singleLine = true,
+                        label = { Text(stringResource(R.string.auth_nickname)) },
+                        isError = nickInvalid != null,
+                        supportingText = { Text(stringResource(R.string.auth_nickname_hint)) },
+                    )
+                    error?.let { Text(it.message(context), color = c.stamp) }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    enabled = !busy && com.nopo.cheonnyeon.domain.rule.AuthValidation.nickname(nick) == null,
+                    onClick = {
+                        busy = true
+                        scope.launch {
+                            val r = container.auth.changeNickname(nick)
+                            busy = false
+                            error = r.errorOrNull
+                            if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) nickDialog = false
+                        }
+                    },
+                ) { Text(stringResource(R.string.reviews_save)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ nickDialog = false }, enabled = !busy) { Text(stringResource(R.string.detail_back)) } },
+        )
+    }
+
+    if (deleteDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { if (!busy) deleteDialog = false },
+            title = { Text(stringResource(R.string.settings_delete_account)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                    Text(stringResource(R.string.settings_delete_warn))
+                    androidx.compose.material3.OutlinedTextField(
+                        value = password, onValueChange = { password = it }, singleLine = true,
+                        label = { Text(stringResource(R.string.auth_password)) },
+                        visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                    )
+                    error?.let { Text(it.message(context), color = c.stamp) }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    enabled = !busy && password.isNotEmpty(),
+                    onClick = {
+                        busy = true
+                        scope.launch {
+                            val r = container.auth.deleteAccount(password)
+                            busy = false
+                            error = r.errorOrNull
+                            if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) {
+                                deleteDialog = false
+                                container.visits.clearUserData()
+                            }
+                        }
+                    },
+                ) { Text(stringResource(R.string.settings_delete_confirm)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ deleteDialog = false }, enabled = !busy) { Text(stringResource(R.string.detail_back)) } },
+        )
     }
 }
 

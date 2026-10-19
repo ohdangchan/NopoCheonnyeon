@@ -60,12 +60,15 @@ data class ReviewsUiState(
     val eligibility: ReviewEligibility = ReviewEligibility.NOT_VISITED,
     val error: AppError? = null,
     val saving: Boolean = false,
+    val reported: Boolean = false,
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
     private val _state = MutableStateFlow(ReviewsUiState())
     val state: StateFlow<ReviewsUiState> = _state.asStateFlow()
     private var lastPage: ReviewPage? = null
+
+    val myUid: String? get() = container.auth.currentUid
 
     init { refresh() }
 
@@ -107,6 +110,13 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         }
     }
 
+    fun report(reviewId: String, reason: String) {
+        viewModelScope.launch {
+            val r = container.reviews.report(reviewId, reason)
+            _state.update { it.copy(error = r.errorOrNull, reported = r is AppResult.Success) }
+        }
+    }
+
     fun save(rating: Int, text: String, onDone: () -> Unit) {
         if (_state.value.saving) return
         _state.update { it.copy(saving = true, error = null) }
@@ -138,6 +148,8 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var editing by rememberSaveable { mutableStateOf(false) }
+    var reportTarget by rememberSaveable { mutableStateOf<String?>(null) }
+    val myUid = vm.myUid
 
     Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
         Text(stringResource(R.string.reviews_title), style = NopoTheme.typography.titleLarge, color = c.ink)
@@ -164,8 +176,27 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
             )
         }
 
-        state.items.forEach { ReviewCard(it, onOpenProfile) }
+        state.items.forEach { r -> ReviewCard(r, onOpenProfile, onReport = if (r.uid != myUid) ({ reportTarget = r.id }) else null) }
+        if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)
         if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+    }
+
+    reportTarget?.let { id ->
+        val reasons = listOf(R.string.report_reason_abuse, R.string.report_reason_ad, R.string.report_reason_false, R.string.report_reason_other)
+        AlertDialog(
+            onDismissRequest = { reportTarget = null },
+            title = { Text(stringResource(R.string.reviews_report_title)) },
+            text = {
+                Column {
+                    reasons.forEach { res ->
+                        val label = stringResource(res)
+                        TextButton(onClick = { vm.report(id, label); reportTarget = null }) { Text(label) }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { reportTarget = null }) { Text(stringResource(R.string.detail_back)) } },
+        )
     }
 
     if (editing) {
@@ -181,7 +212,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
 }
 
 @Composable
-private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit) {
+private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport: (() -> Unit)?) {
     val c = NopoTheme.colors
     Column(
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
@@ -193,6 +224,7 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit) {
         }
         StarRating(r.rating.toFloat())
         if (r.text.isNotBlank()) Text(r.text, style = NopoTheme.typography.bodyMedium, color = c.ink)
+        if (onReport != null) TextButton(onClick = onReport) { Text(stringResource(R.string.reviews_report)) }
     }
 }
 

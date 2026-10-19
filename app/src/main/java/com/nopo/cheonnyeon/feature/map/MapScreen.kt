@@ -157,6 +157,31 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         val map = naverMap ?: return@LaunchedEffect
         val zoom = map.cameraPosition.zoom
         zoomedOut = zoom < MIN_ZOOM_FOR_MARKERS
+        if (zoomedOut) {
+            // 축소하면 시·도별 개수 원으로 묶어 보여 준다 (FR-MAP-04). 누르면 그 지역으로 확대
+            val groups = state.filtered.filter { it.lat != null && it.lng != null }.groupBy { it.sido.ifBlank { "-" } }
+            val keepClusters = groups.keys.map { "cluster:$it" }.toSet()
+            markers.keys.filter { it !in keepClusters }.forEach { markers.remove(it)?.map = null }
+            groups.forEach { (sido, list) ->
+                val center = LatLng(list.map { it.lat!! }.average(), list.map { it.lng!! }.average())
+                val marker = markers.getOrPut("cluster:$sido") {
+                    Marker().apply {
+                        icon = MarkerIcons.BLACK
+                        this.map = map
+                    }
+                }
+                marker.position = center
+                marker.iconTintColor = c.sign.toArgb()
+                marker.width = 72
+                marker.height = 90
+                marker.captionText = "$sido ${list.size}"
+                marker.setOnClickListener {
+                    map.moveCamera(CameraUpdate.scrollAndZoomTo(center, 10.5).animate(CameraAnimation.Easing))
+                    true
+                }
+            }
+            return@LaunchedEffect
+        }
         val visible = if (zoomedOut) emptyList() else {
             val b = map.contentBounds
             val center = map.cameraPosition.target
@@ -167,6 +192,7 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         }
         val keep = visible.map { it.id }.toSet()
         markers.keys.filter { it !in keep }.forEach { markers.remove(it)?.map = null }
+        // 확대하면 묶음 원은 지우고 가게 마커로 바꾼다
         visible.forEach { s ->
             val years = state.yearsOf(s)
             val color = when {
@@ -201,14 +227,6 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         }
         Column(Modifier.align(Alignment.TopStart).padding(NopoTheme.spacing.md)) {
             YearsPill(state.totalYears)
-        }
-        if (zoomedOut) {
-            Text(
-                stringResource(R.string.map_zoom_in_hint),
-                color = c.onPrimary,
-                modifier = Modifier.align(Alignment.Center).background(c.primary.copy(alpha = 0.85f), NopoTheme.shapes.md)
-                    .padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
-            )
         }
         authError?.let {
             Text(

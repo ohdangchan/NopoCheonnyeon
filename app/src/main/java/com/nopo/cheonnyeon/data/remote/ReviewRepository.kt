@@ -100,6 +100,13 @@ class ReviewRepository(
         }
     }
 
+    /** 리뷰 신고 (S-805, P1). 신고만 쌓고 처리는 운영자가 한다 */
+    suspend fun report(reviewId: String, reason: String): AppResult<Unit> = call {
+        val me = uid() ?: throw NotSignedIn()
+        db().collection("reports").add(mapOf("reviewId" to reviewId, "reason" to reason, "reporterUid" to me, "createdAt" to FieldValue.serverTimestamp())).await()
+        Unit
+    }
+
     suspend fun delete(storeId: String): AppResult<Unit> = call {
         val me = uid() ?: throw NotSignedIn()
         val firestore = db()

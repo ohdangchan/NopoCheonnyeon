@@ -45,7 +45,10 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 else -> SettingsScreen(
                     container,
                     signOutButton = { SignOutButton(container) },
-                    devTools = { TestStoreButton(container) },
+                    devTools = {
+                        TestStoreButton(container)
+                        if (BuildConfig.DEBUG) DebugVisitButton(container)
+                    },
                     onDiagnostics = onDiagnostics,
                 )
             }
@@ -116,4 +119,25 @@ private fun SignOutButton(container: AppContainer) {
             dismissButton = { androidx.compose.material3.TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
         )
     }
+}
+
+/** 디버그 전용: 영수증·위치 없이 가게 하나에 방문 기록을 만든다. 동기화·리뷰·프로필·복원 같은 서버 흐름을 시험할 때 쓴다. */
+@Composable
+private fun DebugVisitButton(container: AppContainer) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var message by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+    NopoButton("가상 방문 기록 (디버그, 서버 동기화 시험)", {
+        scope.launch {
+            val visited = container.visits.visitRefs().map { it.storeId }.toSet()
+            val store = container.catalog.all().firstOrNull { !it.isTest && it.id !in visited && it.foundedYear != null }
+            if (store == null) {
+                message = "기록할 가게가 없어요"
+            } else {
+                container.visits.record(store, com.nopo.cheonnyeon.domain.model.VerifyMethod.RECEIPT, true, null)
+                container.syncScheduler.enqueue()
+                message = "가상 방문 기록: " + store.name
+            }
+        }
+    })
+    message?.let { Text(it, color = NopoTheme.colors.ink2) }
 }
