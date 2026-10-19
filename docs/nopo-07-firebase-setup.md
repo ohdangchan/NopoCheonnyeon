@@ -26,6 +26,18 @@
 2. 로그인 방법 → **이메일/비밀번호** → 사용 설정 → 저장 (이메일 링크 로그인은 끔)
 3. 템플릿 → 비밀번호 재설정 메일의 언어를 한국어로 바꾸면 테스트 사용자가 덜 헷갈립니다
 
+## 0. 이 저장소의 실제 연결 정보 (2026-10-19 설정)
+| 항목 | 값 |
+|---|---|
+| 계정 | songpa24@iceu.kr |
+| 프로젝트 ID | `nopocheonnyeon` (표시 이름 NopoCheonnyeon, `firebase/.firebaserc`) |
+| Android 앱 | `com.nopo.cheonnyeon`, App ID `1:401283218421:android:1cf2a80d59a68bf853bebc` |
+| 설정 파일 | `app/google-services.json` (git 제외, `firebase apps:sdkconfig ANDROID <App ID> -o app/google-services.json`로 다시 받기) |
+| Firestore | `(default)`, **asia-northeast3 (서울)**, Standard |
+
+> ⚠️ **데이터베이스를 만들기 전에 `firebase deploy --only firestore`를 실행하지 않는다.** 데이터베이스가 없으면 CLI가 자동으로 만드는데, 위치가 **nam5(미국)**로 정해지고 나중에 바꿀 수 없다(2026-10-19 실제로 발생 → 삭제 후 재생성, 같은 ID는 삭제 5분 뒤 재사용 가능).
+> 순서: `firebase firestore:databases:create "(default)" --location asia-northeast3` → 위치 확인(`firebase firestore:databases:get "(default)"`) → `firebase deploy --only firestore` (프로젝트 루트가 아니라 `firebase/` 폴더에서 실행)
+
 ## 4. 데이터베이스(Cloud Firestore)
 1. 왼쪽 메뉴에서 **Firestore Database** → **데이터베이스 만들기** (에디션을 고르라고 하면 **Standard**, 데이터베이스 ID는 기본값 `(default)`)
 2. 위치: **`asia-northeast3` (서울)** — 한 번 정하면 바꿀 수 없음
