@@ -1,0 +1,136 @@
+{
+ "generated_at": "2026-10-18T22:52:58",
+ "baeknyeon_total": 1139,
+ "baeknyeon_official_only": 0,
+ "baeknyeon_not_in_official": 0,
+ "baeknyeon_detail_collected": 1139,
+ "baeknyeon_food": 751,
+ "baeknyeon_founded_known": 1139,
+ "baeknyeon_under30": 207,
+ "baeknyeon_founded_from_detail": 1027,
+ "baeknyeon_founded_from_text": 112,
+ "orae_total": 173,
+ "orae_listed": 173,
+ "orae_matched_baeknyeon": 12,
+ "orae_founded_known": 124,
+ "catalog_total": 1300,
+ "app_catalog_total": 1277,
+ "orae_in_app": 151,
+ "orae_flagged": 22,
+ "catalog_food": 839,
+ "with_coords": 0,
+ "by_category": {
+  "음식점업": 751,
+  "도소매업": 252,
+  "서비스업": 95,
+  "제조업": 36,
+  "건설업": 2,
+  "축산업": 1,
+  "숙박업": 1,
+  "농업": 1
+ },
+ "by_sido": {
+  "경기": 152,
+  "서울": 131,
+  "경북": 109,
+  "경남": 96,
+  "강원": 75,
+  "충북": 72,
+  "전북": 70,
+  "전남": 69,
+  "부산": 65,
+  "충남": 63,
+  "대구": 58,
+  "광주": 54,
+  "인천": 41,
+  "대전": 36,
+  "울산": 22,
+  "제주": 18,
+  "세종": 8
+ },
+ "food_by_sido": {
+  "서울": 97,
+  "경기": 83,
+  "경북": 73,
+  "경남": 67,
+  "충북": 57,
+  "강원": 56,
+  "전북": 53,
+  "대구": 46,
+  "충남": 45,
+  "전남": 43,
+  "부산": 38,
+  "인천": 27,
+  "광주": 20,
+  "대전": 20,
+  "울산": 11,
+  "제주": 9,
+  "세종": 6
+ },
+ "founded_by_decade": {
+  "1900": 1,
+  "1910": 1,
+  "1930": 3,
+  "1940": 4,
+  "1950": 9,
+  "1960": 44,
+  "1970": 144,
+  "1980": 454,
+  "1990": 356,
+  "2000": 74,
+  "2010": 39,
+  "2020": 10
+ },
+ "oldest": [
+  {
+   "name": "경방루",
+   "sido": "전북",
+   "year": 1909
+  },
+  {
+   "name": "황산옥",
+   "sido": "충남",
+   "year": 1915
+  },
+  {
+   "name": "야래향",
+   "sido": "경남",
+   "year": 1930
+  },
+  {
+   "name": "주식회사 예향",
+   "sido": "전남",
+   "year": 1930
+  },
+  {
+   "name": "㈜한일관",
+   "sido": "서울",
+   "year": 1939
+  },
+  {
+   "name": "복화루",
+   "sido": "인천",
+   "year": 1945
+  },
+  {
+   "name": "남창문구사",
+   "sido": "인천",
+   "year": 1945
+  },
+  {
+   "name": "태화루",
+   "sido": "경남",
+   "year": 1947
+  },
+  {
+   "name": "창성옥",
+   "sido": "서울",
+   "year": 1948
+  },
+  {
+   "name": "한국의상 현필원",
+   "sido": "충남",
+   "year": 1950
+  }
+ ]
+}

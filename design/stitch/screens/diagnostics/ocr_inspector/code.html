@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>영수증 OCR 검증기 (DEV) - 노포천년</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error": "#ba1a1a",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-surface-variant": "#3f4947",
+            "surface-container-low": "#e9f7f3",
+            "on-surface": "#121e1c",
+            "secondary": "#b02e1f",
+            "primary-container": "#1f6b63",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#00524b",
+            "surface-dim": "#cfddd9",
+            "on-secondary-fixed": "#410100",
+            "inverse-primary": "#8dd3c9",
+            "outline": "#6f7977",
+            "surface": "#effcf9",
+            "background": "#effcf9",
+            "surface-container-high": "#ddebe7",
+            "inverse-surface": "#273331",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#ffb4a8",
+            "tertiary-container": "#7e5a00",
+            "on-tertiary-container": "#ffd68d",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-container": "#e3f1ed",
+            "on-primary-fixed": "#00201d",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-background": "#121e1c",
+            "primary-fixed": "#a8f0e5",
+            "surface-container-highest": "#d8e5e2",
+            "inverse-on-surface": "#e6f4f0",
+            "on-tertiary-fixed": "#271900",
+            "on-error-container": "#93000a",
+            "surface-bright": "#effcf9",
+            "surface-variant": "#d8e5e2",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed-variant": "#005049",
+            "secondary-fixed": "#ffdad4",
+            "tertiary": "#604400",
+            "secondary-container": "#ff6751",
+            "surface-tint": "#1c6961",
+            "tertiary-fixed": "#ffdea7",
+            "on-secondary-container": "#690200",
+            "outline-variant": "#bec9c6",
+            "on-primary-container": "#a1e9de"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-mobile": "0.75rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "margin": "1.25rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "label-lg": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "display-lg": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          "fontSize": {
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      display: inline-block;
+      text-transform: none;
+      letter-spacing: normal;
+      word-wrap: normal;
+      white-space: nowrap;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Paper stamp and receipt textures */
+    .receipt-paper {
+      background: #fafaf7;
+      background-image: radial-gradient(#d6ded8 0.6px, transparent 0.6px);
+      background-size: 12px 12px;
+    }
+    .receipt-serrated {
+      background-size: 16px 16px;
+      background-position: 0 0;
+      position: relative;
+    }
+    .receipt-serrated::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: radial-gradient(circle, transparent, transparent 50%, #fafaf7 50%, #fafaf7 100%);
+      background-size: 12px 12px;
+    }
+    .inju-stamp-ring {
+      border: 2px solid #b02e1f;
+      box-shadow: inset 0 1px 2px rgba(176, 46, 31, 0.25);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TOP APP BAR (Shared Components Token Translation) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm dark:shadow-none flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<div class="flex items-center gap-space-sm">
+<button aria-label="뒤로가기" class="p-2 -ml-2 rounded-full active:scale-95 transition-transform duration-150 hover:bg-primary-container dark:hover:bg-primary text-on-primary flex items-center justify-center" onclick="history.back()">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">영수증 OCR 검증기</span>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded font-mono font-bold tracking-wider">DEV</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary text-on-secondary font-label-md text-label-md shadow-xs">
+<span class="w-2 h-2 rounded-full bg-on-secondary animate-pulse"></span>
+<span>진단 모드</span>
+</span>
+<button aria-label="검색" class="p-1 rounded-full text-on-primary hover:bg-primary-container active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+</div>
+</header>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="flex-1 w-full max-w-2xl mx-auto px-4 py-4 space-y-4 pb-28">
+<!-- DEV NOTIFICATION BANNER -->
+<section class="bg-surface-container border border-outline-variant rounded-xl p-3.5 shadow-sm relative overflow-hidden">
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary shrink-0 mt-0.5" data-icon="terminal">terminal</span>
+<div class="space-y-1.5 flex-1">
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-mono font-bold">
+              SPK-3 / Tesseract-MLKit OCR 실시간 파서 검증
+            </span>
+<span class="font-label-sm text-label-sm text-outline font-mono">FR-TST-01 · FR-TST-02</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            실물 영수증 없이도 화면에 띄운 테스트 영수증(<code class="font-mono text-primary font-semibold">test_receipt_live.html</code>)이나 샘플 영수증을 카메라로 비추어 인식 정밀도와 해시 추출을 즉각 테스트합니다.
+          </p>
+</div>
+</div>
+</section>
+<!-- SAMPLE RECEIPT PRESET SELECTOR -->
+<section class="space-y-2">
+<div class="flex items-center justify-between px-0.5">
+<h2 class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="dataset">dataset</span>
+          테스트 영수증 프리셋 선택
+        </h2>
+<span class="font-label-sm text-label-sm text-outline">tools/test-images</span>
+</div>
+<!-- Horizontal Scrollable Preset Strip -->
+<div class="flex gap-2.5 overflow-x-auto pb-2 pt-1 -mx-4 px-4 scrollbar-none snap-x">
+<!-- Preset 1: Selected (이문설농탕) -->
+<button class="snap-start shrink-0 w-64 text-left p-3 rounded-xl bg-surface-container-lowest border-2 border-primary shadow-sm transition-all relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-12 h-12 overflow-hidden pointer-events-none">
+<div class="bg-primary text-on-primary font-label-sm text-[9px] py-0.5 text-center transform rotate-45 translate-x-3 -translate-y-1 font-bold">ACTIVE</div>
+</div>
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1">
+              이문설농탕
+              <span class="text-secondary font-label-sm font-bold bg-secondary-fixed/50 px-1 py-0.2 rounded text-[10px]">정상</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium mb-1">2026.10.18 당일 결제</p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span class="font-mono">TEL 02-733-6526</span>
+<span class="text-primary font-bold">120년 노포</span>
+</div>
+</button>
+<!-- Preset 2: 청진옥 (만료 영수증) -->
+<button class="snap-start shrink-0 w-64 text-left p-3 rounded-xl bg-surface-container-low border border-outline-variant hover:border-outline opacity-90 transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1">
+              청진옥
+              <span class="text-error font-label-sm font-bold bg-error-container/60 text-on-error-container px-1 py-0.2 rounded text-[10px]">만료</span>
+</span>
+<span class="font-label-sm text-label-sm text-error font-mono font-bold">EXPIRED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">48시간 전 결제</p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span class="font-mono text-error">E_RECEIPT_EXPIRED 검증</span>
+</div>
+</button>
+<!-- Preset 3: 을지면옥 (흐린 감열지) -->
+<button class="snap-start shrink-0 w-64 text-left p-3 rounded-xl bg-surface-container-low border border-outline-variant hover:border-outline opacity-90 transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1">
+              을지면옥
+              <span class="text-tertiary-container font-label-sm font-bold bg-tertiary-fixed px-1 py-0.2 rounded text-[10px]">노이즈</span>
+</span>
+<span class="font-label-sm text-label-sm text-tertiary font-mono font-bold">CONTRAST</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">흐린 감열지 인쇄본</p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span>콘트라스트/잡음 필터</span>
+</div>
+</button>
+<!-- Preset 4: 타 매장 영수증 -->
+<button class="snap-start shrink-0 w-64 text-left p-3 rounded-xl bg-surface-container-low border border-outline-variant hover:border-outline opacity-90 transition-all">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1">
+              스타벅스 종로점
+              <span class="text-outline font-label-sm font-bold bg-surface-variant px-1 py-0.2 rounded text-[10px]">불일치</span>
+</span>
+<span class="font-label-sm text-label-sm text-error font-mono font-bold">MISMATCH</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-1">상호 및 업태 불일치</p>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-outline">
+<span class="font-mono text-error">E_RECEIPT_MISMATCH 검증</span>
+</div>
+</button>
+</div>
+</section>
+<!-- LIVE OCR SIMULATOR & PARSER INSPECTION BENTO -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- LEFT / TOP: LIVE RECEIPT VIEWPORT DOCK -->
+<div class="md:col-span-5 flex flex-col">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-4 shadow-sm flex flex-col h-full">
+<div class="flex items-center justify-between pb-3 border-b border-outline-variant/60">
+<span class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-base" data-icon="photo_camera">photo_camera</span>
+              시뮬레이터 프리뷰
+            </span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+              LIVE_FEED
+            </span>
+</div>
+<!-- Virtual Receipt Mockup with Paper Styling -->
+<div class="my-3 p-4 receipt-paper border border-outline-variant rounded-lg font-mono text-xs text-on-surface relative shadow-inner">
+<!-- Simulated Inju Stamp Watermark -->
+<div class="absolute right-3 top-3 w-16 h-16 rounded-full inju-stamp-ring flex flex-col items-center justify-center text-secondary opacity-75 transform rotate-[-6deg] pointer-events-none">
+<span class="font-bold text-[8px] tracking-tighter">노포천년</span>
+<span class="font-number-stat text-[12px] leading-tight font-extrabold">1904</span>
+<span class="text-[7px]">인증대사</span>
+</div>
+<div class="text-center pb-2 border-b border-dashed border-outline-variant">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface font-headline-md tracking-tight">이문설농탕</h3>
+<p class="text-[10px] text-outline mt-0.5">서울 종로구 우정국로 38-13 (견지동)</p>
+<p class="text-[10px] text-outline">TEL: 02-733-6526 / 대표자: 유원석</p>
+</div>
+<div class="py-2.5 space-y-1 text-[11px] border-b border-dashed border-outline-variant">
+<div class="flex justify-between">
+<span>설농탕 (특)</span>
+<span>13,000</span>
+</div>
+<div class="flex justify-between text-outline text-[10px]">
+<span>부가세(VAT 포함)</span>
+<span>1,181</span>
+</div>
+</div>
+<div class="pt-2 flex justify-between font-bold text-[12px] text-on-surface">
+<span>합계 금액</span>
+<span>13,000원</span>
+</div>
+<div class="mt-3 pt-2 border-t border-outline-variant/60 text-[9px] text-outline space-y-0.5">
+<p>사업자번호: 101-04-12345</p>
+<p>결제일시: 2026-10-18 13:42:19 KST</p>
+<p>카드승인: 38291048 (일시불)</p>
+</div>
+</div>
+<!-- Camera Reticle Overlay Status -->
+<div class="mt-auto pt-1 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm bg-surface-container-high px-2.5 py-1.5 rounded-lg">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="filter_center_focus">filter_center_focus</span>
+              ROI 오토 트래킹: Locked
+            </span>
+<span class="font-mono text-primary font-bold">1080p @ 60fps</span>
+</div>
+</div>
+</div>
+<!-- RIGHT / BOTTOM: PARSED FIELD INSPECTION CARD -->
+<div class="md:col-span-7 flex flex-col">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-4 shadow-sm flex flex-col h-full space-y-3.5">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant/60">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">
+                실시간 파싱 필드 추출 결과
+              </h2>
+<p class="font-label-sm text-label-sm text-outline font-mono">ReceiptParser.kt [v2.4.1-engine]</p>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">
+              PASS 6 / 6
+            </span>
+</div>
+<!-- Structured Key-Value List with Heritage Tokens -->
+<div class="space-y-2 flex-1">
+<!-- Field 1: 상호명 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-outline font-bold">상호명 (Store Name)</span>
+<p class="font-headline-sm text-[16px] text-on-surface font-bold">이문설농탕</p>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs" data-icon="check_circle">check_circle</span>
+                  유사도 1.00 - 완전 일치
+                </span>
+<span class="text-[10px] text-outline font-mono mt-0.5">DB 매핑 ID: NP-1904-01</span>
+</div>
+</div>
+<!-- Field 2: 전화번호 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-outline font-bold">전화번호 (Phone)</span>
+<p class="font-body-lg text-body-lg text-on-surface font-mono font-bold">02-733-6526</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-xs" data-icon="verified">verified</span>
+                  정규화 일치
+                </span>
+</div>
+</div>
+<!-- Field 3: 사업자번호 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-outline font-bold">사업자등록번호 (Business No)</span>
+<p class="font-body-md text-body-md text-on-surface font-mono font-bold">101-04-12345</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-bold font-mono">
+                  체크섬 유효: VALID
+                </span>
+</div>
+</div>
+<!-- Field 4: 결제일시 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-outline font-bold">결제일시 (Timestamp)</span>
+<p class="font-body-md text-body-md text-on-surface font-mono font-bold">2026-10-18 13:42 KST</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-bold">
+                  24시간 이내 기준 충족
+                </span>
+</div>
+</div>
+<!-- Field 5: 결제금액 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex items-center justify-between hover:bg-surface-container transition-colors">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-outline font-bold">결제금액 (Total Amount)</span>
+<p class="font-body-lg text-body-lg text-secondary font-bold">13,000원</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm">
+                  단건 결제 추출
+                </span>
+</div>
+</div>
+<!-- Field 6: 생성된 해시 -->
+<div class="p-2.5 rounded-xl bg-surface-container-low border border-outline-variant/50 flex flex-col gap-1 hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline font-bold">생성된 중복방지 고유 해시</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-bold">
+                  중복 대조 큐 준비
+                </span>
+</div>
+<div class="flex items-center justify-between font-mono text-[11px] bg-surface-container-highest/60 px-2 py-1 rounded">
+<span class="text-on-surface-variant truncate">SHA256: 7f8a9bc4e120...c1d2e389</span>
+<button class="text-primary hover:text-primary-container ml-2 flex items-center" title="해시 복사">
+<span class="material-symbols-outlined text-sm" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SIMULATION ACTION PANEL -->
+<section class="space-y-2.5 pt-1">
+<!-- Primary Stamp Trigger CTA (Stamp Red #b02e1f) -->
+<button class="w-full min-h-[56px] rounded-xl bg-secondary text-on-secondary font-label-lg text-label-lg font-bold shadow-md hover:bg-secondary/90 active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 px-4 text-center">
+<span class="material-symbols-outlined text-xl" data-icon="approval">approval</span>
+<span>이 테스트 영수증으로 방문 인증 시뮬레이션 (+120년 적립 시험)</span>
+</button>
+<!-- Secondary Outline Action -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+<button class="min-h-[48px] rounded-xl border border-primary text-primary bg-surface-container-lowest font-label-md text-label-md font-bold hover:bg-surface-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 px-3">
+<span class="material-symbols-outlined text-lg" data-icon="file_copy">file_copy</span>
+<span>영수증 텍스트 전문(Raw OCR) 로그 복사</span>
+</button>
+<button class="min-h-[48px] rounded-xl border border-outline-variant text-on-surface-variant bg-surface-container-lowest font-label-md text-label-md font-medium hover:bg-surface-container active:scale-[0.98] transition-all flex items-center justify-center gap-2 px-3">
+<span class="material-symbols-outlined text-lg text-outline" data-icon="restart_alt">restart_alt</span>
+<span>파서 캐시 초기화 및 재스캔</span>
+</button>
+</div>
+</section>
+<!-- HERITAGE GAUGE MOCK (Cumulative Years Context) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-lg" data-icon="history_edu">history_edu</span>
+          세월 누적 시험 게이지 시뮬레이션
+        </span>
+<span class="font-label-sm text-label-sm font-bold text-primary font-mono">
+          442년 + 120년 = 562년 / 1,000년
+        </span>
+</div>
+<!-- Progress Bar Track -->
+<div class="w-full h-3 bg-surface-container rounded-full border border-outline-variant overflow-hidden p-0.5">
+<div class="h-full bg-gradient-to-r from-primary to-tertiary-fixed-dim rounded-full transition-all duration-500" style="width: 56.2%"></div>
+</div>
+<p class="font-body-sm text-[11px] text-outline text-right">
+        인증 완료 시 '노포천년 백년패스포트' 5권 6페이지에 주홍 인주 직인이 날인됩니다.
+      </p>
+</section>
+</main>
+<!-- TELEMETRY SUMMARY DOCKED FOOTER -->
+<footer class="fixed bottom-0 left-0 w-full bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant py-2.5 px-4 z-30 shadow-md">
+<div class="max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-1 font-mono text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+<span class="flex items-center gap-1 text-primary font-bold">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+          평균 인식 속도: 620ms
+        </span>
+<span class="text-outline">|</span>
+<span class="font-bold text-on-surface">정확도: 99.4%</span>
+<span class="text-outline">|</span>
+<span class="text-outline">엔진: ML Kit Text Recognition v2 Korean</span>
+</div>
+<div class="font-label-sm text-[10px] text-outline">
+        LATENCY_TEST_OK
+      </div>
+</div>
+</footer>
+</body></html>

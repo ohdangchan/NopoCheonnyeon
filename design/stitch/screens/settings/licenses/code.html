@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>오픈소스 라이선스 - 노포천년</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Epilogue & Noto Sans KR -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#00201d",
+            "outline": "#6f7977",
+            "inverse-surface": "#273331",
+            "surface-container": "#e3f1ed",
+            "tertiary-fixed": "#ffdea7",
+            "surface-container-highest": "#d8e5e2",
+            "surface-variant": "#d8e5e2",
+            "surface-dim": "#cfddd9",
+            "on-primary-fixed-variant": "#005049",
+            "on-background": "#121e1c",
+            "tertiary": "#604400",
+            "surface-container-high": "#ddebe7",
+            "secondary-fixed": "#ffdad4",
+            "secondary": "#b02e1f",
+            "tertiary-container": "#7e5a00",
+            "error": "#ba1a1a",
+            "outline-variant": "#bec9c6",
+            "on-tertiary-fixed": "#271900",
+            "on-surface-variant": "#3f4947",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-container": "#a1e9de",
+            "inverse-primary": "#8dd3c9",
+            "primary-fixed-dim": "#8dd3c9",
+            "inverse-on-surface": "#e6f4f0",
+            "on-secondary": "#ffffff",
+            "primary-container": "#1f6b63",
+            "surface-container-low": "#e9f7f3",
+            "on-tertiary-container": "#ffd68d",
+            "surface-tint": "#1c6961",
+            "on-error": "#ffffff",
+            "surface-bright": "#effcf9",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-primary": "#ffffff",
+            "secondary-container": "#ff6751",
+            "error-container": "#ffdad6",
+            "primary": "#00524b",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-secondary-container": "#690200",
+            "secondary-fixed-dim": "#ffb4a8",
+            "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "background": "#effcf9",
+            "on-surface": "#121e1c",
+            "surface": "#effcf9"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-mobile": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "body-sm": ["Noto Sans KR", "sans-serif"],
+            "headline-md": ["Noto Sans KR", "sans-serif"],
+            "body-lg": ["Noto Sans KR", "sans-serif"],
+            "headline-sm": ["Noto Sans KR", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"],
+            "body-md": ["Noto Sans KR", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "label-lg": ["Noto Sans KR", "sans-serif"],
+            "label-md": ["Noto Sans KR", "sans-serif"],
+            "label-sm": ["Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"]
+          },
+          "fontSize": {
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- Mobile Container Mockup (Android 412dp viewport logic) -->
+<main class="w-full max-w-[430px] min-h-screen flex flex-col bg-background relative shadow-2xl pb-28">
+<!-- TopAppBar (Shared Component Token Applied) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed shadow-sm">
+<div class="flex items-center gap-2">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">오픈소스 라이선스</h1>
+</div>
+<div class="flex items-center">
+<button aria-label="라이선스 정보 복사" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" title="전체 목록 복사" type="button">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+</header>
+<!-- Editorial Header Section: Traditional Heritage Parchment Style -->
+<section class="px-space-md pt-6 pb-4">
+<div class="relative bg-surface-container-lowest rounded-xl p-5 border border-outline-variant shadow-sm overflow-hidden">
+<!-- Vermilion Mini Inju Stamp Accent -->
+<div class="absolute -top-3 -right-3 w-16 h-16 rounded-full border border-secondary flex flex-col items-center justify-center rotate-6 pointer-events-none opacity-20">
+<span class="font-label-sm text-[8px] text-secondary font-bold">노포천년</span>
+<span class="font-number-stat text-[11px] text-secondary font-black">認證</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container text-primary font-bold">
+            S-903 · FR-SYS-01
+          </span>
+<span class="text-label-sm font-label-sm text-outline">v2.4.0-stable</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight mb-2">
+          노포천년의 기술적 토대
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          사라져가는 우리 미식 유산을 기록하기 위해 사용된 오픈소스 소프트웨어 라이선스 및 저작권 정보입니다.
+        </p>
+<!-- Summary Badge / Brass-accent Banner -->
+<div class="mt-4 pt-3.5 border-t border-outline-variant/60 flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-tertiary">
+<span class="material-symbols-outlined text-[18px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">총 18개 라이브러리 준수 중</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-medium">
+            Apache 2.0 / BSD / MIT
+          </span>
+</div>
+</div>
+</section>
+<!-- Centenary Heritage Progress Accent Divider -->
+<div class="px-space-md mb-3">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-outline mb-1.5">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          오픈소스 컴플라이언스 무결성 검증
+        </span>
+<span class="font-bold text-primary">100% 완료</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-gradient-to-r from-primary-container via-primary to-tertiary-fixed-dim w-full rounded-full"></div>
+</div>
+</div>
+<!-- License Stack Card Container -->
+<section class="px-space-md flex flex-col gap-3">
+<!-- Card 1: Naver Map Android SDK -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-primary bg-surface-container px-2 py-0.5 rounded-full inline-block mb-1">
+              지도 렌더링
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Naver Map Android SDK
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">v3.24.0</span>
+</div>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed/60 text-on-tertiary-fixed font-semibold px-2 py-1 rounded">
+            Terms &amp; Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          전국 노포 카탈로그 시각화 및 위치 렌더링 엔진
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">NAVER Corp.</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-1')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<!-- Hidden Snippet Drawer (Vanilla JS Interactive) -->
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-1">
+          Copyright (c) 2018-2024 NAVER Corp.<br/>
+          Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+        </div>
+</article>
+<!-- Card 2: Google ML Kit Text Recognition -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-secondary bg-secondary-fixed/50 px-2 py-0.5 rounded-full inline-block mb-1">
+              간판 · 영수증 OCR
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              ML Kit Text Recognition (Korean)
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">v16.0.1</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container text-primary font-semibold px-2 py-1 rounded">
+            Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          온디바이스 한글 영수증 및 노포 간판 문자 인식 엔진
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">Google LLC</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-2')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-2">
+          Copyright 2024 Google LLC.<br/>
+          Licensed under the Apache License, Version 2.0. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+        </div>
+</article>
+<!-- Card 3: Android Jetpack Compose & Material 3 -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-primary bg-surface-container px-2 py-0.5 rounded-full inline-block mb-1">
+              UI 시스템
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Jetpack Compose &amp; Material 3
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">androidx.compose:v1.7.0</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container text-primary font-semibold px-2 py-1 rounded">
+            Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          현대적인 선언형 UI 프레임워크 및 머티리얼 디자인 토큰
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">The Android Open Source Project</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-3')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-3">
+          Copyright (C) 2021 The Android Open Source Project<br/>
+          Licensed under the Apache License, Version 2.0.
+        </div>
+</article>
+<!-- Card 4: Kotlin Coroutines & Flow -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-primary bg-surface-container px-2 py-0.5 rounded-full inline-block mb-1">
+              비동기 아키텍처
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Kotlin &amp; Coroutines / Flow
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">org.jetbrains.kotlinx:v1.8.1</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container text-primary font-semibold px-2 py-1 rounded">
+            Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          비동기 단방향 데이터 스트림 및 안정적 MVVM 아키텍처
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">JetBrains s.r.o.</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-4')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-4">
+          Copyright 2000-2024 JetBrains s.r.o. and Kotlin Programming Language contributors.<br/>
+          Licensed under the Apache License, Version 2.0.
+        </div>
+</article>
+<!-- Card 5: Firebase SDK -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-tertiary bg-tertiary-fixed px-2 py-0.5 rounded-full inline-block mb-1">
+              클라우드 및 모니터링
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Firebase Android SDK
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">com.google.firebase:v33.0.0</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container text-primary font-semibold px-2 py-1 rounded">
+            Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          식객 계정 복원, 오프라인 방문 큐 동기화 및 무결점 크래시 모니터링
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">Google LLC</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-5')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-5">
+          Copyright 2024 Google LLC.<br/>
+          Licensed under the Apache License, Version 2.0.
+        </div>
+</article>
+<!-- Card 6: Room Persistence Library -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm hover:border-primary/40 transition-colors">
+<div class="flex justify-between items-start gap-2 mb-1.5">
+<div>
+<span class="font-label-sm text-label-sm font-bold text-primary bg-surface-container px-2 py-0.5 rounded-full inline-block mb-1">
+              로컬 저장소
+            </span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+              Room Persistence Library (SQLite)
+            </h3>
+<span class="font-label-sm text-label-sm text-outline">androidx.room:v2.6.1</span>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-container text-primary font-semibold px-2 py-1 rounded">
+            Apache 2.0
+          </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-3">
+          1,277개 전국 노포 카탈로그 기기 내 안전 저장소
+        </p>
+<div class="flex items-center justify-between pt-2.5 border-t border-outline-variant/50 text-label-sm font-label-sm">
+<span class="text-on-surface-variant font-medium">저작권자: <strong class="text-on-surface font-semibold">The Android Open Source Project</strong></span>
+<button class="text-primary font-bold flex items-center gap-0.5 hover:text-primary-container active:scale-95 transition-transform" onclick="toggleSnippet('snippet-6')" type="button">
+<span>약관 전문</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<div class="hidden mt-3 pt-3 border-t border-dashed border-outline-variant font-mono text-[11px] leading-relaxed text-on-surface-variant bg-surface-container-low p-2.5 rounded" id="snippet-6">
+          Copyright (C) 2017 The Android Open Source Project<br/>
+          Licensed under the Apache License, Version 2.0.
+        </div>
+</article>
+</section>
+<!-- Open Source Attribution Notice Box -->
+<section class="px-space-md mt-6 mb-2">
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/60 flex items-start gap-3">
+<span class="material-symbols-outlined text-outline mt-0.5 text-[20px]">info</span>
+<div class="flex-1">
+<h4 class="font-label-md text-label-md font-bold text-on-surface mb-1">법적 고지 및 저작권 안내</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            모든 소프트웨어 저작권은 해당 저작권자에게 있으며, 상세 전문은 각 라이브러리 저장소에서 확인하실 수 있습니다. 본 소프트웨어는 보증 없이 "있는 그대로(AS IS)" 제공됩니다.
+          </p>
+</div>
+</div>
+</section>
+<!-- Task-Focused Return Action Sticky Footer (Suppressed BottomNavBar destination as per Linear Task rule) -->
+<footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] p-space-md bg-surface-bright/95 backdrop-blur-sm border-t border-outline-variant/70 z-50">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all hover:bg-primary-container" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span>설정으로 돌아가기</span>
+</button>
+</footer>
+</main>
+<!-- Interactive Snippet Toggle Script -->
+<script>
+    function toggleSnippet(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.toggle('hidden');
+      }
+    }
+  </script>
+</body></html>

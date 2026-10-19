@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>노포천년 - 영수증 방문 인증</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffd68d",
+            "secondary-fixed": "#ffdad4",
+            "tertiary": "#604400",
+            "on-secondary-fixed": "#410100",
+            "on-tertiary-fixed": "#271900",
+            "on-primary-container": "#a1e9de",
+            "surface": "#effcf9",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-primary-fixed": "#00201d",
+            "primary-fixed": "#a8f0e5",
+            "on-error": "#ffffff",
+            "outline-variant": "#bec9c6",
+            "tertiary-fixed": "#ffdea7",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-highest": "#d8e5e2",
+            "inverse-surface": "#273331",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container": "#e3f1ed",
+            "on-background": "#121e1c",
+            "on-surface": "#121e1c",
+            "secondary-fixed-dim": "#ffb4a8",
+            "secondary-container": "#ff6751",
+            "on-secondary-fixed-variant": "#8e1409",
+            "outline": "#6f7977",
+            "primary": "#00524b",
+            "on-secondary-container": "#690200",
+            "surface-bright": "#effcf9",
+            "surface-dim": "#cfddd9",
+            "surface-variant": "#d8e5e2",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-high": "#ddebe7",
+            "inverse-primary": "#8dd3c9",
+            "on-tertiary": "#ffffff",
+            "on-surface-variant": "#3f4947",
+            "secondary": "#b02e1f",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-tint": "#1c6961",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-container-low": "#e9f7f3",
+            "tertiary-container": "#7e5a00",
+            "primary-container": "#1f6b63",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.25rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter": "1rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "number-stat": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "body-sm": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "label-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"]
+          },
+          "fontSize": {
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .scanner-laser {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff6751 50%, transparent);
+      box-shadow: 0 0 10px #ff6751;
+      animation: scan 2.8s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0%, 100% { top: 6%; opacity: 0.3; }
+      50% { top: 92%; opacity: 0.95; }
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#101918] text-on-surface antialiased flex justify-center items-center min-h-screen p-0 sm:p-4 select-none">
+<!-- Mobile Viewport Wrapper (~390px) -->
+<main class="relative w-full max-w-[412px] h-[884px] max-h-[915px] bg-[#121c1b] flex flex-col justify-between overflow-hidden shadow-2xl sm:rounded-3xl border border-outline/20">
+<!-- Top Status & Custom Header (Enamel Plaque Aesthetic) -->
+<header class="relative z-30 bg-primary px-space-md pt-3 pb-3 border-b-2 border-tertiary-fixed flex flex-col gap-2">
+<!-- App Bar Top Row -->
+<div class="flex items-center justify-between h-11">
+<button aria-label="닫기" class="w-11 h-11 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150 -ml-2" type="button">
+<span class="material-symbols-outlined text-[26px]">arrow_back</span>
+</button>
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-primary font-bold tracking-tight">이문설농탕</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm px-1.5 py-0.5 rounded font-bold">121년차</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-primary-container">방문 공식 인증 (No. 001)</span>
+</div>
+<button aria-label="도움말" class="w-11 h-11 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150 -mr-2" type="button">
+<span class="material-symbols-outlined text-[24px]">help</span>
+</button>
+</div>
+<!-- Verification Mode Tabs -->
+<nav class="grid grid-cols-2 p-1 bg-[#0b3833] rounded-xl border border-outline-variant/30 mt-1">
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container-lowest text-primary shadow-sm transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-md text-label-md font-bold">영수증 인증</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-on-primary-container hover:text-on-primary transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+<span class="font-label-md text-label-md font-semibold">간판·위치 인증</span>
+</button>
+</nav>
+</header>
+<!-- Camera Viewfinder Canvas Area -->
+<section class="relative flex-1 w-full bg-black flex flex-col items-center justify-center overflow-hidden">
+<!-- Simulated Camera Feed Background -->
+<div class="absolute inset-0 bg-cover bg-center filter brightness-[0.78] contrast-[1.12]" data-alt="Close up overhead view of an authentic vintage paper receipt resting on a dark rustic wooden restaurant tabletop. Warm ambient indoor bistro lighting illuminates the paper fiber texture with subtle shadows. Soft muted tones of sepia, teal accents, and deep charcoal ink convey the tactile heritage of a traditional Korean culinary eatery." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhjqMvPXSCRxdDE_yRmv8CdAXvdrIx9fSNzr61bmx2sETtrUM6z12kuRol2IvFMFnmk6c5rUKu9HO8GVdBdU2ldRXm7GpTpw1ugJj7MBYeXVHxPOJsqo-G9KkNjZEY-gGFWtTjSC5VDn-53ujigf-4bon6iqdZkC1Ut75m8NEPnrR8qhHFmLnV7wPUXCq68JT3RUfYnG6ZhHnomPzTlt5gISLxOvvDecZ455ZsgrLZ5KMGxq2kNaqt')">
+</div>
+<!-- Vignette Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-[#121c1b]/70 via-transparent to-[#101918]/90 pointer-events-none"></div>
+<!-- Live Viewfinder HUD Elements -->
+<div class="relative z-10 w-[84%] max-w-[328px] aspect-[3/4.2] flex flex-col justify-between p-3.5 my-auto">
+<!-- Framing Bracket Corners (Brass Heritage Tone) -->
+<div class="absolute -top-1 -left-1 w-7 h-7 border-t-[3.5px] border-l-[3.5px] border-tertiary-fixed rounded-tl-lg shadow-sm"></div>
+<div class="absolute -top-1 -right-1 w-7 h-7 border-t-[3.5px] border-r-[3.5px] border-tertiary-fixed rounded-tr-lg shadow-sm"></div>
+<div class="absolute -bottom-1 -left-1 w-7 h-7 border-b-[3.5px] border-l-[3.5px] border-tertiary-fixed rounded-bl-lg shadow-sm"></div>
+<div class="absolute -bottom-1 -right-1 w-7 h-7 border-b-[3.5px] border-r-[3.5px] border-tertiary-fixed rounded-br-lg shadow-sm"></div>
+<!-- Scanning Beam -->
+<div class="scanner-laser"></div>
+<!-- Frame Header Guideline -->
+<div class="flex items-center justify-between bg-inverse-surface/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-outline-variant/30 text-inverse-on-surface">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-on-tertiary-container tracking-wider">AI 영수증 자동 스캔 중</span>
+</div>
+<span class="material-symbols-outlined text-inverse-primary text-[18px]">document_scanner</span>
+</div>
+<!-- Live Real-Time OCR Detected Floating Tags -->
+<div class="flex flex-col gap-2 my-auto">
+<!-- Detected Shop Name -->
+<div class="self-start inline-flex items-center gap-1.5 bg-primary/90 backdrop-blur-md px-2.5 py-1.5 rounded-md border border-primary-fixed/40 shadow-lg translate-x-1">
+<span class="material-symbols-outlined text-primary-fixed text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-label-sm text-primary-fixed">상호:</span>
+<span class="font-label-md text-label-md text-on-primary font-bold">이문설농탕 본점</span>
+</div>
+<!-- Detected Date & Time -->
+<div class="self-end inline-flex items-center gap-1.5 bg-inverse-surface/90 backdrop-blur-md px-2.5 py-1.5 rounded-md border border-outline-variant/40 shadow-lg -translate-x-1">
+<span class="material-symbols-outlined text-tertiary-fixed text-[16px]" style="font-variation-settings: 'FILL' 1;">event</span>
+<span class="font-label-sm text-label-sm text-tertiary-fixed">일시:</span>
+<span class="font-label-md text-label-md text-surface font-semibold">2026.10.18 13:42</span>
+</div>
+<!-- Detected Price -->
+<div class="self-start inline-flex items-center gap-1.5 bg-inverse-surface/90 backdrop-blur-md px-2.5 py-1.5 rounded-md border border-outline-variant/40 shadow-lg translate-x-3">
+<span class="material-symbols-outlined text-secondary-container text-[16px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed">결제금액:</span>
+<span class="font-label-md text-label-md text-on-primary font-bold">28,000원</span>
+</div>
+</div>
+<!-- Inner Inju Stamp Silhouette Target -->
+<div class="self-center flex items-center justify-center w-14 h-14 rounded-full border border-dashed border-secondary/60 text-secondary/80 bg-secondary/10 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[24px]">verified</span>
+</div>
+</div>
+<!-- Quick Guidance Tooltip (Above Shutter) -->
+<div class="relative z-10 w-[90%] max-w-[340px] mb-2 px-3.5 py-2.5 bg-surface-container-lowest/95 backdrop-blur-md rounded-xl border border-outline-variant/40 shadow-md flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5" style="font-variation-settings: 'FILL' 1;">info</span>
+<div class="flex flex-col">
+<p class="font-label-md text-label-md text-on-surface font-bold leading-tight">
+            상호, 전화번호, 결제일시가 네모 칸 안에 들어오게 맞춰주세요.
+          </p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">
+            ※ 위치 권한 없이도 24시간 이내 결제 영수증이면 즉시 인증됩니다.
+          </p>
+</div>
+</div>
+</section>
+<!-- Bottom Controls & Shutter Deck -->
+<footer class="relative z-30 bg-[#14201e] px-space-md pt-3 pb-5 flex flex-col items-center border-t border-outline/20">
+<!-- Utility Toolbar (Flash, Shutter, Gallery) -->
+<div class="w-full flex items-center justify-around max-w-[320px] mb-3">
+<!-- Flash Light Toggle -->
+<button aria-label="플래시 켜기" class="w-12 h-12 rounded-full bg-inverse-surface/80 text-surface hover:text-tertiary-fixed flex items-center justify-center active:scale-95 transition-transform duration-150 border border-outline-variant/30" type="button">
+<span class="material-symbols-outlined text-[22px]">flash_on</span>
+</button>
+<!-- Main Capture / Stamp Shutter Button -->
+<button aria-label="영수증 촬영 및 방문 도장 획득" class="relative group flex items-center justify-center p-1 rounded-full active:scale-90 transition-transform duration-150 focus:outline-none" type="button">
+<!-- Outer Stamp Vermilion Concentric Ring -->
+<div class="w-20 h-20 rounded-full border-[3px] border-secondary-fixed flex items-center justify-center shadow-[0_0_15px_rgba(176,46,31,0.4)]">
+<!-- Inner Solid Vermilion Core -->
+<div class="w-[66px] h-[66px] rounded-full bg-secondary flex flex-col items-center justify-center text-on-secondary shadow-inner">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">approval</span>
+<span class="font-label-sm text-[9px] font-bold leading-none -mt-0.5 tracking-tighter">도장찍기</span>
+</div>
+</div>
+</button>
+<!-- Album Gallery Import -->
+<button aria-label="앨범에서 선택" class="w-12 h-12 rounded-full bg-inverse-surface/80 text-surface hover:text-primary-fixed flex items-center justify-center active:scale-95 transition-transform duration-150 border border-outline-variant/30" type="button">
+<span class="material-symbols-outlined text-[22px]">photo_library</span>
+</button>
+</div>
+<!-- Fallback Switch Banner / Link -->
+<button class="w-full py-2.5 px-3 rounded-xl bg-surface-container/10 hover:bg-surface-container/20 border border-outline-variant/30 flex items-center justify-center gap-1.5 text-center active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">storefront</span>
+<span class="font-label-md text-label-md text-inverse-on-surface">
+          영수증이 없거나 인식이 안 되나요?
+        </span>
+<span class="font-label-md text-label-md text-tertiary-fixed font-bold flex items-center">
+          간판 사진 인증 ➔
+        </span>
+</button>
+<!-- Centenary Heritage Progress Pill -->
+<div class="flex items-center gap-2 mt-2.5">
+<span class="font-label-sm text-label-sm text-outline-variant">인증 완료 시:</span>
+<span class="font-label-sm text-label-sm text-tertiary-fixed font-bold">+121년 누적</span>
+<span class="text-outline-variant text-[10px]">•</span>
+<span class="font-label-sm text-label-sm text-secondary-fixed font-bold">인주 스탬프 1개 지급</span>
+</div>
+</footer>
+</main>
+</body></html>

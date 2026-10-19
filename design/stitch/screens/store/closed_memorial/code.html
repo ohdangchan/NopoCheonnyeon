@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>사라진 맛 기록관 | 노포천년</title>
+<!-- Google Fonts: Noto Sans KR & Epilogue -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#8dd3c9",
+            "on-background": "#121e1c",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#273331",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed": "#410100",
+            "inverse-primary": "#8dd3c9",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#ffb4a8",
+            "on-secondary": "#ffffff",
+            "surface-container-highest": "#d8e5e2",
+            "on-error-container": "#93000a",
+            "background": "#effcf9",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#ffd68d",
+            "tertiary-fixed": "#ffdea7",
+            "primary-container": "#1f6b63",
+            "on-surface": "#121e1c",
+            "surface-variant": "#d8e5e2",
+            "secondary-container": "#ff6751",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-tertiary-fixed": "#271900",
+            "tertiary": "#604400",
+            "on-surface-variant": "#3f4947",
+            "outline-variant": "#bec9c6",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#ffdad4",
+            "on-primary-container": "#a1e9de",
+            "tertiary-container": "#7e5a00",
+            "on-secondary-container": "#690200",
+            "on-primary-fixed": "#00201d",
+            "surface-container-high": "#ddebe7",
+            "outline": "#6f7977",
+            "surface": "#effcf9",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container": "#e3f1ed",
+            "error": "#ba1a1a",
+            "secondary": "#b02e1f",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "primary-fixed": "#a8f0e5",
+            "surface-container-low": "#e9f7f3",
+            "on-error": "#ffffff",
+            "surface-dim": "#cfddd9",
+            "surface-tint": "#1c6961",
+            "inverse-on-surface": "#e6f4f0",
+            "primary": "#00524b",
+            "tertiary-fixed-dim": "#f7bd46"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.25rem",
+            "space-lg": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "1.25rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "label-md": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "body-md": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "body-sm": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "headline-lg": ["Epilogue", "Noto Sans KR", "sans-serif"],
+            "body-lg": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "label-lg": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "label-sm": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "headline-md": ["Noto Sans KR", "Noto Sans", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Textured Paper and Custom Stamp Borders */
+    .memorial-stamp-ring {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);
+    }
+    .brass-badge {
+      border: 1px solid rgba(217, 162, 44, 0.4);
+      background: linear-gradient(135deg, #ffdea7 0%, #f7bd46 100%);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-32 flex justify-center selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Mobile Screen Container (Android 412dp standard simulation) -->
+<div class="w-full max-w-md min-h-screen bg-surface flex flex-col relative shadow-xl">
+<!-- TopAppBar Component (from Shared Components JSON) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40 border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm dark:shadow-none">
+<div class="flex items-center space-x-3">
+<button aria-label="뒤로가기" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-primary-container active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-on-primary">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="text-headline-sm font-headline-sm tracking-tight text-on-primary">사라진 맛 기록관</h1>
+<span class="text-label-sm font-label-sm text-on-primary-container opacity-90 -mt-0.5">사라진 노포 추모관 · 노포천년</span>
+</div>
+</div>
+<div class="flex items-center">
+<button aria-label="기록 검색" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-primary-container active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-on-primary">search</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col space-y-4">
+<!-- Curatorial Memorial Banner (헌정 헤더 & 아카이브 인트로) -->
+<section class="bg-gradient-to-b from-primary to-primary-container text-on-primary px-space-md pt-5 pb-6 border-b border-outline-variant/30">
+<div class="flex items-start justify-between">
+<div class="space-y-1.5 max-w-[280px]">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surface-container-lowest/15 backdrop-blur-sm border border-on-primary/20">
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">candle</span>
+<span class="text-label-sm font-label-sm text-tertiary-fixed tracking-wider uppercase">Memorial Archive</span>
+</div>
+<h2 class="text-headline-md font-headline-md tracking-tight text-on-primary pt-1">세월의 기억은 사라지지 않습니다</h2>
+</div>
+<!-- Vermilion Memorial Seal Graphic Motif -->
+<div class="w-14 h-14 rounded-full border-2 border-dashed border-secondary-container/80 flex flex-col items-center justify-center rotate-6 shrink-0 bg-primary/40">
+<span class="text-[9px] font-label-sm text-secondary-fixed tracking-widest">기억보존</span>
+<span class="text-label-md font-headline-sm text-secondary-fixed-dim font-bold">銘記</span>
+</div>
+</div>
+<p class="mt-2.5 text-body-sm font-body-sm text-on-primary-container leading-relaxed opacity-95">
+          세월의 무게를 견디고 문을 닫은 전설의 노포들을 기억합니다. 사라진 터 위에 식객들의 헌사와 발자취는 영원히 각인됩니다.
+        </p>
+<!-- Centenary Heritage Gauge / Memorial Stat Track -->
+<div class="mt-4 pt-3.5 border-t border-on-primary/10">
+<div class="flex justify-between items-end mb-1.5">
+<span class="text-label-sm font-label-sm text-tertiary-fixed tracking-wide">문화유산 보존 연대기</span>
+<span class="text-label-md font-label-md font-bold text-on-primary">
+              영구 보존 <span class="font-number-stat text-tertiary-fixed-dim">42</span>곳 · 추억 <span class="font-number-stat text-on-primary">3,420</span>편
+            </span>
+</div>
+<!-- Gauge Bar Container -->
+<div class="w-full h-3 bg-on-primary/20 rounded-full overflow-hidden p-0.5 border border-on-primary/30">
+<div class="h-full bg-gradient-to-r from-tertiary-fixed-dim via-secondary-container to-tertiary-fixed rounded-full w-[78%]"></div>
+</div>
+<div class="flex justify-between items-center mt-1 text-[11px] font-label-sm text-on-primary-container/80">
+<span>서울 31곳</span>
+<span>경기·인천 7곳</span>
+<span>영호남 4곳</span>
+</div>
+</div>
+</section>
+<!-- Filter/Segment Tabs -->
+<section class="px-space-md pt-1">
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+<button class="px-3.5 py-1.5 rounded-full bg-primary text-on-primary text-label-md font-label-md shadow-sm shrink-0 flex items-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">all_inclusive</span>
+            전체 영구보존
+          </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface text-label-md font-label-md border border-outline-variant/60 shrink-0 flex items-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">location_city</span>
+            재개발·철거
+          </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface text-label-md font-label-md border border-outline-variant/60 shrink-0 flex items-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+            재해·소실
+          </button>
+<button class="px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface text-label-md font-label-md border border-outline-variant/60 shrink-0 flex items-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]">person_off</span>
+            후계 단절
+          </button>
+</div>
+</section>
+<!-- Closed Nopo Archive Cards Grid/Stack -->
+<section class="px-space-md flex flex-col space-y-4">
+<!-- Card 1: 종로 피맛골 열차집 -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/70 shadow-sm overflow-hidden flex flex-col">
+<!-- Card Header Image with Monochromatic Nostalgia Overlay -->
+<div class="relative h-44 w-full bg-surface-dim overflow-hidden">
+<img class="w-full h-full object-cover grayscale contrast-125 filter" data-alt="A historic black and white photograph of an old rustic Seoul alleyway tavern with a weathered wooden storefront sign reading Yeolchajib. Soft grain and nostalgic morning mist illuminate stone pavers, showcasing architectural textures of a vanishing Korean alley with retro typography and authentic mid-century culinary ambience in deep monochrome contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBgIaWED7RrA0iwiJdjQaQepzs6-QkPhcn-9g52jAlE04hBMPISClbPYiwh_IK8bB2MZZ_6YFvnUdTV4rb_E5ujJXpG7gTxkcDK_OCdTrzW-N2e8HlztrORrOWhMxGwBCwjfuaDInwrqwLvpWqhnAJ3YCIJHrE2oKzOwYCojaIL9lgwF2O8zvzolFvbQHzExxu0q_UV_5QQqfSaHGLfOxvCvHYehijgTkEeRkpZcqkH0Zh2SH9qCoQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent"></div>
+<!-- Brass Seal & Tag Header -->
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded brass-badge text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-sm">
+                69년의 세월
+              </span>
+<span class="px-2 py-0.5 rounded bg-inverse-surface/80 text-surface text-label-sm font-label-sm border border-outline-variant/40">
+                1954 ~ 2023
+              </span>
+</div>
+<!-- Authentic Inju / Brass Memorial Stamp Graphic -->
+<div class="absolute -bottom-3 right-3 w-20 h-20 rounded-full border-2 border-secondary bg-surface-container-lowest memorial-stamp-ring flex flex-col items-center justify-center p-1 text-secondary -rotate-6 shadow-md">
+<div class="w-full h-full rounded-full border border-secondary/50 flex flex-col items-center justify-center leading-none text-center">
+<span class="text-[8px] font-label-sm tracking-tighter text-secondary">노포천년 추모</span>
+<span class="font-number-stat text-sm font-bold my-0.5 tracking-tight text-secondary">1954</span>
+<span class="text-[7px] font-label-sm text-secondary/90">피맛골 열차집</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-3 right-24 text-surface-lowest">
+<h3 class="text-headline-md font-headline-md text-white font-bold drop-shadow-sm">종로 피맛골 열차집</h3>
+<p class="text-label-sm font-label-sm text-tertiary-fixed drop-shadow-sm flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+                서울 종로구 피맛골길 (현재 철거)
+              </p>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-4 pt-3 flex flex-col space-y-3">
+<div class="border-l-2 border-secondary pl-2.5 py-0.5">
+<p class="text-body-md font-body-md text-on-surface font-medium">
+                "재개발로 피맛골 골목의 마지막 빈대떡 불씨가 꺼졌습니다."
+              </p>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                기름 냄새 자욱하던 선술집, 주전자 막걸리와 바삭한 맷돌 녹두빈대떡의 고향.
+              </p>
+</div>
+<!-- Memorial Stats Pill -->
+<div class="flex items-center justify-between text-body-sm font-body-sm bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/40">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">history_edu</span>
+<span>다녀온 식객 <strong class="text-on-surface font-bold">1,240명</strong></span>
+</div>
+<div class="flex items-center gap-1 text-tertiary font-bold text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                추모 황동 인장 발급완료
+              </div>
+</div>
+<!-- Action Buttons Footer -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-12 px-3 rounded-lg border border-primary text-primary hover:bg-surface-container font-label-lg flex items-center justify-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span>역사 아카이브</span>
+</button>
+<button class="h-12 px-3 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-lg flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span>추억 한 줄 남기기</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 2: 을지로 양미옥 본점 -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/70 shadow-sm overflow-hidden flex flex-col">
+<!-- Card Header Visual -->
+<div class="relative h-44 w-full bg-surface-dim overflow-hidden">
+<img class="w-full h-full object-cover grayscale contrast-110 filter" data-alt="Atmospheric archival monochrome portrait of a bustling traditional Korean restaurant interior with charcoal grills emitting gentle smoke, wooden tables, and vintage Korean calligraphic banners on wooden pillars, capturing an emotional historical dining sanctuary in 을지로 with warm contrasting light and somber archival reverence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5E9OflFsnSF-o2NjT4lxH-cDaoymAUYLq_L9-vX25mNyejUygVj1OGqbM-9XFvTrhuriT30MzSkN-zP5mLdKmujQgFxSNfs466Oqxx6dxumbD2qS37Gn4Mkzsif54X55DEA5UDepgLMCd3zmJ_giBBwq5QxXpPYbPuLdjQ1cnUdneFtdJx7AWHFysaa4_rPoawGV7mO6zpWpIdfuA4zISwXE_mvuA4eANX8-57xYCaJkI0dvCZF8F"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded brass-badge text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-sm">
+                30년 세월의 불꽃
+              </span>
+<span class="px-2 py-0.5 rounded bg-error/90 text-on-error text-label-sm font-label-sm font-bold">
+                2022 소실
+              </span>
+</div>
+<!-- Commemorative Red Stamp (Inju Deboss) -->
+<div class="absolute -bottom-3 right-3 w-20 h-20 rounded-full border-2 border-secondary bg-surface-container-lowest memorial-stamp-ring flex flex-col items-center justify-center p-1 text-secondary rotate-3 shadow-md">
+<div class="w-full h-full rounded-full border border-secondary/50 flex flex-col items-center justify-center leading-none text-center">
+<span class="text-[8px] font-label-sm text-secondary">영구결번</span>
+<span class="font-number-stat text-sm font-bold my-0.5 text-secondary">1992</span>
+<span class="text-[7px] font-label-sm text-secondary/90">양미옥 본점</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-3 right-24 text-surface-lowest">
+<h3 class="text-headline-md font-headline-md text-white font-bold drop-shadow-sm">을지로 양미옥 본점</h3>
+<p class="text-label-sm font-label-sm text-tertiary-fixed drop-shadow-sm flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+                서울 중구 충무로 을지로3가 (화재 소실)
+              </p>
+</div>
+</div>
+<!-- Body -->
+<div class="p-4 pt-3 flex flex-col space-y-3">
+<div class="border-l-2 border-error pl-2.5 py-0.5">
+<p class="text-body-md font-body-md text-on-surface font-medium">
+                "화재로 역사 속으로 사라진 을지로 곱창·양대창 골목의 전설."
+              </p>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                대통령의 단골집이자 을지로 직장인들의 청춘과 희로애락이 스민 빨간 숯불의 터전.
+              </p>
+</div>
+<!-- Curatorial Quote from diner -->
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/30 flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">format_quote</span>
+<p class="text-body-sm font-body-sm text-on-surface italic">
+                "입사 첫 월급날 아버지 손잡고 특양구이를 먹었던 그 자리, 불길 속으로 사라졌어도 혀끝의 따뜻함은 평생 남습니다."
+                <span class="block text-label-sm font-label-sm text-on-surface-variant not-italic mt-1 font-semibold">— 식객 김영호 님(52세) 헌사</span>
+</p>
+</div>
+<!-- Action Buttons Footer -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-12 px-3 rounded-lg border border-primary text-primary hover:bg-surface-container font-label-lg flex items-center justify-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+<span>현장 복원 사진첩</span>
+</button>
+<button class="h-12 px-3 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-lg flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span>추억 한 줄 남기기</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Card 3: 신촌 형제갈비 구관 (1972~) -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant/70 shadow-sm overflow-hidden flex flex-col">
+<div class="relative h-44 w-full bg-surface-dim overflow-hidden">
+<img class="w-full h-full object-cover grayscale contrast-110 filter" data-alt="Sepia toned archival shot of a multi-story vintage Korean wooden meat restaurant building constructed in the 1970s in Sinchon Seoul, with heavy timber balconies, tiled roofs, and warm street lamps reflecting softly on the sidewalk, embodying cultural nostalgia and architectural heritage in deep earthy museum tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQ9xT4KiTYkm22nw9IrjmGRK1pWS_NfvS8hKQte0x0xfiUT0A-VHSEu6ToOvpT_PmMghqMBIAVFaYnzOCb1Y2ZA66XuppJZ534OI1cXsRy-mIuYiEd8-vdDCsdcToEeH9kWDReQi5LSPMg2j_MgD_MlSQ1q_qy4s43ie19WSuWiREz0m_4kK9ROZVb7uvfQjmXZDY075MfhNz2vMxJaMdMNraa-EI_z8iFyNHXKFlSdbjur8ZPKBuB"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded brass-badge text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-sm">
+                반세기 청춘의 상징
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high/90 text-on-surface text-label-sm font-label-sm">
+                1972 ~ 구관 철거
+              </span>
+</div>
+<!-- Stamp Icon -->
+<div class="absolute -bottom-3 right-3 w-20 h-20 rounded-full border-2 border-primary-container bg-surface-container-lowest memorial-stamp-ring flex flex-col items-center justify-center p-1 text-primary-container -rotate-12 shadow-md">
+<div class="w-full h-full rounded-full border border-primary-container/40 flex flex-col items-center justify-center leading-none text-center">
+<span class="text-[8px] font-label-sm text-primary">기록복원</span>
+<span class="font-number-stat text-sm font-bold my-0.5 text-primary">1972</span>
+<span class="text-[7px] font-label-sm text-primary-container">형제갈비 구관</span>
+</div>
+</div>
+<div class="absolute bottom-3 left-3 right-24 text-surface-lowest">
+<h3 class="text-headline-md font-headline-md text-white font-bold drop-shadow-sm">신촌 형제갈비 구관</h3>
+<p class="text-label-sm font-label-sm text-tertiary-fixed drop-shadow-sm flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px]">location_on</span>
+                서울 서대문구 명물길 (구 목조관 해체)
+              </p>
+</div>
+</div>
+<div class="p-4 pt-3 flex flex-col space-y-3">
+<div class="border-l-2 border-primary pl-2.5 py-0.5">
+<p class="text-body-md font-body-md text-on-surface font-medium">
+                "추억의 1세대 목조 건물 복원 및 졸업식 갈비탕의 기억."
+              </p>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+                대학가 청춘들의 합격과 졸업 잔칫날을 도맡았던 신촌 로터리의 웅장했던 옛 목조건물 연대기.
+              </p>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/40">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">menu_book</span>
+<span>남겨진 헌사 <strong class="text-on-surface font-bold">892편</strong></span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">architecture</span>
+                도면 아카이브 완료
+              </div>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-12 px-3 rounded-lg border border-primary text-primary hover:bg-surface-container font-label-lg flex items-center justify-center gap-1 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>세월 연대기</span>
+</button>
+<button class="h-12 px-3 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-lg flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">edit_note</span>
+<span>추억 한 줄 남기기</span>
+</button>
+</div>
+</div>
+</article>
+</section>
+<!-- Educational / Social Value Callout Card -->
+<section class="px-space-md pt-2 pb-4">
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/60 flex items-start gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">policy</span>
+</div>
+<div class="space-y-1">
+<h4 class="text-headline-sm font-headline-sm text-on-surface text-[15px]">노포 보존 청원 및 가치 연대</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+              사라지는 노포는 단순한 식당의 폐업이 아닌 도심의 무형 문화재 손실입니다. '노포천년'은 백년가게 보호 입법 촉구와 장인 전수 지원 아카이브를 공식 후원합니다.
+            </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Chip (내가 다녀왔던 사라진 노포 도장첩 모아보기) -->
+<!-- Positioned safely above BottomNavBar with Android 48dp+ interactive compliance -->
+<aside class="fixed bottom-20 left-0 right-0 max-w-md mx-auto px-4 z-40 pointer-events-none flex justify-center">
+<button class="pointer-events-auto h-12 px-5 rounded-full bg-inverse-surface text-inverse-on-surface shadow-xl flex items-center gap-2 border border-outline/50 hover:bg-on-surface active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed" style="font-variation-settings: 'FILL' 1;">approval_delegation</span>
+<span class="text-label-md font-label-md font-bold text-white tracking-wide">내 여권 속 사라진 노포 도장 모아보기</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary text-white text-[11px] font-bold">3</span>
+</button>
+</aside>
+<!-- BottomNavBar Component (from Shared Components JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md bg-surface dark:bg-surface-container text-primary dark:text-inverse-primary border-t border-outline-variant dark:border-outline shadow-md dark:shadow-none">
+<!-- Tab 1: 지도 탐색 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary min-w-[64px] h-12 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[24px]">map</span>
+<span class="text-label-sm font-label-sm mt-0.5">지도 탐색</span>
+</a>
+<!-- Tab 2: 내 패스포트 (Active - Memoriam resides in passport ecosystem) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-bold hover:text-primary min-w-[64px] h-12 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="text-label-sm font-label-sm mt-0.5">내 패스포트</span>
+</a>
+<!-- Tab 3: 설정 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary min-w-[64px] h-12 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[24px]">settings</span>
+<span class="text-label-sm font-label-sm mt-0.5">설정</span>
+</a>
+</nav>
+</div>
+</body></html>

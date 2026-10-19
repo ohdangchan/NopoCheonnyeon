@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>설정 및 데이터 출처 - 노포천년</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Epilogue & Noto Sans KR -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "primary-fixed-dim": "#8dd3c9",
+            "secondary-container": "#ff6751",
+            "on-tertiary-fixed": "#271900",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed": "#00201d",
+            "inverse-primary": "#8dd3c9",
+            "outline-variant": "#bec9c6",
+            "on-error-container": "#93000a",
+            "surface-dim": "#cfddd9",
+            "outline": "#6f7977",
+            "on-surface-variant": "#3f4947",
+            "surface-container-low": "#e9f7f3",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-container-highest": "#d8e5e2",
+            "on-primary-container": "#a1e9de",
+            "tertiary-container": "#7e5a00",
+            "tertiary-fixed": "#ffdea7",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-tertiary": "#ffffff",
+            "on-background": "#121e1c",
+            "surface-container": "#e3f1ed",
+            "secondary-fixed-dim": "#ffb4a8",
+            "surface-tint": "#1c6961",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#effcf9",
+            "on-surface": "#121e1c",
+            "on-tertiary-container": "#ffd68d",
+            "primary-container": "#1f6b63",
+            "inverse-surface": "#273331",
+            "secondary": "#b02e1f",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#effcf9",
+            "tertiary": "#604400",
+            "primary": "#00524b",
+            "on-error": "#ffffff",
+            "surface-variant": "#d8e5e2",
+            "on-secondary-fixed": "#410100",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-high": "#ddebe7",
+            "on-secondary-container": "#690200",
+            "secondary-fixed": "#ffdad4",
+            "background": "#effcf9",
+            "on-tertiary-fixed-variant": "#5e4200"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "body-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "headline-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "headline-lg": ["Epilogue", "Noto Sans KR", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"],
+            "headline-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "body-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "label-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "body-lg": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "label-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "label-lg": ["Noto Sans", "Noto Sans KR", "sans-serif"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Physical Hanji texture tactile effect */
+    .hanji-card {
+      background-color: #F8F9F5;
+      border: 1px solid #CCD4CC;
+      box-shadow: 0 2px 6px rgba(20, 32, 30, 0.04);
+    }
+    .inju-seal {
+      border: 2px solid #b02e1f;
+      color: #b02e1f;
+      position: relative;
+    }
+    .inju-seal::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border: 1px solid #b02e1f;
+      border-radius: 9999px;
+      pointer-events: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex justify-center selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Mobile Viewport Container (Android max-w-md constraint) -->
+<div class="w-full max-w-md bg-surface flex flex-col min-h-screen pb-24 relative overflow-x-hidden">
+<!-- TopAppBar (Execution of Shared Component with Screen Header '설정') -->
+<header class="bg-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed shadow-sm sticky top-0 z-40">
+<div class="flex items-center gap-2">
+<button aria-label="뒤로가기" class="text-on-primary p-2 -ml-2 rounded-full hover:bg-primary-container active:scale-95 transition-transform duration-150 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="text-on-primary font-headline-md text-headline-md tracking-tight">설정</h1>
+</div>
+<div class="flex items-center gap-1">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-on-primary-container tracking-wider border border-primary-fixed-dim/30">
+          S-903 / ARCHIVE
+        </span>
+<button aria-label="검색" class="text-on-primary p-2 rounded-full hover:bg-primary-container active:scale-95 transition-transform duration-150 flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-space-md pt-4 space-y-4">
+<!-- 1. 내 계정 프로필 간이 카드 -->
+<section class="hanji-card rounded-xl p-4 relative overflow-hidden">
+<!-- Traditional Brass Corner Accent Decoration -->
+<div class="absolute top-0 right-0 w-8 h-8 pointer-events-none overflow-hidden">
+<div class="w-12 h-1 bg-tertiary-fixed-dim rotate-45 transform origin-bottom-right translate-x-1 -translate-y-3"></div>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3.5">
+<!-- Avatar with Inju Vermilion double-ring seal styling -->
+<div class="relative w-14 h-14 rounded-full inju-seal flex flex-col items-center justify-center bg-surface-container-lowest shrink-0 shadow-inner">
+<span class="font-headline-sm text-[12px] font-bold text-secondary leading-none">老鋪</span>
+<span class="font-label-sm text-[9px] text-secondary tracking-tighter mt-0.5">천년</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">국밥장인</span>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded font-bold border border-tertiary-fixed-dim flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                  동네 어른 300년+
+                </span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant font-body-sm text-body-sm">
+<span>gourmet@nopo.kr</span>
+<span class="material-symbols-outlined text-primary text-[15px]" style="font-variation-settings: 'FILL' 1;" title="인증된 계정">verified</span>
+</div>
+</div>
+</div>
+<!-- 로그아웃 텍스트 버튼 -->
+<button class="shrink-0 font-label-md text-label-md text-outline hover:text-secondary px-2.5 py-2 rounded-lg hover:bg-surface-container transition-colors active:scale-95 duration-150" type="button">
+            로그아웃
+          </button>
+</div>
+<!-- Mini Heritage Progress (세월 누적 요약) -->
+<div class="mt-4 pt-3 border-t border-outline-variant/60 flex items-center justify-between font-label-sm text-label-sm">
+<span class="text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">history_edu</span>
+            누적 검증 세월
+          </span>
+<span class="font-number-stat text-body-md text-primary font-bold">442년 <span class="font-body-sm text-outline font-normal">/ 1,000년</span></span>
+</div>
+</section>
+<!-- 2. 노포 데이터 출처 및 공공 데이터 명시 (FR-DATA-03) -->
+<section class="hanji-card rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-outline-variant/50">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">database</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">데이터 출처 및 아카이브</h2>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container text-primary font-semibold border border-outline-variant/40">
+            FR-DATA-03
+          </span>
+</div>
+<!-- Bento style metadata cards -->
+<div class="grid grid-cols-2 gap-2.5">
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">카탈로그 버전</span>
+<span class="font-headline-sm text-label-lg font-bold text-primary mt-1">v2026.10-STABLE</span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex flex-col justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">데이터 최종 동기화</span>
+<span class="font-body-md text-label-lg font-bold text-on-surface mt-1">2026.10.18</span>
+</div>
+</div>
+<!-- 수록 노포 현황 배지 -->
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/40 space-y-1.5">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface font-semibold">전국 수록 노포 현황</span>
+<span class="font-headline-sm text-label-lg text-secondary font-extrabold">1,277개처</span>
+</div>
+<div class="flex items-center gap-2 pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              백년가게 <strong class="text-on-surface font-semibold">1,139</strong>
+</span>
+<span class="inline-flex items-center gap-1 bg-surface-container px-2 py-0.5 rounded">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+              오래가게 <strong class="text-on-surface font-semibold">151</strong>
+</span>
+</div>
+</div>
+<!-- 공공데이터 원천 명시 -->
+<div class="p-2.5 bg-surface-container/60 rounded-lg border border-outline-variant/30 text-body-sm font-body-sm text-on-surface-variant space-y-1">
+<p class="font-label-sm text-label-sm font-bold text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">account_balance</span>
+            공공데이터 원천 및 인가 기관
+          </p>
+<ul class="list-disc list-inside space-y-0.5 text-[11px] text-outline leading-tight">
+<li>중소벤처기업부 소상공인시장진흥공단 (백년가게 인증 데이터)</li>
+<li>서울특별시 문화유산과 (오래가게 발굴 아카이브)</li>
+</ul>
+</div>
+</section>
+<!-- 3. 앱 이용 및 개인정보 보호 (FR-SYS-01) -->
+<section class="hanji-card rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between pb-1 border-b border-outline-variant/50">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[20px]">policy</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">앱 이용 및 프라이버시</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">보안 준수</span>
+</div>
+<!-- Interactive Policies List -->
+<div class="divide-y divide-outline-variant/40">
+<!-- 방문 인증 및 위치 정보 방침 -->
+<button class="w-full py-2.5 flex items-start justify-between text-left group hover:bg-surface-container/40 rounded px-1 transition-colors" type="button">
+<div class="space-y-0.5 pr-2">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">방문 인증 및 위치 정보 방침</span>
+<span class="font-label-sm text-[10px] bg-primary/10 text-primary px-1 rounded">비저장 원칙</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline">반경 50m 내 현장 인증 시에만 휘발성 대조 후 즉시 파기 (좌표 기록 일절 없음)</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors mt-1 text-[20px]">chevron_right</span>
+</button>
+<!-- 영수증 이미지 처리 정책 -->
+<button class="w-full py-2.5 flex items-start justify-between text-left group hover:bg-surface-container/40 rounded px-1 transition-colors" type="button">
+<div class="space-y-0.5 pr-2">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">영수증 이미지 처리 정책</span>
+<span class="font-label-sm text-[10px] bg-secondary/10 text-secondary px-1 rounded">온디바이스</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline">OCR 인증 시 스마트폰 내부(On-Device)에서 텍스트 추출 후 사진 원본 즉시 자동 영구 폐기</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors mt-1 text-[20px]">chevron_right</span>
+</button>
+<!-- 오픈소스 소프트웨어 라이선스 -->
+<button class="w-full py-2.5 flex items-start justify-between text-left group hover:bg-surface-container/40 rounded px-1 transition-colors" type="button">
+<div class="space-y-0.5 pr-2">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface group-hover:text-primary transition-colors">오픈소스 소프트웨어 라이선스</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline">Naver Map SDK, Google ML Kit, Android Jetpack Compose 외 18종</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors mt-1 text-[20px]">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- 4. 개발자 히든 진단 트리거 영역 (S-901) -->
+<section class="hanji-card rounded-xl p-4 border-dashed border-2 border-outline-variant/80 text-center relative select-none">
+<div class="cursor-pointer active:scale-[0.98] transition-transform p-2 rounded-lg" id="dev-trigger-area">
+<div class="flex items-center justify-center gap-2 mb-1">
+<span class="font-headline-sm text-label-lg font-bold text-on-surface">노포천년(老鋪千年) 미식가 프로젝트</span>
+</div>
+<div class="flex items-center justify-center gap-2 mb-2">
+<span class="font-body-md text-label-md font-semibold text-primary bg-primary-container/20 px-2.5 py-0.5 rounded-full border border-primary/20">
+              v0.4.0 (Build 42) - Android Release
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-outline leading-relaxed max-w-xs mx-auto">
+            (앱 정보 영역을 5회 연속 탭하면 시스템 진단 화면으로 진입합니다)
+          </p>
+<!-- Interactive 5-Tap Counter Feedback Dots -->
+<div class="flex items-center justify-center gap-2 mt-3" id="tap-indicators">
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant transition-colors" data-step="1"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant transition-colors" data-step="2"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant transition-colors" data-step="3"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant transition-colors" data-step="4"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant transition-colors" data-step="5"></span>
+</div>
+<!-- Toast Message (Initially hidden) -->
+<div class="hidden mt-3 p-2 bg-inverse-surface text-inverse-on-surface rounded-lg font-label-md text-label-md shadow-lg animate-pulse" id="diagnostic-toast">
+            진단 모드 활성화: S-901 진단 시스템으로 전환 중...
+          </div>
+</div>
+</section>
+<!-- Cultural Note Footer Stamp Notice -->
+<div class="text-center py-2">
+<p class="font-label-sm text-label-sm text-outline/80 tracking-widest">
+          사라져가는 우리 미식 유산의 불멸을 기록합니다
+        </p>
+</div>
+</main>
+<!-- BottomNavBar (Execution of Shared Component with '설정' ACTIVE) -->
+<!-- JSON: destination_count: 3, labels: ["지도 탐색", "내 패스포트", "설정"], icons: ["map", "menu_book", "settings"] -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md bg-surface border-t border-outline-variant shadow-md">
+<!-- 1. 지도 탐색 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#">
+<span class="material-symbols-outlined text-[24px]">map</span>
+<span class="text-label-sm font-label-sm mt-0.5">지도 탐색</span>
+</a>
+<!-- 2. 내 패스포트 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#">
+<span class="material-symbols-outlined text-[24px]">menu_book</span>
+<span class="text-label-sm font-label-sm mt-0.5">내 패스포트</span>
+</a>
+<!-- 3. 설정 (Active - Mandatory Contextual Match) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-150 py-1 px-3 relative" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="text-label-sm font-label-sm mt-0.5">설정</span>
+<!-- Active indicator dot in Vermilion Stamp Red -->
+<span class="w-1 h-1 rounded-full bg-secondary absolute -bottom-0.5"></span>
+</a>
+</nav>
+</div>
+<!-- Micro-interactions: Hidden Diagnostic 5-Tap Tracker -->
+<script>
+    let tapCount = 0;
+    let tapResetTimeout = null;
+    const devTriggerArea = document.getElementById('dev-trigger-area');
+    const toast = document.getElementById('diagnostic-toast');
+    const indicatorDots = document.querySelectorAll('#tap-indicators [data-step]');
+
+    devTriggerArea.addEventListener('click', () => {
+      tapCount++;
+      
+      // Update visual dots
+      indicatorDots.forEach((dot, index) => {
+        if (index < tapCount) {
+          dot.classList.remove('bg-outline-variant');
+          dot.classList.add('bg-secondary', 'scale-110');
+        } else {
+          dot.classList.remove('bg-secondary', 'scale-110');
+          dot.classList.add('bg-outline-variant');
+        }
+      });
+
+      if (tapCount >= 5) {
+        toast.classList.remove('hidden');
+        setTimeout(() => {
+          alert('시스템 진단 모드(S-901 진단 시스템)로 이동합니다. (디버그 포트: 8088)');
+          resetTaps();
+        }, 300);
+      } else {
+        clearTimeout(tapResetTimeout);
+        tapResetTimeout = setTimeout(() => {
+          resetTaps();
+        }, 3000);
+      }
+    });
+
+    function resetTaps() {
+      tapCount = 0;
+      indicatorDots.forEach(dot => {
+        dot.classList.remove('bg-secondary', 'scale-110');
+        dot.classList.add('bg-outline-variant');
+      });
+      toast.classList.add('hidden');
+    }
+  </script>
+</body></html>

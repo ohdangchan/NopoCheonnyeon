@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_THREEJS_START:ANIMATION_64 class="fixed inset-0 w-full h-full bg-transparent" -->
+<div class="fixed inset-0 w-full h-full bg-transparent" style="display:block;">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-container-ANIMATION_64" style="width:100%;height:100%"></div>
+<script>
+(function() {
+  const container = document.getElementById('threejs-container-ANIMATION_64');
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  # 노포 천년 미식가 — Firebase Firestore 보안 규칙 & WorkManager SyncWorker 연동 가이드 (v0.4)
+
+본 문서는 '노포 천년 미식가' 앱의 **Cloud Firestore 보안 규칙 (`firestore.rules`)** 전문과, 로컬 SQLite(Room)에 선(先)기록된 영수증/사진 방문 인증 데이터를 원격 Firestore로 안전하게 무결성 보장 배치 전송하는 **WorkManager 기반 `SyncWorker` & `SyncScheduler`**의 프로덕션 Kotlin 구현 코드 명세입니다.
+
+---
+
+## 1. Cloud Firestore 보안 규칙 (`firebase/firestore.rules`)
+
+PRD 8.2, 8.3 및 아키텍처 6.3 명세에 따라, 악의적인 클라이언트 위변조 및 타인 데이터 침해를 원천 차단하는 정밀 보안 규칙입니다.
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // 1. 공통 보안 헬퍼 함수
+    // =========================================================================
+    function signedIn() { 
+      return request.auth != null; 
+    }
+    
+    function isMe(uid) { 
+      return signedIn() && request.auth.uid == uid; 
+    }
+
+    // users 문서의 허용된 키 화이트리스트 (임의 필드 주입 방지)
+    function userKeys() {
+      return ['nickname', 'nicknameLower', 'titleId', 'totalYears', 'visitCount', 'reviewCount', 'createdAt', 'updatedAt'];
+    }
+
+    // =========================================================================
+    // 2. 식객 유저 프로필 (/users/{uid})
+    // =========================================================================
+    match /users/{uid} {
+      // 모든 로그인 사용자는 다른 식객의 프로필(칭호, 누적 세월, 방문 수)을 조회 가능
+      allow read: if signedIn();
+
+      // 회원가입 시 본인 문서만 초기값(세월 0, 방문 0, 리뷰 0)으로 생성 가능
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(userKeys())
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 12
+        && request.resource.data.nicknameLower == request.resource.data.nickname.lower()
+        && request.resource.data.totalYears == 0
+        && request.resource.data.visitCount == 0
+        && request.resource.data.reviewCount == 0
+        && request.resource.data.createdAt == request.time;
+
+      // 방문 인증 또는 리뷰 작성 시 점진적 갱신만 허용 (급격한 치팅 방지)
+      allow update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(userKeys())
+        && request.resource.data.nickname == resource.data.nickname
+        && request.resource.data.createdAt == resource.data.createdAt
+        // 세월 적립: 이전보다 크거나 같아야 하며, 단일 적립은 최대 200년(공식 지정 상한) 이내
+        && request.resource.data.totalYears >= resource.data.totalYears
+        && request.resource.data.totalYears <= resource.data.totalYears + 200
+        // 방문 수: 1회씩만 증가 가능
+        && request.resource.data.visitCount >= resource.data.visitCount
+        && request.resource.data.visitCount <= resource.data.visitCount + 1
+        && request.resource.data.reviewCount >= 0;
+
+      // 계정 탈퇴 시 영구 삭제 허용
+      allow delete: if isMe(uid);
+
+      // -----------------------------------------------------------------------
+      // 2.1 서브컬렉션: 방문 각인 기록 (/users/{uid}/visits/{storeId})
+      // -----------------------------------------------------------------------
+      match /visits/{storeId} {
+        allow read: if signedIn();
+
+        // 첫 방문 인증 기록 생성
+        allow create: if isMe(uid)
+          && request.resource.data.storeId == storeId
+          && request.resource.data.yearsAwarded is int
+          && request.resource.data.yearsAwarded >= 30
+          && request.resource.data.yearsAwarded <= 200
+          && request.resource.data.visitCount == 1
+          && request.resource.data.method in ['RECEIPT', 'PHOTO', 'LOCATION_ONLY'];
+
+        // 재방문 단골 횟수 업데이트 (yearsAwarded 및 최초 방문일은 불변)
+        allow update: if isMe(uid)
+          && request.resource.data.yearsAwarded == resource.data.yearsAwarded
+          && request.resource.data.firstVisitedAt == resource.data.firstVisitedAt
+          && request.resource.data.visitCount == resource.data.visitCount + 1;
+
+        allow delete: if isMe(uid);
+      }
+    }
+
+    // =========================================================================
+    // 3. 닉네임 유일성 인덱스 (/nicknames/{nameLower})
+    // =========================================================================
+    match /nicknames/{name} {
+      // 가입 전 닉네임 중복 체크를 위한 단건 조회 허용 (목록 조회 불가)
+      allow get: if true;
+      allow list: if false;
+
+      // 가입 시 본인 uid로만 등록 가능
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && name == name.lower()
+        && name.size() >= 2 && name.size() <= 12;
+
+      // 닉네임 변경 또는 탈퇴 시 기존 닉네임 반환/삭제
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // =========================================================================
+    // 4. 공인 미식 리뷰 (/reviews/{reviewId}) — 문서 ID: "{storeId}_{uid}"
+    // =========================================================================
+    match /reviews/{reviewId} {
+      function validReview() {
+        let d = request.resource.data;
+        return d.uid == request.auth.uid
+          && reviewId == d.storeId + '_' + request.auth.uid
+          && d.rating is int && d.rating >= 1 && d.rating <= 5
+          && d.text is string && d.text.size() <= 500
+          // 핵심: 해당 가게의 방문 인증 문서가 실제 존재하는 경우에만 리뷰 작성 허용
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid)/visits/$(d.storeId));
+      }
+
+      allow read: if signedIn();
+
+      allow create: if signedIn() && validReview()
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if signedIn() && validReview()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // =========================================================================
+    // 5. 영수증 원타임 해시 (/receiptHashes/{hash})
+    // =========================================================================
+    match /receiptHashes/{hash} {
+      // 읽기 불가 (다른 유저의 영수증 해시 열람 방지)
+      allow read: if false;
+      // 생성만 허용 (기존 문서가 존재하면 생성 거부 -> PERMISSION_DENIED를 통해 중복 판정)
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // =========================================================================
+    // 6. 노포 정보 제보 및 리뷰 신고 (/reports/{reportId})
+    // =========================================================================
+    match /reports/{id} {
+      allow read: if false;
+      allow create: if signedIn() && request.resource.data.reporterUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // =========================================================================
+    // 7. 1일차 스파이크 기능 검증 콘솔 (/diagnostics/{uid})
+    // =========================================================================
+    match /diagnostics/{uid} {
+      allow read, write: if isMe(uid);
+    }
+  }
+}
+```
+
+---
+
+## 2. WorkManager 기반 백그라운드 동기화 엔진
+
+### 2.1 동기화 작업자 (`SyncWorker.kt`)
+오프라인이나 네트워크 불안정 환경에서 로컬 `my_visits`와 `pending_ops`에 안전하게 적재된 대기 작업을, 네트워크 재연결 시 Firestore 트랜잭션/Batch 쓰기를 통해 전송하는 핵심 Worker 클래스입니다.
+
+```kotlin
+package com.nopo.cheonnyeon.data.sync
+
+import android.content.Context
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.nopo.cheonnyeon.data.local.AppDatabase
+import com.nopo.cheonnyeon.data.local.entity.PendingOpEntity
+import com.nopo.cheonnyeon.data.local.entity.SyncState
+import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class VisitSyncPayload(
+    val storeId: String,
+    val storeName: String,
+    val sigungu: String,
+    val yearsAwarded: Int,
+    val grade: String,
+    val method: String,
+    val photoVerified: Boolean,
+    val receiptHash: String?,
+    val isFirstVisit: Boolean
+)
+
+class SyncWorker(
+    appContext: Context,
+    workerParams: WorkerParameters
+) : CoroutineWorker(appContext, workerParams) {
+
+    private val db = AppDatabase.getInstance(appContext)
+    private val firestore = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
+    private val json = Json { ignoreUnknownKeys = true }
+
+    override suspend fun doWork(): Result {
+        val currentUid = auth.currentUser?.uid ?: return Result.failure()
+        val pendingOps = db.pendingOpDao().getAllPendingOps()
+
+        if (pendingOps.isEmpty()) {
+            return Result.success()
+        }
+
+        for (op in pendingOps) {
+            try {
+                processSingleOp(currentUid, op)
+                // 성공 시 대기열 큐에서 제거
+                db.pendingOpDao().delete(op.id)
+            } catch (e: Exception) {
+                // 해시 중복 거부 (PERMISSION_DENIED) 핸들링
+                if (e is FirebaseFirestoreException && e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                    handleDuplicateReceiptRollback(currentUid, op)
+                    db.pendingOpDao().delete(op.id)
+                } else {
+                    // 일시적 네트워크 에러: 재시도 횟수 증가 및 지수 백오프
+                    db.pendingOpDao().updateError(op.id, op.attempts + 1, e.message)
+                    return Result.retry()
+                }
+            }
+        }
+
+        return Result.success()
+    }
+
+    private suspend fun processSingleOp(uid: String, op: PendingOpEntity) {
+        val payload = json.decodeFromString<VisitSyncPayload>(op.payloadJson)
+        val userRef = firestore.collection("users").document(uid)
+        val visitRef = userRef.collection("visits").document(payload.storeId)
+
+        // 서울 기준 0시 타임스탬프 계산 (정밀 방문 시/분 비저장 규격)
+        val seoulMidnightMillis = java.time.LocalDate.now(java.time.ZoneId.of("Asia/Seoul"))
+            .atStartOfDay(java.time.ZoneId.of("Asia/Seoul"))
+            .toInstant()
+            .toEpochMilli()
+        val visitTimestamp = com.google.firebase.Timestamp(java.util.Date(seoulMidnightMillis))
+
+        val batch = firestore.batch()
+
+        // 1. 영수증 해시가 있을 경우 receiptHashes 문서 선기록
+        payload.receiptHash?.let { hash ->
+            val hashRef = firestore.collection("receiptHashes").document(hash)
+            batch.set(
+                hashRef,
+                mapOf(
+                    "uid" to uid,
+                    "storeId" to payload.storeId,
+                    "createdAt" to visitTimestamp
+                )
+            )
+        }
+
+        // 2. 첫 방문 vs 재방문 분기
+        if (payload.isFirstVisit) {
+            batch.set(
+                visitRef,
+                mapOf(
+                    "storeId" to payload.storeId,
+                    "storeName" to payload.storeName,
+                    "sigungu" to payload.sigungu,
+                    "yearsAwarded" to payload.yearsAwarded,
+                    "grade" to payload.grade,
+                    "method" to payload.method,
+                    "photoVerified" to payload.photoVerified,
+                    "firstVisitedAt" to visitTimestamp,
+                    "lastVisitedAt" to visitTimestamp,
+                    "visitCount" to 1
+                )
+            )
+
+            // 유저 누적 세월 및 방문 수 원자적 증가
+            batch.update(
+                userRef,
+                mapOf(
+                    "totalYears" to FieldValue.increment(payload.yearsAwarded.toLong()),
+                    "visitCount" to FieldValue.increment(1),
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+            )
+        } else {
+            // 재방문: 단골 카운트만 증가
+            batch.update(
+                visitRef,
+                mapOf(
+                    "visitCount" to FieldValue.increment(1),
+                    "lastVisitedAt" to visitTimestamp
+                )
+            )
+            batch.update(userRef, "updatedAt", FieldValue.serverTimestamp())
+        }
+
+        // Firestore 원자적 일괄 커밋 실행
+        batch.commit().await()
+
+        // 3. 로컬 SQLite 동기화 상태 SYNCED로 확정
+        db.myVisitDao().updateSyncState(payload.storeId, SyncState.SYNCED)
+    }
+
+    private suspend fun handleDuplicateReceiptRollback(uid: String, op: PendingOpEntity) {
+        val payload = json.decodeFromString<VisitSyncPayload>(op.payloadJson)
+        val visitRef = firestore.collection("users").document(uid).collection("visits").document(payload.storeId)
+
+        // 혹시 이전 통신에서 이미 정상 등록되었던 것인지 서버 확인
+        val existingDoc = visitRef.get().await()
+        if (existingDoc.exists()) {
+            // 이미 정상 등록된 건 -> 롤백하지 않고 SYNCED 처리
+            db.myVisitDao().updateSyncState(payload.storeId, SyncState.SYNCED)
+            return
+        }
+
+        // 실제 중복 영수증 반려 -> 로컬 임시 기록 삭제 및 실패 상태 반영
+        db.myVisitDao().deleteByStoreId(payload.storeId)
+    }
+}
+```
+
+---
+
+### 2.2 동기화 스케줄러 (`SyncScheduler.kt`)
+앱의 생명주기와 네트워크 상태를 모니터링하여 중복 실행 없이 단일 워크 큐를 유지하는 관리자 클래스입니다.
+
+```kotlin
+package com.nopo.cheonnyeon.data.sync
+
+import android.content.Context
+import androidx.work.*
+import java.util.concurrent.TimeUnit
+
+object SyncScheduler {
+
+    private const val UNIQUE_WORK_NAME = "nopo_visit_sync_worker"
+
+    /**
+     * 네트워크 연결(CONNECTED) 조건 충족 시 지수 백오프로 자동 실행되는 백그라운드 큐 등록
+     */
+    fun enqueue(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(constraints)
+            .setBackoffCriteria(
+                BackoffPolicy.EXPONENTIAL,
+                WorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .addTag("nopo_sync")
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            UNIQUE_WORK_NAME,
+            ExistingWorkPolicy.APPEND_OR_REPLACE,
+            syncRequest
+        )
+    }
+
+    /**
+     * 인증 직후 평점 작성 등 즉각적인 서버 반영이 필요할 때 호출하는 즉시 전송 요청
+     */
+    fun enqueueNow(context: Context) {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val immediateRequest = OneTimeWorkRequestBuilder<SyncWorker>()
+            .setConstraints(constraints)
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .build()
+
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            UNIQUE_WORK_NAME,
+            ExistingWorkPolicy.REPLACE,
+            immediateRequest
+        )
+    }
+}
+```
+
+---
+
+## 3. 엔드투엔드 동기화 흐름 및 예외 보장 매트릭스
+
+| 시나리오 | 로컬 SQLite (`my_visits`) | 전송 대기열 (`pending_ops`) | WorkManager 동작 | 최종 서버 (`Firestore`) |
+|---|---|---|---|---|
+| **정상 온라인 인증** | `yearsAwarded`, `PENDING` 즉시 기록 | `VISIT_FIRST` 페이로드 인큐 | `enqueueNow()` 즉시 실행 ➔ Batch 커밋 | `receiptHashes`, `visits/{id}`, `users/{uid}` 원자적 기록 완료 ➔ 로컬 `SYNCED` |
+| **비행기 모드 (오프라인)** | `yearsAwarded`, `PENDING` 즉시 기록 (UI '확인 중' 도장 표출) | 페이로드 대기열 보존 | 네트워크 연결 대기 (백그라운드 슬립) | 변화 없음 (데이터 로컬 영구 보존) |
+| **네트워크 복귀 시** | 대기열 처리 전까지 `PENDING` 유지 | `SyncWorker` 자동 트리거 | 일괄 묶음 쓰기 커밋 (배치 전송) | 원격 호적부에 세월 누적 반영 ➔ UI '확인 중' 딱지 자동 소멸 |
+| **타인 사용 영수증 (해시 중복)** | 임시 `PENDING` 기록 | 전송 시도 | Firestore `PERMISSION_DENIED` 발생 | 중복 검증 로직 실행 ➔ 로컬 `my_visits` 안전 롤백 및 `E_RECEIPT_DUP` 알림 표출 |
+| **앱 강제 종료 / 프로세스 킬** | SQLite ACID 트랜잭션으로 영구 보존 | SQLite ACID 트랜잭션으로 보존 | 앱 재실행 또는 OS 스케줄러에 의해 자동 복원 | 데이터 유실 0건 보장 |
+
+})();
+</script>
+</div>
+<!-- STITCH_THREEJS_END:ANIMATION_64 -->
+</body>
+</html>

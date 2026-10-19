@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 미식가 - 기존 식객 로그인</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-surface-variant": "#3f4947",
+            "inverse-on-surface": "#e6f4f0",
+            "on-tertiary-fixed": "#271900",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "background": "#effcf9",
+            "surface-bright": "#effcf9",
+            "on-primary": "#ffffff",
+            "surface-container-high": "#ddebe7",
+            "on-error": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "surface-container-highest": "#d8e5e2",
+            "surface-container": "#e3f1ed",
+            "inverse-primary": "#8dd3c9",
+            "on-primary-container": "#a1e9de",
+            "error-container": "#ffdad6",
+            "primary": "#00524b",
+            "tertiary-fixed": "#ffdea7",
+            "tertiary-container": "#7e5a00",
+            "surface-tint": "#1c6961",
+            "primary-fixed": "#a8f0e5",
+            "outline": "#6f7977",
+            "surface-container-low": "#e9f7f3",
+            "error": "#ba1a1a",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed-dim": "#f7bd46",
+            "tertiary": "#604400",
+            "on-primary-fixed-variant": "#005049",
+            "on-surface": "#121e1c",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-container": "#690200",
+            "on-secondary-fixed": "#410100",
+            "inverse-surface": "#273331",
+            "surface": "#effcf9",
+            "primary-fixed-dim": "#8dd3c9",
+            "on-background": "#121e1c",
+            "primary-container": "#1f6b63",
+            "secondary-container": "#ff6751",
+            "secondary-fixed": "#ffdad4",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed": "#00201d",
+            "secondary-fixed-dim": "#ffb4a8",
+            "surface-dim": "#cfddd9",
+            "on-tertiary-container": "#ffd68d",
+            "outline-variant": "#bec9c6",
+            "surface-variant": "#d8e5e2",
+            "secondary": "#b02e1f"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "body-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "label-lg": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "label-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "body-lg": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "headline-md": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "label-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "body-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "headline-sm": ["Noto Sans", "Noto Sans KR", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    
+    /* Paper and stamp tactile subtleties */
+    .hanji-texture {
+      background-color: #EDF0EA;
+      background-image: radial-gradient(#121e1c 0.45px, transparent 0.45px), radial-gradient(#121e1c 0.45px, #EDF0EA 0.45px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+      background-opacity: 0.03;
+    }
+    
+    .stamp-seal-stamp {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);
+    }
+    
+    .brass-edge {
+      box-shadow: 0 1px 0 rgba(217, 162, 44, 0.4);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#EDF0EA] text-on-surface antialiased font-body-md min-h-screen flex flex-col justify-between selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- WRAPPER / CONTAINER (Mobile Max Width 440px for authentic Android viewport) -->
+<div class="w-full max-w-md mx-auto min-h-screen bg-[#EDF0EA] flex flex-col relative shadow-2xl">
+<!-- 1. TOP APP BAR (Shared Component Anchor) -->
+<header class="bg-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed shadow-sm sticky top-0 z-40">
+<!-- Back button (min 48dp target) -->
+<button aria-label="뒤로가기" class="min-w-[48px] min-h-[48px] flex items-center justify-center text-on-primary hover:bg-primary-container hover:text-on-primary-container rounded-full active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<!-- Screen Title / Anchor -->
+<h1 class="text-on-primary font-headline-sm text-headline-sm tracking-tight text-center truncate max-w-[200px]">
+        기존 식객 로그인
+      </h1>
+<!-- Trailing Action: Help & Account Recovery Support (min 48dp target) -->
+<button aria-label="도움말 및 고객지원" class="min-w-[48px] min-h-[48px] flex items-center justify-center text-on-primary hover:bg-primary-container hover:text-on-primary-container rounded-full active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]">help</span>
+</button>
+</header>
+<!-- MAIN SCROLLABLE CANVAS -->
+<main class="flex-1 px-space-md pt-space-lg pb-10 flex flex-col justify-between">
+<div>
+<!-- 2. HEADER HERO & VINTAGE WATERMARK SEAL -->
+<section class="relative mb-space-lg rounded-xl bg-[#F8F9F5] p-space-lg border border-[#CCD4CC] overflow-hidden shadow-sm">
+<!-- Subtle Heritage Watermark Seal -->
+<div class="absolute -right-6 -bottom-6 w-36 h-36 rounded-full border-4 border-dashed border-[#b02e1f]/15 pointer-events-none flex items-center justify-center rotate-12">
+<div class="w-28 h-28 rounded-full border border-[#b02e1f]/20 flex flex-col items-center justify-center text-[#b02e1f]/20 font-bold select-none text-center">
+<span class="text-[9px] tracking-widest uppercase">AUTHENTIC NOPO</span>
+<span class="font-display-lg text-lg tracking-tighter my-0.5">百年銘家</span>
+<span class="text-[8px] tracking-wider">서울·경성 천년록</span>
+</div>
+</div>
+<!-- Vintage Plaque Tag -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#17504A] text-tertiary-fixed text-label-sm font-label-sm uppercase tracking-wider mb-space-sm border-b border-[#D9A22C]">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>식객 고유 번호부 복원</span>
+</div>
+<!-- Hero Headline -->
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface tracking-tight mb-space-xs text-[#121e1c]">
+            미식 장부로<br/>돌아오셨습니까?
+          </h2>
+<!-- Subtitle / Curatorial Notice -->
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+            이전에 발급받은 식객 계정(이메일)으로 로그인하면 누적된 세월과 패스포트 도장이 즉시 복원됩니다.
+          </p>
+</section>
+<!-- 3. INPUT FORM CARD (Physical Hanji Paper Surface) -->
+<form class="bg-[#F8F9F5] rounded-xl border border-[#CCD4CC] p-space-lg shadow-sm space-y-space-md" onsubmit="event.preventDefault();">
+<!-- Field 1: Email Input -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="email">
+<span class="material-symbols-outlined text-[18px] text-primary">mail</span>
+                식객 등록 이메일
+              </label>
+<span class="text-label-sm font-label-sm text-outline">계정 고유 식별자</span>
+</div>
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">alternate_email</span>
+</div>
+<input class="w-full h-12 pl-11 pr-11 bg-white border border-[#CCD4CC] rounded-lg text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-150" id="email" name="email" placeholder="gourmet@nopo.kr" type="email" value="cheongjin@nopo.kr"/>
+<!-- Valid checkmark icon indicator -->
+<div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-primary">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Field 2: Password Input -->
+<div class="space-y-1.5 pt-1">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-1.5" for="password">
+<span class="material-symbols-outlined text-[18px] text-primary">lock</span>
+                비밀번호
+              </label>
+<span class="text-label-sm font-label-sm text-outline">암호화 인장</span>
+</div>
+<div class="relative flex items-center">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">key</span>
+</div>
+<input class="w-full h-12 pl-11 pr-12 bg-white border border-[#CCD4CC] rounded-lg text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary tracking-widest transition-all duration-150" id="password" name="password" placeholder="••••••••••••" type="password" value="nopo1968century"/>
+<!-- Visibility Toggle Button (min 48dp target) -->
+<button aria-label="비밀번호 표시 전환" class="absolute inset-y-0 right-0 w-12 h-12 flex items-center justify-center text-outline hover:text-on-surface active:scale-95 transition-transform duration-150" id="togglePassword" onclick="const pass = document.getElementById('password'); const icon = this.querySelector('span'); if(pass.type === 'password'){ pass.type = 'text'; icon.textContent = 'visibility_off'; } else { pass.type = 'password'; icon.textContent = 'visibility'; }" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Utility Row: Auto-login & Recovery Link -->
+<div class="flex items-center justify-between pt-1">
+<!-- Checkbox with 48dp minimum click envelope -->
+<label class="inline-flex items-center gap-2 cursor-pointer select-none py-2 pr-2">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-primary focus:ring-offset-0 border-[#CCD4CC] bg-white cursor-pointer" type="checkbox"/>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">자동 로그인 유지</span>
+</label>
+<!-- Password Reset Mail Trigger Link -->
+<a class="font-label-md text-label-md text-primary font-semibold hover:text-primary-container underline decoration-primary/40 underline-offset-4 py-2 pl-2 active:opacity-75 transition-colors" href="#recovery">
+              비밀번호 재설정 메일 발송
+            </a>
+</div>
+</form>
+<!-- 4. SECURITY NOTICE BANNER (S-404 / S-405 / S-407 Spec) -->
+<div class="mt-space-md p-space-sm rounded-lg bg-[#EDF0EA] border border-[#CCD4CC] flex items-start gap-2.5">
+<div class="w-7 h-7 rounded-full bg-[#ddebe7] flex-shrink-0 flex items-center justify-center text-primary mt-0.5">
+<span class="material-symbols-outlined text-[16px]">lock_clock</span>
+</div>
+<div class="flex-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+<strong class="font-label-sm text-on-surface">식객 정보 보호 조치:</strong> 
+              로그인 실패 시 계정 존재 여부를 노출하지 않고 일관된 보안 안내를 제공합니다. (오류 5회 초과 시 일시 제한)
+            </p>
+</div>
+</div>
+</div>
+<!-- BOTTOM ACTIONS & SYNC STATUS -->
+<div class="mt-space-xl space-y-space-md">
+<!-- 5. ACTION BUTTONS -->
+<div class="space-y-space-sm">
+<!-- Primary CTA: Sign Deep Teal (#17504A / #1F6B63) with Brass Notch Accent -->
+<button class="w-full min-h-[56px] px-space-lg py-3.5 rounded-xl bg-[#17504A] hover:bg-primary-container text-white font-label-lg text-label-lg font-bold flex items-center justify-center gap-2.5 shadow-md active:scale-[0.98] transition-all duration-150 border-b-2 border-[#D9A22C] group" type="submit">
+<span class="material-symbols-outlined text-[22px] group-hover:rotate-6 transition-transform">menu_book</span>
+<span>미식 패스포트 열기 (로그인)</span>
+<span class="material-symbols-outlined text-[18px] opacity-80 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<!-- Secondary Divider Line with Serif Style Stamp Label -->
+<div class="relative flex py-2 items-center">
+<div class="flex-grow border-t border-[#CCD4CC]"></div>
+<span class="flex-shrink mx-3 text-label-sm font-label-sm text-outline uppercase tracking-wider">
+              아직 패스포트가 없으신가요?
+            </span>
+<div class="flex-grow border-t border-[#CCD4CC]"></div>
+</div>
+<!-- Tertiary Outlined Action: New Registration -->
+<button class="w-full min-h-[52px] px-space-lg py-3 rounded-xl bg-[#F8F9F5] border-2 border-[#1F6B63] text-primary hover:bg-[#effcf9] font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 active:scale-[0.98] transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">badge</span>
+<span>새로운 식객 호적부 등록 (회원가입)</span>
+</button>
+</div>
+<!-- 6. BOTTOM FOOTER / OFFLINE ARCHIVE SYNC NOTE -->
+<footer class="pt-2 text-center pb-2">
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 border border-[#CCD4CC] text-on-surface-variant font-body-sm text-body-sm shadow-2xs">
+<span class="material-symbols-outlined text-[15px] text-[#1F6B63]" style="font-variation-settings: 'FILL' 1;">cloud_sync</span>
+<span>네트워크가 불안정해도 기기 내 적재된 노포 카탈로그(1,277곳)는 자유롭게 열람하실 수 있습니다.</span>
+</div>
+<div class="mt-3 flex items-center justify-center gap-3 text-label-sm text-outline">
+<span>노포천년 미식록 v2.4</span>
+<span>•</span>
+<a class="hover:underline" href="#terms">이용약관</a>
+<span>•</span>
+<a class="hover:underline font-semibold text-on-surface-variant" href="#privacy">개인정보처리방침</a>
+</div>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

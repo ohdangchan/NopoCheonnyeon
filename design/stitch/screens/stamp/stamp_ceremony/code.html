@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 - 방문 인증 및 세월 적립</title>
+<!-- Google Fonts: Epilogue & Noto Sans KR -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffd68d",
+            "secondary-fixed": "#ffdad4",
+            "tertiary": "#604400",
+            "on-secondary-fixed": "#410100",
+            "on-tertiary-fixed": "#271900",
+            "on-primary-container": "#a1e9de",
+            "surface": "#effcf9",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-primary-fixed": "#00201d",
+            "primary-fixed": "#a8f0e5",
+            "on-error": "#ffffff",
+            "outline-variant": "#bec9c6",
+            "tertiary-fixed": "#ffdea7",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-highest": "#d8e5e2",
+            "inverse-surface": "#273331",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container": "#e3f1ed",
+            "on-background": "#121e1c",
+            "on-surface": "#121e1c",
+            "secondary-fixed-dim": "#ffb4a8",
+            "secondary-container": "#ff6751",
+            "on-secondary-fixed-variant": "#8e1409",
+            "outline": "#6f7977",
+            "primary": "#00524b",
+            "on-secondary-container": "#690200",
+            "surface-bright": "#effcf9",
+            "surface-dim": "#cfddd9",
+            "surface-variant": "#d8e5e2",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-high": "#ddebe7",
+            "inverse-primary": "#8dd3c9",
+            "on-tertiary": "#ffffff",
+            "on-surface-variant": "#3f4947",
+            "secondary": "#b02e1f",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-tint": "#1c6961",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-container-low": "#e9f7f3",
+            "tertiary-container": "#7e5a00",
+            "primary-container": "#1f6b63",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.25rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter": "1rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "number-stat": ["Epilogue", "sans-serif"],
+            "body-lg": ["Noto Sans KR", "sans-serif"],
+            "headline-sm": ["Noto Sans KR", "sans-serif"],
+            "label-sm": ["Noto Sans KR", "sans-serif"],
+            "body-md": ["Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "body-sm": ["Noto Sans KR", "sans-serif"],
+            "headline-md": ["Noto Sans KR", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "label-md": ["Noto Sans KR", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "label-lg": ["Noto Sans KR", "sans-serif"]
+          },
+          "fontSize": {
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom Paper & Stamp Physicality Keyframes */
+    @keyframes stampSlam {
+      0% {
+        transform: scale(2.4) rotate(-22deg);
+        opacity: 0;
+        filter: blur(4px);
+      }
+      65% {
+        transform: scale(0.94) rotate(-9deg);
+        opacity: 0.95;
+        filter: blur(0px);
+      }
+      80% {
+        transform: scale(1.04) rotate(-11deg);
+      }
+      100% {
+        transform: scale(1) rotate(-10deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes goldFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+      50% { transform: translateY(-8px) rotate(15deg); opacity: 1; }
+    }
+
+    .animate-stamp {
+      animation: stampSlam 480ms cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+
+    .particle {
+      animation: goldFloat 3s ease-in-out infinite;
+    }
+
+    /* Textured tactile Hanji paper effect using pure CSS gradient layers */
+    .hanji-bg {
+      background-color: #EDF0EA;
+      background-image: 
+        radial-gradient(#d3dbce 0.75px, transparent 0.75px),
+        radial-gradient(#e0e7dc 0.75px, #EDF0EA 0.75px);
+      background-size: 24px 24px;
+      background-position: 0 0, 12px 12px;
+    }
+
+    .stamp-red-color {
+      color: #C23B2A;
+    }
+    .stamp-red-border {
+      border-color: #C23B2A;
+    }
+    .stamp-red-bg {
+      background-color: #C23B2A;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="hanji-bg text-on-surface antialiased min-h-screen flex justify-center selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Viewport Container (~390px Width Target) -->
+<main class="w-full max-w-[420px] min-h-screen flex flex-col relative pb-8 shadow-2xl bg-[#EDF0EA]">
+<!-- Enamel Plaque Top App Bar (TopAppBar Shared Component) -->
+<!-- Destination Context Note: Sub-page/Ceremony Result screen; leading arrow returns, bottom navigation suppressed per The Filter mandate -->
+<header class="bg-primary text-on-primary border-b-2 border-tertiary-fixed shadow-sm flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<div class="flex items-center gap-2">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-on-primary">노포천년</span>
+</div>
+<div class="flex items-center gap-1">
+<div class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>공인 미식패스</span>
+</div>
+<button aria-label="검색" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[22px]">search</span>
+</button>
+</div>
+</header>
+<!-- Ceremony Main Canvas Body -->
+<div class="px-space-md pt-5 flex-1 flex flex-col items-center">
+<!-- Header Verification Notice -->
+<section class="text-center space-y-1.5 mb-6">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-md text-label-md mb-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+<span>제 42호 미식 훈장 획득</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg font-bold tracking-tight text-primary">인증 완료!</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-[280px] mx-auto leading-relaxed">
+          귀하의 미식 연대기에 백년의 세월이 새겨졌습니다.
+        </p>
+</section>
+<!-- Center Stamp Ceremony Stage -->
+<section class="relative w-full py-4 flex flex-col items-center justify-center mb-6">
+<!-- Atmospheric Gold & Vermilion Ink Sprinkles (Tactile Heritage Atmosphere) -->
+<div class="absolute -top-1 left-8 w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim particle opacity-80 pointer-events-none"></div>
+<div class="absolute top-4 right-10 w-3.5 h-3.5 rounded-full bg-tertiary-fixed particle opacity-90 pointer-events-none" style="animation-delay: 0.8s;"></div>
+<div class="absolute bottom-6 left-12 w-2 h-2 rounded-full bg-secondary-container particle opacity-60 pointer-events-none" style="animation-delay: 1.4s;"></div>
+<div class="absolute bottom-2 right-14 w-2 h-2 rounded-full bg-tertiary-fixed-dim particle opacity-70 pointer-events-none" style="animation-delay: 0.3s;"></div>
+<!-- Physical Ink Stamp Artwork (-10deg rotation, Double concentric vermilion rings) -->
+<div class="relative w-56 h-56 rounded-full p-2 animate-stamp shadow-[0_12px_32px_rgba(176,46,31,0.18)]">
+<!-- Outer Concentric Ring -->
+<div class="w-full h-full rounded-full border-[3px] border-dashed border-[#C23B2A] p-1 flex items-center justify-center bg-[#F8F9F5]/90 backdrop-blur-[1px]">
+<!-- Inner Solid Ring with Heritage Lettering -->
+<div class="w-full h-full rounded-full border-[2.5px] border-[#C23B2A] flex flex-col items-center justify-between py-3.5 px-3 relative">
+<!-- Vermilion Micro-debosing Inner Halo -->
+<div class="absolute inset-0 rounded-full shadow-[inset_0_2px_4px_rgba(194,59,42,0.2)] pointer-events-none"></div>
+<!-- Upper Arc Stamp Shop Name & Century Sign -->
+<div class="flex items-center gap-1.5 z-10">
+<span class="font-label-sm text-label-sm font-bold tracking-widest text-[#C23B2A]">이문설농탕</span>
+<span class="w-1 h-1 rounded-full bg-[#C23B2A]"></span>
+<span class="font-label-sm text-label-sm font-bold text-[#C23B2A]">百年</span>
+</div>
+<!-- Main Center Impact Seal: +120년 Calligraphic Seal Typography -->
+<div class="flex flex-col items-center justify-center my-auto z-10 -space-y-1">
+<span class="font-display-lg text-display-lg font-black text-[#C23B2A] tracking-tighter drop-shadow-sm">+120<span class="font-headline-sm text-headline-sm font-extrabold ml-0.5">년</span></span>
+<span class="font-label-sm text-label-sm font-semibold tracking-wider text-[#C23B2A]/90 bg-[#C23B2A]/10 px-2 py-0.5 rounded">세월 누적 각인</span>
+</div>
+<!-- Bottom Stamp Authentication Date & Seal Identity -->
+<div class="flex items-center gap-1 font-label-sm text-label-sm font-bold text-[#C23B2A] z-10">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">approval_delegation</span>
+<span class="tracking-wider">노포천년 공인</span>
+<span class="opacity-75">· 1904년 창업</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Shop Name & Verified Location Stamp Badge -->
+<div class="mt-4 flex items-center gap-2 bg-surface-container-lowest border border-outline-variant px-3.5 py-1.5 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<span class="font-body-md text-body-md font-bold text-on-surface">서울 종로구 견지동</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-label-md text-label-md font-semibold text-tertiary">대한민국 1호 음식점</span>
+</div>
+</section>
+<!-- Heritage Accumulation Details Card (Bento Style Sheet) -->
+<section class="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-space-md shadow-sm space-y-4 mb-5">
+<!-- Score Transition Header -->
+<div class="flex items-center justify-between border-b border-surface-container pb-3">
+<div>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium block">누적 세월 연대기</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">미식력 도약</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-secondary font-bold bg-secondary-fixed px-2 py-0.5 rounded-full">+120년 적립 완료</span>
+</div>
+</div>
+<!-- Numeric Counter Journey: 322년 -> 442년 -->
+<div class="flex items-center justify-around py-1 bg-surface-container-low rounded-lg border border-surface-container-highest px-3">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant">인증 전</span>
+<span class="font-number-stat text-number-stat text-outline">322<span class="text-sm font-semibold ml-0.5">년</span></span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[24px] animate-pulse">arrow_forward</span>
+<span class="font-label-sm text-label-sm text-secondary font-extrabold">+120</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-primary font-bold">현재 세월</span>
+<span class="font-number-stat text-number-stat text-primary font-black">442<span class="text-sm font-semibold ml-0.5 text-secondary">년</span></span>
+</div>
+</div>
+<!-- 1,000-Year Centenary Heritage Gauge Bar -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center text-xs">
+<span class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">hourglass_top</span>
+              천년 미식가 게이지
+            </span>
+<span class="font-label-md text-label-md font-bold text-primary">
+              442년 <span class="font-normal text-on-surface-variant">/ 1,000년 (44.2%)</span>
+</span>
+</div>
+<!-- Gauge Progress Track -->
+<div class="w-full h-3.5 bg-surface-container-highest rounded-full border border-outline-variant overflow-hidden relative p-[2px]">
+<div class="h-full rounded-full bg-gradient-to-r from-primary-container via-primary to-tertiary-fixed-dim transition-all duration-1000 ease-out flex justify-end items-center pr-0.5" style="width: 44.2%;">
+<div class="w-2 h-2 rounded-full bg-surface-container-lowest shadow-xs"></div>
+</div>
+</div>
+</div>
+<!-- Title / Status Tier Badge -->
+<div class="bg-surface-container rounded-lg p-3 flex items-center gap-3 border border-outline-variant">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center shrink-0 border border-tertiary shadow-xs">
+<span class="material-symbols-outlined text-tertiary text-[22px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm px-1.5 py-0.2 bg-primary text-on-primary rounded font-bold">현재 칭호</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface truncate">동네 어른 (300년+)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate mt-0.5">
+              다음 칭호 <span class="font-semibold text-secondary">'장인 식객(600년)'</span>까지 <span class="font-bold text-primary">158년</span> 남음
+            </p>
+</div>
+</div>
+</section>
+<!-- Action Button Group (Bottom Sticky Experience) -->
+<section class="w-full space-y-2.5 mt-auto pt-2">
+<!-- Primary Action CTA: 내 패스포트 확인하기 -->
+<button class="w-full h-14 bg-primary hover:bg-primary-container text-on-primary hover:text-on-primary-container font-label-lg text-label-lg rounded-xl shadow-md flex items-center justify-center gap-2 active:scale-95 transition-all duration-150 border-b-2 border-primary-fixed" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span>내 패스포트 확인하기</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Secondary Action CTA: 이 노포에 첫 평점 남기기 -->
+<button class="w-full h-12 bg-surface-container-lowest hover:bg-surface-container text-primary border-2 border-primary font-label-md text-label-md rounded-xl shadow-xs flex items-center justify-center gap-2 active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-secondary text-[18px]" style="font-variation-settings: 'FILL' 1;">rate_review</span>
+<span>이 노포에 첫 미식 평점 남기기</span>
+</button>
+<p class="text-center font-label-sm text-label-sm text-on-surface-variant/80 pt-1 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+          방문 인증이 완료되어 공인 평점 작성 권한이 부여되었습니다.
+        </p>
+</section>
+</div>
+</main>
+<script>
+    // Micro-interactions: Number roll-up effect for tactile delight
+    document.addEventListener('DOMContentLoaded', () => {
+      const finalYears = 442;
+      const startYears = 322;
+      const duration = 800; // ms
+      const startTime = performance.now();
+
+      // Simple haptic feedback simulation on supported devices
+      if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate([40, 60, 80]);
+      }
+    });
+  </script>
+</body></html>

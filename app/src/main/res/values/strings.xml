@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">노포천년</string>
+
+    <!-- 칭호 -->
+    <string name="title_sprout">새싹 식객</string>
+    <string name="title_regular">단골 식객</string>
+    <string name="title_elder">동네 어른</string>
+    <string name="title_artisan">장인 식객</string>
+    <string name="title_master">천년 미식가</string>
+    <string name="cd_title_badge">칭호 %1$s</string>
+
+    <!-- 도장 -->
+    <string name="stamp_label_normal">세월</string>
+    <string name="stamp_label_red">각인</string>
+    <string name="stamp_label_gold">百年</string>
+    <string name="stamp_gold_caption">공인 노포</string>
+    <string name="years_value">%1$d년</string>
+    <string name="cd_stamp">%1$s 도장, 업력 %2$d년</string>
+    <string name="cd_stamp_grade_normal">청록</string>
+    <string name="cd_stamp_grade_red">붉은</string>
+    <string name="cd_stamp_grade_gold">금빛</string>
+
+    <!-- 세월 게이지 -->
+    <string name="years_gauge_total">%1$,d / 1,000년</string>
+    <string name="years_gauge_next">다음 칭호까지 %1$,d년</string>
+    <string name="years_gauge_max">천년의 대업 달성</string>
+    <string name="cd_years_gauge">세월 %1$,d년, 천 년 중 %2$d퍼센트</string>
+
+    <!-- 별점 -->
+    <string name="cd_star_rating">별점 5점 중 %1$s점</string>
+    <string name="cd_star_input">%1$d점 주기</string>
+
+    <!-- 오프라인 -->
+    <string name="offline_banner">오프라인이에요. 기록은 연결되면 자동으로 올라가요.</string>
+    <string name="offline_banner_pending">오프라인이에요. 올라가지 않은 기록 %1$d개</string>
+
+    <!-- 디자인 시스템 확인 화면 (S-001 진단 화면 전까지 임시) -->
+    <string name="catalog_title">디자인 시스템</string>
+    <string name="catalog_section_buttons">버튼</string>
+    <string name="catalog_section_stamps">도장</string>
+    <string name="catalog_section_titles">칭호</string>
+    <string name="catalog_section_gauge">세월 게이지</string>
+    <string name="catalog_section_rating">별점</string>
+    <string name="catalog_section_empty">빈 상태</string>
+    <string name="catalog_btn_primary">식객 등록</string>
+    <string name="catalog_btn_stamp">방문 인증하기</string>
+    <string name="catalog_btn_outline">길찾기</string>
+    <string name="catalog_btn_disabled">저장 중</string>
+    <string name="catalog_empty_title">아직 찍은 도장이 없어요</string>
+    <string name="catalog_empty_body">가까운 노포에서 첫 세월을 모아 보세요.</string>
+    <string name="catalog_empty_action">노포 지도 보기</string>
+    <!-- 진단 화면 (SPK-0 / S-001) -->
+    <string name="diag_title">진단</string>
+    <string name="diag_device">기기 %1$s %2$s</string>
+    <string name="diag_android">Android %1$s (API %2$d)</string>
+    <string name="diag_app_version">앱 %1$s (%2$d)</string>
+    <string name="diag_tab_map">지도</string>
+    <string name="diag_tab_camera">카메라</string>
+    <string name="diag_tab_ocr">글자 인식</string>
+    <string name="diag_tab_location">위치</string>
+    <string name="diag_tab_design">디자인</string>
+    <string name="diag_preparing">준비 중</string>
+</resources>

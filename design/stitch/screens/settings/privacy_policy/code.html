@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>개인정보 및 위치정보 처리방침 - 노포천년</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "outline-variant": "#bec9c6",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "secondary-fixed": "#ffdad4",
+            "surface-container-highest": "#d8e5e2",
+            "secondary-container": "#ff6751",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#1c6961",
+            "outline": "#6f7977",
+            "on-tertiary-fixed": "#271900",
+            "tertiary-container": "#7e5a00",
+            "on-surface-variant": "#3f4947",
+            "inverse-primary": "#8dd3c9",
+            "secondary-fixed-dim": "#ffb4a8",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "error-container": "#ffdad6",
+            "surface-bright": "#effcf9",
+            "on-error-container": "#93000a",
+            "on-background": "#121e1c",
+            "surface-dim": "#cfddd9",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "primary-fixed-dim": "#8dd3c9",
+            "secondary": "#b02e1f",
+            "on-tertiary-container": "#ffd68d",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "on-surface": "#121e1c",
+            "tertiary": "#604400",
+            "surface-container": "#e3f1ed",
+            "on-primary-fixed": "#00201d",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-high": "#ddebe7",
+            "primary-container": "#1f6b63",
+            "surface-variant": "#d8e5e2",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "inverse-on-surface": "#e6f4f0",
+            "surface": "#effcf9",
+            "background": "#effcf9",
+            "tertiary-fixed": "#ffdea7",
+            "on-secondary-container": "#690200",
+            "inverse-surface": "#273331",
+            "surface-container-low": "#e9f7f3",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "body-md": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .inju-stamp-border {
+      border: 2px dashed #b02e1f;
+      background: radial-gradient(circle at center, rgba(176, 46, 31, 0.04) 0%, transparent 70%);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased font-body-md text-body-md selection:bg-primary selection:text-on-primary min-h-screen flex flex-col justify-between">
+<!-- Top Navigation Bar (Shared Component Contract: TopAppBar) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary w-full h-14 px-space-md py-space-sm flex justify-between items-center shadow-sm">
+<div class="flex items-center gap-space-sm">
+<button aria-label="뒤로 가기" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150" onclick="history.back()">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-on-primary-container opacity-90 leading-tight">노포천년 법적 고지</span>
+<h1 class="text-headline-sm font-headline-sm font-bold text-on-primary tracking-tight">개인정보 및 위치정보 처리방침</h1>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="PDF 다운로드 및 전문보기" class="w-10 h-10 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150" title="PDF 사본 저장">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+<button aria-label="외부 규정 링크 열기" class="w-10 h-10 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150" title="법제처 원문 확인">
+<span class="material-symbols-outlined" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</header>
+<!-- Main Scrollable Content Canvas -->
+<main class="w-full max-w-xl mx-auto px-space-md py-space-md flex-1 flex flex-col gap-space-lg pb-10">
+<!-- Version & Compliance Status Chip -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant text-on-surface-variant text-label-md font-label-md">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span>규정 준수 무결성 v2.4 (2026.10.18 개정)</span>
+</div>
+<div class="inline-flex items-center gap-1 text-label-sm font-label-sm text-tertiary font-bold">
+<span class="material-symbols-outlined text-tertiary text-[14px]" data-icon="history_edu">history_edu</span>
+<span>PRD v0.4 공시</span>
+</div>
+</div>
+<!-- Editorial Header Introduction -->
+<div class="flex flex-col gap-1">
+<h2 class="text-headline-md font-headline-md font-bold text-on-surface">
+        시간의 기록만 남기고,<br/>
+<span class="text-primary underline decoration-tertiary-fixed-dim decoration-4 underline-offset-4">개인의 흔적은 즉시 지웁니다.</span>
+</h2>
+<p class="text-body-md font-body-md text-on-surface-variant pt-1">
+        노포천년(老鋪千年)은 백년 식당의 역사와 가치를 수집하는 디지털 패스포트 서비스입니다. 본 방침은 전자금융거래법, 위치정보보호법 및 개인정보보호법에 의거하여 회원의 권익을 엄격히 보호합니다.
+      </p>
+</div>
+<!-- Highlight Security Guarantee Card (Privacy-First Physical Plaque Motif) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<!-- Top Decorative Brass Bar -->
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-tertiary-fixed-dim to-primary"></div>
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container-high mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-2xl" data-icon="shield_with_heart" style="font-variation-settings: 'FILL' 1;">shield_with_heart</span>
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface">3대 무결성 프라이버시 보증</h3>
+</div>
+<span class="text-label-sm font-label-sm text-secondary bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded-full font-bold">Zero-Storage</span>
+</div>
+<!-- 3 Key Commitments -->
+<ul class="space-y-space-md">
+<!-- Commitment 1 -->
+<li class="flex items-start gap-3">
+<div class="w-7 h-7 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="text-label-md font-bold text-secondary">01</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-body-lg font-body-lg font-bold text-on-surface">영수증 촬영 이미지 0% 저장</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm rounded">온디바이스</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              OCR 광학 인식 완료 직후 스마트폰 RAM 메모리에서 즉시 덮어쓰기 파기되며, 어떠한 외부 원격 서버에도 이미지가 전송되거나 보관되지 않습니다.
+            </p>
+</div>
+</li>
+<!-- Commitment 2 -->
+<li class="flex items-start gap-3">
+<div class="w-7 h-7 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="text-label-md font-bold text-secondary">02</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-body-lg font-body-lg font-bold text-on-surface">위치 좌표 서버 영구 미보관</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm rounded">15초 휘발</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              노포 반경 30m 반경 도달 인증 여부 판정 시에만 15초간 일시적으로 계산에 사용된 후 즉시 소멸 처리되며 실시간 이동 경로는 추적되지 않습니다.
+            </p>
+</div>
+</li>
+<!-- Commitment 3 -->
+<li class="flex items-start gap-3">
+<div class="w-7 h-7 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center flex-shrink-0 mt-0.5">
+<span class="text-label-md font-bold text-secondary">03</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-body-lg font-body-lg font-bold text-on-surface">방문 기록은 0시 날짜 단위만 기록</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest text-on-surface-variant text-label-sm font-label-sm rounded">시·분 미기록</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              사용자의 생활 패턴 및 동선 유추를 차단하기 위해 스탬프 날인은 표준시(KST) 기준 날짜(YYYY-MM-DD)만 아카이빙되며 상세 시·분·초 정보는 버려집니다.
+            </p>
+</div>
+</li>
+</ul>
+<!-- Inju Stamp Seal Badge Motif -->
+<div class="mt-4 pt-3 border-t border-dashed border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2 text-label-md font-label-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="lock_clock">lock_clock</span>
+<span>암호화 프로토콜: AES-256 GCM</span>
+</div>
+<div class="inju-stamp-border px-2 py-0.5 rounded text-secondary font-bold text-label-sm tracking-wider uppercase rotate-[-2deg]">
+          인증 보증済
+        </div>
+</div>
+</section>
+<!-- Collapsible Accordion Sections -->
+<section aria-label="개인정보 상세 규정" class="flex flex-col gap-space-sm">
+<h3 class="text-headline-sm font-headline-sm font-bold text-on-surface px-1">조항별 세부 고지</h3>
+<!-- Accordion Item 1 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden open:shadow-sm transition-all" open="">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-container-low hover:bg-surface-container transition-colors list-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">1. 수집하는 개인위치정보의 항목 및 이용목적</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform duration-200" data-icon="expand_more">expand_more</span>
+</summary>
+<div class="p-space-md border-t border-outline-variant bg-surface-container-lowest space-y-2 text-body-md font-body-md text-on-surface-variant leading-relaxed">
+<p>
+<strong>수집 항목:</strong> 단말기 GPS, Wi-Fi AP 정보 및 기압 센서에 기반한 단말기 경위도 좌표.
+          </p>
+<p>
+<strong>이용 목적:</strong>
+</p>
+<ul class="list-disc list-inside space-y-1 pl-1 text-body-sm font-body-sm">
+<li>지정된 백년가게 및 노포 건축물 중심점으로부터 <strong class="text-on-surface">근접 30m 이내 실제 방문 여부 판정</strong> (위치정보보호법 제16조 준수).</li>
+<li>GPS 스푸핑(Spoofing) 및 루팅을 통한 모의 위치(Mock Location) 조작 부정 스탬프 날인 차단.</li>
+</ul>
+<div class="p-2.5 rounded bg-surface-container border border-outline-variant text-label-md font-label-md text-on-surface-variant flex items-start gap-2 mt-2">
+<span class="material-symbols-outlined text-primary text-[18px] flex-shrink-0 mt-0.5" data-icon="info">info</span>
+<span>판정 직후 좌표는 메모리에서 소거되며, 위치정보시스템에 데이터베이스화되어 영구 저장되지 않습니다.</span>
+</div>
+</div>
+</details>
+<!-- Accordion Item 2 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden open:shadow-sm transition-all">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-container-low hover:bg-surface-container transition-colors list-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="document_scanner">document_scanner</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">2. 영수증 OCR 데이터 처리 프로세스</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform duration-200" data-icon="expand_more">expand_more</span>
+</summary>
+<div class="p-space-md border-t border-outline-variant bg-surface-container-lowest space-y-2 text-body-md font-body-md text-on-surface-variant leading-relaxed">
+<p>
+            본 서비스는 영수증 인식을 위해 구글의 <strong class="text-on-surface">온디바이스 ML Kit 한글 텍스트 모델</strong>을 탑재하고 있습니다.
+          </p>
+<ul class="list-disc list-inside space-y-1 pl-1 text-body-sm font-body-sm">
+<li>카메라로 캡처된 영수증 프레임은 오직 스마트폰 내부 로컬 프로세스에서만 텍스트로 추출됩니다.</li>
+<li>상호명, 사업자등록번호, 결제 일자 3개 지표의 노포 DB 매칭 여부만 확인하며 결제 카드번호 마스킹 잔여부 및 승인 번호는 판별 즉시 완전 마스킹 소각됩니다.</li>
+<li>원본 이미지 파일은 파일 시스템(캐시 포함)에 저장되지 않고 0 바이트로 덮어쓰기 파기됩니다.</li>
+</ul>
+</div>
+</details>
+<!-- Accordion Item 3 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden open:shadow-sm transition-all">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-container-low hover:bg-surface-container transition-colors list-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="database">database</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">3. 계정 정보 및 Firebase Firestore 암호화 항목</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform duration-200" data-icon="expand_more">expand_more</span>
+</summary>
+<div class="p-space-md border-t border-outline-variant bg-surface-container-lowest space-y-2 text-body-md font-body-md text-on-surface-variant leading-relaxed">
+<p>
+            클라우드 저장소(Google Cloud 서울 리전)에는 패스포트 인증 연속성을 위한 최소 단위의 계정 데이터만 보관됩니다:
+          </p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 py-1">
+<div class="bg-surface-container p-2.5 rounded border border-outline-variant">
+<span class="text-label-sm font-label-sm text-primary font-bold block">회원 고유 식별자</span>
+<span class="text-body-sm font-body-sm text-on-surface">난수화된 Auth UID</span>
+</div>
+<div class="bg-surface-container p-2.5 rounded border border-outline-variant">
+<span class="text-label-sm font-label-sm text-primary font-bold block">표시 닉네임</span>
+<span class="text-body-sm font-body-sm text-on-surface">이용자 설정 별칭</span>
+</div>
+<div class="bg-surface-container p-2.5 rounded border border-outline-variant">
+<span class="text-label-sm font-label-sm text-primary font-bold block">스탬프 및 세월 합계</span>
+<span class="text-body-sm font-body-sm text-on-surface">방문 노포 ID 및 누적 연수</span>
+</div>
+</div>
+<p class="text-body-sm font-body-sm">
+            실명, 주민등록번호, 연락처, 기기 고유식별값(IMEI) 등의 고유식별정보는 일절 수집 및 전송하지 않습니다.
+          </p>
+</div>
+</details>
+<!-- Accordion Item 4 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden open:shadow-sm transition-all">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-container-low hover:bg-surface-container transition-colors list-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="delete_forever">delete_forever</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">4. 개인정보의 보유 및 파기 절차</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform duration-200" data-icon="expand_more">expand_more</span>
+</summary>
+<div class="p-space-md border-t border-outline-variant bg-surface-container-lowest space-y-2 text-body-md font-body-md text-on-surface-variant leading-relaxed">
+<p>
+            회원 탈퇴 요청 시 유예 기간 없이 <strong class="text-on-surface">실시간 즉시 파기</strong>를 원칙으로 합니다.
+          </p>
+<ul class="list-disc list-inside space-y-1 pl-1 text-body-sm font-body-sm">
+<li>Firestore 상의 모든 패스포트 도장 찍힘 이력, 누적 세월 수치 데이터는 복구 불가능한 암호학적 파쇄(Cryptographic Erasure) 기법으로 즉시 삭제됩니다.</li>
+<li>전자상거래 등에서의 소비자보호에 관한 법률 등 관련 법령에 의하여 보존할 필요가 있는 결제 및 환불 증빙건에 한하여 해당 법령에서 명시한 기간 동안 분리 보관됩니다.</li>
+</ul>
+</div>
+</details>
+<!-- Accordion Item 5 -->
+<details class="group bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden open:shadow-sm transition-all">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-container-low hover:bg-surface-container transition-colors list-none">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">5. 위치정보 관리책임자 및 권리 행사 안내</span>
+</div>
+<span class="material-symbols-outlined text-outline group-open:rotate-180 transition-transform duration-200" data-icon="expand_more">expand_more</span>
+</summary>
+<div class="p-space-md border-t border-outline-variant bg-surface-container-lowest space-y-2 text-body-md font-body-md text-on-surface-variant leading-relaxed">
+<p class="text-body-sm font-body-sm">
+            이용자는 언제든지 위치정보 수집 동의를 철회할 수 있으며, 열람·고지 및 정정을 요구할 수 있습니다. (설정 &gt; 권한 관리에서 위치 접근 권한을 '거부'로 변경 시에도 수기 영수증 심사 기능으로 패스포트 참여 가능)
+          </p>
+<div class="bg-surface-container-high rounded p-3 text-body-sm font-body-sm text-on-surface mt-2 space-y-1">
+<div><strong>위치정보 관리책임자:</strong> 정보보호본부 최고보안책임자(CISO)</div>
+<div><strong>소속 부서:</strong> 노포천년 아카이브 보안인증팀</div>
+<div><strong>연락처:</strong> 02-732-1000 (평일 10:00 - 18:00)</div>
+</div>
+</div>
+</details>
+</section>
+<!-- Heritage Trust Seal / Curatorial Statement Card -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-space-md flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary flex-shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-2xl" data-icon="menu_book">menu_book</span>
+</div>
+<div class="flex-1">
+<h4 class="text-label-lg font-label-lg font-bold text-on-surface">노포의 세월을 보존하는 약속</h4>
+<p class="text-body-sm font-body-sm text-on-surface-variant">
+          노포천년은 기술을 통해 골목 장인들의 시간을 증명하되, 탐방자의 사생활은 가장 순수한 한지처럼 깨끗하게 지키겠습니다.
+        </p>
+</div>
+</div>
+<!-- Contact & Feedback Info Box -->
+<div class="flex flex-col items-center justify-center text-center gap-1 py-2 text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="mail">mail</span>
+<span>개인정보보호 및 위치약관 전용 문의:</span>
+<a class="text-primary font-bold underline hover:text-primary-container" href="mailto:privacy@nopo.kr">privacy@nopo.kr</a>
+</div>
+<div class="text-label-sm font-label-sm text-outline">
+        사업자등록번호: 104-86-99201 | 주소: 서울특별시 종로구 인사동길 44 백년기념관 3F
+      </div>
+</div>
+</main>
+<!-- Sticky Bottom Navigation Action Anchor (Task-Focused Return CTA) -->
+<footer class="sticky bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant p-space-md z-30 shadow-md">
+<div class="max-w-xl mx-auto flex flex-col gap-2">
+<button class="w-full h-14 bg-primary text-on-primary font-label-lg font-bold rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-transform duration-150 hover:bg-primary-container shadow-sm" onclick="history.back()">
+<span class="material-symbols-outlined text-[20px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>확인하고 설정으로 돌아가기</span>
+</button>
+<p class="text-center text-label-sm font-label-sm text-outline">
+        본 방침에 동의하지 않을 경우 앱 내 위치 기반 즉시 인증 기능이 제한될 수 있습니다.
+      </p>
+</div>
+</footer>
+</body></html>

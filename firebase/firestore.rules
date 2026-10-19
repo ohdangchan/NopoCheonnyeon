@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function userKeys() {
+      return ['nickname','nicknameLower','titleId','totalYears','visitCount','reviewCount','createdAt','updatedAt'];
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(userKeys())
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 2
+        && request.resource.data.nickname.size() <= 12
+        && request.resource.data.nicknameLower == request.resource.data.nickname.lower()
+        && request.resource.data.totalYears == 0
+        && request.resource.data.visitCount == 0
+        && request.resource.data.reviewCount == 0
+        && request.resource.data.createdAt == request.time;   // FieldValue.serverTimestamp()
+      allow update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(userKeys())
+        && request.resource.data.nickname == resource.data.nickname
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.totalYears >= resource.data.totalYears
+        && request.resource.data.totalYears <= resource.data.totalYears + 200
+        && request.resource.data.visitCount >= resource.data.visitCount
+        && request.resource.data.visitCount <= resource.data.visitCount + 1
+        && request.resource.data.reviewCount >= 0;
+      allow delete: if isMe(uid);
+
+      match /visits/{storeId} {
+        allow read: if signedIn();
+        allow create: if isMe(uid)
+          && request.resource.data.storeId == storeId
+          && request.resource.data.yearsAwarded is int
+          && request.resource.data.yearsAwarded >= 30
+          && request.resource.data.yearsAwarded <= 200
+          && request.resource.data.visitCount == 1
+          && request.resource.data.method in ['RECEIPT', 'PHOTO', 'LOCATION_ONLY'];
+        allow update: if isMe(uid)
+          && request.resource.data.yearsAwarded == resource.data.yearsAwarded
+          && request.resource.data.firstVisitedAt == resource.data.firstVisitedAt
+          && request.resource.data.visitCount == resource.data.visitCount + 1;
+        allow delete: if isMe(uid);
+      }
+    }
+
+    match /nicknames/{name} {
+      allow get: if true;    // 가입 전 중복 확인용 단건 조회만 (목록 조회 불가)
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && name == name.lower()
+        && name.size() >= 2 && name.size() <= 12;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /reviews/{reviewId} {
+      function validReview() {
+        let d = request.resource.data;
+        return d.uid == request.auth.uid
+          && reviewId == d.storeId + '_' + request.auth.uid
+          && d.rating is int && d.rating >= 1 && d.rating <= 5
+          && d.text is string && d.text.size() <= 500
+          && exists(/databases/$(database)/documents/users/$(request.auth.uid)/visits/$(d.storeId));
+      }
+      allow read: if signedIn();
+      allow create: if signedIn() && validReview()
+        && request.resource.data.createdAt == request.time;
+      allow update: if signedIn() && validReview()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    match /receiptHashes/{hash} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+    }
+
+    match /reports/{id} {
+      allow create: if signedIn() && request.resource.data.reporterUid == request.auth.uid;
+    }
+
+    // 1일차 기능 검증(SPK-5)과 진단 화면의 쓰기·읽기 왕복 시험용
+    match /diagnostics/{uid} {
+      allow read, write: if isMe(uid);
+    }
+  }
+}

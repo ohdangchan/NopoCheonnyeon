@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>내 작성 리뷰 - 노포천년 패스포트</title>
+<!-- Google Fonts: Epilogue & Noto Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,600;0,700;0,800;0,900;1,700&amp;family=Noto+Sans+KR:wght@300;400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#d8e5e2",
+            "on-background": "#121e1c",
+            "tertiary-container": "#7e5a00",
+            "surface-container-low": "#e9f7f3",
+            "surface-container-high": "#ddebe7",
+            "surface-container": "#e3f1ed",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-primary": "#8dd3c9",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "tertiary-fixed": "#ffdea7",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-tertiary-container": "#ffd68d",
+            "on-tertiary-fixed": "#271900",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-surface-variant": "#3f4947",
+            "secondary-fixed-dim": "#ffb4a8",
+            "outline": "#6f7977",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-tint": "#1c6961",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary-container": "#ff6751",
+            "secondary": "#b02e1f",
+            "primary-fixed-dim": "#8dd3c9",
+            "tertiary": "#604400",
+            "inverse-surface": "#273331",
+            "surface": "#effcf9",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed": "#00201d",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "outline-variant": "#bec9c6",
+            "on-surface": "#121e1c",
+            "surface-variant": "#d8e5e2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Noto Sans", "Noto Sans KR"],
+            "label-md": ["Noto Sans", "Noto Sans KR"],
+            "body-md": ["Noto Sans", "Noto Sans KR"],
+            "display-lg-mobile": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "headline-sm": ["Noto Sans", "Noto Sans KR"],
+            "label-sm": ["Noto Sans", "Noto Sans KR"],
+            "number-stat": ["Epilogue"],
+            "body-lg": ["Noto Sans", "Noto Sans KR"],
+            "display-lg": ["Epilogue"],
+            "headline-md": ["Noto Sans", "Noto Sans KR"],
+            "body-sm": ["Noto Sans", "Noto Sans KR"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Subtle hanji paper grain background simulation */
+    .bg-paper-grain {
+      background-color: #effcf9;
+      background-image: radial-gradient(#bec9c6 0.75px, transparent 0.75px);
+      background-size: 14px 14px;
+    }
+    /* Heritage stamp pressed effect */
+    .stamp-inju {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.28);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-paper-grain text-on-surface antialiased min-h-screen flex flex-col justify-between selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TOP APP BAR (Shared Component JSON standard) -->
+<header class="sticky top-0 z-40 bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container shadow-sm dark:shadow-none border-b-2 border-tertiary-fixed dark:border-tertiary">
+<div class="flex justify-between items-center w-full px-space-md py-space-sm h-14 max-w-md mx-auto">
+<!-- Back Action -->
+<button aria-label="뒤로 가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container dark:hover:bg-primary hover:text-on-primary-container dark:hover:text-on-primary active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-on-primary dark:text-on-primary-container" data-icon="arrow_back">arrow_back</span>
+</button>
+<!-- Headline -->
+<div class="flex items-center space-x-1.5">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-on-primary dark:text-on-primary-container">내 작성 리뷰</span>
+<span class="text-xs px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary-container font-label-sm border border-tertiary-fixed">FR-REV-03</span>
+</div>
+<!-- Trailing Action: Filter Tune -->
+<button aria-label="필터 설정" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container dark:hover:bg-primary hover:text-on-primary-container dark:hover:text-on-primary active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-on-primary dark:text-on-primary-container" data-icon="tune">tune</span>
+</button>
+</div>
+</header>
+<!-- MAIN SCROLLABLE CONTENT CANVAS (Mobile Viewport Optimized) -->
+<main class="w-full max-w-md mx-auto flex-1 px-margin-mobile pt-space-md pb-28">
+<!-- SUB-NAVIGATION / BREADCRUMB BADGE -->
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-base text-primary" data-icon="menu_book">menu_book</span>
+<span>패스포트 서고</span>
+<span class="text-outline-variant">/</span>
+<span class="text-primary font-bold">인증 평문첩</span>
+</div>
+<div class="flex items-center space-x-1 text-xs text-outline font-label-sm">
+<span>S-704</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+</div>
+<!-- SUMMARY ARCHIVAL CARD (Bento Accent with Brass & Inju Motifs) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-space-md mb-space-md relative overflow-hidden">
+<!-- Background Brass Watermark Detail -->
+<div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border-4 border-tertiary-fixed opacity-40 pointer-events-none"></div>
+<div class="flex items-start justify-between border-b border-surface-container-high pb-3 mb-3">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">ARCHIVAL CREDENTIAL</span>
+<h1 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5 mt-0.5">
+<span>미식 유산 감정 기록</span>
+<span class="material-symbols-outlined text-secondary material-symbols-fill text-lg" data-icon="verified">verified</span>
+</h1>
+</div>
+<!-- Heritage Year Seal Badge -->
+<div class="px-2.5 py-1 rounded-md bg-surface-container-low border border-outline-variant text-right">
+<span class="font-label-sm text-label-sm text-outline block">누적 인증 연수</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">262<span class="text-xs font-normal">년</span></span>
+</div>
+</div>
+<!-- Metrics Bento Grid -->
+<div class="grid grid-cols-2 gap-2.5 mb-3">
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-surface-container-high flex items-center justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">총 작성 리뷰</div>
+<div class="font-number-stat text-number-stat text-primary leading-none mt-1">5<span class="font-label-md text-label-md font-semibold text-on-surface ml-0.5">편</span></div>
+</div>
+<div class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl" data-icon="edit_note">edit_note</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2.5 border border-surface-container-high flex items-center justify-between">
+<div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">평균 부여 평점</div>
+<div class="font-number-stat text-number-stat text-secondary leading-none mt-1">4.8<span class="font-label-md text-label-md font-semibold text-on-surface ml-0.5">/ 5.0</span></div>
+</div>
+<div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl material-symbols-fill" data-icon="star">star</span>
+</div>
+</div>
+</div>
+<!-- Curator Notice Banner -->
+<div class="bg-surface-container rounded-lg px-3 py-2 border-l-4 border-primary flex items-start space-x-2">
+<span class="material-symbols-outlined text-primary text-base mt-0.5" data-icon="history_edu">history_edu</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+          내가 방문 인증을 완료하고 솔직하게 남긴 공인 미식 평문 기록입니다. 위조 방지 블록이 적용되어 있습니다.
+        </p>
+</div>
+</section>
+<!-- TABS SEGMENT FILTER (Paper Tabs) -->
+<div class="flex items-center space-x-1.5 mb-space-md p-1 bg-surface-container-high rounded-xl border border-outline-variant">
+<!-- Tab 1: 전체 (Active) -->
+<button class="flex-1 py-1.5 px-3 rounded-lg bg-surface-container-lowest text-primary shadow-xs font-label-md text-label-md text-center font-bold border border-outline-variant flex items-center justify-center gap-1 transition-all">
+<span>전체</span>
+<span class="w-5 h-5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center">5</span>
+</button>
+<!-- Tab 2: 최신순 (Inactive) -->
+<button class="flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md text-center transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span>최신순</span>
+</button>
+<!-- Tab 3: 별점 높은순 (Inactive) -->
+<button class="flex-1 py-1.5 px-3 rounded-lg text-on-surface-variant hover:text-primary font-label-md text-label-md text-center transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary-container" data-icon="star">star</span>
+<span>별점 높은순</span>
+</button>
+</div>
+<!-- REVIEW CARDS STACK -->
+<div class="space-y-space-md">
+<!-- ================= CARD 1: 이문설농탕 (120년차) ================= -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden transition-all duration-200 hover:border-primary">
+<!-- Top Plaque Header -->
+<div class="bg-surface-container-low px-space-md py-3 border-b border-surface-container-high flex items-start justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-on-tertiary bg-tertiary-container font-label-sm text-label-sm tracking-wide">
+                120년차 노포
+              </span>
+<span class="font-label-sm text-label-sm text-outline">창립 1904년</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">이문설농탕</h2>
+</div>
+<!-- Inju Stamp Seal Graphic -->
+<div class="relative flex items-center justify-center w-12 h-12 rounded-full border-2 border-secondary text-secondary p-1 rotate-[-6deg] stamp-inju">
+<div class="w-full h-full rounded-full border border-secondary flex flex-col items-center justify-center text-center">
+<span class="font-label-sm text-[8px] leading-none font-bold">공인인증</span>
+<span class="font-display-lg-mobile text-[11px] leading-tight font-extrabold tracking-tighter">1904</span>
+</div>
+</div>
+</div>
+<!-- Rating & Authentication Metadata Bar -->
+<div class="px-space-md pt-3 pb-2 flex flex-wrap items-center justify-between gap-y-2 text-on-surface-variant">
+<!-- Star Rating -->
+<div class="flex items-center space-x-1">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface ml-1">5.0</span>
+<span class="text-xs text-outline">/ 5.0</span>
+</div>
+<!-- Date & Regular Visitor Badge -->
+<div class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span>2024.04.18</span>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-bold text-[10px]">3회차 단골 각인</span>
+</div>
+</div>
+<!-- Verified Credential Badge -->
+<div class="px-space-md mb-2.5">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-surface-tint/20 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm text-primary material-symbols-fill" data-icon="receipt_long">receipt_long</span>
+<span class="font-semibold">영수증 OCR 대조 인증 통과</span>
+<span class="text-[10px] text-outline font-normal">| 결제 일련번호 #9021-KR</span>
+</div>
+</div>
+<!-- Review Body & Quotation Box -->
+<div class="px-space-md mb-3">
+<div class="bg-surface-bright rounded-lg p-3 border-l-2 border-primary-container relative">
+<span class="material-symbols-outlined text-outline-variant text-xl absolute right-2 top-2 select-none" data-icon="format_quote">format_quote</span>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed pr-5">
+              “120년 동안 끓여온 사골 국물의 맑고 묵직한 진심. 인공 조미료 없는 순수한 백년의 헤리티지네. 깍두기 국물을 살짝 부어 마실 때 비로소 종로 피맛골의 세월이 입안 가득 감돈다.”
+            </p>
+</div>
+</div>
+<!-- Attached Photo Inspection Preview (With Detailed Prompt as per Data-Alt requirement) -->
+<div class="px-space-md mb-3">
+<div class="relative rounded-lg overflow-hidden border border-outline-variant bg-surface-container-high group">
+<img class="w-full h-44 object-cover" data-alt="A steaming, authentic bowl of traditional Korean seolleongtang ox bone soup served in a vintage heavy ceramic bowl atop an aged wooden dining table. Tender brisket slices and minced green scallions float gracefully on the milky, translucent broth. Soft atmospheric lighting accents the rising steam, capturing a warm, timeless culinary aesthetic in rich teal and golden brass tones reminiscent of historic Seoul alley dining." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDulCaWqV9Mv6jogw5Fdc-_3rWdRi5VZK9ExWgMFPMFgFF90VL03JnEBA6jV7iI5QNiBoTwLOI2rEcZGIqmXgo_tKi4v1pai_mQXdw3bKzlJOFHLDgKNZjO9hFmo-hys3i6Fr6QaDZUH39BSwTEoy7CxapPYvFwNhwFNQ-hiuEv0hVD_jnSocgqAKrSR3sofTXuMnqOm9Ecqulzs45qyCva62ql25B9f0XdUIO3QucGEkuyZYnDZtWP"/>
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-on-background/85 via-on-background/40 to-transparent p-2.5 flex items-center justify-between text-on-primary">
+<span class="font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="photo_camera">photo_camera</span>
+<span>특설농탕 실물 검증</span>
+</span>
+<span class="font-label-sm text-label-sm text-surface-container-high">1080 × 1350 px</span>
+</div>
+</div>
+</div>
+<!-- Action Footer Bar -->
+<div class="px-space-md py-2.5 bg-surface-container-low border-t border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md flex items-center gap-1 transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+<span>리뷰 수정하기</span>
+</button>
+<button class="px-2.5 py-1.5 rounded-lg text-outline hover:text-error hover:bg-error-container/20 font-label-md text-label-md flex items-center gap-0.5 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>삭제</span>
+</button>
+</div>
+<!-- Share Button for Archival Pride -->
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors" title="공유">
+<span class="material-symbols-outlined text-lg" data-icon="share">share</span>
+</button>
+</div>
+</article>
+<!-- ================= CARD 2: 청진옥 (87년차) ================= -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden transition-all duration-200 hover:border-primary">
+<!-- Header -->
+<div class="bg-surface-container-low px-space-md py-3 border-b border-surface-container-high flex items-start justify-between">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2 py-0.5 rounded text-on-tertiary bg-tertiary-container font-label-sm text-label-sm tracking-wide">
+                87년차 해장국
+              </span>
+<span class="font-label-sm text-label-sm text-outline">창립 1937년</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">청진옥</h2>
+</div>
+<!-- Stamp Deboss Indicator -->
+<div class="flex items-center justify-center w-11 h-11 rounded-full border border-dashed border-secondary text-secondary p-1 rotate-[3deg]">
+<span class="material-symbols-outlined text-xl" data-icon="approval">approval</span>
+</div>
+</div>
+<!-- Rating & Details -->
+<div class="px-space-md pt-3 pb-2 flex flex-wrap items-center justify-between gap-y-2 text-on-surface-variant">
+<div class="flex items-center space-x-1">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-lg text-outline-variant" data-icon="star">star</span>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface ml-1">4.0</span>
+<span class="text-xs text-outline">/ 5.0</span>
+</div>
+<div class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span>2024.03.02</span>
+</div>
+</div>
+<!-- Verified Badge: 현장 체류 인증 -->
+<div class="px-space-md mb-2.5">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-surface-container border border-surface-tint/20 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm text-primary material-symbols-fill" data-icon="pin_drop">pin_drop</span>
+<span class="font-semibold">위치 확인 도장 (현장 체류)</span>
+<span class="text-[10px] text-outline font-normal">| GPS 45분 잔류 확인</span>
+</div>
+</div>
+<!-- Review Body -->
+<div class="px-space-md mb-3">
+<div class="bg-surface-bright rounded-lg p-3 border-l-2 border-primary-container">
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+              선지와 양이 푸짐하게 들어간 맑은 서울식 해장국. 놋그릇에 담겨 나오는 온기가 한결같습니다. 자극적인 양념 다대기를 넣지 않아도 본연의 감칠맛이 탁월합니다.
+            </p>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="px-space-md py-2.5 bg-surface-container-low border-t border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-lg border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md flex items-center gap-1 transition-all duration-150 active:scale-95">
+<span class="material-symbols-outlined text-base" data-icon="edit">edit</span>
+<span>리뷰 수정하기</span>
+</button>
+<button class="px-2.5 py-1.5 rounded-lg text-outline hover:text-error hover:bg-error-container/20 font-label-md text-label-md flex items-center gap-0.5 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-base" data-icon="delete">delete</span>
+<span>삭제</span>
+</button>
+</div>
+<div class="text-xs text-outline font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="verified_user">verified_user</span>
+<span>공개 기록</span>
+</div>
+</div>
+</article>
+<!-- ================= CARD 3: 을지면옥 (55년차 평양냉면) ================= -->
+<article class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden transition-all duration-200 hover:border-primary opacity-95">
+<div class="bg-surface-container-low px-space-md py-2.5 border-b border-surface-container-high flex items-center justify-between">
+<div>
+<div class="flex items-center gap-2 mb-0.5">
+<span class="px-2 py-0.5 rounded text-on-tertiary bg-tertiary-container font-label-sm text-label-sm">
+                55년차 평양냉면
+              </span>
+<span class="font-label-sm text-label-sm text-outline">창립 1969년</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">을지면옥</h2>
+</div>
+<div class="text-right">
+<span class="inline-block px-2 py-0.5 rounded bg-surface-container text-outline font-label-sm text-label-sm border border-outline-variant">초고 저장본</span>
+</div>
+</div>
+<div class="px-space-md pt-2.5 pb-2 flex items-center justify-between text-on-surface-variant">
+<div class="flex items-center space-x-1">
+<div class="flex text-secondary">
+<span class="material-symbols-outlined text-base material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-base material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-base material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-base material-symbols-fill" data-icon="star">star</span>
+<span class="material-symbols-outlined text-base material-symbols-fill" data-icon="star">star</span>
+</div>
+<span class="font-label-md text-label-md font-bold text-on-surface ml-1">5.0</span>
+</div>
+<div class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span>2024.02.15</span>
+</div>
+</div>
+<!-- Short Draft Review Note -->
+<div class="px-space-md mb-3">
+<p class="font-body-sm text-body-sm text-on-surface-variant italic bg-surface-container-low/50 p-2.5 rounded border border-dashed border-outline-variant">
+            “고춧가루 톡톡 털어넣은 의정부 계열 메밀향. 이전 후에도 육수의 슴슴한 깊이는 변함이 없다. (추가 보완 메모 중...)”
+          </p>
+</div>
+<!-- Action Row -->
+<div class="px-space-md py-2 bg-surface-container-low border-t border-surface-container-high flex items-center justify-between">
+<button class="px-3 py-1 rounded border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md flex items-center gap-1 transition-all active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="edit_note">edit_note</span>
+<span>초고 이어서 작성하기</span>
+</button>
+<button class="text-outline hover:text-error font-label-md text-label-md text-xs">
+            삭제
+          </button>
+</div>
+</article>
+</div>
+<!-- CENTENARY HERITAGE GAUGE METER (Design System Anchor Component) -->
+<section class="mt-space-lg p-space-md bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-tertiary-container text-base material-symbols-fill" data-icon="military_tech">military_tech</span>
+          세월 누적 헤리티지 게이지
+        </span>
+<span class="font-label-sm text-label-sm text-primary font-bold">262년 / 1,000년</span>
+</div>
+<!-- Heavy Gauge Bar -->
+<div class="w-full h-3 rounded-full bg-surface-container border border-outline-variant overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary-container to-tertiary-fixed-dim rounded-full" style="width: 26.2%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-2 text-center">
+        천 년 노포의 역사를 향해 26.2% 도달했습니다.
+      </p>
+</section>
+</main>
+<!-- BOTTOM NAVIGATION BAR (Shared Component JSON standard) -->
+<nav aria-label="메인 하단 내비게이션" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md bg-surface dark:bg-surface-container border-t border-outline-variant dark:border-outline shadow-md dark:shadow-none">
+<!-- Destination 1: 지도 탐색 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="map">map</span>
+<span class="font-label-sm text-label-sm mt-0.5">지도 탐색</span>
+</a>
+<!-- Destination 2: 내 패스포트 (ACTIVE - Selected with Vermilion Inju Dot) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-bold active:scale-95 transition-transform duration-150 py-1 px-3 relative" href="#">
+<span class="material-symbols-outlined text-2xl material-symbols-fill" data-icon="menu_book">menu_book</span>
+<span class="font-label-sm text-label-sm mt-0.5">내 패스포트</span>
+<!-- Active under-dot indicator -->
+<span class="w-1.5 h-1.5 rounded-full bg-secondary absolute -bottom-1"></span>
+</a>
+<!-- Destination 3: 설정 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm mt-0.5">설정</span>
+</a>
+</nav>
+<!-- Interactive script for filter switching & micro-toggles -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Basic tactile tap effect
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          // Micro vibration if supported on mobile
+          if (navigator.vibrate) {
+            navigator.vibrate(10);
+          }
+        });
+      });
+    });
+  </script>
+</body></html>

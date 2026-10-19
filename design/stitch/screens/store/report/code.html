@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>신고 및 정보 수정 제보 - 노포천년</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#d8e5e2",
+            "on-background": "#121e1c",
+            "tertiary-container": "#7e5a00",
+            "surface-container-low": "#e9f7f3",
+            "surface-container-high": "#ddebe7",
+            "surface-container": "#e3f1ed",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-primary": "#8dd3c9",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "tertiary-fixed": "#ffdea7",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-tertiary-container": "#ffd68d",
+            "on-tertiary-fixed": "#271900",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#690200",
+            "on-surface-variant": "#3f4947",
+            "secondary-fixed-dim": "#ffb4a8",
+            "outline": "#6f7977",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-tint": "#1c6961",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary-container": "#ff6751",
+            "secondary": "#b02e1f",
+            "primary-fixed-dim": "#8dd3c9",
+            "tertiary": "#604400",
+            "inverse-surface": "#273331",
+            "surface": "#effcf9",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed": "#00201d",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "outline-variant": "#bec9c6",
+            "on-surface": "#121e1c",
+            "surface-variant": "#d8e5e2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "headline-sm": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "number-stat": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "headline-md": ["Noto Sans"],
+            "body-sm": ["Noto Sans"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .inju-stamp {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-secondary selection:text-on-secondary">
+<!-- Top Enamel Plaque AppBar -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm dark:shadow-none flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed text-[20px]" data-icon="history_edu">history_edu</span>
+<h1 class="text-headline-sm font-headline-sm font-bold tracking-tight text-on-primary">신고 및 정보 수정 제보</h1>
+</div>
+<button aria-label="닫기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</header>
+<!-- Main Scrollable Canvas (Mobile Task Container) -->
+<main class="flex-1 w-full max-w-md mx-auto px-margin-mobile py-space-md space-y-space-md pb-28">
+<!-- Header System Badges & Breadcrumb Context -->
+<div class="flex items-center justify-between text-on-surface-variant font-label-md text-label-md px-0.5">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-primary font-bold text-label-sm border border-outline-variant">S-805</span>
+<span class="text-outline">·</span>
+<span class="text-label-sm font-label-sm">FR-STORE-06</span>
+</div>
+<div class="flex items-center gap-1 text-secondary font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary inline-block"></span>
+<span class="text-label-sm font-label-sm tracking-wide">보존위원회 직할</span>
+</div>
+</div>
+<!-- Targeted Nopo Heritage Context Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<!-- Background vintage seal watermark accent -->
+<div class="absolute -right-6 -bottom-6 opacity-5 pointer-events-none select-none">
+<span class="material-symbols-outlined text-[130px] text-primary" data-icon="verified">verified</span>
+</div>
+<div class="flex items-start justify-between gap-space-sm mb-3">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm px-1.5 py-0.5 rounded font-bold border border-tertiary-fixed-dim">개업 1904년</span>
+<span class="text-on-surface-variant text-label-sm font-label-sm tracking-tight font-medium">서울 종로구 우정국로 38-13</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface font-bold tracking-tight">이문설농탕</h2>
+</div>
+<!-- Vintage Brass ID Badge -->
+<div class="text-right flex-shrink-0 bg-surface-container px-2 py-1.5 rounded-lg border border-outline-variant">
+<p class="text-label-sm font-label-sm text-on-surface-variant">등록 고유번호</p>
+<p class="font-number-stat text-[15px] font-bold text-primary tracking-wider">BN-11029</p>
+</div>
+</div>
+<!-- Historical Status Snippet -->
+<div class="pt-2 border-t border-surface-container-high flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified_user">verified_user</span>
+<span>120년 백년가게 · 미식 아카이브 공인</span>
+</div>
+<span class="text-secondary font-semibold text-label-sm font-label-sm">누적 방문식객 8,492명</span>
+</div>
+</section>
+<!-- Report Type Tab Selection (Bento Segmented Segment) -->
+<section class="space-y-space-xs">
+<label class="block text-label-lg font-label-lg text-on-surface">제보 구분 선택 <span class="text-secondary">*</span></label>
+<div class="grid grid-cols-2 gap-space-sm p-1 bg-surface-container-high rounded-xl border border-outline-variant">
+<label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-150 border-2 bg-surface-container-lowest border-primary shadow-sm text-primary">
+<input checked="" class="sr-only" name="report_type" type="radio" value="store_info"/>
+<span class="material-symbols-outlined mb-1 text-[24px]" data-icon="edit_calendar">edit_calendar</span>
+<span class="font-label-md text-label-md font-bold">노포 정보 오류 제보</span>
+<span class="text-[10px] text-on-surface-variant mt-0.5">영업시간·휴업·이전·가격</span>
+</label>
+<label class="cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-150 border-2 border-transparent hover:bg-surface-container-lowest/60 text-on-surface-variant">
+<input class="sr-only" name="report_type" type="radio" value="review_flag"/>
+<span class="material-symbols-outlined mb-1 text-[24px]" data-icon="flag">flag</span>
+<span class="font-label-md text-label-md font-bold">부적절한 리뷰 신고</span>
+<span class="text-[10px] text-outline mt-0.5">허위방문·욕설·광고 도배</span>
+</label>
+</div>
+</section>
+<!-- Input Form Section -->
+<form class="space-y-space-md" onsubmit="event.preventDefault();">
+<!-- Reason Category Select Dropdown -->
+<div class="space-y-space-xs">
+<label class="block text-label-lg font-label-lg text-on-surface" for="reason-category">
+          세부 사유 선택 <span class="text-secondary">*</span>
+</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-space-md py-3 pr-10 text-body-md font-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors" id="reason-category">
+<option value="closed_or_moved">폐업 또는 다른 장소로 이전함</option>
+<option value="hours_mismatch">영업시간 및 정기 휴무일 불일치</option>
+<option value="phone_unreachable">전화번호 결번 / 점포 번호 변경</option>
+<option value="menu_price_changed">주요 메뉴 품절 또는 가격 변동</option>
+<option value="owner_changed">경영주 승계 및 가업 상호 변경</option>
+<option value="other">기타 역사적 사실 불일치 제보</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-space-md text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_drop_down">arrow_drop_down</span>
+</div>
+</div>
+</div>
+<!-- Detailed Description Textarea -->
+<div class="space-y-space-xs">
+<div class="flex justify-between items-center">
+<label class="text-label-lg font-label-lg text-on-surface" for="report-content">
+            제보 상세 내용 <span class="text-secondary">*</span>
+</label>
+<span class="text-label-sm font-label-sm text-on-surface-variant font-medium">최대 300자</span>
+</div>
+<div class="relative">
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg p-space-md text-body-md font-body-md text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none" id="report-content" maxlength="300" placeholder="정확한 확인을 위해 상세 내용이나 최신 간판/안내문 사진 내용을 적어주세요 (최대 300자)" rows="4"></textarea>
+<div class="flex justify-between items-center mt-1 px-1 text-label-sm font-label-sm text-outline">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="info">info</span>
+              사실에 근거하여 상세히 작성 바랍니다.
+            </span>
+<span class="font-bold text-on-surface-variant" id="char-counter">0/300</span>
+</div>
+</div>
+</div>
+<!-- Image Attachment Field -->
+<div class="space-y-space-xs">
+<label class="block text-label-lg font-label-lg text-on-surface">
+          현장 증빙 사진 첨부 <span class="text-label-sm font-label-sm text-outline font-normal">(선택)</span>
+</label>
+<div class="grid grid-cols-3 gap-space-sm">
+<!-- Upload Button Trigger -->
+<button class="aspect-square flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-outline-variant bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant transition-colors p-2 active:scale-95" type="button">
+<span class="material-symbols-outlined text-primary text-[28px] mb-1" data-icon="add_a_photo">add_a_photo</span>
+<span class="text-label-sm font-label-sm font-bold">사진 추가</span>
+<span class="text-[10px] text-outline">최대 2장</span>
+</button>
+<!-- Pre-filled Sample Attachment (Receipt / Store Notice) -->
+<div class="aspect-square rounded-lg border border-outline-variant bg-surface-container overflow-hidden relative group">
+<img class="w-full h-full object-cover" data-alt="A vintage Korean restaurant printed paper receipt resting on a dark rustic wooden heritage counter. High-key light-mode photograph capturing crisp Korean hangul text, official stamp marks, and muted teal tones reflecting 1960s alley atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5P7FIEq1-TT3uH4kJjuq1MxpBYhK0h8TEHfvzTTN2OeKR-wacllkk2_hiT48Xs-c35gzEcs8yVqjyzmz7BG-fLkhaX-nIYQK-7UUo097iAJDeyBChvDYCmksQpemWMdM78spR3tdgB1U8gmRyOVUkibrQfk-KKjYWF89wF0yXRn_4xlPH_TuxRtNslYPXJ4KWk1hVSkAxwOwBkxd1ucBquPzqOgispUj_Iw7_KnWebHXUthxElDPR"/>
+<div class="absolute inset-0 bg-on-surface/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button aria-label="사진 삭제" class="w-8 h-8 rounded-full bg-surface-container-lowest text-secondary flex items-center justify-center shadow" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span>
+</button>
+</div>
+<span class="absolute bottom-1 left-1 bg-on-surface/80 text-surface text-[9px] font-bold px-1 rounded backdrop-blur-sm">영수증_인증.jpg</span>
+</div>
+<!-- Empty Slot Placeholder with Inju Stamp Vibe -->
+<div class="aspect-square rounded-lg border border-outline-variant/60 bg-surface-container-low/40 flex flex-col items-center justify-center p-2 text-center">
+<span class="material-symbols-outlined text-outline-variant text-[24px]" data-icon="image">image</span>
+<span class="text-[10px] text-outline mt-1">안내문·간판 권장</span>
+</div>
+</div>
+</div>
+<!-- Trust & Governance Verification Note (Heritage Conservation Committee) -->
+<div class="bg-surface-container p-space-md rounded-xl border border-outline-variant space-y-2 relative">
+<div class="flex items-center gap-2 text-primary font-bold text-label-md font-label-md">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="gavel">gavel</span>
+<span>노포천년 미식 보존위원회 운영 원칙</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+          접수된 제보는 <span class="font-bold text-on-surface">24시간 이내 현장 교차 검증</span> 및 지자체 소상공인 DB 조회를 거쳐 정식 아카이브에 반영됩니다. 허위 제보 또는 악의적 신고 시 식객 자격 및 여권 날인 혜택이 제한될 수 있습니다.
+        </p>
+<div class="pt-2 border-t border-outline-variant/50 flex items-center justify-between text-[11px] text-outline">
+<span>제보자 보호 규정 준수</span>
+<span class="text-primary font-semibold">검증 완료 시 10년 헤리티지 포인트 적립</span>
+</div>
+</div>
+<!-- Action Buttons Sticky Mobile Bottom Bar Canvas Anchor -->
+<div class="pt-space-sm space-y-space-xs">
+<button class="w-full h-14 bg-primary-container text-on-primary rounded-xl font-headline-sm font-headline-sm font-bold flex items-center justify-center gap-2 shadow-md hover:bg-primary active:scale-[0.98] transition-all duration-150" type="submit">
+<span class="material-symbols-outlined text-[22px]" data-icon="send">send</span>
+<span>보존위원회에 제보 접수하기</span>
+</button>
+<button class="w-full h-12 bg-transparent border border-outline text-on-surface-variant rounded-xl font-label-lg font-label-lg font-semibold hover:bg-surface-container active:scale-[0.98] transition-all duration-150 flex items-center justify-center" type="button">
+          취소하고 돌아가기
+        </button>
+</div>
+</form>
+</main>
+<script>
+    // Live Character Counter micro-interaction
+    const textarea = document.getElementById('report-content');
+    const counter = document.getElementById('char-counter');
+    if (textarea && counter) {
+      textarea.addEventListener('input', () => {
+        counter.textContent = `${textarea.value.length}/300`;
+      });
+    }
+
+    // Toggle Tab Selection styles micro-interaction
+    const radioLabels = document.querySelectorAll('input[name="report_type"]');
+    radioLabels.forEach(input => {
+      input.addEventListener('change', () => {
+        radioLabels.forEach(r => {
+          const parent = r.closest('label');
+          if (r.checked) {
+            parent.className = "cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-150 border-2 bg-surface-container-lowest border-primary shadow-sm text-primary";
+          } else {
+            parent.className = "cursor-pointer relative flex flex-col items-center justify-center p-3 rounded-lg transition-all duration-150 border-2 border-transparent hover:bg-surface-container-lowest/60 text-on-surface-variant";
+          }
+        });
+      });
+    });
+  </script>
+</body></html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>미식 패스포트 공유 카드 생성기</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error": "#ffffff",
+            "outline-variant": "#bec9c6",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "secondary-fixed": "#ffdad4",
+            "surface-container-highest": "#d8e5e2",
+            "secondary-container": "#ff6751",
+            "on-secondary": "#ffffff",
+            "surface-tint": "#1c6961",
+            "outline": "#6f7977",
+            "on-tertiary-fixed": "#271900",
+            "tertiary-container": "#7e5a00",
+            "on-surface-variant": "#3f4947",
+            "inverse-primary": "#8dd3c9",
+            "secondary-fixed-dim": "#ffb4a8",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "error-container": "#ffdad6",
+            "surface-bright": "#effcf9",
+            "on-error-container": "#93000a",
+            "on-background": "#121e1c",
+            "surface-dim": "#cfddd9",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "primary-fixed-dim": "#8dd3c9",
+            "secondary": "#b02e1f",
+            "on-tertiary-container": "#ffd68d",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "on-surface": "#121e1c",
+            "tertiary": "#604400",
+            "surface-container": "#e3f1ed",
+            "on-primary-fixed": "#00201d",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-high": "#ddebe7",
+            "primary-container": "#1f6b63",
+            "surface-variant": "#d8e5e2",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "inverse-on-surface": "#e6f4f0",
+            "surface": "#effcf9",
+            "background": "#effcf9",
+            "tertiary-fixed": "#ffdea7",
+            "on-secondary-container": "#690200",
+            "inverse-surface": "#273331",
+            "surface-container-low": "#e9f7f3",
+            "error": "#ba1a1a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "body-md": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .hanji-texture {
+      background-color: #f7f8f3;
+      background-image: radial-gradient(#d5ded9 0.75px, transparent 0.75px), radial-gradient(#ccd4cc 0.5px, #f7f8f3 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+    }
+    .ink-dark-mode {
+      background-color: #172422 !important;
+      color: #effcf9 !important;
+      border-color: #3f4947 !important;
+    }
+    .brass-gold-mode {
+      background-color: #faf6ea !important;
+      border-color: #d9a22c !important;
+    }
+    .vermilion-stamp {
+      box-shadow: inset 0 1px 2px rgba(176, 46, 31, 0.28);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen pb-12 selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar (Transactional modal task: Navigation shell suppressed) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary border-b-2 border-tertiary-fixed shadow-sm">
+<div class="flex justify-between items-center w-full px-space-md py-space-sm h-14 max-w-md mx-auto">
+<button aria-label="닫기" class="w-12 h-12 -ml-2 flex items-center justify-center rounded-full hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-2xl" data-icon="close">close</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm tracking-tight text-center flex-1 font-bold">패스포트 공유 카드 발급</h1>
+<button aria-label="미리보기 공유" class="w-12 h-12 -mr-2 flex items-center justify-center rounded-full hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-2xl" data-icon="share">share</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas Container -->
+<main class="max-w-md mx-auto px-margin-mobile pt-4 space-y-5">
+<!-- Card Preview Stage (9:16 vertical ratio optimized for stories) -->
+<section class="relative mx-auto w-full max-w-[340px] aspect-[9/16] rounded-xl shadow-xl transition-all duration-300" id="share-card-container">
+<div class="hanji-texture w-full h-full rounded-xl p-4 flex flex-col justify-between border-[3px] border-primary-container relative overflow-hidden text-on-surface" id="card-surface">
+<!-- Double hairline frame + ornamental corners -->
+<div class="absolute inset-1.5 border border-primary/30 pointer-events-none rounded-lg"></div>
+<div class="absolute inset-2.5 border-2 border-primary/70 pointer-events-none rounded-md"></div>
+<!-- Brass vintage corner corner accents -->
+<div class="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-tertiary-fixed-dim pointer-events-none"></div>
+<div class="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-tertiary-fixed-dim pointer-events-none"></div>
+<div class="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-tertiary-fixed-dim pointer-events-none"></div>
+<div class="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-tertiary-fixed-dim pointer-events-none"></div>
+<!-- Inner Top: Official Heritage Seal & Serial Header -->
+<div class="relative z-10 pt-1 text-center">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 mb-1">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm tracking-wider text-primary font-bold">노포천년 공인 식객 패스포트</span>
+</div>
+<p class="font-label-sm text-label-sm text-outline tracking-tight">제 2026-KR-7829호</p>
+</div>
+<!-- User Profile Badge Area -->
+<div class="relative z-10 flex items-center gap-3 px-2 py-1.5 bg-surface-container-low/70 rounded-lg border border-outline-variant/60 backdrop-blur-sm" id="profile-section">
+<div class="w-12 h-12 rounded-full border-2 border-tertiary-fixed-dim bg-primary text-on-primary flex items-center justify-center shadow-sm shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="person_pin" style="font-variation-settings: 'FILL' 1;">person_pin</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm font-bold truncate">종로국밥대장</span>
+<span class="material-symbols-outlined text-secondary text-base" data-icon="verified">verified</span>
+</div>
+<div class="inline-block mt-0.5 px-2 py-0.2 bg-tertiary-container/20 text-tertiary border border-tertiary/30 rounded font-label-sm text-label-sm font-bold">
+              동네 어른 (300년+)
+            </div>
+</div>
+</div>
+<!-- Grand Heritage Gauge (Centenary Accumulation) -->
+<div class="relative z-10 bg-surface-container-lowest/80 p-2.5 rounded-lg border border-outline-variant/80 shadow-xs" id="gauge-section">
+<div class="flex justify-between items-baseline mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">세월 누적 헤리티지</span>
+<span class="font-number-stat text-primary font-black tracking-tight text-xl">442<span class="font-body-sm text-body-sm text-on-surface-variant ml-0.5">년</span></span>
+</div>
+<!-- Gauge bar -->
+<div class="w-full h-3 bg-surface-variant rounded-full overflow-hidden p-0.5 border border-outline-variant relative">
+<div class="h-full rounded-full bg-gradient-to-r from-primary-container via-primary to-tertiary-fixed-dim w-[44.2%] relative">
+<div class="absolute right-0 top-0 bottom-0 w-1 bg-on-primary shadow"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 divide-x divide-outline-variant/40 mt-2 pt-1 border-t border-outline-variant/30 text-center">
+<div>
+<p class="font-label-sm text-label-sm text-outline">탐방 노포</p>
+<p class="font-headline-sm text-headline-sm font-bold text-on-surface">14곳</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-outline">총 공인 평점</p>
+<p class="font-headline-sm text-headline-sm font-bold text-secondary">5편</p>
+</div>
+</div>
+</div>
+<!-- 3 Recent Stamped Vermilion Seals Grid -->
+<div class="relative z-10" id="stamps-section">
+<div class="flex items-center justify-between mb-1 px-1">
+<span class="font-label-sm text-label-sm font-bold text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="ink_highlighter">ink_highlighter</span>
+              최근 인증 진인(眞印)
+            </span>
+<span class="font-label-sm text-label-sm text-outline">100년 명문가</span>
+</div>
+<div class="grid grid-cols-3 gap-1.5">
+<!-- Seal 1 -->
+<div class="vermilion-stamp aspect-square rounded-full border-2 border-secondary bg-secondary-fixed/30 flex flex-col items-center justify-center p-1 text-center text-secondary transform -rotate-3 transition-transform hover:rotate-0">
+<div class="w-full h-full rounded-full border border-secondary/70 flex flex-col items-center justify-center p-0.5">
+<span class="font-label-sm text-[8px] leading-tight font-bold tracking-tighter text-secondary">노포공인</span>
+<span class="font-label-md text-label-md font-extrabold truncate w-full text-secondary leading-tight">이문설농탕</span>
+<span class="text-[9px] font-bold text-secondary">120년</span>
+</div>
+</div>
+<!-- Seal 2 -->
+<div class="vermilion-stamp aspect-square rounded-full border-2 border-secondary bg-secondary-fixed/30 flex flex-col items-center justify-center p-1 text-center text-secondary transform rotate-2 transition-transform hover:rotate-0">
+<div class="w-full h-full rounded-full border border-secondary/70 flex flex-col items-center justify-center p-0.5">
+<span class="font-label-sm text-[8px] leading-tight font-bold tracking-tighter text-secondary">노포공인</span>
+<span class="font-label-md text-label-md font-extrabold truncate w-full text-secondary leading-tight">청진옥</span>
+<span class="text-[9px] font-bold text-secondary">87년</span>
+</div>
+</div>
+<!-- Seal 3 -->
+<div class="vermilion-stamp aspect-square rounded-full border-2 border-secondary bg-secondary-fixed/30 flex flex-col items-center justify-center p-1 text-center text-secondary transform -rotate-2 transition-transform hover:rotate-0">
+<div class="w-full h-full rounded-full border border-secondary/70 flex flex-col items-center justify-center p-0.5">
+<span class="font-label-sm text-[8px] leading-tight font-bold tracking-tighter text-secondary">노포공인</span>
+<span class="font-label-md text-label-md font-extrabold truncate w-full text-secondary leading-tight">용금옥</span>
+<span class="text-[9px] font-bold text-secondary">92년</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Footer: Verification QR & Watermark -->
+<div class="relative z-10 flex items-center justify-between border-t border-outline-variant/60 pt-2 px-1">
+<div class="flex items-center gap-2">
+<!-- Functional QR Mockup -->
+<div class="w-10 h-10 bg-on-primary p-0.5 rounded border border-outline flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-2xl text-on-surface" data-icon="qr_code_2">qr_code_2</span>
+</div>
+<div class="text-left">
+<p class="font-label-sm text-[9px] text-primary font-bold leading-tight">nopo1000.app/verify</p>
+<p class="font-body-sm text-[8px] text-outline leading-tight">모바일 정품 인증 보증서</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-xs font-black tracking-widest text-primary/80">百年食道</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Customization Control Panel -->
+<div class="bg-surface-container-low rounded-xl p-space-md border border-outline-variant space-y-4 shadow-sm">
+<!-- Theme Switchers -->
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2 font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-primary" data-icon="palette">palette</span>
+          카드 테마 서식
+        </label>
+<div class="grid grid-cols-3 gap-2">
+<button class="theme-btn py-2 px-2.5 rounded-lg border-2 border-primary bg-primary/10 text-primary font-label-sm text-label-sm font-bold flex flex-col items-center gap-1 transition-all" id="theme-btn-classic" onclick="setCardTheme('classic')" type="button">
+<span class="w-4 h-4 rounded-full bg-[#f7f8f3] border border-outline"></span>
+            클래식 한지
+          </button>
+<button class="theme-btn py-2 px-2.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold flex flex-col items-center gap-1 transition-all hover:border-outline" id="theme-btn-dark" onclick="setCardTheme('dark')" type="button">
+<span class="w-4 h-4 rounded-full bg-[#172422] border border-outline-variant"></span>
+            먹색 야경
+          </button>
+<button class="theme-btn py-2 px-2.5 rounded-lg border border-outline-variant bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold flex flex-col items-center gap-1 transition-all hover:border-outline" id="theme-btn-brass" onclick="setCardTheme('brass')" type="button">
+<span class="w-4 h-4 rounded-full bg-[#f4ecd2] border border-tertiary-fixed-dim"></span>
+            황동 골드
+          </button>
+</div>
+</div>
+<!-- Content Visibility Toggles -->
+<div class="space-y-2.5 pt-2 border-t border-outline-variant/50">
+<span class="block font-label-md text-label-md text-on-surface font-bold">노출 정보 맞춤설정</span>
+<label class="flex items-center justify-between cursor-pointer py-1">
+<span class="font-body-md text-body-md text-on-surface">내 닉네임 노출</span>
+<input checked="" class="sr-only peer" id="toggle-profile" onchange="toggleCardElement('profile-section', this.checked)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
+</label>
+<label class="flex items-center justify-between cursor-pointer py-1">
+<span class="font-body-md text-body-md text-on-surface">최근 방문 도장 3개 포함</span>
+<input checked="" class="sr-only peer" id="toggle-stamps" onchange="toggleCardElement('stamps-section', this.checked)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
+</label>
+<label class="flex items-center justify-between cursor-pointer py-1">
+<span class="font-body-md text-body-md text-on-surface">세월 게이지 포함</span>
+<input checked="" class="sr-only peer" id="toggle-gauge" onchange="toggleCardElement('gauge-section', this.checked)" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary relative"></div>
+</label>
+</div>
+</div>
+<!-- Action Buttons Stack (Thumb Zone Anchor) -->
+<div class="space-y-3 pt-1">
+<button class="w-full h-14 bg-secondary text-on-secondary rounded-xl font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-transform" type="button">
+<span class="material-symbols-outlined text-2xl" data-icon="download">download</span>
+        이미지로 기기에 저장하기 (PNG 고화질)
+      </button>
+<button class="w-full h-12 bg-surface-paper border-2 border-primary text-primary rounded-xl font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 hover:bg-primary/5 active:scale-[0.98] transition-transform" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="send">send</span>
+        인스타그램 스토리 / 카카오톡 바로 공유
+      </button>
+</div>
+</main>
+<script>
+    function setCardTheme(theme) {
+      const surface = document.getElementById('card-surface');
+      const buttons = document.querySelectorAll('.theme-btn');
+      
+      buttons.forEach(btn => {
+        btn.classList.remove('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
+        btn.classList.add('border', 'border-outline-variant', 'bg-surface-container', 'text-on-surface-variant');
+      });
+
+      surface.classList.remove('ink-dark-mode', 'brass-gold-mode', 'hanji-texture');
+
+      if (theme === 'classic') {
+        surface.classList.add('hanji-texture');
+        const activeBtn = document.getElementById('theme-btn-classic');
+        activeBtn.classList.add('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
+      } else if (theme === 'dark') {
+        surface.classList.add('ink-dark-mode');
+        const activeBtn = document.getElementById('theme-btn-dark');
+        activeBtn.classList.add('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
+      } else if (theme === 'brass') {
+        surface.classList.add('brass-gold-mode');
+        const activeBtn = document.getElementById('theme-btn-brass');
+        activeBtn.classList.add('border-2', 'border-primary', 'bg-primary/10', 'text-primary');
+      }
+    }
+
+    function toggleCardElement(elementId, isVisible) {
+      const target = document.getElementById(elementId);
+      if (target) {
+        if (isVisible) {
+          target.classList.remove('hidden');
+        } else {
+          target.classList.add('hidden');
+        }
+      }
+    }
+  </script>
+</body></html>

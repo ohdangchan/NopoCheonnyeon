@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>위치 권한 상태 안내 및 대략적 위치 허용 경고 화면</title>
+<!-- Google Fonts: Epilogue & Noto Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#d8e5e2",
+            "on-background": "#121e1c",
+            "tertiary-container": "#7e5a00",
+            "surface-container-low": "#e9f7f3",
+            "surface-container-high": "#ddebe7",
+            "surface-container": "#e3f1ed",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-primary": "#8dd3c9",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "tertiary-fixed": "#ffdea7",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-tertiary-container": "#ffd68d",
+            "on-tertiary-fixed": "#271900",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#690200",
+            "on-surface-variant": "#3f4947",
+            "secondary-fixed-dim": "#ffb4a8",
+            "outline": "#6f7977",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-tint": "#1c6961",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary-container": "#ff6751",
+            "secondary": "#b02e1f",
+            "primary-fixed-dim": "#8dd3c9",
+            "tertiary": "#604400",
+            "inverse-surface": "#273331",
+            "surface": "#effcf9",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed": "#00201d",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "outline-variant": "#bec9c6",
+            "on-surface": "#121e1c",
+            "surface-variant": "#d8e5e2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "headline-sm": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "number-stat": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "headline-md": ["Noto Sans"],
+            "body-sm": ["Noto Sans"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Hanji Paper Texture & Stamp Embellishments */
+    .hanji-card {
+      background-color: #F8F9F5;
+      border: 1px solid #CCD4CC;
+      box-shadow: 0 4px 12px rgba(20, 32, 30, 0.05);
+    }
+    .vintage-stamp-border {
+      border: 1.5px dashed #bec9c6;
+    }
+    .stamp-deboss {
+      box-shadow: inset 0 1px 3px rgba(176, 46, 31, 0.2);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex justify-center selection:bg-secondary selection:text-on-secondary">
+<!-- Mobile Screen Constraint (Max 412dp Android shell simulation) -->
+<main class="w-full max-w-md bg-[#EDF0EA] min-h-screen flex flex-col relative pb-8 overflow-x-hidden border-x border-outline-variant shadow-lg">
+<!-- TopAppBar (Based on Shared Components JSON: docked top, border-b-2 brass trim, enamel plaque tone) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm dark:shadow-none flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full active:scale-95 transition-transform duration-150 hover:bg-primary-container text-on-primary" type="button">
+<span class="material-symbols-outlined text-2xl" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-headline-sm font-headline-sm tracking-tight text-on-primary">
+        위치 확인 및 권한 안내
+      </h1>
+<button aria-label="도움말" class="w-10 h-10 flex items-center justify-center rounded-full active:scale-95 transition-transform duration-150 hover:bg-primary-container text-on-primary" type="button">
+<span class="material-symbols-outlined text-2xl" data-icon="help_outline">help_outline</span>
+</button>
+</header>
+<!-- Scrollable Alert Canvas Content -->
+<div class="flex-1 px-space-md pt-5 flex flex-col space-y-4">
+<!-- Status Code Badge & Brass Warning Banner -->
+<div class="flex items-center justify-between bg-surface-container-highest px-3 py-1.5 rounded-lg border border-outline-variant">
+<div class="flex items-center space-x-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-tertiary tracking-wider font-mono">CODE: E_LOC_APPROX_ONLY</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant font-mono">S-502 · FR-MAP-01</span>
+</div>
+<!-- Illustrated Brass Plaque Card -->
+<div class="hanji-card rounded-xl p-5 flex flex-col items-center text-center relative overflow-hidden">
+<!-- Vintage Watermark Stamp in Corner -->
+<div class="absolute -right-4 -bottom-4 w-24 h-24 border-2 border-secondary/20 rounded-full flex items-center justify-center pointer-events-none transform rotate-12">
+<span class="text-secondary/20 text-label-sm font-label-sm font-bold tracking-widest">노포천년·검증불가</span>
+</div>
+<!-- Compass & Caution Icon Cluster -->
+<div class="relative w-20 h-20 mb-3 flex items-center justify-center">
+<div class="w-16 h-16 rounded-full bg-surface-container border-2 border-outline-variant flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-3xl text-primary" data-icon="explore">explore</span>
+</div>
+<div class="absolute -top-1 -right-1 w-8 h-8 rounded-full bg-tertiary-fixed border-2 border-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-xl text-tertiary" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 rounded-full bg-error-container border border-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="wrong_location" style="font-variation-settings: 'FILL' 1;">wrong_location</span>
+</div>
+</div>
+<!-- Prominent Status Pill -->
+<div class="inline-flex items-center gap-1.5 bg-tertiary-fixed/40 border border-tertiary-fixed-dim px-3 py-1 rounded-full mb-3">
+<span class="material-symbols-outlined text-sm text-tertiary" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
+<span class="text-label-md font-label-md text-tertiary">대략적인 위치만 허용됨 (정밀 위치 필요)</span>
+</div>
+<!-- Headline -->
+<h2 class="text-headline-md font-headline-md text-on-background tracking-tight mb-2">
+          노포 30m 현장 검증을 위해<br/>
+<span class="text-secondary underline decoration-secondary decoration-2 underline-offset-4">정밀 위치 권한</span>이 필요합니다
+        </h2>
+<!-- Explanation Body -->
+<p class="text-body-md font-body-md text-on-surface-variant text-left leading-relaxed mt-2 bg-surface-container-low/70 p-3 rounded-lg border border-outline-variant/60">
+          노포천년 미식가는 골목 깊숙한 노포 앞 <strong class="text-primary font-semibold">30m 반경</strong> 도달 여부를 공정하게 판정하여 도장을 날인합니다. 현재 Android 시스템 설정에서 <span class="bg-surface-variant px-1.5 py-0.5 rounded text-on-surface font-semibold">[대략적인 위치]</span>로 설정되어 있어 정확한 거리(30m 이내) 판정이 불가능합니다.
+        </p>
+</div>
+<!-- Comparison Card: Current vs Required Precision -->
+<div class="hanji-card rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between border-b border-outline-variant/50 pb-2">
+<span class="text-label-lg font-label-lg text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-base" data-icon="straighten">straighten</span>
+            측정 정밀도 대조표 (FR-VER-09)
+          </span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">시스템 판정 기준</span>
+</div>
+<!-- Item 1: Current (Approximate) -->
+<div class="p-3 rounded-lg bg-surface-container-highest/60 border border-outline-variant flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center shrink-0 mt-0.5 border border-outline-variant">
+<span class="material-symbols-outlined text-secondary text-lg" data-icon="cancel">cancel</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-label-md text-on-surface font-bold">대략적인 위치 (현재 상태)</span>
+<span class="text-label-sm font-label-sm text-secondary font-bold">날인 불가 ❌</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              오차 반경 약 <strong class="text-on-surface">±2,000m</strong> (동/구 행정구역 단위)<br/>
+<span class="text-outline">노포 골목 진입 여부 식별 불가</span>
+</p>
+</div>
+</div>
+<!-- Item 2: Required (Precise) -->
+<div class="p-3 rounded-lg bg-primary-fixed/20 border-2 border-primary-container flex items-start gap-3 relative">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 mt-0.5 text-on-primary">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between">
+<span class="text-label-md font-label-md text-primary font-bold">정확한 위치 (필수 요건)</span>
+<span class="text-label-sm font-label-sm text-primary font-bold">즉시 발급 ⭕</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface mt-0.5">
+              오차 반경 약 <strong class="text-primary font-semibold">±10~30m</strong> (노포 식당 문 앞)<br/>
+<span class="text-primary-container font-medium">실시간 현장 검증 즉시 공인 도장 발급 가능</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Privacy & Battery Safety Guarantee Notice -->
+<div class="rounded-xl p-3.5 bg-surface-container border border-outline-variant flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-primary text-xl shrink-0 mt-0.5" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<h3 class="text-label-md font-label-md text-primary font-bold">백그라운드 위치 수집 0% 안심 보장</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5 leading-relaxed">
+            백그라운드 위치 수집 0%: 방문 인증 버튼을 누르는 <span class="font-semibold text-on-surface">최대 15초 동안만 일시 측정</span>되며, 사용자의 실제 좌표는 서버에 영구 저장되지 않습니다.
+          </p>
+</div>
+</div>
+<!-- Action Button Controls Stack -->
+<div class="pt-2 flex flex-col space-y-2.5">
+<!-- Primary Action: Open System Settings -->
+<button class="w-full h-14 bg-secondary text-on-secondary rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-md active:scale-95 transition-transform duration-150 stamp-deboss" type="button">
+<span class="material-symbols-outlined text-xl" data-icon="settings">settings</span>
+          기기 설정에서 정확한 위치 허용하기
+        </button>
+<!-- Secondary Action: Receipt Verification Alternative (FR-VER-02) -->
+<button class="w-full h-12 hanji-card border-2 border-primary-container text-primary rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 active:scale-95 transition-transform duration-150 hover:bg-surface-container" type="button">
+<span class="material-symbols-outlined text-xl text-primary" data-icon="receipt_long">receipt_long</span>
+          영수증 인증으로 진행 (위치 권한 불필요)
+        </button>
+<!-- Tertiary Text Button: Return to Map Default -->
+<button class="w-full py-2.5 text-center text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-base" data-icon="map">map</span>
+          지도로 돌아가기 (서울시청 기준 보기)
+        </button>
+</div>
+<!-- Footer Archival Stamp Brand Note -->
+<div class="pt-2 pb-4 flex items-center justify-center space-x-2 text-outline">
+<span class="w-8 h-[1px] bg-outline-variant"></span>
+<span class="text-label-sm font-label-sm tracking-widest uppercase">천년노포 공인 미식 아카이브</span>
+<span class="w-8 h-[1px] bg-outline-variant"></span>
+</div>
+</div>
+</main>
+</body></html>

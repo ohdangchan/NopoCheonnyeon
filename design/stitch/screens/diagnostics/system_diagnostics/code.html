@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>개발자 진단 및 테스트 가게 관리 - 노포천년</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#005049",
+            "tertiary-fixed": "#ffdea7",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#121e1c",
+            "surface-container-high": "#ddebe7",
+            "inverse-on-surface": "#e6f4f0",
+            "outline": "#6f7977",
+            "secondary-container": "#ff6751",
+            "on-tertiary-container": "#ffd68d",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "secondary-fixed-dim": "#ffb4a8",
+            "surface-container": "#e3f1ed",
+            "on-surface": "#121e1c",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary": "#b02e1f",
+            "inverse-primary": "#8dd3c9",
+            "surface": "#effcf9",
+            "on-surface-variant": "#3f4947",
+            "primary-fixed": "#a8f0e5",
+            "inverse-surface": "#273331",
+            "tertiary-container": "#7e5a00",
+            "tertiary": "#604400",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "surface-variant": "#d8e5e2",
+            "secondary-fixed": "#ffdad4",
+            "background": "#effcf9",
+            "surface-container-highest": "#d8e5e2",
+            "on-primary-fixed": "#00201d",
+            "outline-variant": "#bec9c6",
+            "primary-fixed-dim": "#8dd3c9",
+            "on-tertiary-fixed": "#271900",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#1c6961",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "on-secondary-container": "#690200",
+            "primary": "#00524b",
+            "surface-container-low": "#e9f7f3",
+            "error-container": "#ffdad6",
+            "surface-dim": "#cfddd9",
+            "tertiary-fixed-dim": "#f7bd46"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "body-lg": ["Noto Sans", "sans-serif"],
+            "body-sm": ["Noto Sans", "sans-serif"],
+            "number-stat": ["Epilogue", "monospace"],
+            "label-md": ["Noto Sans", "sans-serif"],
+            "headline-md": ["Noto Sans", "sans-serif"],
+            "label-lg": ["Noto Sans", "sans-serif"],
+            "label-sm": ["Noto Sans", "sans-serif"],
+            "headline-sm": ["Noto Sans", "sans-serif"],
+            "body-md": ["Noto Sans", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md antialiased min-h-screen flex justify-center selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Mobile Viewport Canvas Container (390dp base standard) -->
+<main class="w-full max-w-[430px] min-h-screen bg-surface-bright flex flex-col shadow-2xl relative overflow-x-hidden border-x border-outline-variant/30">
+<!-- Top App Bar (Task Sub-page Diagnostic Execution) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed shadow-sm">
+<div class="flex items-center space-x-2">
+<button aria-label="뒤로가기" class="p-2 -ml-2 rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform flex items-center justify-center" type="button">
+<span class="material-symbols-outlined text-[22px]">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary flex items-center gap-1.5">
+            진단 및 테스트 환경
+            <span class="bg-secondary text-on-secondary font-mono text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wider font-bold">DEV-SPIKE</span>
+</span>
+<span class="font-label-sm text-label-sm text-on-primary-container leading-none opacity-90">FR-SPK / FR-TST 샌드박스</span>
+</div>
+</div>
+<button aria-label="진단 정보 복사" class="flex items-center gap-1 bg-primary-container/60 hover:bg-primary-container text-on-primary-container px-2.5 py-1.5 rounded-lg active:scale-95 transition-all text-xs border border-on-primary-container/20" id="copyLogBtn" title="진단 정보 복사" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span class="font-label-md text-label-md hidden sm:inline">진단 복사</span>
+</button>
+</header>
+<!-- Main Diagnostic Scroll Canvas -->
+<div class="flex-1 px-margin-mobile py-space-md space-y-4 pb-12 custom-scroll">
+<!-- Breadcrumb & Mode Flag -->
+<div class="flex items-center justify-between text-xs text-on-surface-variant px-0.5">
+<div class="flex items-center gap-1 font-mono text-[11px]">
+<span class="text-tertiary font-bold">설정</span>
+<span>&gt;</span>
+<span>앱 정보 (5-tap Triggered)</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container-high px-2 py-0.5 rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary font-bold">LOCAL ROOM 100% ISOLATED</span>
+</div>
+</div>
+<!-- CARD 1: Device & Environment Live Status Card -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 p-space-md shadow-sm space-y-3 relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-16 h-16 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<!-- Header & Target Hardware Chip -->
+<div class="flex flex-col gap-1.5 border-b border-outline-variant/30 pb-2.5">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-primary">memory</span> 하드웨어 및 네이티브 모듈 상태
+            </span>
+<span class="font-mono text-[10px] text-outline">LATENCY: LIVE</span>
+</div>
+<div class="inline-flex items-center gap-2 bg-surface-container px-2.5 py-1 rounded-md border border-outline-variant w-fit">
+<span class="material-symbols-outlined text-primary text-[16px]">smartphone</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">실기기 진단 모드 (Galaxy S24 / Android 14)</span>
+</div>
+</div>
+<!-- 2x2 Diagnostic Specs Bento Grid -->
+<div class="grid grid-cols-1 gap-2 pt-1 font-mono text-xs">
+<!-- Naver Map SDK -->
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex items-start justify-between">
+<div class="space-y-0.5">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-sans font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Naver Map SDK
+              </div>
+<p class="font-mono text-[12px] font-bold text-on-surface">v3.24.0 <span class="text-primary font-sans font-semibold">(정상 인증 200 OK)</span></p>
+</div>
+<span class="bg-surface-container text-primary font-mono text-[10px] px-1.5 py-0.5 rounded border border-primary/20">READY</span>
+</div>
+<!-- Fused Location -->
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex items-start justify-between">
+<div class="space-y-0.5">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-sans font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Fused Location Provider
+              </div>
+<p class="font-mono text-[12px] font-bold text-on-surface">정밀 GPS ±5m <span class="text-on-surface-variant font-sans text-[11px]">(모의위치: 미사용)</span></p>
+</div>
+<span class="bg-surface-container text-primary font-mono text-[10px] px-1.5 py-0.5 rounded border border-primary/20">FIXED</span>
+</div>
+<!-- ML Kit OCR -->
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex items-start justify-between">
+<div class="space-y-0.5">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-sans font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> On-Device ML Kit OCR
+              </div>
+<p class="font-mono text-[12px] font-bold text-on-surface">한국어 v16.0.1 <span class="text-tertiary font-sans text-[11px] font-semibold">(평균 240ms)</span></p>
+</div>
+<span class="bg-surface-container text-tertiary-container font-mono text-[10px] px-1.5 py-0.5 rounded border border-tertiary/20">WARMED</span>
+</div>
+<!-- Firebase Cloud / Auth -->
+<div class="bg-surface-container-low p-2.5 rounded-lg border border-outline-variant/40 flex items-start justify-between">
+<div class="space-y-0.5">
+<div class="font-label-sm text-label-sm text-on-surface-variant font-sans font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Firebase Client Gateway
+              </div>
+<p class="font-mono text-[12px] font-bold text-on-surface">Firestore 180ms <span class="text-on-surface-variant font-sans text-[11px]">· Auth 연동 완료</span></p>
+</div>
+<span class="bg-surface-container text-primary font-mono text-[10px] px-1.5 py-0.5 rounded border border-primary/20">SYNCED</span>
+</div>
+</div>
+</section>
+<!-- CARD 2: Virtual Test Store Generator (가상 노포 생성기) -->
+<section class="bg-surface-container-lowest rounded-xl border-2 border-secondary/40 p-space-md shadow-sm space-y-3 relative">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">storefront</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">가상 노포 생성기 (Sandbox)</h2>
+</div>
+<span class="font-mono text-[10px] bg-secondary-fixed text-on-secondary-fixed px-2 py-0.5 rounded font-bold">FR-TST READY</span>
+</div>
+<!-- Prominent Test Card with Warning Border Accent -->
+<div class="bg-surface-container-low rounded-lg p-3 border-l-4 border-secondary space-y-2">
+<div class="flex items-center justify-between">
+<h3 class="font-label-lg text-label-lg font-bold text-on-surface">
+              현재 위치에 '노포천년테스트식당' 생성
+            </h3>
+<span class="font-mono text-[11px] bg-surface-variant text-on-surface-variant px-1.5 py-0.5 rounded font-semibold">창업 1980년 (44년차)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            실제 인증 로직(위치 30m 반경, OCR 영수증 파싱, 단방향 해시 검증)을 즉시 테스트할 수 있는 가상 노포를 생성합니다. 하루 한도(5곳) 및 원격 서버 오염 없이 완벽히 격리 테스트됩니다.
+          </p>
+<!-- Status Display -->
+<div class="bg-surface-container-lowest p-2 rounded border border-outline-variant/60 flex items-center gap-2 text-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">pin_drop</span>
+<div class="flex-1 font-mono text-[11px] truncate text-on-surface">
+<span class="font-sans font-bold text-primary">배치 현황:</span> 1개 (ID: <span class="font-bold">TEST-0001</span>) · 서울 종로구 탑골공원 인근
+            </div>
+</div>
+</div>
+<!-- Primary Action Button: Teal Outline 48dp+ tap standard -->
+<button class="w-full min-h-[48px] py-2.5 px-4 rounded-xl border-2 border-primary bg-surface-container-lowest hover:bg-primary/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-primary font-label-lg text-label-lg font-bold shadow-sm" id="btnSpawnStore" type="button">
+<span class="material-symbols-outlined text-[20px]">add_location_alt</span>
+<span>현재 위치에 테스트 가게 배치하기</span>
+</button>
+</section>
+<!-- CARD 3: Diagnostics Test Actions (1일차 5종 스파이크 탭/기능) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 p-space-md shadow-sm space-y-3">
+<div class="flex items-center justify-between border-b border-outline-variant/30 pb-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">science</span>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">단위 스파이크 테스트 (Spike Suite)</h2>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">5 TASKS</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          네이티브 엔진 및 SQLite 로컬 파이프라인의 내구성과 반응 지연을 강제 프로파일링합니다.
+        </p>
+<!-- Test items list -->
+<div class="divide-y divide-outline-variant/30">
+<!-- Test 1: Map Marker Stress -->
+<div class="py-3 flex items-center justify-between gap-3">
+<div class="space-y-0.5 flex-1 pr-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[11px] font-bold text-primary bg-primary-fixed px-1.5 py-0.2 rounded">T-01</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">지도 마커 1,000개 렌더링 부하 테스트</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">클러스터링 알고리즘 및 60fps 프레임 드랍 여부 측정</p>
+</div>
+<button class="shrink-0 min-h-[40px] px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-bold border border-primary/30 active:scale-95 transition-transform flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">play_arrow</span>
+<span>테스트 실행</span>
+</button>
+</div>
+<!-- Test 2: Receipt OCR Sample -->
+<div class="py-3 flex items-center justify-between gap-3">
+<div class="space-y-0.5 flex-1 pr-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[11px] font-bold text-tertiary bg-tertiary-fixed px-1.5 py-0.2 rounded">T-02</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">영수증 live_receipt.html OCR 샘플 테스트</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">정규식 사업자번호·가게명 매칭 신뢰도 98.4% 점검</p>
+</div>
+<button class="shrink-0 min-h-[40px] px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-bold border border-primary/30 active:scale-95 transition-transform flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">play_arrow</span>
+<span>테스트 실행</span>
+</button>
+</div>
+<!-- Test 3: Offline WorkManager Queue -->
+<div class="py-3 flex items-center justify-between gap-3">
+<div class="space-y-0.5 flex-1 pr-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[11px] font-bold text-primary bg-primary-fixed px-1.5 py-0.2 rounded">T-03</span>
+<span class="font-label-md text-label-md font-bold text-on-surface">오프라인 모드 대기열(WorkManager) 시뮬레이션</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">네트워크 단절 시 SQLite 인증 큐 저장 및 재연결 동기화</p>
+</div>
+<button class="shrink-0 min-h-[40px] px-3.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md font-bold border border-primary/30 active:scale-95 transition-transform flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">play_arrow</span>
+<span>테스트 실행</span>
+</button>
+</div>
+<!-- Test 4: Reset Local Records (Destructive) -->
+<div class="py-3 flex items-center justify-between gap-3">
+<div class="space-y-0.5 flex-1 pr-1">
+<div class="flex items-center gap-1.5">
+<span class="font-mono text-[11px] font-bold text-secondary bg-secondary-fixed px-1.5 py-0.2 rounded">T-04</span>
+<span class="font-label-md text-label-md font-bold text-secondary">테스트 인증 기록 전체 초기화</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">로컬 Room DB에 적재된 가상 노포 스탬프 기록 및 캐시 소각</p>
+</div>
+<button class="shrink-0 min-h-[40px] px-3.5 py-1.5 rounded-lg bg-error-container hover:bg-secondary-fixed text-secondary font-label-md text-label-md font-bold border border-secondary/30 active:scale-95 transition-transform flex items-center gap-1" id="btnResetDB" type="button">
+<span class="material-symbols-outlined text-[15px]">delete_forever</span>
+<span>초기화 실행</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Centenary Verification Engine Sandbox Info Gauge (Style Spec) -->
+<div class="bg-surface-container p-3 rounded-xl border border-outline-variant/60 flex items-center justify-between">
+<div class="space-y-1">
+<div class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-bold">인증 파이프라인 무결성 해시</div>
+<div class="font-mono text-xs text-on-surface font-semibold">SHA-256: e82f...b91a (SALT OK)</div>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span class="font-label-md text-label-md font-bold">통과 (SEC-01)</span>
+</div>
+</div>
+<!-- Legal / Technical Boundary Footer Notice -->
+<footer class="pt-2 pb-6 px-1 text-center">
+<p class="font-body-sm text-body-sm text-outline text-xs leading-relaxed max-w-sm mx-auto">
+          ※ 본 화면의 테스트 가게 인증 기록은 로컬 Room DB에서만 동작하며 원격 Firestore 및 공개 패스포트에 반영되지 않습니다.
+        </p>
+<div class="mt-2 text-[10px] font-mono text-outline/80">
+          BUILD: 2024.11-STABLE-SPK · NOPO-1000-AOSP
+        </div>
+</footer>
+</div>
+<!-- Microinteraction Toast Element -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-lg text-xs font-mono shadow-xl transition-all duration-200 opacity-0 pointer-events-none z-50 flex items-center gap-2 border border-outline/30" id="toast">
+<span class="material-symbols-outlined text-[16px] text-inverse-primary">check_circle</span>
+<span id="toastMsg">클립보드에 진단 정보가 복사되었습니다.</span>
+</div>
+</main>
+<!-- Interactive Sandbox Logic for Demonstration -->
+<script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+        toast.classList.remove('opacity-100');
+      }, 2400);
+    }
+
+    document.getElementById('copyLogBtn').addEventListener('click', () => {
+      const log = `[NOPO-DIAGNOSTIC]\\nDevice: Galaxy S24 (Android 14)\\nNaverSDK: 3.24.0 (200 OK)\\nFusedGPS: ±5m\\nOCR: Korean 16.0.1 (240ms)\\nFirestore: 180ms\\nRoom Isolation: STRICT_TEST_MODE`;
+      navigator.clipboard?.writeText(log).catch(() => {});
+      showToast('진단 정보 로그가 클립보드에 복사되었습니다.');
+    });
+
+    document.getElementById('btnSpawnStore').addEventListener('click', () => {
+      showToast("📍 현 위치(30m)에 '노포천년테스트식당' 배치 완료 (Room DB)");
+    });
+
+    document.getElementById('btnResetDB').addEventListener('click', () => {
+      if (confirm('로컬 Room DB의 테스트 인증 기록을 모두 소각하시겠습니까?')) {
+        showToast('로컬 테스트 인증 레코드가 모두 초기화되었습니다.');
+      }
+    });
+
+    document.querySelectorAll('.shrink-0').forEach((btn, index) => {
+      if (btn.id !== 'btnResetDB') {
+        btn.addEventListener('click', () => {
+          showToast(`스파이크 T-0${index + 1} 프로파일링 시뮬레이션 완료 (정상 수렴)`);
+        });
+      }
+    });
+  </script>
+</body></html>

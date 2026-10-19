@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>오프라인 리뷰 작성 및 초안 안전 보존 안내 - 노포천년</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error": "#ba1a1a",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-surface-variant": "#3f4947",
+            "surface-container-low": "#e9f7f3",
+            "on-surface": "#121e1c",
+            "secondary": "#b02e1f",
+            "primary-container": "#1f6b63",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#00524b",
+            "surface-dim": "#cfddd9",
+            "on-secondary-fixed": "#410100",
+            "inverse-primary": "#8dd3c9",
+            "outline": "#6f7977",
+            "surface": "#effcf9",
+            "background": "#effcf9",
+            "surface-container-high": "#ddebe7",
+            "inverse-surface": "#273331",
+            "error-container": "#ffdad6",
+            "secondary-fixed-dim": "#ffb4a8",
+            "tertiary-container": "#7e5a00",
+            "on-tertiary-container": "#ffd68d",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-secondary": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-container": "#e3f1ed",
+            "on-primary-fixed": "#00201d",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-background": "#121e1c",
+            "primary-fixed": "#a8f0e5",
+            "surface-container-highest": "#d8e5e2",
+            "inverse-on-surface": "#e6f4f0",
+            "on-tertiary-fixed": "#271900",
+            "on-error-container": "#93000a",
+            "surface-bright": "#effcf9",
+            "surface-variant": "#d8e5e2",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed-variant": "#005049",
+            "secondary-fixed": "#ffdad4",
+            "tertiary": "#604400",
+            "secondary-container": "#ff6751",
+            "surface-tint": "#1c6961",
+            "tertiary-fixed": "#ffdea7",
+            "on-secondary-container": "#690200",
+            "outline-variant": "#bec9c6",
+            "on-primary-container": "#a1e9de"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter-mobile": "0.75rem",
+            "space-xl": "2.25rem",
+            "gutter": "1rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "margin": "1.25rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "label-lg": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "display-lg": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"]
+          },
+          "fontSize": {
+            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700"}],
+            "display-lg-mobile": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "number-stat": ["32px", {"lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900"}],
+            "headline-lg": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "display-lg": ["38px", {"lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+            "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .paper-pattern {
+      background-color: #effcf9;
+      background-image: radial-gradient(#bec9c6 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+    }
+    .inju-stamp {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);
+      transform: rotate(-3deg);
+    }
+    .enamel-header {
+      background-color: #00524b;
+      border-bottom: 2px solid #ffdea7;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen paper-pattern selection:bg-primary-container selection:text-on-primary">
+<!-- Main Container: Mobile viewport constrained & desktop responsive centered -->
+<div class="max-w-md mx-auto min-h-screen flex flex-col bg-surface shadow-xl relative pb-8">
+<!-- Top App Bar (Contextual Task Bar without Global Bottom Shell) -->
+<header class="sticky top-0 z-40 enamel-header text-on-primary shadow-sm px-space-md py-space-sm h-14 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button aria-label="뒤로 가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container transition-transform active:scale-95 text-on-primary" type="button">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="font-headline-sm text-headline-sm leading-tight text-on-primary font-bold tracking-tight">공인 평문 작성</h1>
+<span class="text-[10px] font-label-sm text-primary-fixed tracking-wider">FR-REV-06 · E_REVIEW_OFFLINE</span>
+</div>
+</div>
+<!-- Trailing Offline Badge -->
+<div class="flex items-center gap-1 bg-tertiary-container/80 text-on-tertiary-container px-2.5 py-1 rounded-full border border-tertiary-fixed-dim/40 text-[11px] font-label-md">
+<span class="material-symbols-outlined text-[14px]" data-icon="cloud_off">cloud_off</span>
+<span>오프라인 모드</span>
+</div>
+</header>
+<!-- Sub-header Brass Filigree Strip -->
+<div class="bg-tertiary-fixed text-on-tertiary-fixed px-space-md py-1 flex items-center justify-between text-[11px] font-label-sm tracking-tight border-b border-outline-variant/60">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span>로컬 Room DB 연동 활성</span>
+</div>
+<span class="font-mono text-[10px] opacity-80">S-802 · V2.4 ARCHIVE</span>
+</div>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-space-md py-space-md flex flex-col gap-space-md">
+<!-- Hero Notice Card: Offline Warning & Room DB Safeguard -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant shadow-sm relative overflow-hidden">
+<div class="absolute -right-3 -bottom-3 text-surface-container-highest/60 select-none pointer-events-none">
+<span class="material-symbols-outlined text-[72px]" data-icon="wifi_off">wifi_off</span>
+</div>
+<div class="flex items-start gap-3 relative z-10">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed flex-shrink-0 border border-secondary-fixed-dim">
+<span class="material-symbols-outlined text-[22px]" data-icon="cloud_sync">cloud_sync</span>
+</div>
+<div class="flex-1">
+<h2 class="font-headline-sm text-headline-sm text-secondary font-bold flex items-center gap-1.5 mb-1">
+<span>현재 인터넷 연결이 끊겨 있습니다</span>
+</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              작성하신 별점과 평문은 기기 안전 메모리(<span class="font-semibold text-primary">SavedStateHandle</span> 및 <span class="font-semibold text-primary">로컬 Room DB</span>)에 즉시 임시 보존되며, 온라인으로 복구되는 즉시 <span class="underline decoration-secondary underline-offset-2 font-medium text-on-surface">[서버 안전 저장]</span>이 활성화됩니다.
+            </p>
+</div>
+</div>
+<div class="mt-3 pt-2.5 border-t border-outline-variant/50 flex items-center justify-between text-xs text-outline">
+<div class="flex items-center gap-1 font-label-md">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>네트워크 복구 시 자동 백그라운드 동기화 준비 완료</span>
+</div>
+<span class="text-[10px] font-mono text-outline">ROOM_TX: READY</span>
+</div>
+</section>
+<!-- Nopo Store Summary Badge Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex flex-col items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined text-2xl" data-icon="soup_kitchen">soup_kitchen</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">이문설농탕</h3>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-label-sm px-2 py-0.5 rounded-full font-bold border border-tertiary-fixed-dim">
+                120년 백년가게
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">서울 종로구 우정국로 38-13</p>
+</div>
+</div>
+<!-- Verification Stamp Badge (Inju Stamp) -->
+<div class="inju-stamp border-2 border-secondary rounded-full w-14 h-14 flex flex-col items-center justify-center p-1 text-center bg-secondary-fixed/20 flex-shrink-0">
+<div class="border border-secondary rounded-full w-full h-full flex flex-col items-center justify-center text-[8px] font-label-sm text-secondary leading-none">
+<span class="font-bold tracking-tight">인증완료</span>
+<span class="font-mono text-[7px] scale-90 mt-0.5">24.10.18</span>
+</div>
+</div>
+</section>
+<!-- Rating Section -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary" data-icon="military_tech">military_tech</span>
+<span>공인 세월 점수 (별점)</span>
+</label>
+<span class="text-xs font-label-md text-primary font-semibold">5.0 / 5.0 최고 평점</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low rounded-lg p-3 border border-outline-variant/60">
+<!-- 5 Stars with Fill -->
+<div aria-label="별점 5점" class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-2xl cursor-pointer hover:scale-110 transition-transform" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-2xl cursor-pointer hover:scale-110 transition-transform" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-2xl cursor-pointer hover:scale-110 transition-transform" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-2xl cursor-pointer hover:scale-110 transition-transform" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-2xl cursor-pointer hover:scale-110 transition-transform" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="text-right">
+<span class="inline-block text-[11px] font-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant/40">
+              인터넷 연결 없이도 별점 책정 가능
+            </span>
+</div>
+</div>
+</section>
+<!-- Review Input Area -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant shadow-sm flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5" for="review-draft">
+<span class="material-symbols-outlined text-primary" data-icon="history_edu">history_edu</span>
+<span>미식 기록 및 평문 초안</span>
+</label>
+<!-- Status indicator badge -->
+<span class="bg-primary-fixed text-on-primary-fixed-variant text-[11px] font-label-sm px-2 py-0.5 rounded-full flex items-center gap-1 border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+<span>기기 내 실시간 임시 저장 완료</span>
+</span>
+</div>
+<div class="relative">
+<textarea class="w-full rounded-lg border border-outline-variant bg-surface-bright p-3 text-on-surface font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-colors leading-relaxed resize-none" id="review-draft" placeholder="노포의 내력과 맛의 품격을 기록해보세요..." rows="5">120년의 세월이 담긴 사골의 깊이가 여전하다. 골목 안쪽이라 데이터가 잘 안 터지지만 이 깊은 맛의 감동을 잊기 전에 바로 초고로 기록해둔다...</textarea>
+</div>
+<!-- Footer status row -->
+<div class="flex items-center justify-between text-xs text-on-surface-variant pt-1 border-t border-outline-variant/40">
+<div class="flex items-center gap-1.5 text-primary text-[11px] font-label-md">
+<span class="material-symbols-outlined text-[14px]" data-icon="save">save</span>
+<span>오프라인 초안 보존 중 (Snapshot: 14:32:08)</span>
+</div>
+<span class="font-mono text-outline font-label-md">82 / 500자</span>
+</div>
+</section>
+<!-- Rules & Explanations Card -->
+<section class="bg-surface-container-high/60 rounded-xl p-space-md border border-outline-variant">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-bold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-outline" data-icon="help_center">help_center</span>
+<span>오프라인 동기화 안내 및 유의사항</span>
+</h4>
+<div class="space-y-3">
+<!-- Accordion / Info item 1 -->
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/60">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px] mt-0.5 flex-shrink-0" data-icon="gavel">gavel</span>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mb-1">
+                  왜 오프라인에서는 바로 등록되지 않나요?
+                </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  공인 리뷰는 위변조 방지 Firestore 트랜잭션 검증을 거쳐 실시간 평균 평점에 산입되므로, 네트워크 연결 시점에 원자적으로 기록됩니다.
+                </p>
+</div>
+</div>
+</div>
+<!-- Info item 2 -->
+<div class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/60">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary text-[18px] mt-0.5 flex-shrink-0" data-icon="security">security</span>
+<div>
+<p class="font-label-lg text-label-lg text-on-surface font-bold mb-1">
+                  작성 중 앱을 닫거나 꺼도 안전한가요?
+                </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                  기기 로컬 캐시에 안전하게 보관되어 앱 재시작 시 그대로 복원됩니다. 안심하고 식사를 마친 후 네트워크가 원활한 곳에서 확인하세요.
+                </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Buttons Block -->
+<div class="pt-2 flex flex-col gap-2.5">
+<!-- Primary Button (Disabled / Waiting style with sync icon) -->
+<button class="w-full h-14 bg-surface-container text-outline border border-outline-variant rounded-xl flex items-center justify-center gap-2 font-label-lg text-label-lg cursor-not-allowed transition-all shadow-inner select-none" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px] animate-spin" data-icon="sync">sync</span>
+<span>인터넷 연결 시 자동 등록 대기 (초안 보관)</span>
+</button>
+<!-- Secondary Outline Button -->
+<button class="w-full h-12 bg-surface-container-lowest text-primary border-2 border-primary hover:bg-primary-container hover:text-on-primary rounded-xl flex items-center justify-center gap-2 font-label-lg text-label-lg font-bold transition-all active:scale-[0.98] shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="menu_book">menu_book</span>
+<span>임시 저장하고 패스포트로 나가기</span>
+</button>
+</div>
+</main>
+<!-- Bottom System Safe Margin Padding -->
+<footer class="text-center px-4 pt-2 text-[11px] font-label-sm text-outline">
+      노포천년 국보 미식 아카이브 · 로컬 무결성 보존 모듈
+    </footer>
+</div>
+</body></html>

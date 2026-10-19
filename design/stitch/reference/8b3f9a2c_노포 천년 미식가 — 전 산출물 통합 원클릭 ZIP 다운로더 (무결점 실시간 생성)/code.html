@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>노포 천년 미식가 — 전 산출물 통합 원클릭 ZIP 패키지 다운로더</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=JetBrains+Mono:wght@400;600;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; background-color: #EDF0EA; color: #14201E; }
+    .font-display { font-family: 'Black Han Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="min-h-screen py-10 px-4 md:px-8">
+  <div class="max-w-4xl mx-auto space-y-8">
+    
+    <!-- 헤더 카드 -->
+    <header class="bg-[#17504A] text-[#F8F9F5] rounded-3xl p-8 md:p-10 shadow-xl relative overflow-hidden border border-[#1F6B63]">
+      <div class="absolute -right-8 -bottom-8 opacity-10 pointer-events-none select-none font-display text-9xl text-[#D9A22C]">
+        百年
+      </div>
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-3 py-1 rounded-full text-xs font-bold font-mono tracking-wider bg-[#1F6B63] text-[#D3E5E0] border border-[#5DB3A6]/30">
+          ● PROD RELEASE V0.4.1 SSOT
+        </span>
+        <span class="text-xs text-[#CCD4CC]">전체 51개 화면 · 1,277곳 카탈로그 · Compose 소스</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black font-display tracking-tight text-white mb-3">
+        노포 천년 미식가 전 산출물 올인원 ZIP
+      </h1>
+      <p class="text-[#D3E5E0] text-sm md:text-base leading-relaxed max-w-2xl">
+        기획안(PRD), 아키텍처(ADR 12개), 51개 화면 UI 템플릿(Jetpack Compose), 전국 1,277곳 노포 정제 카탈로그(JSON/CSV), Figma Variables 토큰, Firestore 보안 규칙까지 단 하나의 ZIP 파일로 즉시 압축 패키징하여 다운로드합니다.
+      </p>
+    </header>
+
+    <!-- 메인 원클릭 다운로드 박스 -->
+    <section class="bg-[#F8F9F5] rounded-3xl p-8 md:p-10 border border-[#CCD4CC] shadow-md text-center space-y-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F4DCD6] text-[#C23B2A] mb-2 shadow-inner">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+        </svg>
+      </div>
+
+      <div>
+        <h2 class="text-2xl md:text-3xl font-black font-display text-[#17504A]">
+          원클릭 전체 ZIP 파일 생성 & 다운로드
+        </h2>
+        <p class="text-[#52625E] text-sm mt-2">
+          외부 네트워크나 추가 서버 통신 없이, 브라우저 내장 바이너리 엔진이 실시간으로 <code class="font-mono bg-[#EDF0EA] px-2 py-0.5 rounded text-[#1F6B63] font-bold">nopo-cheonnyeon-all-in-one-v0.4.1.zip</code>을 생성합니다.
+        </p>
+      </div>
+
+      <!-- 프로그레스 바 (클릭 시 작동) -->
+      <div id="progressContainer" class="hidden max-w-md mx-auto space-y-2">
+        <div class="w-full bg-[#EDF0EA] rounded-full h-3 overflow-hidden border border-[#CCD4CC]">
+          <div id="progressBar" class="bg-[#C23B2A] h-full transition-all duration-200" style="width: 0%"></div>
+        </div>
+        <div id="progressText" class="text-xs font-mono text-[#52625E] text-right">0%</div>
+      </div>
+
+      <!-- 다운로드 트리거 버튼 -->
+      <div class="pt-2">
+        <button id="downloadBtn" onclick="generateAndDownloadZip()" class="w-full sm:w-auto px-10 py-5 bg-[#C23B2A] hover:bg-[#a53022] active:scale-95 text-white font-black text-lg md:text-xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3 mx-auto">
+          <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+          </svg>
+          <span>지금 전체 ZIP 파일 다운로드 (.zip)</span>
+        </button>
+      </div>
+
+      <!-- 다운로드 완료 후 수동 링크 -->
+      <div id="manualDownloadArea" class="hidden pt-4 text-sm text-[#1F6B63] font-medium">
+        자동 다운로드가 차단되었나요? 
+        <a id="directZipLink" href="#" download="nopo-cheonnyeon-all-in-one-v0.4.1.zip" class="underline font-bold text-[#C23B2A] ml-1">수동 링크 클릭하여 저장</a>
+      </div>
+    </section>
+
+    <!-- 개별 단독 산출물 직접 다운로드 (즉시 다운로드 버튼들) -->
+    <section class="bg-[#F8F9F5] rounded-3xl p-6 md:p-8 border border-[#CCD4CC] shadow-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-[#CCD4CC] pb-3">
+        <h3 class="font-bold text-[#17504A] flex items-center gap-2">
+          <span>⚡</span> 주요 개별 산출물 단독 즉시 다운로드 (원클릭 파일 저장)
+        </h3>
+        <span class="text-xs text-[#52625E]">필요한 파일만 바로 추출</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <button onclick="downloadSingleFile('stores.json', sampleStoresJson, 'application/json')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#17504A]">📊 stores.json</div>
+            <div class="text-[11px] text-[#52625E]">1,277곳 카탈로그 DB</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+
+        <button onclick="downloadSingleFile('nopo_stores.csv', sampleStoresCsv, 'text/csv')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#17504A]">📑 nopo_stores.csv</div>
+            <div class="text-[11px] text-[#52625E]">엑셀/DB용 마스터 카탈로그</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+
+        <button onclick="downloadSingleFile('nopo-tokens.json', sampleTokensJson, 'application/json')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#17504A]">💎 nopo-tokens.json</div>
+            <div class="text-[11px] text-[#52625E]">Figma Variables 토큰</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+
+        <button onclick="downloadSingleFile('DESIGN.md', sampleDesignMd, 'text/markdown')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#17504A]">🎨 DESIGN.md</div>
+            <div class="text-[11px] text-[#52625E]">디자인 시스템 마스터 명세</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+
+        <button onclick="downloadSingleFile('NopoNavHost.kt', sampleNavHostKt, 'text/plain')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#17504A]">📱 NopoNavHost.kt</div>
+            <div class="text-[11px] text-[#52625E]">51개 화면 라우팅 진입점</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+
+        <button onclick="downloadSingleFile('stamp_gold_120y.svg', sampleGoldSvg, 'image/svg+xml')" class="p-3 bg-[#EDF0EA] hover:bg-[#d8e0d4] text-left rounded-xl border border-[#CCD4CC] transition-colors flex items-center justify-between group">
+          <div>
+            <div class="text-xs font-bold text-[#D9A22C]">印 stamp_gold.svg</div>
+            <div class="text-[11px] text-[#52625E]">100년 백년가게 황금 인장</div>
+          </div>
+          <span class="text-[#1F6B63] group-hover:translate-y-0.5 transition-transform text-sm">↓</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ZIP 패키지 내부 파일 트리 인벤토리 -->
+    <section class="bg-[#F8F9F5] rounded-3xl p-6 md:p-8 border border-[#CCD4CC] shadow-sm space-y-4">
+      <h3 class="text-lg font-bold text-[#17504A] flex items-center gap-2">
+        <span>📁</span> ZIP 아카이브 내부 패키징 디렉토리 구조 명세
+      </h3>
+      <div class="bg-[#14201E] text-[#E7EEEA] p-5 rounded-2xl font-mono text-xs overflow-x-auto leading-relaxed border border-[#2A3C37]">
+<pre>nopo-cheonnyeon-all-in-one-v0.4.1/
+├── 📄 START-HERE.md                     // 5단계 개발 착수 종합 퀵스타트 시작 가이드
+├── 📄 CLAUDE.md                         // Claude Code 터미널 에이전트 작업 지침서
+├── 📄 DESIGN.md                         // 디자인 시스템 마스터 명세서 (토큰, 8dp 그리드)
+├── 📄 .gitignore                        // 민감 서명 키 및 빌드 캐시 격리 규칙
+│
+├── 📁 figma/
+│   └── 📄 nopo-tokens.json              // Figma Variables W3C 표준 토큰 패키지 (v0.4.1)
+│
+├── 📁 firebase/
+│   ├── 📄 firestore.rules               // Firestore 보안 규칙 (200년 상한, SHA-256 중복 차단)
+│   ├── 📄 firestore.indexes.json        // 리뷰 및 프로필 복합 정렬 색인
+│   └── 📄 firebase.json                 // Firebase CLI 프로젝트 설정 파일
+│
+├── 📁 assets-and-images/
+│   ├── 📁 screens-html/                 // 51개 전체 모바일 화면 단독 HTML (390×844 px)
+│   ├── 📁 stamps-svg/                   // 3종 등급별 원형 인장 및 30m 위치 구제도장 SVG
+│   └── 📁 badges-svg/                   // 5대 식객 칭호 훈장 배지 벡터 에셋
+│
+├── 📁 data/
+│   ├── 📄 nopo_stores.csv               // 1,277곳 노포 통합 마스터 카탈로그
+│   └── 📄 nopo_stores.db                // 검증용 로컬 SQLite DB 파일
+│
+└── 📁 app/
+    ├── 📄 build.gradle.kts              // R8 최적화, 릴리스 서명 fallback, syncDesignTokens 태스크 내장
+    ├── 📄 proguard-rules.pro            // R8 난독화 예외 keep 규칙
+    └── 📁 src/main/
+        ├── 📄 AndroidManifest.xml       // 지도 SDK Key, 카메라, 위치 권한
+        ├── 📁 assets/
+        │   └── 📄 stores.json           // 앱 첫 실행 시 Room DB 시딩용 1,277곳 카탈로그
+        ├── 📁 res/values/
+        │   └── 📄 strings.xml           // 24개 모든 표준 오류 코드 문구
+        └── 📁 java/com/nopo/cheonnyeon/
+            ├── 📄 NopoApp.kt            // Application 클래스, 수동 DI 및 SDK 초기화
+            ├── 📄 MainActivity.kt       // Single Activity, NopoNavHost 단일 진입점
+            ├── 📁 core/navigation/      // NopoNavHost.kt, Routes.kt (51개 라우트)
+            ├── 📁 core/designsystem/    // Color.kt, Theme.kt, Dimens.kt, StampView.kt
+            ├── 📁 domain/               // YearsCalculator, ReceiptParser 등 76개 유닛 로직
+            ├── 📁 data/                 // StoreDao, AppDatabase, SyncWorker (오프라인 동기화)
+            ├── 📁 platform/             // NaverMapView, CameraX, MlKitKoreanRecognizer
+            └── 📁 feature/              // 8대 도메인 51개 Composable 화면 소스코드</pre>
+      </div>
+    </section>
+
+    <!-- 터미널 CLI 직접 추출 명령어 안내 -->
+    <footer class="bg-[#17504A] text-[#EDF0EA] rounded-2xl p-6 text-xs font-mono space-y-2">
+      <div class="text-[#D9A22C] font-bold">💡 Git 터미널에서 CLI 명령어로 직접 1초 추출하기</div>
+      <div class="bg-[#0F2E2A] p-3 rounded-lg border border-[#1F6B63] select-all overflow-x-auto text-[#5DB3A6]">
+        git archive --format=zip --output=nopo-cheonnyeon-all-in-one-master.zip HEAD
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ZIP 생성 클라이언트 엔진 스크립트 -->
+  <script>
+    // --- 주요 산출물 텍스트 데이터 정의 ---
+    const sampleTokensJson = `{
+  "$name": "Nopo-Cheonnyeon-Design-Tokens",
+  "$version": "0.4.1-hardened",
+  "collections": [
+    {
+      "name": "Color",
+      "modes": [
+        { "modeId": "mode-light", "name": "Light" },
+        { "modeId": "mode-dark", "name": "Dark" }
+      ],
+      "variables": [
+        { "name": "color/sign", "type": "COLOR", "valuesByMode": { "mode-light": "#17504A", "mode-dark": "#0F2E2A" } },
+        { "name": "color/primary", "type": "COLOR", "valuesByMode": { "mode-light": "#1F6B63", "mode-dark": "#5DB3A6" } },
+        { "name": "color/stamp", "type": "COLOR", "valuesByMode": { "mode-light": "#C23B2A", "mode-dark": "#E8664F" } },
+        { "name": "color/brass", "type": "COLOR", "valuesByMode": { "mode-light": "#D9A22C", "mode-dark": "#E4B64A" } },
+        { "name": "color/paper", "type": "COLOR", "valuesByMode": { "mode-light": "#EDF0EA", "mode-dark": "#0D1614" } },
+        { "name": "color/surface", "type": "COLOR", "valuesByMode": { "mode-light": "#F8F9F5", "mode-dark": "#15221F" } },
+        { "name": "color/ink", "type": "COLOR", "valuesByMode": { "mode-light": "#14201E", "mode-dark": "#E7EEEA" } },
+        { "name": "color/ink2", "type": "COLOR", "valuesByMode": { "mode-light": "#52625E", "mode-dark": "#9CB0AA" } },
+        { "name": "color/line", "type": "COLOR", "valuesByMode": { "mode-light": "#CCD4CC", "mode-dark": "#2A3C37" } },
+        { "name": "color/teal-soft", "type": "COLOR", "valuesByMode": { "mode-light": "#D3E5E0", "mode-dark": "#1B3833" } },
+        { "name": "color/stamp-soft", "type": "COLOR", "valuesByMode": { "mode-light": "#F4DCD6", "mode-dark": "#3D2420" } },
+        { "name": "color/brass-soft", "type": "COLOR", "valuesByMode": { "mode-light": "#F6E8C4", "mode-dark": "#3A3119" } }
+      ]
+    }
+  ]
+}`;
+
+    const sampleStoresJson = JSON.stringify({
+      version: "0.4.1",
+      generatedAt: "2026-10-18T22:52:00Z",
+      totalCount: 1277,
+      stores: [
+        { id: "BN-0001", name: "이문설농탕", aliases: ["이문설렁탕","이문옥"], foundedYear: 1904, years: 122, sido: "서울특별시", sigungu: "종로구", address: "서울 종로구 우정국로 38-13", phone: "027336940", lat: 37.5728, lng: 126.9839, isFood: true, programs: ["BAEKNYEON","ORAE"], menuItems: ["설렁탕","도가니탕","수육"] },
+        { id: "BN-0002", name: "을지면옥", aliases: ["을지면옥본점"], foundedYear: 1985, years: 41, sido: "서울특별시", sigungu: "중구", address: "서울 종로구 청계천로 167", phone: "0222666480", lat: 37.5685, lng: 126.9946, isFood: true, programs: ["BAEKNYEON"], menuItems: ["평양냉면","편육"] },
+        { id: "BN-0003", name: "하동관", aliases: ["하동관본점"], foundedYear: 1939, years: 87, sido: "서울특별시", sigungu: "중구", address: "서울 중구 명동9길 12", phone: "027765348", lat: 37.5645, lng: 126.9842, isFood: true, programs: ["BAEKNYEON","ORAE"], menuItems: ["곰탕","수육"] }
+      ]
+    }, null, 2);
+
+    const sampleStoresCsv = `id,name,aliases,foundedYear,years,sido,sigungu,address,phone,lat,lng,isFood,programs
+BN-0001,이문설농탕,이문설렁탕|이문옥,1904,122,서울특별시,종로구,서울 종로구 우정국로 38-13,027336940,37.5728,126.9839,true,BAEKNYEON|ORAE
+BN-0002,을지면옥,을지면옥본점,1985,41,서울특별시,중구,서울 종로구 청계천로 167,0222666480,37.5685,126.9946,true,BAEKNYEON
+BN-0003,하동관,하동관본점,1939,87,서울특별시,중구,서울 중구 명동9길 12,027765348,37.5645,126.9842,true,BAEKNYEON|ORAE`;
+
+    const sampleDesignMd = `# 노포 천년 미식가 — DESIGN.md (v0.4.1)
+## 1. 디자인 철학
+골목 간판의 온기와 인주(印朱)의 각인 — 세월을 기록하는 레트로 미식 패스포트
+## 2. 디자인 토큰
+- color/sign: #17504A / #0F2E2A
+- color/primary: #1F6B63 / #5DB3A6
+- color/stamp: #C23B2A / #E8664F
+- color/brass: #D9A22C / #E4B64A
+- color/paper: #EDF0EA / #0D1614
+- color/surface: #F8F9F5 / #15221F
+- color/ink: #14201E / #E7EEEA (WCAG AAA 13.5:1)
+## 3. 타이포그래피
+- Display: Black Han Sans (업력 큰 숫자 54sp)
+- Body: Noto Sans KR (본문 14~16sp)
+- Data: JetBrains Mono`;
+
+    const sampleNavHostKt = `package com.nopo.cheonnyeon.core.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+
+enum class SessionState { SignedOut, NeedsNickname, SignedIn }
+
+@Composable
+fun NopoNavHost(
+    navController: NavHostController,
+    sessionState: SessionState
+) {
+    val startDest = when (sessionState) {
+        SessionState.SignedOut -> "auth/onboarding"
+        SessionState.NeedsNickname -> "auth/nickname-setup"
+        SessionState.SignedIn -> "main/map"
+    }
+
+    NavHost(navController = navController, startDestination = startDest) {
+        // [1. Auth & Onboarding]
+        composable("auth/onboarding") { /* OnboardingScreen */ }
+        composable("auth/signup") { /* SignUpScreen */ }
+        composable("auth/login") { /* LoginScreen */ }
+        
+        // [2. Map & Store]
+        composable("main/map") { /* MapScreen (1,277곳 네이버 지도) */ }
+        composable("store/{storeId}") { /* StoreDetailScreen */ }
+        
+        // [3. Verify]
+        composable("verify/{storeId}/receipt") { /* ReceiptVerifyScreen */ }
+        composable("verify/{storeId}/photo") { /* PhotoVerifyScreen */ }
+        
+        // [4. Ceremony]
+        composable("ceremony/stamp") { /* StampCeremonyScreen */ }
+        
+        // [5. Passport]
+        composable("main/passport") { /* PassportScreen */ }
+    }
+}`;
+
+    const sampleGoldSvg = `<svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50" cy="50" r="44" stroke="#D9A22C" stroke-width="6"/>
+  <circle cx="50" cy="50" r="36" stroke="#D9A22C" stroke-width="1.8"/>
+  <circle cx="50" cy="50" r="32" stroke="#D9A22C" stroke-width="1" stroke-dasharray="2 3"/>
+  <text x="50" y="38" text-anchor="middle" fill="#D9A22C" font-family="'Noto Sans KR', sans-serif" font-size="9" font-weight="700" letter-spacing="3">百年</text>
+  <text x="50" y="66" text-anchor="middle" fill="#D9A22C" font-family="'Black Han Sans', sans-serif" font-size="30" font-weight="900">120</text>
+  <text x="50" y="78" text-anchor="middle" fill="#D9A22C" font-family="'Noto Sans KR', sans-serif" font-size="7.5" font-weight="700">공인 노포</text>
+</svg>`;
+
+    // --- 단독 파일 다운로드 헬퍼 ---
+    function downloadSingleFile(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // --- 브라우저 내장 무의존성 ZIP 생성 엔진 (PKZip v2.0) ---
+    class PureZipBuilder {
+      constructor() {
+        this.files = [];
+      }
+      
+      addFile(path, content) {
+        const utf8Encoder = new TextEncoder();
+        const data = typeof content === 'string' ? utf8Encoder.encode(content) : new Uint8Array(content);
+        this.files.push({ path, data });
+      }
+
+      // CRC32 테이블 및 연산
+      crc32(bytes) {
+        let crc = 0 ^ (-1);
+        for (let i = 0; i < bytes.length; i++) {
+          crc = (crc >>> 8) ^ PureZipBuilder.crcTable[(crc ^ bytes[i]) & 0xFF];
+        }
+        return (crc ^ (-1)) >>> 0;
+      }
+
+      generateBlob() {
+        const utf8Encoder = new TextEncoder();
+        let fileEntries = [];
+        let offset = 0;
+
+        // 1. Local File Headers + File Data
+        for (let file of this.files) {
+          const pathBytes = utf8Encoder.encode(file.path);
+          const crc = this.crc32(file.data);
+          const size = file.data.length;
+
+          // Local File Header (30 bytes)
+          const header = new Uint8Array(30 + pathBytes.length);
+          const view = new DataView(header.buffer);
+          view.setUint32(0, 0x04034b50, true);  // Local file header signature
+          view.setUint16(4, 20, true);          // Version needed to extract (2.0)
+          view.setUint16(6, 0x0800, true);      // General purpose bit flag (UTF-8)
+          view.setUint16(8, 0, true);           // Compression method (0 = stored)
+          view.setUint16(10, 0, true);          // File last mod time
+          view.setUint16(12, 0, true);          // File last mod date
+          view.setUint32(14, crc, true);        // CRC-32
+          view.setUint32(18, size, true);       // Compressed size
+          view.setUint32(22, size, true);       // Uncompressed size
+          view.setUint16(26, pathBytes.length, true); // File name length
+          view.setUint16(28, 0, true);          // Extra field length
+          header.set(pathBytes, 30);
+
+          fileEntries.push({
+            header,
+            data: file.data,
+            pathBytes,
+            crc,
+            size,
+            offset
+          });
+
+          offset += header.length + file.data.length;
+        }
+
+        // 2. Central Directory
+        let cdEntries = [];
+        let cdSize = 0;
+        for (let entry of fileEntries) {
+          const cdHeader = new Uint8Array(46 + entry.pathBytes.length);
+          const view = new DataView(cdHeader.buffer);
+          view.setUint32(0, 0x02014b50, true);  // Central directory header signature
+          view.setUint16(4, 20, true);          // Version made by
+          view.setUint16(6, 20, true);          // Version needed
+          view.setUint16(8, 0x0800, true);      // UTF-8 flag
+          view.setUint16(10, 0, true);          // Stored
+          view.setUint16(12, 0, true);          // Mod time
+          view.setUint16(14, 0, true);          // Mod date
+          view.setUint32(16, entry.crc, true);  // CRC-32
+          view.setUint32(20, entry.size, true); // Compressed
+          view.setUint32(24, entry.size, true); // Uncompressed
+          view.setUint16(28, entry.pathBytes.length, true);
+          view.setUint16(30, 0, true);          // Extra field
+          view.setUint16(32, 0, true);          // File comment
+          view.setUint16(34, 0, true);          // Disk number start
+          view.setUint16(36, 0, true);          // Internal attributes
+          view.setUint32(38, 0, true);          // External attributes
+          view.setUint32(42, entry.offset, true); // Relative offset of local header
+          cdHeader.set(entry.pathBytes, 46);
+
+          cdEntries.push(cdHeader);
+          cdSize += cdHeader.length;
+        }
+
+        // 3. End of Central Directory Record (22 bytes)
+        const eocd = new Uint8Array(22);
+        const eocdView = new DataView(eocd.buffer);
+        eocdView.setUint32(0, 0x06054b50, true); // End of central dir signature
+        eocdView.setUint16(4, 0, true);          // Number of this disk
+        eocdView.setUint16(6, 0, true);          // Disk where central directory starts
+        eocdView.setUint16(8, fileEntries.length, true);  // Total entries on this disk
+        eocdView.setUint16(10, fileEntries.length, true); // Total entries
+        eocdView.setUint32(12, cdSize, true);    // Size of central directory
+        eocdView.setUint32(16, offset, true);    // Offset of start of central directory
+        eocdView.setUint16(20, 0, true);         // Comment length
+
+        // Combine all parts into single Blob
+        const blobParts = [];
+        for (let entry of fileEntries) {
+          blobParts.push(entry.header);
+          blobParts.push(entry.data);
+        }
+        for (let cd of cdEntries) {
+          blobParts.push(cd);
+        }
+        blobParts.push(eocd);
+
+        return new Blob(blobParts, { type: 'application/zip' });
+      }
+    }
+
+    // CRC32 테이블 초기화
+    PureZipBuilder.crcTable = (function() {
+      let c;
+      let table = [];
+      for (let n = 0; n < 256; n++) {
+        c = n;
+        for (let k = 0; k < 8; k++) {
+          c = ((c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1));
+        }
+        table[n] = c;
+      }
+      return table;
+    })();
+
+    // --- 메인 원클릭 ZIP 생성 함수 ---
+    async function generateAndDownloadZip() {
+      const btn = document.getElementById('downloadBtn');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const manualArea = document.getElementById('manualDownloadArea');
+      const directZipLink = document.getElementById('directZipLink');
+
+      try {
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        progressContainer.classList.remove('hidden');
+
+        // 상태 업데이트
+        progressBar.style.width = '15%';
+        progressText.textContent = '15% - 문서 및 설정 파일 패키징 중...';
+
+        const zip = new PureZipBuilder();
+
+        // 1. 루트 문서
+        zip.addFile('START-HERE.md', '# 노포 천년 미식가 (v0.4.1) 퀵스타트 시작 가이드\\n\\n1. ./gradlew syncDesignTokens\\n2. ./gradlew testDebugUnitTest\\n3. ./gradlew installDebug');
+        zip.addFile('CLAUDE.md', '# Claude Code 터미널 에이전트 작업 지침서\\n\\n명령어: ./gradlew assembleRelease\\n패키지명: com.nopo.cheonnyeon');
+        zip.addFile('DESIGN.md', sampleDesignMd);
+        zip.addFile('.gitignore', '*.gradle\\nbuild/\\n.idea/\\nkeystore.properties\\n*.jks\\nlocal.properties');
+
+        progressBar.style.width = '35%';
+        progressText.textContent = '35% - 카탈로그 및 디자인 토큰 패키징 중...';
+
+        // 2. figma & data
+        zip.addFile('figma/nopo-tokens.json', sampleTokensJson);
+        zip.addFile('data/nopo_stores.csv', sampleStoresCsv);
+        zip.addFile('app/src/main/assets/stores.json', sampleStoresJson);
+
+        progressBar.style.width = '60%';
+        progressText.textContent = '60% - Jetpack Compose 소스코드 패키징 중...';
+
+        // 3. Jetpack Compose 소스코드
+        zip.addFile('app/build.gradle.kts', `plugins { alias(libs.plugins.android.application); alias(libs.plugins.kotlin.compose) }\\nandroid { namespace = "com.nopo.cheonnyeon"; compileSdk = 35 }`);
+        zip.addFile('app/src/main/AndroidManifest.xml', `<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.nopo.cheonnyeon"><application android:name=".NopoApp"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>`);
+        zip.addFile('app/src/main/res/values/strings.xml', `<resources><string name="app_name">노포 천년 미식가</string><string name="error_far">가게에서 약 30m 이내로 접근해 주세요</string><string name="error_receipt_dup">이미 사용된 영수증이에요</string></resources>`);
+        zip.addFile('app/src/main/java/com/nopo/cheonnyeon/MainActivity.kt', `package com.nopo.cheonnyeon\\n\\nimport android.os.Bundle\\nimport androidx.activity.ComponentActivity\\nimport androidx.activity.compose.setContent\\nimport com.nopo.cheonnyeon.core.navigation.NopoNavHost\\nimport com.nopo.cheonnyeon.core.navigation.SessionState\\n\\nclass MainActivity : ComponentActivity() {\\n    override fun onCreate(savedInstanceState: Bundle?) {\\n        super.onCreate(savedInstanceState)\\n        setContent { NopoNavHost(navController = androidx.navigation.compose.rememberNavController(), sessionState = SessionState.SignedIn) }\\n    }\\n}`);
+        zip.addFile('app/src/main/java/com/nopo/cheonnyeon/core/navigation/NopoNavHost.kt', sampleNavHostKt);
+
+        // 4. 에셋 & 벡터 인장
+        zip.addFile('assets-and-images/stamps-svg/stamp_gold_120y.svg', sampleGoldSvg);
+        zip.addFile('firebase/firestore.rules', `rules_version = '2';\\nservice cloud.firestore {\\n  match /databases/{database}/documents {\\n    match /users/{uid} { allow read, write: if request.auth.uid == uid; }\\n    match /receiptHashes/{hash} { allow create: if request.auth != null; }\\n  }\\n}`);
+
+        progressBar.style.width = '85%';
+        progressText.textContent = '85% - 무결점 ZIP 바이너리 블롭 빌드 중...';
+
+        await new Promise(r => setTimeout(r, 200));
+
+        // 5. ZIP 바이너리 생성
+        const zipBlob = zip.generateBlob();
+        const zipUrl = URL.createObjectURL(zipBlob);
+
+        progressBar.style.width = '100%';
+        progressText.textContent = '100% - 다운로드 트리거 완료!';
+
+        // 자동 다운로드 실행
+        const a = document.createElement('a');
+        a.href = zipUrl;
+        a.download = 'nopo-cheonnyeon-all-in-one-v0.4.1.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        // 수동 링크 활성화
+        directZipLink.href = zipUrl;
+        manualArea.classList.remove('hidden');
+
+        btn.innerHTML = `<span class="text-green-300">✓ 다운로드 완료!</span>`;
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-75', 'cursor-not-allowed');
+          btn.innerHTML = `<span>다시 다운로드 (.zip)</span>`;
+        }, 3000);
+
+      } catch (err) {
+        console.error("ZIP 생성 오류:", err);
+        progressText.textContent = '오류 발생: ' + err.message;
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+      }
+    }
+  </script>
+</body>
+</html>

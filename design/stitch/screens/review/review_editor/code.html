@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>공인 방문 평점 및 리뷰 작성 - 노포천년</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,600;0,700;0,800;0,900;1,700&amp;family=Noto+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#005049",
+            "tertiary-fixed": "#ffdea7",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#121e1c",
+            "surface-container-high": "#ddebe7",
+            "inverse-on-surface": "#e6f4f0",
+            "outline": "#6f7977",
+            "secondary-container": "#ff6751",
+            "on-tertiary-container": "#ffd68d",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "secondary-fixed-dim": "#ffb4a8",
+            "surface-container": "#e3f1ed",
+            "on-surface": "#121e1c",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary": "#b02e1f",
+            "inverse-primary": "#8dd3c9",
+            "surface": "#effcf9",
+            "on-surface-variant": "#3f4947",
+            "primary-fixed": "#a8f0e5",
+            "inverse-surface": "#273331",
+            "tertiary-container": "#7e5a00",
+            "tertiary": "#604400",
+            "on-secondary": "#ffffff",
+            "on-error": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "surface-variant": "#d8e5e2",
+            "secondary-fixed": "#ffdad4",
+            "background": "#effcf9",
+            "surface-container-highest": "#d8e5e2",
+            "on-primary-fixed": "#00201d",
+            "outline-variant": "#bec9c6",
+            "primary-fixed-dim": "#8dd3c9",
+            "on-tertiary-fixed": "#271900",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#1c6961",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "on-secondary-container": "#690200",
+            "primary": "#00524b",
+            "surface-container-low": "#e9f7f3",
+            "error-container": "#ffdad6",
+            "surface-dim": "#cfddd9",
+            "tertiary-fixed-dim": "#f7bd46"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter-mobile": "0.75rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "display-lg-mobile": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "number-stat": ["Epilogue"],
+            "label-md": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "label-lg": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "display-lg": ["Epilogue"]
+          },
+          "fontSize": {
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined.fill-1 {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    /* Textured paper feel */
+    .hanji-bg {
+      background-color: #EDF0EA;
+      background-image: radial-gradient(rgba(0, 82, 75, 0.03) 1px, transparent 0);
+      background-size: 16px 16px;
+    }
+    .stamp-badge-border {
+      box-shadow: 0 0 0 1px #ffdad4, 0 1px 3px rgba(176, 46, 31, 0.12);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="hanji-bg text-on-surface antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-on-primary-container pb-28">
+<!-- Mobile Viewport Container (Android 390-412dp standard) -->
+<main class="w-full max-w-[420px] bg-[#F8F9F5] min-h-screen flex flex-col shadow-2xl relative border-x border-outline-variant/40">
+<!-- Top Navigation Bar (Task-focused Modal Navigation: Suppressed BottomNavBar per instructions) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary px-space-md h-14 flex items-center justify-between shadow-sm border-b-2 border-tertiary-fixed-dim">
+<div class="flex items-center gap-space-sm">
+<button aria-label="닫기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container active:scale-95 transition-transform text-on-primary" type="button">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm tracking-tight text-on-primary">미식 기록 작성</h1>
+</div>
+<button class="h-9 px-3.5 bg-primary-container text-on-primary-container rounded font-label-lg text-label-lg active:scale-95 hover:bg-on-primary-fixed-variant transition-all flex items-center justify-center shadow-sm" type="button">
+        등록
+      </button>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="p-space-md flex flex-col gap-space-md flex-1">
+<!-- Store Verification Header Card -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/50 shadow-sm relative overflow-hidden">
+<!-- Decorative Vintage Seal Accent Background -->
+<div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full border-4 border-secondary/10 flex items-center justify-center pointer-events-none rotate-12">
+<span class="text-secondary/15 font-bold text-label-sm">NOPO 1904</span>
+</div>
+<div class="flex items-start justify-between gap-space-sm mb-space-sm">
+<div>
+<div class="flex items-center gap-1.5 mb-0.5">
+<span class="px-1.5 py-0.5 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm">120년차 노포</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">종로구 견지동</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">이문설농탕</h2>
+</div>
+<div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center text-primary border border-outline-variant/40 shrink-0">
+<span class="material-symbols-outlined text-[26px]">storefront</span>
+</div>
+</div>
+<!-- Official Stamp Badge -->
+<div class="p-2.5 rounded-lg bg-secondary-fixed/30 border border-secondary/30 flex items-center gap-2.5 stamp-badge-border mb-2.5">
+<div class="w-7 h-7 rounded-full border-2 border-secondary flex items-center justify-center bg-surface-container-lowest shrink-0 -rotate-6">
+<span class="material-symbols-outlined text-secondary fill-1 text-[16px]">verified</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-secondary font-bold tracking-tight">영수증 방문 인증 완료 (2024.10.18)</p>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[15px]">shield_person</span>
+          인증된 미식가만 남길 수 있는 신뢰의 100년 기록입니다.
+        </p>
+</section>
+<!-- Star Rating Section -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/50 shadow-sm flex flex-col items-center text-center">
+<span class="font-label-md text-label-md text-primary tracking-wide uppercase mb-1">Culinary Heritage Score</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb- space-sm">노포의 미식 가치를 평가해주세요</h3>
+<!-- Interactive Rating Stars -->
+<div class="flex items-center justify-center gap-2 my-space-sm" id="starRatingContainer">
+<button aria-label="1점" class="star-btn p-1 text-tertiary-fixed-dim hover:scale-110 active:scale-95 transition-transform" data-val="1" type="button">
+<span class="material-symbols-outlined fill-1 text-[40px]">star</span>
+</button>
+<button aria-label="2점" class="star-btn p-1 text-tertiary-fixed-dim hover:scale-110 active:scale-95 transition-transform" data-val="2" type="button">
+<span class="material-symbols-outlined fill-1 text-[40px]">star</span>
+</button>
+<button aria-label="3점" class="star-btn p-1 text-tertiary-fixed-dim hover:scale-110 active:scale-95 transition-transform" data-val="3" type="button">
+<span class="material-symbols-outlined fill-1 text-[40px]">star</span>
+</button>
+<button aria-label="4점" class="star-btn p-1 text-tertiary-fixed-dim hover:scale-110 active:scale-95 transition-transform" data-val="4" type="button">
+<span class="material-symbols-outlined fill-1 text-[40px]">star</span>
+</button>
+<button aria-label="5점" class="star-btn p-1 text-tertiary-fixed-dim hover:scale-110 active:scale-95 transition-transform" data-val="5" type="button">
+<span class="material-symbols-outlined fill-1 text-[40px]">star</span>
+</button>
+</div>
+<!-- Rating Dynamic Score & Phrase -->
+<div class="px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant/40 mb-2 flex items-center gap-2">
+<span class="font-number-stat text-headline-sm text-tertiary font-bold">5.0 / 5.0</span>
+<span class="w-1 h-3 bg-outline-variant rounded-full"></span>
+<span class="font-label-md text-label-md text-on-surface">세월의 깊이가 느껴지는 최고의 노포입니다 (5점)</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px]">info</span>
+          별점만 선택해도 바로 저장이 가능합니다 (리뷰 글은 선택사항).
+        </p>
+</section>
+<!-- Review Text Input Area -->
+<section class="bg-surface-container-lowest rounded-xl p-space-md border border-outline-variant/50 shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-space-sm">
+<label class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5" for="reviewText">
+<span class="material-symbols-outlined text-primary text-[20px]">edit_note</span>
+            미식 평문 기록
+          </label>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium" id="charCount">142 / 500자</span>
+</div>
+<!-- Preset Quick Tags -->
+<div class="flex flex-wrap gap-1.5 mb-space-sm">
+<button class="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant border border-outline-variant/50 hover:bg-primary-fixed/30 hover:text-primary active:scale-95 transition-all" onclick="addTag('맑고 깊은 국물')" type="button">
+            + 맑고 깊은 국물
+          </button>
+<button class="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant border border-outline-variant/50 hover:bg-primary-fixed/30 hover:text-primary active:scale-95 transition-all" onclick="addTag('100년의 헤리티지')" type="button">
+            + 100년의 헤리티지
+          </button>
+<button class="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant border border-outline-variant/50 hover:bg-primary-fixed/30 hover:text-primary active:scale-95 transition-all" onclick="addTag('수육 추천')" type="button">
+            + 수육 추천
+          </button>
+<button class="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant border border-outline-variant/50 hover:bg-primary-fixed/30 hover:text-primary active:scale-95 transition-all" onclick="addTag('친절한 응대')" type="button">
+            + 친절한 응대
+          </button>
+<button class="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-surface-container-low text-on-surface-variant border border-outline-variant/50 hover:bg-primary-fixed/30 hover:text-primary active:scale-95 transition-all" onclick="addTag('혼밥 추천')" type="button">
+            + 혼밥 추천
+          </button>
+</div>
+<!-- Textarea with hanji undertone -->
+<div class="relative rounded-lg border border-outline-variant bg-[#FDFAF4] focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<textarea class="w-full bg-transparent p-3 font-body-md text-body-md text-on-surface placeholder:text-outline/70 border-none resize-none focus:outline-none focus:ring-0 leading-relaxed" id="reviewText" placeholder="노포의 맛과 분위기, 탕국의 깊이, 추천 곁들임 메뉴 등 다음 미식가를 위한 진솔한 소감을 남겨주세요 (공백 제외 500자 이내)." rows="5">120년의 세월이 무색하게 고즈넉한 온기를 간직하고 있는 명당입니다. 뽀얗지 않고 맑고 깊은 사골 국물에 정갈한 수육 고명, 그리고 알싸한 깍두기 국물의 조화가 단연 압권입니다.</textarea>
+<div class="p-2 border-t border-outline-variant/30 flex items-center justify-between text-outline">
+<div class="flex items-center gap-2">
+<button class="p-1 rounded hover:bg-surface-container active:scale-95 text-on-surface-variant" title="사진 추가" type="button">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+</button>
+<button class="p-1 rounded hover:bg-surface-container active:scale-95 text-on-surface-variant" title="영수증 태그" type="button">
+<span class="material-symbols-outlined text-[20px]">receipt_long</span>
+</button>
+</div>
+<span class="text-label-sm font-label-sm text-outline">자동 임시저장 됨</span>
+</div>
+</div>
+</section>
+<!-- Online / Sync Status Card -->
+<section class="bg-surface-container-low/70 rounded-xl p-3 border border-outline-variant/60 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">cloud_done</span>
+<div class="text-on-surface-variant font-body-sm text-body-sm leading-snug">
+          리뷰는 공인 검증을 위해 <span class="font-semibold text-primary">온라인 상태</span>에서 서버에 안전하게 등록됩니다. 오프라인 시에도 작성 중인 초안은 보존됩니다.
+        </div>
+</section>
+</div>
+<!-- Bottom Sticky Verification CTA (Fixed Thumb Zone Anchor) -->
+<div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[420px] bg-surface-container-lowest/95 backdrop-blur-md p-space-md border-t border-outline-variant/40 shadow-lg z-50">
+<button class="w-full h-14 bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant active:scale-[0.98] transition-all rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2.5 shadow-md" type="button">
+<span class="material-symbols-outlined text-[22px] fill-1">history_edu</span>
+<span>평점 및 미식 기록 등록하기</span>
+</button>
+<div class="w-32 h-1 bg-on-surface/20 rounded-full mx-auto mt-2.5"></div>
+</div>
+</main>
+<script>
+    // Quick Tag Tap Handler
+    function addTag(tagText) {
+      const textarea = document.getElementById('reviewText');
+      if (textarea) {
+        const separator = textarea.value.trim().length > 0 ? " " : "";
+        textarea.value = textarea.value + separator + "#" + tagText;
+        updateCount();
+        textarea.focus();
+      }
+    }
+
+    // Character Counter
+    const textarea = document.getElementById('reviewText');
+    const counter = document.getElementById('charCount');
+    
+    function updateCount() {
+      if (textarea && counter) {
+        const length = textarea.value.length;
+        counter.textContent = length + " / 500자";
+      }
+    }
+    if (textarea) {
+      textarea.addEventListener('input', updateCount);
+    }
+
+    // Star Rating Micro-interaction
+    const starBtns = document.querySelectorAll('.star-btn');
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseInt(btn.getAttribute('data-val'), 10);
+        starBtns.forEach(b => {
+          const bVal = parseInt(b.getAttribute('data-val'), 10);
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (bVal <= val) {
+            b.classList.remove('text-outline-variant');
+            b.classList.add('text-tertiary-fixed-dim');
+            if (icon) icon.classList.add('fill-1');
+          } else {
+            b.classList.remove('text-tertiary-fixed-dim');
+            b.classList.add('text-outline-variant');
+            if (icon) icon.classList.remove('fill-1');
+          }
+        });
+      });
+    });
+  </script>
+</body></html>

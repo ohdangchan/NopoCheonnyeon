@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>이문설농탕 미식 평점·리뷰 - 노포천년</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Epilogue & Noto Sans KR -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,600;0,700;0,800;0,900;1,700&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-highest": "#d8e5e2",
+            "on-background": "#121e1c",
+            "tertiary-container": "#7e5a00",
+            "surface-container-low": "#e9f7f3",
+            "surface-container-high": "#ddebe7",
+            "surface-container": "#e3f1ed",
+            "surface-bright": "#effcf9",
+            "on-secondary-fixed-variant": "#8e1409",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-primary": "#8dd3c9",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#410100",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed-variant": "#005049",
+            "primary": "#00524b",
+            "tertiary-fixed": "#ffdea7",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-tertiary-container": "#ffd68d",
+            "on-tertiary-fixed": "#271900",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-secondary-container": "#690200",
+            "on-surface-variant": "#3f4947",
+            "secondary-fixed-dim": "#ffb4a8",
+            "outline": "#6f7977",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-tint": "#1c6961",
+            "error": "#ba1a1a",
+            "primary-container": "#1f6b63",
+            "secondary-container": "#ff6751",
+            "secondary": "#b02e1f",
+            "primary-fixed-dim": "#8dd3c9",
+            "tertiary": "#604400",
+            "inverse-surface": "#273331",
+            "surface": "#effcf9",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#a1e9de",
+            "on-primary-fixed": "#00201d",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "outline-variant": "#bec9c6",
+            "on-surface": "#121e1c",
+            "surface-variant": "#d8e5e2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "1rem",
+            "margin-mobile": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "margin": "1.25rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Noto Sans KR", "sans-serif"],
+            "label-md": ["Noto Sans KR", "sans-serif"],
+            "body-md": ["Noto Sans KR", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "headline-sm": ["Noto Sans KR", "sans-serif"],
+            "label-sm": ["Noto Sans KR", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"],
+            "body-lg": ["Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "headline-md": ["Noto Sans KR", "sans-serif"],
+            "body-sm": ["Noto Sans KR", "sans-serif"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .inju-stamp-ring {
+      box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);
+    }
+    .heritage-border-pattern {
+      border-style: solid;
+      border-color: #bec9c6;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-32 font-body-md select-none">
+<!-- Mobile Viewport Container (Centered for responsive tablet/desktop previews) -->
+<div class="max-w-md mx-auto min-h-screen bg-surface-container-lowest shadow-xl flex flex-col relative">
+<!-- Top Enamel Plaque AppBar -->
+<header class="sticky top-0 z-40 bg-primary border-b-2 border-tertiary-fixed-dim text-on-primary shadow-sm flex items-center justify-between px-space-md h-14">
+<div class="flex items-center gap-space-sm">
+<button aria-label="뒤로가기" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-on-primary-container opacity-90">종로구 공평동 · 120년차 노포</span>
+<h1 class="text-headline-sm font-headline-sm tracking-tight text-on-primary leading-tight truncate max-w-[210px]">
+            이문설농탕 미식 평점·리뷰
+          </h1>
+</div>
+</div>
+<div class="flex items-center gap-1 text-on-primary">
+<button aria-label="공유하기" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-primary-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="북마크" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-primary-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-space-md pt-space-md pb-6 space-y-space-md">
+<!-- Store Rating Hero Summary Card (Paper & Plaque aesthetic) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm relative overflow-hidden">
+<!-- Subdued Heritage Watermark Texture Accent -->
+<div class="absolute -top-6 -right-6 w-24 h-24 rounded-full border-4 border-dashed border-outline-variant opacity-20 pointer-events-none"></div>
+<div class="flex items-start justify-between border-b border-outline-variant pb-3 mb-3">
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-number-stat text-number-stat text-on-background tracking-tighter flex items-center">
+<span class="text-tertiary mr-1 text-[28px]" style="font-variation-settings: 'FILL' 1;">★</span>4.8
+              </span>
+<span class="text-label-md font-label-md text-on-surface-variant font-medium">/ 5.0</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-0.5">
+              공인 식객 <strong class="text-on-surface font-semibold">842명</strong>의 진성 평가
+            </p>
+</div>
+<!-- 100% Verified Visitors Badge -->
+<div class="bg-surface-container border border-primary-container/30 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<div class="flex flex-col text-right">
+<span class="text-label-sm font-label-sm text-primary leading-none">100% 영수증 검증</span>
+<span class="text-[9px] font-medium text-on-surface-variant mt-0.5">전원 방문 인증 통과</span>
+</div>
+</div>
+</div>
+<!-- Breakdown Rating Bars -->
+<div class="space-y-1.5">
+<!-- 5점 -->
+<div class="flex items-center text-label-sm font-label-sm gap-2">
+<span class="w-5 text-on-surface-variant">5점</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-gradient-to-r from-primary-container to-tertiary-fixed-dim rounded-full" style="width: 82%"></div>
+</div>
+<span class="w-8 text-right font-medium text-on-surface">82%</span>
+</div>
+<!-- 4점 -->
+<div class="flex items-center text-label-sm font-label-sm gap-2">
+<span class="w-5 text-on-surface-variant">4점</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-primary-container rounded-full" style="width: 14%"></div>
+</div>
+<span class="w-8 text-right font-medium text-on-surface">14%</span>
+</div>
+<!-- 3점 -->
+<div class="flex items-center text-label-sm font-label-sm gap-2">
+<span class="w-5 text-on-surface-variant">3점</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-outline rounded-full" style="width: 3%"></div>
+</div>
+<span class="w-8 text-right font-medium text-on-surface">3%</span>
+</div>
+<!-- 2점 -->
+<div class="flex items-center text-label-sm font-label-sm gap-2">
+<span class="w-5 text-on-surface-variant">2점</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-outline-variant rounded-full" style="width: 1%"></div>
+</div>
+<span class="w-8 text-right font-medium text-on-surface">1%</span>
+</div>
+<!-- 1점 -->
+<div class="flex items-center text-label-sm font-label-sm gap-2">
+<span class="w-5 text-on-surface-variant">1점</span>
+<div class="flex-1 h-2 bg-surface-container rounded-full overflow-hidden border border-outline-variant/40">
+<div class="h-full bg-outline-variant rounded-full" style="width: 0%"></div>
+</div>
+<span class="w-8 text-right font-medium text-on-surface">0%</span>
+</div>
+</div>
+<!-- Curatorial Heritage Tags -->
+<div class="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-outline-variant/60">
+<span class="bg-surface-container-low text-primary border border-outline-variant/60 px-2 py-0.5 rounded text-label-sm font-label-sm">#맑은사골</span>
+<span class="bg-surface-container-low text-primary border border-outline-variant/60 px-2 py-0.5 rounded text-label-sm font-label-sm">#백년헤리티지</span>
+<span class="bg-surface-container-low text-primary border border-outline-variant/60 px-2 py-0.5 rounded text-label-sm font-label-sm">#마늘김치</span>
+<span class="bg-surface-container-low text-primary border border-outline-variant/60 px-2 py-0.5 rounded text-label-sm font-label-sm">#피맛골역사</span>
+</div>
+</section>
+<!-- Write Review CTA Card (User Verified Action Prompter) -->
+<section class="bg-surface-container-low border border-outline-variant rounded-xl p-4 relative">
+<div class="flex items-start gap-3">
+<!-- Inju Stamp Icon Accent -->
+<div class="w-10 h-10 rounded-full border-2 border-secondary bg-surface-container-lowest flex items-center justify-center flex-shrink-0 inju-stamp-ring">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">approval_delegation</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-1.5">
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant text-[11px] font-bold px-1.5 py-0.5 rounded">방문자 자격 확인</span>
+<span class="text-label-sm font-label-sm text-outline">단골 인증 완료</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface mt-1 leading-snug">
+              식객님은 <strong class="text-secondary font-semibold">3회 방문 인증</strong>이 완료되었습니다. 나의 미식 소감을 공유해주세요.
+            </p>
+</div>
+</div>
+<button class="mt-3 w-full h-11 bg-secondary text-on-secondary font-label-lg text-label-lg rounded-lg shadow-sm flex items-center justify-center gap-2 hover:bg-secondary-container active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">rate_review</span>
+<span>공인 평점 및 리뷰 쓰기</span>
+</button>
+</section>
+<!-- Review Feed Section -->
+<section class="space-y-3">
+<!-- Feed Header & Filter Chips -->
+<div class="flex items-center justify-between pt-1">
+<h2 class="text-headline-sm font-headline-sm text-on-background flex items-center gap-1.5">
+<span>식객 미식 평</span>
+<span class="text-primary font-normal text-label-md">(842)</span>
+</h2>
+<div class="flex items-center gap-1 bg-surface-container p-0.5 rounded-lg border border-outline-variant/70">
+<button class="px-2.5 py-1 text-label-sm font-label-sm rounded-md bg-surface-container-lowest text-primary shadow-xs font-bold">최신순</button>
+<button class="px-2.5 py-1 text-label-sm font-label-sm rounded-md text-on-surface-variant hover:text-primary transition-colors">단골순</button>
+<button class="px-2.5 py-1 text-label-sm font-label-sm rounded-md text-on-surface-variant hover:text-primary transition-colors">칭호 높은순</button>
+</div>
+</div>
+<!-- Review Card 1 (Heritage Stamp Highlight) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm relative space-y-2.5">
+<!-- Top Row: User Meta & Heritage Badge -->
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center font-bold text-primary text-label-md">
+                종로
+              </div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-label-md font-label-md text-on-surface font-bold">종로국밥대장</span>
+<!-- Brass Badge -->
+<span class="bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-fixed-dim/80 text-[10px] font-bold px-1.5 py-0.2 rounded-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                    동네 어른 (300년+)
+                  </span>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-outline mt-0.5">
+<span class="text-primary font-semibold">단골 3회 방문</span>
+<span>·</span>
+<span>2024.04.18</span>
+</div>
+</div>
+</div>
+<!-- Report Button -->
+<button class="text-outline hover:text-error flex items-center gap-0.5 text-label-sm font-label-sm p-1" title="리뷰 신고" type="button">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+<span>신고</span>
+</button>
+</div>
+<!-- Rating Stars & Verified Stamp Badge -->
+<div class="flex items-center justify-between">
+<div class="flex items-center text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="ml-1.5 font-bold text-on-surface text-label-sm">5.0</span>
+</div>
+<!-- Inju Vermilion Stamp Tag -->
+<div class="flex items-center gap-1 text-[11px] font-bold text-secondary border border-secondary/60 bg-secondary-fixed/40 px-2 py-0.5 rounded-sm">
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span>영수증 인증 완료</span>
+</div>
+</div>
+<!-- Review Body Text -->
+<p class="text-body-md font-body-md text-on-surface leading-relaxed pt-0.5">
+            120년 동안 끓여온 사골 국물의 맑고 묵직한 진심. 인공 조미료 없는 순수한 백년의 헤리티지네.
+          </p>
+<!-- Interaction bar -->
+<div class="flex items-center gap-4 pt-1 text-label-sm font-label-sm text-outline">
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>도움됨 42</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+<span>댓글 3</span>
+</button>
+</div>
+</article>
+<!-- Review Card 2 (With Attached Photo Badge) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm relative space-y-2.5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-surface-container border border-outline-variant flex items-center justify-center font-bold text-primary text-label-md">
+                마포
+              </div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-label-md font-label-md text-on-surface font-bold">마포미식가</span>
+<!-- Brass Master Badge -->
+<span class="bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-fixed-dim/80 text-[10px] font-bold px-1.5 py-0.2 rounded-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[11px]" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+                    장인 식객 (600년+)
+                  </span>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-outline mt-0.5">
+<span class="text-primary font-semibold">단골 7회</span>
+<span>·</span>
+<span>2024.04.10</span>
+</div>
+</div>
+</div>
+<button class="text-outline hover:text-error flex items-center gap-0.5 text-label-sm font-label-sm p-1" title="리뷰 신고" type="button">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+<span>신고</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center text-tertiary text-sm" style="font-variation-settings: 'FILL' 1;">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="ml-1.5 font-bold text-on-surface text-label-sm">5.0</span>
+</div>
+<!-- Photo & Receipt Tag Chips -->
+<div class="flex items-center gap-1">
+<span class="bg-surface-container text-primary border border-outline-variant/60 text-[11px] font-bold px-1.5 py-0.5 rounded-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">image</span>
+                사진 2장
+              </span>
+<span class="text-[11px] font-bold text-secondary border border-secondary/60 bg-secondary-fixed/40 px-1.5 py-0.5 rounded-sm">
+                영수증 인증
+              </span>
+</div>
+</div>
+<!-- Review Attached Image Preview (Standard Requirement: 50-100 word image prompt with placeholder & data-alt) -->
+<div class="rounded-lg overflow-hidden border border-outline-variant relative">
+<img class="w-full h-40 object-cover" data-alt="Authentic traditional Korean Seolleongtang ox bone soup served in a vintage earthenware ttukbaegi bowl at an alley heritage restaurant. The steaming, milky-white and clear broth is topped with finely chopped fresh scallions and delicate tender beef brisket slices. Beside the bowl sits rich fermented garlic radish kimchi on heavy textured ceramic tableware in a warmly lit, nostalgic dining hall with hanji paper textures and dark walnut wood accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5qOWGzHfrjvUt3oBSHTm803gYREC0ZlbOru1w5XHwIg0oK-r9FgBKD4C-qEdZZsgQT9B7JdkiYQGuqTvfvzn9qzbTFFgv1pObqohYJlGrGieMTHk_9sD-5Efd0Pa-aDduYdt_WUTQk61JV5ikDL0h7RA-qERQRvRrhM_M2gqu3QVQiABHHG5yOHOW9q24pnScl8-e3ufNQ0JCW4UJq2Z8ry2eVe4wAGTfWA-kneRPOG3suIWOTDsX"/>
+<div class="absolute bottom-2 right-2 bg-on-background/80 text-surface-bright text-label-sm px-2 py-0.5 rounded backdrop-blur-sm">
+              특설농탕 &amp; 수육한접시
+            </div>
+</div>
+<p class="text-body-md font-body-md text-on-surface leading-relaxed">
+            수육의 양지머리와 지라의 고소함이 일품입니다. 파를 듬뿍 넣고 소금 간 없이 먼저 한 술 뜨는 것을 추천.
+          </p>
+<div class="flex items-center gap-4 pt-1 text-label-sm font-label-sm text-outline">
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>도움됨 67</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+<span>댓글 5</span>
+</button>
+</div>
+</article>
+<!-- Review Card 3 (Novice Explorer Review) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm relative space-y-2.5">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center font-bold text-on-surface-variant text-label-md">
+                새싹
+              </div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-label-md font-label-md text-on-surface font-bold">새싹식객12</span>
+<span class="bg-surface-container-high text-on-surface-variant border border-outline-variant text-[10px] font-bold px-1.5 py-0.2 rounded-sm flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[11px]">eco</span>
+                    새싹 식객
+                  </span>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-outline mt-0.5">
+<span class="text-on-surface-variant font-medium">첫 방문</span>
+<span>·</span>
+<span>2024.04.05</span>
+</div>
+</div>
+</div>
+<button class="text-outline hover:text-error flex items-center gap-0.5 text-label-sm font-label-sm p-1" title="리뷰 신고" type="button">
+<span class="material-symbols-outlined text-[16px]">flag</span>
+<span>신고</span>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center text-tertiary text-sm">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="ml-1.5 font-bold text-on-surface text-label-sm">4.0</span>
+</div>
+<span class="text-[11px] font-bold text-secondary border border-secondary/60 bg-secondary-fixed/40 px-2 py-0.5 rounded-sm">
+              영수증 인증 완료
+            </span>
+</div>
+<p class="text-body-md font-body-md text-on-surface leading-relaxed">
+            처음엔 슴슴했는데 먹을수록 깊은 맛이 우러나옵니다.
+          </p>
+<div class="flex items-center gap-4 pt-1 text-label-sm font-label-sm text-outline">
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">thumb_up</span>
+<span>도움됨 8</span>
+</button>
+<button class="flex items-center gap-1 hover:text-primary">
+<span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+<span>댓글 0</span>
+</button>
+</div>
+</article>
+<!-- Pagination Load More Button -->
+<div class="pt-2">
+<button class="w-full py-3.5 bg-surface-container hover:bg-surface-container-high border border-outline-variant text-primary font-label-lg text-label-lg rounded-xl flex items-center justify-center gap-2 active:scale-[0.99] transition-transform" type="button">
+<span>더보기 (20개씩 불러오기)</span>
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Bottom Docked Sticky Footer Bar (Android Ergonomic Thumb Zone Anchor) -->
+<div class="sticky bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant p-3 shadow-lg z-50 flex items-center gap-2">
+<!-- Store Info Quick Jump -->
+<button class="h-12 px-3 rounded-lg border border-primary-container text-primary flex flex-col items-center justify-center flex-shrink-0 hover:bg-surface-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[18px]">storefront</span>
+<span class="text-[10px] font-bold leading-tight">가게 정보</span>
+</button>
+<!-- Primary Visit Verification & Review CTA -->
+<button class="flex-1 h-12 bg-secondary text-on-secondary font-label-lg text-label-lg rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-secondary-container active:scale-[0.98] transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>방문 인증하고 리뷰 쓰기</span>
+</button>
+</div>
+</div>
+</body></html>

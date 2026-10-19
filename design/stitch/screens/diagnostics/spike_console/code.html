@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 미식가 - E0 스파이크 종합 진단기</title>
+<!-- Google Fonts: Epilogue & Noto Sans KR -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#005049",
+            "on-primary-container": "#a1e9de",
+            "tertiary": "#604400",
+            "inverse-primary": "#8dd3c9",
+            "secondary-fixed-dim": "#ffb4a8",
+            "primary": "#00524b",
+            "outline-variant": "#bec9c6",
+            "outline": "#6f7977",
+            "tertiary-container": "#7e5a00",
+            "error-container": "#ffdad6",
+            "on-background": "#121e1c",
+            "on-tertiary-fixed": "#271900",
+            "on-surface-variant": "#3f4947",
+            "on-error": "#ffffff",
+            "surface-container-low": "#e9f7f3",
+            "tertiary-fixed": "#ffdea7",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#273331",
+            "secondary-container": "#ff6751",
+            "surface-container": "#e3f1ed",
+            "tertiary-fixed-dim": "#f7bd46",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "on-tertiary": "#ffffff",
+            "on-primary": "#ffffff",
+            "error": "#ba1a1a",
+            "surface": "#effcf9",
+            "on-secondary-container": "#690200",
+            "on-tertiary-container": "#ffd68d",
+            "inverse-on-surface": "#e6f4f0",
+            "on-secondary-fixed": "#410100",
+            "surface-bright": "#effcf9",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "secondary": "#b02e1f",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#00201d",
+            "surface-container-highest": "#d8e5e2",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-tint": "#1c6961",
+            "on-secondary": "#ffffff",
+            "primary-container": "#1f6b63",
+            "on-surface": "#121e1c",
+            "background": "#effcf9",
+            "surface-variant": "#d8e5e2",
+            "surface-container-high": "#ddebe7",
+            "primary-fixed": "#a8f0e5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-xl": "2.25rem",
+            "margin": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-md": ["Noto Sans KR", "sans-serif"],
+            "body-md": ["Noto Sans KR", "sans-serif"],
+            "body-sm": ["Noto Sans KR", "sans-serif"],
+            "display-lg": ["Epilogue", "sans-serif"],
+            "label-sm": ["Noto Sans KR", "sans-serif"],
+            "headline-md": ["Noto Sans KR", "sans-serif"],
+            "body-lg": ["Noto Sans KR", "sans-serif"],
+            "display-lg-mobile": ["Epilogue", "sans-serif"],
+            "number-stat": ["Epilogue", "sans-serif"],
+            "headline-lg": ["Epilogue", "sans-serif"],
+            "headline-sm": ["Noto Sans KR", "sans-serif"],
+            "label-lg": ["Noto Sans KR", "sans-serif"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .font-mono-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    /* Subtle scanline and terminal inspector feel with design system teal tone */
+    .terminal-panel {
+      background: #121e1c;
+      color: #e3f1ed;
+      border: 1px solid #1f6b63;
+      box-shadow: 0 4px 20px rgba(0, 82, 75, 0.15);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #1f6b63;
+      border-radius: 4px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen antialiased flex flex-col items-center">
+<!-- Outer Mobile Container Simulation -->
+<div class="w-full max-w-md min-h-screen bg-surface flex flex-col shadow-2xl relative pb-28">
+<!-- Top Navigation Bar (Shared Component Anchored) -->
+<header class="bg-primary text-on-primary docked full-width top border-b-2 border-tertiary-fixed shadow-sm flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<div class="flex items-center space-x-2">
+<button aria-label="뒤로가기" class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-on-primary tracking-tight">노포천년</span>
+</div>
+<div class="flex items-center space-x-2">
+<button class="flex items-center space-x-1 px-2.5 py-1 rounded bg-primary-container text-on-primary font-label-sm text-label-sm active:scale-95 transition-all shadow-inner" id="copyLogBtn" title="콘솔 로그 복사">
+<span class="material-symbols-outlined text-[16px]" data-icon="content_copy">content_copy</span>
+<span>로그 복사</span>
+</button>
+<button aria-label="검색" class="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-primary-container hover:text-on-primary-container active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+</button>
+</div>
+</header>
+<!-- Sub-Header Diagnostic Banner -->
+<div class="bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm border-b border-primary-container flex justify-between items-center">
+<div class="flex items-center space-x-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-primary-fixed-dim animate-pulse"></span>
+<h1 class="font-headline-sm text-headline-sm text-surface-bright tracking-tight">E0 스파이크 종합 진단기</h1>
+</div>
+<div class="flex items-center space-x-1 bg-primary text-on-primary px-2 py-0.5 rounded text-label-sm font-label-sm border border-primary-fixed">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span>5/5 PASSED</span>
+</div>
+</div>
+<!-- Main Content Stream -->
+<main class="flex-1 p-space-md space-y-4">
+<!-- Spec & Requirement Tag Chips Bar -->
+<div class="flex flex-wrap gap-1.5 font-mono-code text-[11px]">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface border border-outline-variant">FR-SPK-01~03</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface border border-outline-variant">nopo-06</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface border border-outline-variant">S-001 ~ S-008</span>
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary-container ml-auto font-label-sm">Day-1 AM Sprint</span>
+</div>
+<!-- Environment & Device Info Card (Bento Style) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-space-md shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-2 border-b border-surface-container">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="phone_android">phone_android</span>
+<span class="font-headline-sm text-[15px] text-on-surface">단말기 환경 인포</span>
+</div>
+<span class="font-mono-code text-label-sm text-primary font-bold bg-surface-container-low px-2 py-0.5 rounded">R8 Verified</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5 pt-3">
+<div class="p-2 rounded-lg bg-surface-container-low border border-outline-variant/60">
+<span class="text-[10px] text-on-surface-variant block uppercase font-label-sm">Device Target</span>
+<span class="font-body-md text-[13px] font-semibold text-on-surface flex items-center gap-1 mt-0.5">
+              Galaxy S24
+              <span class="text-[10px] bg-outline-variant/40 text-on-surface px-1 rounded">API 34</span>
+</span>
+<span class="text-[11px] text-on-surface-variant block font-mono-code">Play Services v24.12</span>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-low border border-outline-variant/60">
+<span class="text-[10px] text-on-surface-variant block uppercase font-label-sm">Application Package</span>
+<span class="font-mono-code text-[12px] font-bold text-primary truncate block mt-0.5" title="com.nopo.cheonnyeon">
+              com.nopo.cheonnyeon
+            </span>
+<span class="text-[11px] text-secondary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[12px]" data-icon="check_circle">check_circle</span> Release Sign OK
+            </span>
+</div>
+</div>
+</section>
+<!-- Section Title: 5 Core Features Dashboard -->
+<div class="flex items-center justify-between pt-1">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary" data-icon="speed">speed</span>
+          5대 필수 기능 실시간 대시보드
+        </h2>
+<span class="font-mono-code text-label-sm text-on-surface-variant">Live Probe</span>
+</div>
+<!-- Feature Card 1: Naver Map SDK -->
+<div class="terminal-panel rounded-xl p-3.5 space-y-2.5 transition-all">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary font-mono-code text-[11px] font-bold rounded">SPK-1</span>
+<h3 class="font-headline-sm text-[15px] font-bold text-surface-bright">네이버 지도 SDK</h3>
+<span class="text-xs text-primary-fixed font-mono-code">v3.24.0</span>
+</div>
+<span class="flex items-center gap-1 text-[11px] text-primary-fixed bg-primary-container/40 px-2 py-0.5 rounded border border-primary-container">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed animate-ping"></span> Auth 200 OK
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs font-mono-code">
+<div class="bg-inverse-surface/80 p-2 rounded border border-outline/30">
+<div class="text-on-surface-variant text-[10px]">초기 렌더링 레이턴시</div>
+<div class="text-sm font-bold text-surface-bright flex items-baseline gap-1 mt-0.5">
+<span class="text-primary-fixed text-base font-number-stat">42</span> ms
+              <span class="text-[10px] text-outline-variant font-normal">(&lt; 150ms 권장)</span>
+</div>
+</div>
+<div class="bg-inverse-surface/80 p-2 rounded border border-outline/30">
+<div class="text-on-surface-variant text-[10px]">카탈로그 마커 클러스터링</div>
+<div class="text-sm font-bold text-surface-bright flex items-baseline gap-1 mt-0.5">
+<span class="text-tertiary-fixed text-base font-number-stat">1,277</span> 개
+              <span class="text-[11px] text-primary-fixed font-normal">@ 60fps</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline-variant pt-1 border-t border-outline/20 font-mono-code">
+<span>Cluster overhead: 0 drops</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="task_alt">task_alt</span> 부하 0건 통과
+          </span>
+</div>
+</div>
+<!-- Feature Card 2: CameraX & Memory -->
+<div class="terminal-panel rounded-xl p-3.5 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary font-mono-code text-[11px] font-bold rounded">SPK-2</span>
+<h3 class="font-headline-sm text-[15px] font-bold text-surface-bright">CameraX 뷰파인더 &amp; 캡처</h3>
+</div>
+<span class="text-[11px] text-primary-fixed font-bold bg-primary-container/40 px-2 py-0.5 rounded border border-primary-container">
+            1080p Locked
+          </span>
+</div>
+<div class="bg-inverse-surface/80 p-2 rounded border border-outline/30 space-y-1.5 font-mono-code text-xs">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">버퍼 메모리 해제 상태:</span>
+<span class="text-primary-fixed font-bold">100% Release Guaranteed</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-outline-variant">영수증 메모리 파싱:</span>
+<span class="text-surface-bright">ImageProxy Closed (Leak: 0B)</span>
+</div>
+<div class="w-full bg-outline/20 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-fixed h-full w-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline-variant pt-1 border-t border-outline/20 font-mono-code">
+<span>GC Allocation: 0 spike</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="memory">memory</span> 메모리 릭 0 검증
+          </span>
+</div>
+</div>
+<!-- Feature Card 3: ML Kit Korean OCR -->
+<div class="terminal-panel rounded-xl p-3.5 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary font-mono-code text-[11px] font-bold rounded">SPK-3</span>
+<h3 class="font-headline-sm text-[15px] font-bold text-surface-bright">ML Kit 한국어 OCR</h3>
+<span class="text-xs text-outline-variant font-mono-code">v16.0.1</span>
+</div>
+<span class="text-[10px] text-tertiary-fixed font-mono-code bg-tertiary/40 px-1.5 py-0.5 rounded border border-tertiary">
+            Offline Mode
+          </span>
+</div>
+<div class="grid grid-cols-3 gap-1.5 text-center font-mono-code">
+<div class="bg-inverse-surface/80 p-1.5 rounded border border-outline/30">
+<div class="text-[10px] text-on-surface-variant">상호 인식</div>
+<div class="text-sm font-bold text-primary-fixed mt-0.5 font-number-stat">94%</div>
+</div>
+<div class="bg-inverse-surface/80 p-1.5 rounded border border-outline/30">
+<div class="text-[10px] text-on-surface-variant">전화번호</div>
+<div class="text-sm font-bold text-primary-fixed mt-0.5 font-number-stat">100%</div>
+</div>
+<div class="bg-inverse-surface/80 p-1.5 rounded border border-outline/30">
+<div class="text-[10px] text-on-surface-variant">날짜/금액</div>
+<div class="text-sm font-bold text-primary-fixed mt-0.5 font-number-stat">91%</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline-variant pt-1 border-t border-outline/20 font-mono-code">
+<span>Latency: <strong class="text-surface-bright">1,420ms</strong> / 10,000ms max</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="check">check</span> 정규식 통과
+          </span>
+</div>
+</div>
+<!-- Feature Card 4: Fused Location High Precision GPS -->
+<div class="terminal-panel rounded-xl p-3.5 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary font-mono-code text-[11px] font-bold rounded">SPK-4</span>
+<h3 class="font-headline-sm text-[15px] font-bold text-surface-bright">Fused Location 정밀 GPS</h3>
+</div>
+<span class="text-[10px] text-primary-fixed font-mono-code bg-primary-container/40 px-2 py-0.5 rounded border border-primary-container">
+            Anti-Mock On
+          </span>
+</div>
+<div class="bg-inverse-surface/80 p-2 rounded border border-outline/30 space-y-1 font-mono-code text-xs">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">현장 측정지:</span>
+<span class="text-tertiary-fixed font-bold">이문설농탕 입구 (1904년~)</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-outline-variant">좌표 데이터:</span>
+<span class="text-surface-bright">37.5724° N, 126.9852° E</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-outline-variant">측정 오차 반경:</span>
+<span class="text-primary-fixed font-bold">±7.4m <span class="text-outline-variant font-normal">(기준 30m)</span></span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline-variant pt-1 border-t border-outline/20 font-mono-code">
+<span>Spoofing check: Pure Hardware</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="gps_fixed">gps_fixed</span> 지오펜스 적합
+          </span>
+</div>
+</div>
+<!-- Feature Card 5: Firebase Firestore Seoul -->
+<div class="terminal-panel rounded-xl p-3.5 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary font-mono-code text-[11px] font-bold rounded">SPK-5</span>
+<h3 class="font-headline-sm text-[15px] font-bold text-surface-bright">Firestore (서울 리전)</h3>
+<span class="text-xs text-primary-fixed font-mono-code">asia-ne3</span>
+</div>
+<span class="text-[11px] text-primary-fixed font-bold bg-primary-container/40 px-2 py-0.5 rounded border border-primary-container">
+            RTT 84ms
+          </span>
+</div>
+<div class="bg-inverse-surface/80 p-2 rounded border border-outline/30 text-xs font-mono-code space-y-1.5">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">오프라인 대기열 묶음 쓰기:</span>
+<span class="text-primary-fixed font-semibold">Batch Write Sync OK</span>
+</div>
+<div class="flex justify-between items-center text-[11px]">
+<span class="text-outline-variant">트랜잭션 롤백 테스트:</span>
+<span class="text-surface-bright">ACID Rollback Confirmed</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline-variant pt-1 border-t border-outline/20 font-mono-code">
+<span>Latency limit: &lt; 2,000ms</span>
+<span class="text-primary-fixed flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="cloud_done">cloud_done</span> 84ms 초과 없음
+          </span>
+</div>
+</div>
+<!-- Quick Action Console Buttons -->
+<div class="space-y-2 pt-2">
+<button class="w-full h-12 bg-primary text-on-primary rounded-xl font-label-lg flex items-center justify-center space-x-2 shadow hover:bg-primary-container active:scale-95 transition-all" id="fullReportBtn">
+<span class="material-symbols-outlined text-[20px]" data-icon="file_copy">file_copy</span>
+<span>진단 결과 전체 텍스트 클립보드 복사</span>
+</button>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-11 bg-surface-container-high text-on-surface border border-primary text-label-md rounded-lg flex items-center justify-center space-x-1.5 hover:bg-primary/10 active:scale-95 transition-all" id="createShopBtn">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="add_location_alt">add_location_alt</span>
+<span>테스트 가게 즉시 생성</span>
+</button>
+<button class="h-11 bg-surface-container-high text-secondary border border-outline-variant text-label-md rounded-lg flex items-center justify-center space-x-1.5 hover:bg-error-container active:scale-95 transition-all" id="clearCacheBtn">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="delete_sweep">delete_sweep</span>
+<span>전체 캐시 초기화</span>
+</button>
+</div>
+</div>
+<!-- Log Output Terminal Stream Preview -->
+<section class="bg-on-background text-inverse-on-surface rounded-xl p-3 border border-outline/40 font-mono-code text-[11px] space-y-1">
+<div class="flex items-center justify-between pb-1 border-b border-outline/20 text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary-container"></span> docs/spike-report.md stream</span>
+<span id="logTimestamp">SYNC: 11:24:08 KST</span>
+</div>
+<div class="space-y-0.5 text-outline-variant pt-1 h-24 overflow-y-auto custom-scroll" id="logConsole">
+<p class="text-primary-fixed">[OK] NaverMap v3.24.0: Overlay instance attached (1,277 items)</p>
+<p class="text-surface-bright">[OK] CameraX: Subsampled ImageProxy cleared, Native Heap: 48.2MB</p>
+<p class="text-primary-fixed">[OK] MLKit: '이문설농탕 / 02-733-6526' parsing completed in 1420ms</p>
+<p class="text-surface-bright">[OK] FusedLocation: accuracy=7.4m at lat=37.5724, lng=126.9852</p>
+<p class="text-primary-fixed">[OK] Firestore: Batch commit latency: 84ms (Write 1 doc / 4 stamps)</p>
+<p class="text-tertiary-fixed font-bold">[READY] All 5/5 Spikes passed release readiness gate.</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Shared Component Anchored - Semantic Shell Lock) -->
+<!-- Active Destination: '설정' (Settings / System Console) -->
+<nav class="bg-surface docked full-width bottom-0 border-t border-outline-variant shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md max-w-md mx-auto right-0">
+<!-- Tab 1: 지도 탐색 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform duration-150 flex-1 py-1" href="#map">
+<span class="material-symbols-outlined text-[24px]" data-icon="map">map</span>
+<span class="text-label-sm font-label-sm mt-0.5">지도 탐색</span>
+</a>
+<!-- Tab 2: 내 패스포트 -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary active:scale-95 transition-transform duration-150 flex-1 py-1" href="#passport">
+<span class="material-symbols-outlined text-[24px]" data-icon="menu_book">menu_book</span>
+<span class="text-label-sm font-label-sm mt-0.5">내 패스포트</span>
+</a>
+<!-- Tab 3: 설정 (Active State Applied as per Diagnostic Console Intent) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-150 flex-1 py-1 relative" href="#settings">
+<span class="material-symbols-outlined text-[24px]" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="text-label-sm font-label-sm mt-0.5">설정</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary mt-0.5"></span>
+</a>
+</nav>
+<!-- Toast Notification Overlay -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2 rounded-lg text-label-md font-label-md shadow-lg border border-primary-fixed opacity-0 pointer-events-none transition-opacity duration-200 z-50 flex items-center gap-2" id="toast">
+<span class="material-symbols-outlined text-primary-fixed text-[18px]" data-icon="check_circle">check_circle</span>
+<span id="toastMsg">클립보드에 복사되었습니다.</span>
+</div>
+</div>
+<!-- Interactive Logic for Spike Console Execution -->
+<script>
+    const reportText = `# [노포천년 미식가] 1일차 오전 실기기 5대 기능 종합 진단 보고서 (Spike Report)
+- 일시: ${new Date().toLocaleString('ko-KR')}
+- 단말기: Samsung Galaxy S24 (Android 14, API 34)
+- 패키지: com.nopo.cheonnyeon (Release Sign R8 Verified)
+- 통과율: 5/5 PASSED (100%)
+
+## 세부 진단 결과
+1. [SPK-1] 네이버 지도 SDK (v3.24.0):
+   - Auth: 200 OK
+   - 초기 렌더링: 42ms
+   - 1,277개 마커 클러스터링: 60fps (부하 0건)
+2. [SPK-2] CameraX 뷰파인더 & 캡처:
+   - 해상도: 1080p 고정
+   - 버퍼 메모리 해제 보장, 누수 0건
+3. [SPK-3] ML Kit 한국어 OCR (v16.0.1):
+   - 지연시간: 1,420ms (10초 이내 통과)
+   - 오프라인 상호 94%, 전화번호 100%, 금액 91%
+4. [SPK-4] Fused Location 정밀 GPS:
+   - 오차: ±7.4m (허용치 30m)
+   - 위치: 이문설농탕 (37.5724° N, 126.9852° E), Anti-Mock 정상
+5. [SPK-5] Firebase Firestore (서울 리전 asia-ne3):
+   - RTT: 84ms
+   - 오프라인 큐 Batch Write 및 ACID 롤백 정상
+`;
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.innerText = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2000);
+    }
+
+    function appendLog(line, isHighlight = false) {
+      const consoleEl = document.getElementById('logConsole');
+      const p = document.createElement('p');
+      p.className = isHighlight ? 'text-primary-fixed font-bold' : 'text-surface-bright';
+      p.innerText = line;
+      consoleEl.appendChild(p);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    document.getElementById('fullReportBtn').addEventListener('click', () => {
+      navigator.clipboard.writeText(reportText).then(() => {
+        showToast('보고서 (docs/spike-report.md) 복사 완료');
+        appendLog(`[CLIPBOARD] Full spike markdown copied (${new Date().toLocaleTimeString()})`, true);
+      }).catch(() => {
+        showToast('클립보드 접근 권한이 필요합니다.');
+      });
+    });
+
+    document.getElementById('copyLogBtn').addEventListener('click', () => {
+      const logs = document.getElementById('logConsole').innerText;
+      navigator.clipboard.writeText(logs).then(() => {
+        showToast('콘솔 로그가 클립보드에 복사되었습니다.');
+      });
+    });
+
+    document.getElementById('createShopBtn').addEventListener('click', () => {
+      const shopName = '테스트 노포 #' + Math.floor(100 + Math.random() * 900);
+      showToast(`${shopName} (이문설농탕 인근) 임시 생성됨`);
+      appendLog(`[MOCK DB] Inserted 1 Nopo item: '${shopName}' (Lat: 37.5724, Lng: 126.9852)`, true);
+    });
+
+    document.getElementById('clearCacheBtn').addEventListener('click', () => {
+      showToast('Glide, MLKit, Firestore 로컬 캐시 초기화 완료');
+      appendLog('[CACHE] Disk & Memory cache invalidated successfully (0B freed).');
+    });
+  </script>
+</body></html>

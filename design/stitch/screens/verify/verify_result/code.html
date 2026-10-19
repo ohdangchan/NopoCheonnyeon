@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>방문 인증 결과 - 노포천년</title>
+<!-- Material Symbols & Typography -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom theme config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#410100",
+            "surface": "#effcf9",
+            "outline-variant": "#bec9c6",
+            "surface-container-high": "#ddebe7",
+            "primary-fixed": "#a8f0e5",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-surface": "#273331",
+            "on-surface": "#121e1c",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#ffb4a8",
+            "secondary-fixed": "#ffdad4",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#121e1c",
+            "on-tertiary-container": "#ffd68d",
+            "surface-tint": "#1c6961",
+            "surface-variant": "#d8e5e2",
+            "background": "#effcf9",
+            "on-primary-fixed": "#00201d",
+            "on-secondary-container": "#690200",
+            "tertiary-container": "#7e5a00",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ff6751",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#8dd3c9",
+            "secondary": "#b02e1f",
+            "surface-dim": "#cfddd9",
+            "tertiary": "#604400",
+            "primary-fixed-dim": "#8dd3c9",
+            "inverse-on-surface": "#e6f4f0",
+            "on-primary-container": "#a1e9de",
+            "primary-container": "#1f6b63",
+            "surface-container-highest": "#d8e5e2",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-low": "#e9f7f3",
+            "surface-bright": "#effcf9",
+            "on-error": "#ffffff",
+            "primary": "#00524b",
+            "on-tertiary-fixed": "#271900",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-primary": "#ffffff",
+            "outline": "#6f7977",
+            "on-surface-variant": "#3f4947",
+            "tertiary-fixed": "#ffdea7",
+            "surface-container": "#e3f1ed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "margin": "1.25rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.25rem",
+            "margin-mobile": "1rem",
+            "space-sm": "0.5rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Epilogue"],
+            "body-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "headline-md": ["Noto Sans"],
+            "number-stat": ["Epilogue"],
+            "label-md": ["Noto Sans"]
+          },
+          "fontSize": {
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .stamp-debortex {
+      box-shadow: inset 0 1px 3px rgba(176, 46, 31, 0.2);
+    }
+    .heritage-paper {
+      background-color: #f8f9f5;
+      background-image: radial-gradient(#d8e5e2 0.75px, transparent 0.75px);
+      background-size: 12px 12px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex flex-col justify-between selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- Mobile Viewport Shell (Constraint: Max 430px centered) -->
+<div class="w-full max-w-md mx-auto flex flex-col min-h-screen bg-background relative pb-8 shadow-xl">
+<!-- Top App Bar (Enamel Plaque Header derived from Shared Components) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<div class="flex items-center space-x-2">
+<button aria-label="이전 화면으로 가기" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container/20 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<span class="font-headline-sm text-headline-sm tracking-tight text-on-primary">방문 인증 결과</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-md bg-secondary text-on-secondary font-mono tracking-wider shadow-sm">
+          E-VER-402
+        </span>
+<button aria-label="검색 또는 도움말" class="w-10 h-10 rounded-full flex items-center justify-center text-on-primary hover:bg-primary-container/20 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-xl">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-space-md pt-4 space-y-4">
+<!-- Target Shop Identity Badge -->
+<section class="flex items-center justify-between bg-surface-container-low px-3.5 py-2.5 rounded-xl border border-outline-variant/50">
+<div class="flex items-center space-x-2.5">
+<span class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-lg">restaurant</span>
+</span>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">이문설농탕</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-label-sm font-bold">120년차 노포</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">서울 종로구 우정국로 38-13</p>
+</div>
+</div>
+<span class="text-xs font-label-md text-tertiary font-bold tracking-tight bg-tertiary-fixed-dim/30 px-2 py-1 rounded">미인증</span>
+</section>
+<!-- Hero Status Card: Verification Failure -->
+<section class="heritage-paper rounded-xl border border-outline-variant p-4 text-center relative overflow-hidden shadow-sm">
+<!-- Paper Texture Accent Lines -->
+<div class="absolute -right-8 -top-8 w-24 h-24 rounded-full border-4 border-secondary/10 pointer-events-none"></div>
+<!-- Stamp Outline Visual -->
+<div class="my-2 flex justify-center">
+<div class="relative w-28 h-28 flex flex-col items-center justify-center border-2 border-secondary text-secondary rounded-full stamp-debortex transform -rotate-2 select-none bg-secondary/5">
+<div class="absolute inset-1.5 border border-dashed border-secondary/70 rounded-full"></div>
+<span class="material-symbols-outlined text-2xl mb-0.5 text-secondary">error_outline</span>
+<span class="font-headline-sm text-headline-sm tracking-tighter text-secondary font-black">인증 대조 실패</span>
+<span class="text-[9px] font-label-sm tracking-widest text-secondary mt-0.5 uppercase">VERIFICATION REJECTED</span>
+</div>
+</div>
+<h1 class="font-headline-md text-headline-md text-secondary mt-3">
+          영수증 정보를 확인할 수 없습니다
+        </h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2 leading-relaxed px-1 text-left bg-surface-container/60 p-2.5 rounded-lg border border-outline-variant/40">
+          촬영된 영수증에서 <strong class="text-on-surface font-semibold">'이문설농탕'</strong> 상호 또는 등록된 전화번호<strong class="text-on-surface font-semibold">(02-733-6426)</strong>를 찾지 못했거나, 결제일시가 24시간을 초과했습니다.
+        </p>
+</section>
+<!-- Diagnostic Details Card (Bento Style breakdown) -->
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 shadow-sm space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-surface-variant">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-primary text-base">analytics</span>
+<h2 class="font-label-lg text-label-lg text-on-surface">영수증 OCR 진단 내역</h2>
+</div>
+<span class="text-xs font-mono text-outline">CODE: E_RECEIPT_MISMATCH</span>
+</div>
+<div class="space-y-2.5 text-xs">
+<!-- Detected Business Name -->
+<div class="flex items-start justify-between bg-surface-container-low p-2.5 rounded-lg">
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined text-sm text-secondary">store</span>
+<span>감지된 상호</span>
+</div>
+<div class="text-right">
+<span class="font-label-md font-bold text-secondary">(주)이문푸드</span>
+<p class="text-[11px] text-error font-body-sm mt-0.5 font-medium">유사도 58% (기준 70% 미달)</p>
+</div>
+</div>
+<!-- Detected Phone -->
+<div class="flex items-center justify-between bg-surface-container-low p-2.5 rounded-lg">
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined text-sm text-outline">call</span>
+<span>감지된 전화번호</span>
+</div>
+<span class="font-label-md text-outline font-medium">미인식 (인쇄 흐림)</span>
+</div>
+<!-- Payment Timestamp -->
+<div class="flex items-center justify-between bg-surface-container-low p-2.5 rounded-lg">
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-label-md">
+<span class="material-symbols-outlined text-sm text-primary">schedule</span>
+<span>결제 시각</span>
+</div>
+<span class="font-label-md text-primary font-bold">2026.10.18 13:40 <span class="text-on-surface-variant font-normal">(유효 시간 내)</span></span>
+</div>
+</div>
+<div class="flex items-start space-x-1.5 pt-1 text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-sm text-tertiary shrink-0 mt-0.5">info</span>
+<p class="font-body-sm text-body-sm leading-snug">
+            오래된 노포는 사업자등록 상호(법인명)와 실제 간판 상호가 다를 수 있습니다. 이 경우 아래 대체 수단으로 즉시 인증이 가능합니다.
+          </p>
+</div>
+</section>
+<!-- Action Pathways (Crucial Alternatives) -->
+<section class="space-y-3 pt-1">
+<!-- 1. Primary CTA: Shop Photo Alternative (Stamp Red Button) -->
+<div class="bg-surface-container-high rounded-xl p-3.5 border-2 border-secondary/40 shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-secondary text-base">verified_user</span>
+<span class="font-label-md text-label-md text-secondary font-bold">권장 대체 인증</span>
+</div>
+<span class="inline-flex items-center text-[11px] font-label-sm font-bold bg-tertiary-fixed text-on-tertiary-fixed px-2 py-0.5 rounded-full">
+              +120년 누적 동일
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug mb-3">
+            영수증이 없거나 인식이 안 될 때, <strong>가게 앞 30m 이내</strong>에서 간판이나 차림표를 촬영하여 즉시 인증할 수 있습니다.
+          </p>
+<button class="w-full bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary py-3.5 px-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center space-x-2 shadow-md active:scale-[0.98] transition-transform min-h-[52px]" type="button">
+<span class="material-symbols-outlined text-xl">photo_camera</span>
+<span>가게 사진으로 인증하기 (30m 현장 확인)</span>
+</button>
+</div>
+<!-- 2. Secondary CTA: Retake Receipt -->
+<button class="w-full bg-surface-container-lowest border border-primary-container text-primary-container hover:bg-surface-container-low py-3 px-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center space-x-2 active:scale-[0.98] transition-transform min-h-[48px] shadow-sm" type="button">
+<span class="material-symbols-outlined text-xl">document_scanner</span>
+<span>영수증 다시 선명하게 촬영하기</span>
+</button>
+<!-- 3. Tertiary Links: Self-test & Error Report -->
+<div class="flex items-center justify-center space-x-4 pt-2 text-xs font-label-md">
+<a class="text-on-surface-variant hover:text-primary underline flex items-center space-x-1 py-1" href="#">
+<span class="material-symbols-outlined text-sm">science</span>
+<span>테스트 가게로 모의 인증</span>
+</a>
+<span class="text-outline-variant">|</span>
+<a class="text-on-surface-variant hover:text-secondary underline flex items-center space-x-1 py-1" href="#">
+<span class="material-symbols-outlined text-sm">flag</span>
+<span>오류 리포트 접수</span>
+</a>
+</div>
+</section>
+</main>
+<!-- Footer System Notice & Policy -->
+<footer class="mt-8 px-space-md text-center">
+<div class="inline-flex items-center justify-center space-x-1.5 py-1.5 px-3 rounded-full bg-surface-container text-outline text-[11px] font-label-sm">
+<span class="material-symbols-outlined text-sm">security</span>
+<span>노포천년 인증 프로토콜 · 위치 무저장 원칙 준수</span>
+</div>
+<p class="font-body-sm text-body-sm text-outline mt-1 text-[10px]">
+        대한민국 미식 역사 아카이브 · 문화유산 기록 인증단
+      </p>
+</footer>
+</div>
+</body></html>

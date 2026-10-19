@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 - 미식가 패스포트 발급</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed-variant": "#8e1409",
+            "primary-fixed-dim": "#8dd3c9",
+            "secondary-container": "#ff6751",
+            "on-tertiary-fixed": "#271900",
+            "primary-fixed": "#a8f0e5",
+            "on-primary-fixed": "#00201d",
+            "inverse-primary": "#8dd3c9",
+            "outline-variant": "#bec9c6",
+            "on-error-container": "#93000a",
+            "surface-dim": "#cfddd9",
+            "outline": "#6f7977",
+            "on-surface-variant": "#3f4947",
+            "surface-container-low": "#e9f7f3",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-container-highest": "#d8e5e2",
+            "on-primary-container": "#a1e9de",
+            "tertiary-container": "#7e5a00",
+            "tertiary-fixed": "#ffdea7",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-tertiary": "#ffffff",
+            "on-background": "#121e1c",
+            "surface-container": "#e3f1ed",
+            "secondary-fixed-dim": "#ffb4a8",
+            "surface-tint": "#1c6961",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#effcf9",
+            "on-surface": "#121e1c",
+            "on-tertiary-container": "#ffd68d",
+            "primary-container": "#1f6b63",
+            "inverse-surface": "#273331",
+            "secondary": "#b02e1f",
+            "error": "#ba1a1a",
+            "surface-container-lowest": "#ffffff",
+            "surface": "#effcf9",
+            "tertiary": "#604400",
+            "primary": "#00524b",
+            "on-error": "#ffffff",
+            "surface-variant": "#d8e5e2",
+            "on-secondary-fixed": "#410100",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-high": "#ddebe7",
+            "on-secondary-container": "#690200",
+            "secondary-fixed": "#ffdad4",
+            "background": "#effcf9",
+            "on-tertiary-fixed-variant": "#5e4200"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-xl": "2.25rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter": "1rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "body-md": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "headline-sm": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "body-sm": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "label-sm": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "label-md": ["Noto Sans"],
+            "label-lg": ["Noto Sans"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Inju vermilion debossed seal motif */
+    .stamp-deboss {
+      box-shadow: inset 0 1px 2px rgba(176, 46, 31, 0.25);
+    }
+    .heritage-border {
+      border: 1px solid #CCD4CC;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- Mobile Screen Constraint Canvas (360dp - 440dp standard viewport) -->
+<div class="w-full max-w-md bg-surface-bright min-h-screen flex flex-col shadow-xl relative pb-28">
+<!-- Top Navigation Bar (Shared Component Style: Enamel Plaque with Brass Trim) -->
+<header class="sticky top-0 z-40 bg-primary text-on-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed shadow-sm">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container text-on-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-primary">
+        미식가 패스포트 발급
+      </h1>
+<!-- Balanced spacing spacer -->
+<div class="w-10 h-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+</header>
+<!-- Main Registration Flow (Linear / Transactional Task Flow) -->
+<main class="flex-1 px-space-md pt-6 pb-6">
+<!-- Heritage Editorial Header & Passport Ledger Motif -->
+<section class="mb-6 bg-surface-container-lowest heritage-border rounded-xl p-5 relative overflow-hidden shadow-sm">
+<!-- Vintage Stamp Accents in Background -->
+<div class="absolute -right-3 -top-3 w-20 h-20 rounded-full border border-secondary/20 flex items-center justify-center pointer-events-none rotate-12">
+<div class="w-16 h-16 rounded-full border border-secondary/15 flex items-center justify-center">
+<span class="font-label-sm text-label-sm text-secondary/30 font-bold">노포천년</span>
+</div>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container text-primary text-label-sm font-label-sm mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>식객 호적부 등록 (S-401)</span>
+</div>
+<h2 class="font-headline-md text-headline-md font-bold text-on-surface leading-snug whitespace-pre-line tracking-tight">천년의 미식 장부에
+새로운 식객의 이름을 올립니다</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+          대한민국 백년가게와 유서 깊은 노포 골목의 기록을 오롯이 담아낼 식객만의 인증 수첩을 발급합니다.
+        </p>
+</section>
+<!-- Input Form Card -->
+<form class="space-y-5" onsubmit="event.preventDefault();">
+<!-- 1. 식객 닉네임 섹션 -->
+<div class="bg-surface-container-lowest heritage-border rounded-xl p-4 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label-lg text-label-lg font-bold text-on-surface flex items-center gap-1" for="nickname">
+<span>식객 칭호 (닉네임)</span>
+<span class="text-secondary font-bold">*</span>
+</label>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2~12자 한/영/숫자</span>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-primary text-[20px]">badge</span>
+<input class="w-full pl-10 pr-10 py-3 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface font-semibold focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors" id="nickname" maxlength="12" name="nickname" placeholder="예: 백년미식가" type="text" value="국밥장인"/>
+<div class="absolute right-3 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- 상태 배지 및 피드백 -->
+<div class="mt-2.5 flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-primary-fixed/30 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md text-primary font-bold">✓ 사용 가능한 멋진 칭호입니다</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 ml-0.5">
+            미식 장부 및 리뷰에 표시되는 공인 닉네임입니다
+          </p>
+</div>
+<!-- 2. 이메일 주소 -->
+<div class="bg-surface-container-lowest heritage-border rounded-xl p-4 transition-all focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+<label class="block font-label-lg text-label-lg font-bold text-on-surface mb-1.5" for="email">
+            이메일 주소 <span class="text-secondary font-bold">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px]">mail</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors" id="email" name="email" placeholder="name@example.com" type="email" value="gourmet@nopo.kr"/>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1.5 ml-0.5">
+            패스포트 분실 시 본인 확인 및 백업 수단으로 사용됩니다.
+          </p>
+</div>
+<!-- 3. 비밀번호 & 비밀번호 확인 -->
+<div class="bg-surface-container-lowest heritage-border rounded-xl p-4 space-y-4">
+<!-- 비밀번호 -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label-lg text-label-lg font-bold text-on-surface" for="password">
+                비밀번호 <span class="text-secondary font-bold">*</span>
+</label>
+<span class="font-label-sm text-label-sm text-on-surface-variant">8자 이상, 영문+숫자</span>
+</div>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px]">lock</span>
+<input class="w-full pl-10 pr-10 py-3 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface tracking-widest focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors" id="password" name="password" placeholder="비밀번호 입력" type="password" value="Nopo1968!kr"/>
+<button aria-label="비밀번호 보기 토글" class="absolute right-3 text-outline hover:text-on-surface" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- 비밀번호 확인 -->
+<div>
+<label class="block font-label-lg text-label-lg font-bold text-on-surface mb-1.5" for="password_confirm">
+              비밀번호 확인 <span class="text-secondary font-bold">*</span>
+</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px]">lock_reset</span>
+<input class="w-full pl-10 pr-10 py-3 bg-surface-container-low border border-primary rounded-lg font-body-md text-body-md text-on-surface tracking-widest focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors" id="password_confirm" name="password_confirm" placeholder="비밀번호 다시 입력" type="password" value="Nopo1968!kr"/>
+<div class="absolute right-3 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="mt-1.5 flex items-center gap-1 ml-0.5 text-primary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span class="font-label-sm text-label-sm font-semibold">비밀번호가 안전하게 일치합니다</span>
+</div>
+</div>
+</div>
+<!-- 4. 약관 동의 섹션 -->
+<div class="bg-surface-container-low heritage-border rounded-xl p-4 space-y-2.5">
+<label class="flex items-start gap-3 cursor-pointer">
+<input checked="" class="mt-1 w-5 h-5 rounded text-primary focus:ring-primary border-outline-variant accent-primary cursor-pointer" type="checkbox"/>
+<div class="flex-1">
+<div class="font-label-lg text-label-lg font-bold text-on-surface flex items-center justify-between">
+<span>[필수] 미식 패스포트 이용약관 및 개인정보 처리방침 동의</span>
+<span class="material-symbols-outlined text-outline text-[18px]">chevron_right</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+                (안내: 노포천년은 방문 인증 시 위치 좌표를 영구 저장하지 않습니다)
+              </p>
+</div>
+</label>
+</div>
+<!-- Physical Seal Stamp Preview Accent -->
+<div class="flex items-center justify-center gap-2 py-2">
+<div class="w-6 h-6 rounded-full border border-secondary flex items-center justify-center stamp-deboss">
+<span class="material-symbols-outlined text-secondary text-[14px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold tracking-wide">천년노포 보존위원회 공인 인증 규격</span>
+</div>
+</form>
+</main>
+<!-- Docked Sticky Bottom CTA Sheet (Thumb Zone Ergonomics - min 56dp height) -->
+<div class="fixed bottom-0 left-0 w-full flex justify-center z-50 pointer-events-none">
+<div class="w-full max-w-md bg-surface-bright/95 backdrop-blur-md px-space-md pt-3 pb-5 shadow-lg border-t border-outline-variant pointer-events-auto">
+<!-- Primary Action CTA -->
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-headline-sm text-headline-sm font-bold flex items-center justify-center gap-2.5 shadow-md active:scale-98 transition-transform hover:bg-primary-container" type="button">
+<span class="material-symbols-outlined text-[24px]">stylus_note</span>
+<span>패스포트 발급받고 시작하기</span>
+</button>
+<!-- Secondary Login Redirection -->
+<div class="mt-2.5 text-center">
+<a class="inline-block py-1 font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">
+            이미 계정이 있으신가요? <span class="font-semibold text-primary underline underline-offset-2">기존 계정으로 로그인</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</body></html>

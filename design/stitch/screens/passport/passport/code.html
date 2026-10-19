@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 - 내 패스포트 및 미식 연대기</title>
+<!-- Google Fonts: Noto Sans, Epilogue -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with custom configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-container": "#ffd68d",
+            "secondary-fixed": "#ffdad4",
+            "tertiary": "#604400",
+            "on-secondary-fixed": "#410100",
+            "on-tertiary-fixed": "#271900",
+            "on-primary-container": "#a1e9de",
+            "surface": "#effcf9",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "on-primary-fixed": "#00201d",
+            "primary-fixed": "#a8f0e5",
+            "on-error": "#ffffff",
+            "outline-variant": "#bec9c6",
+            "tertiary-fixed": "#ffdea7",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-highest": "#d8e5e2",
+            "inverse-surface": "#273331",
+            "error": "#ba1a1a",
+            "on-primary": "#ffffff",
+            "surface-container": "#e3f1ed",
+            "on-background": "#121e1c",
+            "on-surface": "#121e1c",
+            "secondary-fixed-dim": "#ffb4a8",
+            "secondary-container": "#ff6751",
+            "on-secondary-fixed-variant": "#8e1409",
+            "outline": "#6f7977",
+            "primary": "#00524b",
+            "on-secondary-container": "#690200",
+            "surface-bright": "#effcf9",
+            "surface-dim": "#cfddd9",
+            "surface-variant": "#d8e5e2",
+            "background": "#effcf9",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#f7bd46",
+            "surface-container-high": "#ddebe7",
+            "inverse-primary": "#8dd3c9",
+            "on-tertiary": "#ffffff",
+            "on-surface-variant": "#3f4947",
+            "secondary": "#b02e1f",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-tint": "#1c6961",
+            "inverse-on-surface": "#e6f4f0",
+            "surface-container-low": "#e9f7f3",
+            "tertiary-container": "#7e5a00",
+            "primary-container": "#1f6b63",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2.25rem",
+            "space-xs": "0.25rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "margin": "1.25rem",
+            "gutter": "1rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "number-stat": ["Epilogue"],
+            "body-lg": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "body-sm": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "label-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"]
+          },
+          "fontSize": {
+            "number-stat": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "500" }],
+            "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "700" }],
+            "label-sm": ["10px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "display-lg": ["38px", { "lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+            "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "display-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-lg": ["26px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+            "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Custom Inju Ink deboss and tactile paper styles */
+    .inju-pressed {
+      box-shadow: inset 0 1px 2px rgba(176, 46, 31, 0.25);
+    }
+    .brass-badge {
+      box-shadow: 0 1px 3px rgba(96, 68, 0, 0.2);
+    }
+    .paper-card {
+      box-shadow: 0 4px 14px rgba(18, 30, 28, 0.05);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased flex flex-col justify-between min-h-screen max-w-[420px] mx-auto relative select-none">
+<!-- TOP APP BAR (from Shared Components JSON: TopAppBar) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container flex justify-between items-center w-full px-space-md py-space-sm h-14 shadow-sm sticky top-0 z-40 border-b-2 border-tertiary-fixed dark:border-tertiary">
+<div class="flex items-center space-x-2">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center text-on-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex items-center space-x-2">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-on-primary">노포천년</span>
+<span class="text-on-primary opacity-60 text-body-sm">|</span>
+<span class="font-label-md text-label-md text-on-primary font-semibold tracking-wide">내 미식 패스포트</span>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button aria-label="검색" class="w-10 h-10 flex items-center justify-center text-on-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<!-- User Profile Snapshot -->
+<div class="w-8 h-8 rounded-full border-2 border-tertiary-fixed overflow-hidden flex items-center justify-center bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="Close up photographic portrait of a middle aged Korean gourmet enthusiast with gentle warm lighting, dressed in subtle linen attire in an authentic alley dining ambiance with teal and warm tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmADMT92UWRWiTEq4_cNcFcdQO93k6uUuchq08v4SfGrV8gUe75zSRmIOUcYbf8ZSKOpBguzjImgU7VrAxAzXXnlZ-hjIzL0OivS1gNINkyqE81pOyG0Q9cWFiIt0JnIQFriAX0E9sBrUJex0djqIzkLXJQC1CTvRlKHdg4hKggXsK2VGYf3XmVNYIqLE3sv9Bn5efsL_cpAMc1ap1plkRUFaqhXGraqGu45Gm_tI38HXboP4NnMj-"/>
+</div>
+</div>
+</header>
+<!-- MAIN SCROLLABLE PASSPORT CANVAS -->
+<main class="flex-1 px-space-md pt-4 pb-24 overflow-y-auto space-y-4">
+<!-- USER IDENTITY & RANK HEADER -->
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="font-label-lg text-label-lg text-primary font-bold">국밥식객</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">의 유람 수첩</span>
+</div>
+<div class="flex items-center space-x-1.5 px-2.5 py-1 bg-surface-container rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant uppercase">인증 완료 패스포트</span>
+</div>
+</div>
+<!-- CENTENARY HERITAGE GAUGE CARD (세월 누적 메인 보드) -->
+<section class="bg-surface-container-lowest paper-card rounded-xl border border-outline-variant p-space-md relative overflow-hidden">
+<!-- Vintage brass rivet decoration in corners -->
+<div class="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim border border-tertiary opacity-70"></div>
+<div class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim border border-tertiary opacity-70"></div>
+<!-- Top Plaque Banner inside card -->
+<div class="flex justify-between items-start mb-3">
+<div>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider block mb-0.5">누적 식경력 연대기</span>
+<div class="flex items-baseline space-x-1.5">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary font-number-stat text-number-stat tracking-tight leading-none">442</span>
+<span class="font-headline-sm text-headline-sm text-outline-variant font-bold">/ 1,000년</span>
+</div>
+</div>
+<!-- Title Badge (놋쇠 골드 배지 & 인주 테두리) -->
+<div class="brass-badge bg-tertiary-fixed border border-secondary text-tertiary px-3 py-1.5 rounded-lg flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-secondary" data-icon="stars" style="font-variation-settings: 'FILL' 1; font-size: 16px;">stars</span>
+<div class="flex flex-col items-start leading-none">
+<span class="font-label-sm text-label-sm text-tertiary-fixed-variant" style="font-size: 9px;">공인 칭호</span>
+<span class="font-label-md text-label-md text-on-tertiary-fixed font-bold tracking-tight">동네 어른</span>
+</div>
+</div>
+</div>
+<!-- Centenary Gauge Track (세월 누적 바) -->
+<div class="my-4">
+<div class="flex justify-between text-body-sm font-body-sm text-on-surface-variant mb-1.5">
+<span class="font-semibold text-primary">천년의 대업 44.2%</span>
+<span class="text-tertiary font-bold text-label-sm">다음 칭호까지 158년</span>
+</div>
+<!-- Outer Track -->
+<div class="h-3 w-full bg-surface-container rounded-full border border-outline-variant relative overflow-hidden flex items-center p-0.5">
+<!-- Filled Gradient Progress -->
+<div class="h-full bg-gradient-to-r from-primary-container via-tertiary to-tertiary-fixed-dim rounded-full transition-all duration-700 ease-out" style="width: 44.2%;"></div>
+</div>
+<!-- Milestones Row -->
+<div class="relative w-full mt-2 flex justify-between text-center">
+<div class="flex flex-col items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mb-0.5"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">100년</span>
+<span class="text-[9px] text-outline leading-tight">단골 식객</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mb-0.5"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">300년</span>
+<span class="text-[9px] text-secondary font-semibold leading-tight">동네 어른 ✓</span>
+</div>
+<div class="flex flex-col items-center opacity-70">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant mb-0.5"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">600년</span>
+<span class="text-[9px] text-outline leading-tight">장인 식객</span>
+</div>
+<div class="flex flex-col items-center opacity-50">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant mb-0.5"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">1,000년</span>
+<span class="text-[9px] text-outline leading-tight">천년 미식가</span>
+</div>
+</div>
+</div>
+<!-- Summary Metrics Bento (요약 메트릭 3분할) -->
+<div class="grid grid-cols-3 gap-2 pt-3 border-t border-surface-container bg-surface-container-low rounded-lg p-2.5">
+<div class="text-center border-r border-outline-variant/60 last:border-0">
+<span class="block font-label-sm text-label-sm text-on-surface-variant">방문 노포</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary">8<span class="text-body-sm font-normal text-on-surface"> 곳</span></span>
+</div>
+<div class="text-center border-r border-outline-variant/60 last:border-0">
+<span class="block font-label-sm text-label-sm text-on-surface-variant">평균 업력</span>
+<span class="font-headline-sm text-headline-sm font-bold text-tertiary">55.2<span class="text-body-sm font-normal text-on-surface"> 년</span></span>
+</div>
+<div class="text-center">
+<span class="block font-label-sm text-label-sm text-on-surface-variant">남긴 기록</span>
+<span class="font-headline-sm text-headline-sm font-bold text-secondary">6<span class="text-body-sm font-normal text-on-surface"> 개</span></span>
+</div>
+</div>
+</section>
+<!-- TAB NAVIGATION BAR -->
+<nav aria-label="패스포트 섹션" class="flex border-b border-outline-variant bg-surface-container-low rounded-t-lg p-1 space-x-1">
+<button class="flex-1 py-2 text-center rounded bg-surface-container-lowest text-primary font-bold shadow-sm font-label-md text-label-md transition-all">
+        도장첩 (스탬프)
+      </button>
+<button class="flex-1 py-2 text-center rounded text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all">
+        내 리뷰 (6)
+      </button>
+<button class="flex-1 py-2 text-center rounded text-on-surface-variant hover:text-primary font-label-md text-label-md transition-all">
+        연대기 타임라인
+      </button>
+</nav>
+<!-- PASSPORT STAMP BOOK (3열 그리드 레이아웃) -->
+<section class="space-y-3">
+<div class="flex justify-between items-center px-1">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-primary text-base" data-icon="auto_stories">auto_stories</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">경성·서울 백년 장부</h2>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold">4 / 9 봉인 해제</span>
+</div>
+<!-- 3-Column Stamp Grid -->
+<div class="grid grid-cols-3 gap-2.5">
+<!-- Slot 1: 이문설농탕 (120년 금빛 도장, 백년 노포) -->
+<article class="aspect-square bg-surface-container-lowest rounded-xl border border-tertiary-fixed-dim p-2 flex flex-col justify-between items-center text-center relative paper-card transition-transform active:scale-95 cursor-pointer">
+<span class="font-label-sm text-label-sm text-tertiary font-bold px-1.5 py-0.2 bg-tertiary-fixed rounded">백년노포</span>
+<!-- Brass Gold Verification Stamp -->
+<div class="w-16 h-16 rounded-full border-2 border-tertiary-container flex flex-col items-center justify-center p-1 text-tertiary-container relative rotate-[-2deg]">
+<div class="w-14 h-14 rounded-full border border-dashed border-tertiary-container flex flex-col items-center justify-center">
+<span class="text-[9px] font-bold tracking-tight">이문설농</span>
+<span class="font-number-stat text-sm font-extrabold text-tertiary">120년</span>
+<span class="text-[8px] opacity-80">1904 認</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md font-bold text-on-surface truncate w-20">이문설농탕</h3>
+<span class="text-[10px] text-outline block">종로 공평동</span>
+</div>
+</article>
+<!-- Slot 2: 을지면옥 (38년 일반 청록 도장) -->
+<article class="aspect-square bg-surface-container-lowest rounded-xl border border-outline-variant p-2 flex flex-col justify-between items-center text-center relative paper-card transition-transform active:scale-95 cursor-pointer">
+<span class="font-label-sm text-label-sm text-primary font-bold px-1.5 py-0.2 bg-surface-container rounded">평양냉면</span>
+<!-- Teal Stamp -->
+<div class="w-16 h-16 rounded-full border-2 border-primary flex flex-col items-center justify-center p-1 text-primary relative rotate-[3deg]">
+<div class="w-14 h-14 rounded-full border border-primary flex flex-col items-center justify-center">
+<span class="text-[9px] font-bold tracking-tight">을지면옥</span>
+<span class="font-number-stat text-sm font-extrabold text-primary">38년</span>
+<span class="text-[8px] opacity-80">1985 認</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md font-bold text-on-surface truncate w-20">을지면옥</h3>
+<span class="text-[10px] text-outline block">낙원동 이전</span>
+</div>
+</article>
+<!-- Slot 3: 하동관 (85년 붉은 인주 도장) -->
+<article class="aspect-square bg-surface-container-lowest rounded-xl border border-secondary-fixed-dim p-2 flex flex-col justify-between items-center text-center relative paper-card transition-transform active:scale-95 cursor-pointer">
+<span class="font-label-sm text-label-sm text-secondary font-bold px-1.5 py-0.2 bg-secondary-fixed rounded">곰탕명가</span>
+<!-- Vermilion Inju Deboss Stamp -->
+<div class="w-16 h-16 rounded-full border-2 border-secondary flex flex-col items-center justify-center p-1 text-secondary relative rotate-[-4deg] inju-pressed">
+<div class="w-14 h-14 rounded-full border border-dashed border-secondary flex flex-col items-center justify-center">
+<span class="text-[9px] font-bold tracking-tight">명동하동관</span>
+<span class="font-number-stat text-sm font-extrabold text-secondary">85년</span>
+<span class="text-[8px] opacity-80">1939 認</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md font-bold text-on-surface truncate w-20">하동관 본점</h3>
+<span class="text-[10px] text-outline block">중구 명동</span>
+</div>
+</article>
+<!-- Slot 4: 청진옥 (87년 붉은 인주 도장) -->
+<article class="aspect-square bg-surface-container-lowest rounded-xl border border-secondary-fixed-dim p-2 flex flex-col justify-between items-center text-center relative paper-card transition-transform active:scale-95 cursor-pointer">
+<span class="font-label-sm text-label-sm text-secondary font-bold px-1.5 py-0.2 bg-secondary-fixed rounded">해장국원조</span>
+<!-- Vermilion Inju Deboss Stamp -->
+<div class="w-16 h-16 rounded-full border-2 border-secondary flex flex-col items-center justify-center p-1 text-secondary relative rotate-[2deg] inju-pressed">
+<div class="w-14 h-14 rounded-full border border-secondary flex flex-col items-center justify-center">
+<span class="text-[9px] font-bold tracking-tight">종로청진</span>
+<span class="font-number-stat text-sm font-extrabold text-secondary">87년</span>
+<span class="text-[8px] opacity-80">1937 認</span>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-label-md font-bold text-on-surface truncate w-20">청진옥</h3>
+<span class="text-[10px] text-outline block">종로 청진동</span>
+</div>
+</article>
+<!-- Slot 5: Empty Slot (다음에 갈 노포 자리) -->
+<article class="aspect-square bg-surface-container/60 rounded-xl border-2 border-dashed border-outline-variant p-2 flex flex-col justify-center items-center text-center relative hover:bg-surface-container cursor-pointer transition-colors">
+<div class="w-12 h-12 rounded-full border border-dashed border-outline flex items-center justify-center mb-1 text-outline">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold">다음 노포 자리</span>
+<span class="text-[10px] text-outline">탐방 대기중</span>
+</article>
+<!-- Slot 6: Empty Slot (다음에 갈 노포 자리) -->
+<article class="aspect-square bg-surface-container/60 rounded-xl border-2 border-dashed border-outline-variant p-2 flex flex-col justify-center items-center text-center relative hover:bg-surface-container cursor-pointer transition-colors">
+<div class="w-12 h-12 rounded-full border border-dashed border-outline flex items-center justify-center mb-1 text-outline">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold">미지의 골목</span>
+<span class="text-[10px] text-outline">세월 발굴하기</span>
+</article>
+<!-- Slot 7: Empty Slot -->
+<article class="aspect-square bg-surface-container/60 rounded-xl border-2 border-dashed border-outline-variant p-2 flex flex-col justify-center items-center text-center relative hover:bg-surface-container cursor-pointer transition-colors">
+<div class="w-12 h-12 rounded-full border border-dashed border-outline flex items-center justify-center mb-1 text-outline">
+<span class="material-symbols-outlined" data-icon="lock_open">lock_open</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold">미답사 구역</span>
+<span class="text-[10px] text-outline">을지로·충무로</span>
+</article>
+<!-- Slot 8: Empty Slot -->
+<article class="aspect-square bg-surface-container/60 rounded-xl border-2 border-dashed border-outline-variant p-2 flex flex-col justify-center items-center text-center relative hover:bg-surface-container cursor-pointer transition-colors">
+<div class="w-12 h-12 rounded-full border border-dashed border-outline flex items-center justify-center mb-1 text-outline">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold">비전의 노포</span>
+<span class="text-[10px] text-outline">추천 받기</span>
+</article>
+<!-- Slot 9: Empty Slot -->
+<article class="aspect-square bg-surface-container/60 rounded-xl border-2 border-dashed border-outline-variant p-2 flex flex-col justify-center items-center text-center relative hover:bg-surface-container cursor-pointer transition-colors">
+<div class="w-12 h-12 rounded-full border border-dashed border-outline flex items-center justify-center mb-1 text-outline">
+<span class="material-symbols-outlined text-secondary" data-icon="history_edu">history_edu</span>
+</div>
+<span class="font-label-md text-label-md text-secondary font-bold">500년 달성석</span>
+<span class="text-[10px] text-outline">특전 잠금</span>
+</article>
+</div>
+</section>
+<!-- RECENT CHRONICLE LOG SNIPPET (미식 연대기 최근 기록) -->
+<section class="bg-surface-container-lowest paper-card rounded-xl border border-outline-variant p-space-md space-y-3">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">가장 최근의 세월 각인</h3>
+<span class="text-label-sm font-label-sm text-primary font-bold">2024. 04. 18</span>
+</div>
+<div class="flex items-start space-x-3 bg-surface-container-low p-2.5 rounded-lg border border-surface-container-highest">
+<div class="w-14 h-14 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Steaming hot authentic Korean Seolleongtang ox bone soup served in a traditional heavy earthenware bowl inside a historic century-old dining hall with deep teal wooden pillars and warm ambient light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-KY7JJYJ46n0P8PFIEjHMlpogYp159FG0JWUnvBiQBRjlqzkfMZPhbusgUcpi5NXkfTSByyFZcFdMDzFNyWmJGrQWj-cP75lDF3RyIZHIOUQbG8sZLaugIaffQWSYA4Eyzu8eRFrWZm7YZ3bpOdDVgY01F_dv-id6ggkIPBJ1HOQj0Dt2r1XbeEzdfC38Klv8mTzUPX2HMSO9Y-Qh7ZZtkpU75SnqAB2mEEFM-O8P3LzMPDNJGF5C"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-label-lg text-label-lg font-bold text-on-surface truncate">이문설농탕</h4>
+<span class="font-number-stat text-xs text-tertiary font-bold">+120년 획득</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mt-0.5">
+            "120년 동안 끓여온 사골 국물의 맑고 묵직한 진심. 인공 조미료 없는 순수한 백년의 맛에 고개가 절로 숙여진다."
+          </p>
+</div>
+</div>
+</section>
+</main>
+<!-- FLOATING STAMP AUTHENTICATION CTA -->
+<aside class="fixed bottom-20 right-4 z-40">
+<button class="bg-secondary text-on-secondary px-4 py-3 rounded-full flex items-center space-x-2 shadow-lg active:scale-95 transition-transform border border-secondary-container">
+<span class="material-symbols-outlined" data-icon="approval">approval</span>
+<span class="font-label-lg text-label-lg font-bold">현장 도장 찍기</span>
+</button>
+</aside>
+<!-- BOTTOM NAVIGATION BAR (from Shared Components JSON: BottomNavBar) -->
+<!-- Active state lock: "내 패스포트" is index 1 and represents this screen's primary destination -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md bg-surface dark:bg-surface-container shadow-md dark:shadow-none border-t border-outline-variant dark:border-outline">
+<!-- Item 1: 지도 탐색 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 w-20" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="map">map</span>
+<span class="text-label-sm font-label-sm mt-0.5">지도 탐색</span>
+</a>
+<!-- Item 2: 내 패스포트 (ACTIVE - strictly mapped to style_active_navigation) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-bold hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 w-20 relative" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="menu_book" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="text-label-sm font-label-sm mt-0.5">내 패스포트</span>
+<!-- Vermilion Under-dot indicating selected heritage passport -->
+<span class="w-1.5 h-1.5 rounded-full bg-secondary absolute -bottom-1"></span>
+</a>
+<!-- Item 3: 설정 (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 w-20" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="settings">settings</span>
+<span class="text-label-sm font-label-sm mt-0.5">설정</span>
+</a>
+</nav>
+<!-- Lightweight stamp tap audio/visual micro-interaction script -->
+<script>
+    document.querySelectorAll('article').forEach(item => {
+      item.addEventListener('click', () => {
+        item.classList.add('scale-95');
+        setTimeout(() => {
+          item.classList.remove('scale-95');
+        }, 150);
+      });
+    });
+  </script>
+</body></html>

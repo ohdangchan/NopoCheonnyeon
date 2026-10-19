@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 시작 화면 깜빡임 방지용. Compose 화면 색은 core/designsystem/theme/Color.kt -->
+    <color name="paper">#FFEDF0EA</color>
+</resources>

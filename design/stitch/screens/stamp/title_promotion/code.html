@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>칭호 승급 및 미식 등급 달성 연출 - 노포천년</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-fixed": "#410100",
+            "surface": "#effcf9",
+            "outline-variant": "#bec9c6",
+            "surface-container-high": "#ddebe7",
+            "primary-fixed": "#a8f0e5",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "inverse-surface": "#273331",
+            "on-surface": "#121e1c",
+            "on-tertiary": "#ffffff",
+            "secondary-fixed-dim": "#ffb4a8",
+            "secondary-fixed": "#ffdad4",
+            "surface-container-lowest": "#ffffff",
+            "on-background": "#121e1c",
+            "on-tertiary-container": "#ffd68d",
+            "surface-tint": "#1c6961",
+            "surface-variant": "#d8e5e2",
+            "background": "#effcf9",
+            "on-primary-fixed": "#00201d",
+            "on-secondary-container": "#690200",
+            "tertiary-container": "#7e5a00",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ff6751",
+            "tertiary-fixed-dim": "#f7bd46",
+            "on-error-container": "#93000a",
+            "inverse-primary": "#8dd3c9",
+            "secondary": "#b02e1f",
+            "surface-dim": "#cfddd9",
+            "tertiary": "#604400",
+            "primary-fixed-dim": "#8dd3c9",
+            "inverse-on-surface": "#e6f4f0",
+            "on-primary-container": "#a1e9de",
+            "primary-container": "#1f6b63",
+            "surface-container-highest": "#d8e5e2",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#005049",
+            "surface-container-low": "#e9f7f3",
+            "surface-bright": "#effcf9",
+            "on-error": "#ffffff",
+            "primary": "#00524b",
+            "on-tertiary-fixed": "#271900",
+            "error-container": "#ffdad6",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-primary": "#ffffff",
+            "outline": "#6f7977",
+            "on-surface-variant": "#3f4947",
+            "tertiary-fixed": "#ffdea7",
+            "surface-container": "#e3f1ed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "margin": "1.25rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2.25rem",
+            "margin-mobile": "1rem",
+            "space-sm": "0.5rem",
+            "gutter-mobile": "0.75rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Epilogue"],
+            "body-md": ["Noto Sans"],
+            "headline-lg": ["Epilogue"],
+            "label-lg": ["Noto Sans"],
+            "label-sm": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "headline-sm": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "headline-md": ["Noto Sans"],
+            "number-stat": ["Epilogue"],
+            "label-md": ["Noto Sans"]
+          },
+          "fontSize": {
+            "display-lg": ["38px", {"lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "headline-lg": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700"}],
+            "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+            "body-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "700"}],
+            "display-lg-mobile": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "number-stat": ["32px", {"lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Inju Stamp Deboss and Subtle Paper Texture simulation */
+    .stamp-deboss {
+      box-shadow: inset 0 2px 4px rgba(176, 46, 31, 0.35), 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+    .heritage-gold-border {
+      border-image: linear-gradient(135deg, #ffd68d, #7e5a00, #f7bd46, #604400) 1;
+    }
+    @keyframes pulse-subtle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    .animate-badge {
+      animation: pulse-subtle 3s ease-in-out infinite;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased overflow-hidden m-0 p-0 font-body-md select-none">
+<!-- Underlying App Screen Mockup (Dimmed in Background) -->
+<div class="fixed inset-0 w-full h-full filter blur-[2px] opacity-40 pointer-events-none z-0 bg-surface flex flex-col justify-between">
+<!-- Top Bar Simulation -->
+<header class="bg-primary text-on-primary flex justify-between items-center w-full px-space-md py-space-sm h-14 border-b-2 border-tertiary-fixed">
+<span class="material-symbols-outlined text-on-primary" data-icon="arrow_back">arrow_back</span>
+<h1 class="text-headline-md font-headline-md font-bold text-on-primary">노포천년</h1>
+<span class="material-symbols-outlined text-on-primary" data-icon="search">search</span>
+</header>
+<!-- Background Card Mockups -->
+<div class="p-4 space-y-4">
+<div class="h-28 bg-surface-container rounded-xl"></div>
+<div class="h-44 bg-surface-container rounded-xl"></div>
+<div class="h-44 bg-surface-container rounded-xl"></div>
+</div>
+<!-- Bottom Nav Simulation -->
+<div class="h-16 bg-surface border-t border-outline-variant flex justify-around items-center">
+<div class="w-12 h-6 bg-outline-variant rounded"></div>
+<div class="w-12 h-6 bg-outline-variant rounded"></div>
+<div class="w-12 h-6 bg-outline-variant rounded"></div>
+</div>
+</div>
+<!-- Modal Backdrop: Dimmed Translucent Paper Overlay + Brass Dust Effects -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-inverse-surface/80 backdrop-blur-sm overflow-y-auto">
+<!-- Atmospheric Floating Brass Dust & Sparkles -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+<span class="absolute top-[12%] left-[18%] material-symbols-outlined text-tertiary-fixed-dim opacity-70 text-lg animate-pulse" data-icon="sparkles" data-weight="fill" style="font-variation-settings: 'FILL' 1;">arrow_back_ios_new</span>
+<span class="absolute top-[22%] right-[14%] material-symbols-outlined text-tertiary-fixed opacity-80 text-2xl animate-bounce" data-icon="hotel_class" data-weight="fill" style="font-variation-settings: 'FILL' 1;">hotel_class</span>
+<span class="absolute bottom-[24%] left-[10%] material-symbols-outlined text-tertiary-fixed-dim opacity-60 text-xl" data-icon="sparkles">arrow_back_ios_new</span>
+<span class="absolute bottom-[16%] right-[20%] material-symbols-outlined text-tertiary-fixed opacity-75 text-sm animate-pulse" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<!-- Central Modal Card: Heritage Scroll Certificate (FR-STP-06 / S-705) -->
+<main class="relative w-full max-w-sm sm:max-w-md bg-surface-container-lowest text-on-surface rounded-xl border-2 border-tertiary-fixed shadow-2xl overflow-hidden flex flex-col z-10 transition-transform duration-300">
+<!-- Brass Plaque Top Banner -->
+<div class="relative bg-primary px-space-md py-2.5 flex items-center justify-between border-b-2 border-tertiary-fixed-dim">
+<div class="flex items-center space-x-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed text-sm" data-icon="verified" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm tracking-widest text-tertiary-fixed">식객 서열 승급 칙서 · 칙령 제302호</span>
+</div>
+<div class="flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+</div>
+</div>
+<!-- Scroll Certificate Inner Content Canvas -->
+<div class="p-space-md sm:p-space-lg flex flex-col items-center text-center">
+<!-- Grand Verification Inju Stamp (Double-Ring Brass & Vermilion Red Seal) -->
+<div class="relative mb-3 flex items-center justify-center animate-badge">
+<!-- Outer Concentric Brass Ring -->
+<div class="w-24 h-24 rounded-full border-[3px] border-tertiary flex items-center justify-center bg-tertiary-fixed/20 p-1 shadow-md">
+<!-- Inner Concentric Stamp Ring with Stamp Red Inset -->
+<div class="w-full h-full rounded-full border border-dashed border-secondary bg-surface-container-lowest flex flex-col items-center justify-center p-1.5 relative stamp-deboss">
+<!-- Circular Ink Imprint Text -->
+<span class="font-label-sm text-[8px] leading-tight text-secondary tracking-widest font-bold">노포천년 · 官印</span>
+<div class="my-0.5 border-t border-b border-secondary/40 py-0.5 px-2">
+<span class="font-display-lg text-secondary text-sm font-black tracking-tight">東네 어른</span>
+</div>
+<span class="font-label-sm text-[8px] leading-none text-secondary font-semibold">300年 突破</span>
+</div>
+</div>
+<!-- Decorative Stamp Wax Ribbon / Ribbon Tail Accent -->
+<div class="absolute -bottom-2 bg-secondary text-on-secondary px-2 py-0.5 rounded-full text-[9px] font-label-sm shadow flex items-center space-x-0.5">
+<span class="material-symbols-outlined text-[10px]" data-icon="award_star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">award_star</span>
+<span>정식 인증 완료</span>
+</div>
+</div>
+<!-- Headline & Main Title Header -->
+<div class="mt-2 space-y-1">
+<p class="font-label-md text-label-md text-tertiary-container flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-sm text-tertiary" data-icon="flare">flare</span>
+            새로운 칭호 획득!
+            <span class="material-symbols-outlined text-sm text-tertiary" data-icon="flare">flare</span>
+</p>
+<h2 class="font-headline-lg-mobile sm:font-headline-lg text-headline-lg-mobile sm:text-headline-lg text-primary font-bold tracking-tight">
+            동네 어른 <span class="text-tertiary-container text-lg sm:text-xl font-normal">(300년+)</span>
+</h2>
+</div>
+<!-- Narrative Heritage Subtext -->
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant leading-relaxed max-w-xs break-keep">
+          백년의 골목을 묵묵히 지켜온 노포들을 두루 섭렵하여, 마침내 동네의 미식 역사를 꿰뚫어 보는 어른의 반열에 올랐습니다.
+        </p>
+<!-- Centenary Heritage Gauge & Cumulative Progress -->
+<div class="mt-4 w-full bg-surface-container-low border border-outline-variant/60 rounded-xl p-3 text-left">
+<div class="flex justify-between items-baseline mb-1.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-xs text-primary" data-icon="history_edu">history_edu</span>
+              누적 세월 게이지
+            </span>
+<div class="font-number-stat text-sm text-primary font-extrabold tracking-tight">
+              442년 <span class="text-xs text-outline font-normal">/ 1,000년</span>
+</div>
+</div>
+<!-- Progress Bar Track -->
+<div class="w-full bg-surface-dim h-2.5 rounded-full overflow-hidden border border-outline-variant relative">
+<div class="h-full bg-gradient-to-r from-primary-container via-tertiary to-tertiary-fixed-dim rounded-full" style="width: 44.2%;"></div>
+</div>
+<!-- Milestone Nodes (Stages) -->
+<div class="mt-2 grid grid-cols-4 gap-1 text-center font-label-sm text-[9px] text-outline">
+<div class="flex flex-col items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mb-0.5"></span>
+<span>새싹 (0년)</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-outline mb-0.5"></span>
+<span>단골 (100년)</span>
+</div>
+<div class="flex flex-col items-center text-secondary font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary mb-0.5 ring-2 ring-secondary-fixed"></span>
+<span>[달성] 어른</span>
+</div>
+<div class="flex flex-col items-center text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-outline-variant mb-0.5"></span>
+<span>장인 (600년)</span>
+</div>
+</div>
+<!-- Next Goal Horizon Box -->
+<div class="mt-2.5 pt-2 border-t border-outline-variant/40 flex items-center justify-between text-on-surface-variant font-body-sm text-[11px]">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary text-xs" data-icon="flag">flag</span>
+              다음 칭호 <strong class="text-primary font-semibold">'장인 식객'</strong>까지
+            </span>
+<span class="font-label-sm text-secondary font-bold">158년 남음</span>
+</div>
+<p class="text-[10px] text-outline text-right mt-0.5 font-body-sm">
+            (약 2~3개 골목 노포 추가 탐방 시 달성)
+          </p>
+</div>
+<!-- Special Perks Unlocked Section (Bento Card Accent) -->
+<div class="mt-3 w-full bg-surface-container rounded-xl p-3 border border-outline-variant/60 text-left">
+<div class="font-label-sm text-label-sm text-tertiary-container font-bold mb-1.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="lock_open">lock_open</span>
+            새롭게 해금된 특권
+          </div>
+<ul class="space-y-1.5 font-body-sm text-xs text-on-surface">
+<li class="flex items-start gap-1.5">
+<span class="material-symbols-outlined text-secondary text-sm shrink-0" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>프로필에 공인 황동 칭호 배지 영구 부여</span>
+</li>
+<li class="flex items-start gap-1.5">
+<span class="material-symbols-outlined text-secondary text-sm shrink-0" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>노포 리뷰 작성 시 <strong class="text-primary">'동네 어른'</strong> 보증 마크 각인</span>
+</li>
+</ul>
+</div>
+<!-- Action Buttons Area (Android Ergonomic Standard Target) -->
+<div class="mt-5 w-full space-y-2">
+<!-- Primary CTA Button (Stamp Red #c23b2a equivalent: bg-secondary) -->
+<button class="w-full h-14 bg-secondary text-on-secondary rounded-xl font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md hover:bg-secondary-container active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-base" data-icon="menu_book">menu_book</span>
+<span>칭호 각인하고 패스포트 확인</span>
+</button>
+<!-- Secondary Action: Shareable Heritage Card -->
+<button class="w-full h-11 border border-outline text-on-surface-variant hover:text-primary hover:border-primary bg-surface-container-lowest rounded-xl font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all duration-150" type="button">
+<span class="material-symbols-outlined text-base" data-icon="share">share</span>
+<span>축하 카드 이미지로 공유하기 (P2)</span>
+</button>
+</div>
+<!-- Archival Verification Footer -->
+<footer class="mt-4 flex items-center justify-center gap-1 text-[11px] font-label-sm text-outline">
+<span class="material-symbols-outlined text-xs" data-icon="verified_user">verified_user</span>
+<span>노포천년(老鋪千年) 미식 보존위원회</span>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

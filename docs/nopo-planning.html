@@ -1,0 +1,1809 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="노포 천년 미식가 v0.4 통합 기획안: APK 실기기 무결점 목표, 1일차 기능 검증, 계정·평점·프로필, 전국 백년가게·서울 오래가게 데이터">
+<title>노포 천년 미식가</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 레이아웃 컨셉: 골목 간판. 청록 간판 띠 위에 제목, 종이 톤 본문, 붉은 도장은 핵심 순간에만 쓴다 */
+:root{
+  --bg:#EDF0EA; --surface:#F8F9F5; --ink:#14201E; --ink2:#52625E; --line:#CCD4CC;
+  --sign:#17504A; --on-sign:#F2F6F1;
+  --teal:#1F6B63; --on-teal:#FFFFFF; --teal-soft:#D3E5E0;
+  --stamp:#C23B2A; --on-stamp:#FFFFFF; --stamp-soft:#F4DCD6;
+  --mus:#D9A22C; --on-mus:#2A1F00; --mus-soft:#F6E8C4;
+  --display:'Black Han Sans','Noto Sans KR',sans-serif;
+  --body:'Noto Sans KR',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1614; --surface:#15221F; --ink:#E7EEEA; --ink2:#9CB0AA; --line:#2A3C37;
+    --sign:#0F2E2A; --on-sign:#EAF1EC;
+    --teal:#5DB3A6; --on-teal:#06201B; --teal-soft:#1B3833;
+    --stamp:#E8664F; --on-stamp:#220B07; --stamp-soft:#3D2420;
+    --mus:#E4B64A; --on-mus:#2A1F00; --mus-soft:#3A3119;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1614; --surface:#15221F; --ink:#E7EEEA; --ink2:#9CB0AA; --line:#2A3C37;
+  --sign:#0F2E2A; --on-sign:#EAF1EC;
+  --teal:#5DB3A6; --on-teal:#06201B; --teal-soft:#1B3833;
+  --stamp:#E8664F; --on-stamp:#220B07; --stamp-soft:#3D2420;
+  --mus:#E4B64A; --on-mus:#2A1F00; --mus-soft:#3A3119;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere}
+.wrap{max-width:940px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--teal)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--mus);outline-offset:2px}
+
+/* 히어로 */
+.hero{background:var(--sign);color:var(--on-sign);padding-block:56px 40px;position:relative;overflow:hidden}
+.hero .meta{font-family:var(--mono);font-size:12px;letter-spacing:.08em;opacity:.8}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(44px,10vw,92px);line-height:1.05;margin:14px 0 14px;text-wrap:balance;letter-spacing:.01em}
+.hero p.lead{font-size:clamp(16px,2.4vw,20px);max-width:34em;margin:0;opacity:.92}
+.hero .seal{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:28px;width:clamp(78px,16vw,128px);transform:rotate(-9deg);color:var(--stamp);opacity:.95}
+.hero .seal circle,.hero .seal text{fill:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero .seal{color:var(--stamp)}}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;padding:0;list-style:none}
+.nav a{display:inline-block;padding:6px 14px;border:1px solid color-mix(in srgb,var(--on-sign) 40%,transparent);border-radius:999px;color:var(--on-sign);text-decoration:none;font-size:13px}
+.nav a:hover{background:color-mix(in srgb,var(--on-sign) 14%,transparent)}
+
+/* 요약 도식 */
+.summary{margin:0;padding:28px 0 8px}
+.summary figcaption{font-size:13px;color:var(--ink2);margin-top:14px}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:26px}
+.flow li{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;display:grid;grid-template-columns:48px 1fr;column-gap:14px;align-items:center;min-width:0}
+.flow li:not(:last-child)::after{content:"↓";position:absolute;left:50%;bottom:-24px;transform:translateX(-50%);color:var(--ink2);font-size:18px;line-height:1}
+.flow .ic{grid-row:span 2;width:48px;height:48px;border-radius:12px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center}
+.flow li.hot .ic{background:var(--stamp-soft);color:var(--stamp)}
+.flow b{font-size:15px;line-height:1.3}
+.flow small{color:var(--ink2);font-size:13px;line-height:1.45}
+@media (min-width:760px){
+  .flow{grid-template-columns:repeat(6,1fr);gap:20px}
+  .flow li{grid-template-columns:1fr;row-gap:6px;justify-items:start;padding:16px 14px}
+  .flow .ic{grid-row:auto;margin-bottom:6px}
+  .flow li:not(:last-child)::after{content:"→";left:auto;right:-20px;bottom:auto;top:50%;transform:translateY(-50%)}
+}
+.gauge{margin-top:30px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+.gauge .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.gauge .big{font-family:var(--display);font-size:34px;line-height:1}
+.gauge .big small{font-family:var(--body);font-size:13px;color:var(--ink2);margin-left:6px}
+.gauge .tag{font-size:12px;color:var(--ink2)}
+.track{position:relative;height:12px;border-radius:6px;background:var(--line);margin:14px 0 30px}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:var(--teal)}
+.track u{position:absolute;top:-4px;width:2px;height:20px;background:var(--ink2);text-decoration:none}
+.track u span{position:absolute;top:22px;left:50%;transform:translateX(-50%);font-size:11px;white-space:nowrap;color:var(--ink2);font-family:var(--mono)}
+.track u.last{background:var(--stamp)}
+.track u.last span{transform:translateX(-100%);left:2px;color:var(--stamp);font-weight:600}
+.src{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--ink2);align-items:center}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--teal-soft);color:var(--ink);font-size:12.5px}
+.pill.m{background:var(--mus-soft)}
+.pill.s{background:var(--stamp-soft)}
+
+/* 섹션 */
+section{padding-block:48px 8px;border-top:1px solid var(--line);margin-top:40px}
+section:first-of-type{margin-top:24px}
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--teal);text-transform:uppercase;margin:0}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,4.6vw,36px);line-height:1.25;margin:6px 0 14px;text-wrap:balance}
+h3{font-size:17px;margin:26px 0 8px}
+p{margin:0 0 14px;max-width:44em}
+.fig{margin:22px 0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 14px 12px}
+.fig .scroll{overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto}
+.fig figcaption{font-size:13px;color:var(--ink2);margin-top:8px;padding-inline:4px}
+.note{background:var(--mus-soft);border-radius:12px;padding:14px 16px;margin:18px 0;max-width:46em;font-size:15px}
+.note b.k{display:inline-block;font-size:12px;background:var(--mus);color:var(--on-mus);border-radius:999px;padding:0 9px;margin-right:8px;line-height:1.7}
+.tbl{overflow-x:auto;margin:18px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14.5px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+th{font-size:12.5px;color:var(--ink2);font-weight:500;letter-spacing:.04em;background:color-mix(in srgb,var(--teal-soft) 55%,var(--surface))}
+tr:last-child td{border-bottom:0}
+td.num,th.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dots{font-family:var(--mono);letter-spacing:.12em;color:var(--teal);white-space:nowrap}
+tr.rec td{background:color-mix(in srgb,var(--teal-soft) 60%,var(--surface))}
+.sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.sw div{border-radius:12px;padding:14px 12px 12px;min-height:104px;display:flex;flex-direction:column;justify-content:flex-end;font-size:13px;line-height:1.4;min-width:0}
+.sw b{font-size:14px}
+.sw code{font-family:var(--mono);font-size:11.5px;opacity:.85}
+.stamps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:6px}
+.stamps div{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;background:var(--bg);border-radius:12px;padding:10px 12px;min-width:0}
+.stamps svg{width:72px;height:72px}
+.stamps b{display:block;font-size:14px}
+.stamps span{font-size:13px;color:var(--ink2);line-height:1.45}
+.type-spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.type-spec div{background:var(--bg);border-radius:12px;padding:14px 16px;min-width:0}
+.type-spec small{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink2);margin-bottom:4px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}
+.steps div{border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface);min-width:0}
+.steps b{display:block;font-family:var(--display);font-weight:400;font-size:20px;margin-bottom:4px}
+.steps span{font-size:14px;color:var(--ink2);line-height:1.55;display:block}
+ul.plain{padding-left:1.2em;margin:0 0 14px;max-width:44em}
+ul.plain li{margin-bottom:6px}
+.src-list{font-size:14px;color:var(--ink2);padding-left:1.2em}
+footer{padding-block:40px 56px;font-size:13px;color:var(--ink2);border-top:1px solid var(--line);margin-top:48px}
+
+/* SVG 공통 */
+svg text{font-family:var(--body);fill:var(--ink)}
+svg .t2{fill:var(--ink2)}
+svg .tw{fill:var(--on-teal)}
+svg .ts{fill:var(--on-stamp)}
+svg .tm{fill:var(--on-mus)}
+svg .disp{font-family:var(--display)}
+svg .mono{font-family:var(--mono)}
+.s-box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.s-bg{fill:var(--bg);stroke:var(--line);stroke-width:1.5}
+.s-teal{fill:var(--teal)}
+.s-tealsoft{fill:var(--teal-soft)}
+.s-stamp{fill:var(--stamp)}
+.s-stampsoft{fill:var(--stamp-soft)}
+.s-mus{fill:var(--mus)}
+.s-mussoft{fill:var(--mus-soft)}
+.s-line{stroke:var(--ink2);stroke-width:1.5;fill:none}
+.s-grid{stroke:var(--line);stroke-width:1;fill:none}
+.s-dash{stroke:var(--ink2);stroke-width:1.2;stroke-dasharray:5 4;fill:none}
+.s-lf{fill:var(--line)}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.checks fieldset{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px 10px;margin:0;min-width:0}
+.checks legend{font-weight:700;font-size:14px;padding:0 6px}
+.checks label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.5;padding:7px 0;border-bottom:1px dashed var(--line);cursor:pointer}
+.checks label:last-child{border-bottom:0}
+.checks input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:var(--teal)}
+.checks input:checked + *{color:var(--ink2)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:18px 0}
+.kpis div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0}
+.kpis b{display:block;font-family:var(--display);font-weight:400;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpis span{font-size:12.5px;color:var(--ink2)}
+ol.plain{padding-left:1.4em;margin:0 0 14px;max-width:44em}
+ol.plain li{margin-bottom:6px}
+code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--teal-soft) 70%,transparent);padding:1px 5px;border-radius:5px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>
+@media print{
+  .nav{display:none}
+  figure,.tbl,table,.note,.kpis{break-inside:avoid}
+  .scroll{overflow:visible}
+  a{color:inherit;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M1 1 L9 5 L1 9 z" fill="var(--ink2)"/>
+    </marker>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="5"/>
+      <circle cx="50" cy="50" r="37" stroke="currentColor" stroke-width="1.6"/>
+      <text x="50" y="58" text-anchor="middle" font-size="32" style="font-family:var(--display);fill:currentColor">千年</text>
+      <text x="50" y="76" text-anchor="middle" font-size="9" style="fill:currentColor;letter-spacing:.2em">美食家</text>
+    </svg>
+    <div class="meta">기획안 v0.4 · 2026.10.17 · ANDROID · KOTLIN · APK</div>
+    <h1>노포 천년 미식가</h1>
+    <p class="lead">내가 먹어 온 노포의 세월을 모아 천 년을 채우는 안드로이드 미식 패스포트. 이번 버전은 APK를 폰에 설치했을 때 모든 기능이 버그 없이 도는 것을 최우선으로 다시 설계했습니다.</p>
+    <ul class="nav">
+      <li><a href="#v04">v0.4 변경</a></li>
+      <li><a href="#concept">컨셉</a></li>
+      <li><a href="#users">사용자</a></li>
+      <li><a href="#loop">세월 규칙</a></li>
+      <li><a href="#ux">화면 설계</a></li>
+      <li><a href="#ui">디자인</a></li>
+      <li><a href="#spike">1일차 검증</a></li>
+      <li><a href="#data">노포 데이터</a></li>
+      <li><a href="#verify">방문 인증</a></li>
+      <li><a href="#account">계정·서버</a></li>
+      <li><a href="#review">평점·리뷰</a></li>
+      <li><a href="#map">지도 SDK</a></li>
+      <li><a href="#backend">백엔드</a></li>
+      <li><a href="#tech">아키텍처</a></li>
+      <li><a href="#claudecode">Claude Code</a></li>
+      <li><a href="#bmad">BMAD</a></li>
+      <li><a href="#uxtools">UX 도구</a></li>
+      <li><a href="#more">추가 기획</a></li>
+      <li><a href="#docs">개발 문서</a></li>
+      <li><a href="#plan">일정</a></li>
+      <li><a href="#scope">범위</a></li>
+      <li><a href="#risk">위험</a></li>
+      <li><a href="#precheck">체크리스트</a></li>
+      <li><a href="#decide">결정</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="wrap">
+
+<figure class="summary" aria-label="서비스 한눈에 보기">
+  <ol class="flow">
+    <li><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><b>가입·로그인</b><small>이메일과 닉네임으로 시작</small></li>
+    <li><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></span><b>발견</b><small>전국 노포 1,277곳 지도</small></li>
+    <li><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span><b>방문 인증</b><small>영수증, 안 되면 30m 안 가게 사진</small></li>
+    <li class="hot"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v6l2 3H7l2-3z"/><path d="M5 15h14v3H5z"/><path d="M4 21h16"/></svg></span><b>도장·세월</b><small>업력만큼 세월 적립, 1,000년이면 칭호</small></li>
+    <li><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg></span><b>평점·리뷰</b><small>다녀온 사람만 평점</small></li>
+    <li><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 3-5 6-5s6 1.5 6 5"/><path d="M15 15c3 0 6 1 6 4"/></svg></span><b>미식가 프로필</b><small>남의 칭호·다녀온 노포·평점</small></li>
+  </ol>
+  <div class="gauge">
+    <div class="row">
+      <div class="big">442<small>/ 1,000년 · 내 세월 (예시)</small></div>
+      <div class="tag">업력 40년 가게 25곳이면 1,000년</div>
+    </div>
+    <div class="track" role="img" aria-label="1,000년 중 442년 진행">
+      <i style="width:44.2%"></i>
+      <u style="left:10%"><span>100</span></u>
+      <u style="left:30%"><span>300</span></u>
+      <u style="left:60%"><span>600</span></u>
+      <u class="last" style="left:calc(100% - 2px)"><span>1,000</span></u>
+    </div>
+    <div class="src">
+      <span>노포 데이터</span>
+      <span class="pill">백년가게 1,139곳</span><span class="pill m">서울 오래가게 173곳</span>
+      <span>→ 창업연도로 업력 계산</span>
+    </div>
+  </div>
+  <figcaption>v0.4의 흐름입니다. 처음부터 계정으로 로그인하고, 인증한 가게에만 평점을 남기며, 다른 미식가의 칭호와 다녀온 노포를 볼 수 있습니다.</figcaption>
+</figure>
+
+<!-- 0. v0.4 변경 -->
+<section id="v04">
+  <p class="label">What changed · v0.4</p>
+  <h2>최우선 목표: 폰에서 버그 없이 도는 APK</h2>
+  <p>v0.4는 출시보다 <b>완성도</b>를 앞에 둡니다. Google Play 등록은 다음 버전으로 미루고, APK를 폰에 설치했을 때 기획한 모든 기능이 실제로 도는 것을 첫 번째 목표로 삼았습니다. 그래서 개발 첫날 오전을 실기기 기능 검증에 쓰고, 마지막 하루를 실기기 QA에 씁니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 470" style="min-width:640px" role="img" aria-label="v0.3에서 v0.4로 바뀐 여덟 가지를 왼쪽과 오른쪽 상자로 비교한 도식">
+      <text x="265" y="22" font-size="13" text-anchor="middle" class="t2" style="font-weight:700">v0.3</text>
+      <text x="585" y="22" font-size="13" text-anchor="middle" style="font-weight:700;fill:var(--stamp)">v0.4</text>
+      <g font-size="13">
+        <text x="10" y="62" style="font-weight:700">목표</text>
+        <text x="10" y="114" style="font-weight:700">개발 방식</text>
+        <text x="10" y="166" style="font-weight:700">1일차 오전</text>
+        <text x="10" y="218" style="font-weight:700">계정</text>
+        <text x="10" y="270" style="font-weight:700">평점·리뷰</text>
+        <text x="10" y="322" style="font-weight:700">방문 인증</text>
+        <text x="10" y="374" style="font-weight:700">노포 데이터</text>
+        <text x="10" y="426" style="font-weight:700">시연</text>
+      </g>
+      <g font-size="12.5">
+        <rect x="150" y="40" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="64" text-anchor="middle" class="t2">3일 안에 심사 시연</text>
+        <rect x="150" y="92" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="116" text-anchor="middle" class="t2">AI 에디터</text>
+        <rect x="150" y="144" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="168" text-anchor="middle" class="t2">프로젝트 생성</text>
+        <rect x="150" y="196" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="220" text-anchor="middle" class="t2">익명 로그인</text>
+        <rect x="150" y="248" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="272" text-anchor="middle" class="t2">하지 않음</text>
+        <rect x="150" y="300" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="324" text-anchor="middle" class="t2">영수증 300m · 간판 50m</text>
+        <rect x="150" y="352" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="376" text-anchor="middle" class="t2">서울 50곳 수동 입력</text>
+        <rect x="150" y="404" width="230" height="38" rx="9" class="s-bg"/><text x="265" y="428" text-anchor="middle" class="t2">시연 모드(검사 건너뜀)</text>
+
+        <rect x="430" y="40" width="310" height="38" rx="9" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="585" y="64" text-anchor="middle" style="font-weight:700">APK 실기기에서 모든 기능 무결점</text>
+        <rect x="430" y="92" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="116" text-anchor="middle">Android Studio + Claude Code</text>
+        <rect x="430" y="144" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="168" text-anchor="middle">지도·카메라·한국어 OCR·위치 실기기 검증</text>
+        <rect x="430" y="196" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="220" text-anchor="middle">이메일 가입·로그인 + 닉네임</text>
+        <rect x="430" y="248" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="272" text-anchor="middle">평점(+리뷰), 다른 미식가 프로필</text>
+        <rect x="430" y="300" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="324" text-anchor="middle">영수증(위치 없음) → 30m 안 가게 사진</text>
+        <rect x="430" y="352" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="376" text-anchor="middle">전국 백년가게 + 서울 오래가게 전체 수집</text>
+        <rect x="430" y="404" width="310" height="38" rx="9" class="s-tealsoft"/><text x="585" y="428" text-anchor="middle">테스트 가게(실제 로직 그대로)</text>
+      </g>
+      <g class="s-line">
+        <path d="M384 59 H426" marker-end="url(#ah)"/><path d="M384 111 H426" marker-end="url(#ah)"/><path d="M384 163 H426" marker-end="url(#ah)"/><path d="M384 215 H426" marker-end="url(#ah)"/>
+        <path d="M384 267 H426" marker-end="url(#ah)"/><path d="M384 319 H426" marker-end="url(#ah)"/><path d="M384 371 H426" marker-end="url(#ah)"/><path d="M384 423 H426" marker-end="url(#ah)"/>
+      </g>
+    </svg>
+    </div>
+    <figcaption>붉은 상자가 모든 결정의 기준입니다. 나머지 일곱 가지 변화는 모두 이 목표를 위한 것입니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>성공 기준</th><th>측정 방법</th></tr></thead>
+      <tbody>
+        <tr><td>1일차 오전 기능 검증 5종(지도·카메라·한국어 OCR·위치·Firebase) 통과</td><td>실기기 2대, 검증 체크리스트</td></tr>
+        <tr><td>릴리스 서명 APK에서 핵심 시나리오 8개 통과</td><td>가입부터 리뷰·프로필까지 실제 노포에서</td></tr>
+        <tr><td>크래시 0, 응답 없음(ANR) 0</td><td>Crashlytics, 무작위 조작 테스트 5,000회</td></tr>
+        <tr><td>가입부터 첫 도장까지 3분 이내</td><td>테스트 사용자 3명</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 1. 컨셉 -->
+<section id="concept">
+  <p class="label">Concept</p>
+  <h2>한 줄 정의와 차별점</h2>
+  <p>노포 천년 미식가는 내가 먹어 온 세월을 모으는 앱입니다. 별점 대신 업력을 점수로 씁니다. 1964년에 문을 연 설렁탕집에 가면 62년이, 1990년에 문을 연 분식집에 가면 36년이 내 패스포트에 쌓입니다. 합계가 1,000년이 되면 ‘천년 미식가’ 칭호를 받습니다.</p>
+  <p>맛집 앱이 “어디가 맛있나”에 답한다면, 이 앱은 “나는 지금까지 얼마나 오래된 맛을 먹어 봤나”에 답합니다. 평점과 리뷰도 남길 수 있지만, <b>그 가게를 방문 인증한 사람만</b> 남길 수 있습니다. 그래서 이 앱의 평점은 “실제로 다녀온 사람의 평가”입니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 640 380" style="min-width:520px" role="img" aria-label="경쟁 앱과 이 앱의 위치를 보여주는 2×2 포지셔닝 맵">
+      <rect x="70" y="24" width="540" height="296" rx="10" class="s-bg"/>
+      <line x1="340" y1="24" x2="340" y2="320" class="s-dash"/>
+      <line x1="70" y1="172" x2="610" y2="172" class="s-dash"/>
+      <text x="82" y="46" font-size="12" class="t2">노포는 잘 알지만 모으는 재미가 적음</text>
+      <text x="600" y="46" font-size="12" class="t2" text-anchor="end">노포 전문 + 수집의 재미</text>
+      <text x="82" y="310" font-size="12" class="t2">일반 정보 제공</text>
+      <text x="600" y="310" font-size="12" class="t2" text-anchor="end">수집은 되지만 노포 기준 없음</text>
+      <circle cx="190" cy="236" r="9" class="s-mus"/>
+      <text x="206" y="240" font-size="13">지도·리뷰 앱</text>
+      <circle cx="200" cy="108" r="9" class="s-mus"/>
+      <text x="216" y="112" font-size="13">노포 블로그·커뮤니티 목록</text>
+      <circle cx="450" cy="248" r="9" class="s-mus"/>
+      <text x="466" y="252" font-size="13">스탬프 투어 앱</text>
+      <circle cx="500" cy="96" r="15" class="s-stamp"/>
+      <text x="500" y="100" font-size="11" text-anchor="middle" class="ts" style="font-weight:700">千年</text>
+      <text x="500" y="128" font-size="13" text-anchor="middle" style="font-weight:700">노포 천년 미식가</text>
+      <text x="340" y="344" font-size="13" text-anchor="middle" class="t2">모으는 재미 (기록·수집·성장) →</text>
+      <text x="22" y="172" font-size="13" text-anchor="middle" class="t2" transform="rotate(-90 22 172)">노포 전문성 →</text>
+      <text x="610" y="368" font-size="11.5" text-anchor="end" class="t2">기획자 가설 기준의 배치이며 조사 결과가 아닙니다</text>
+    </svg>
+    </div>
+    <figcaption>오른쪽 위가 비어 있다는 가설이 이 기획의 출발점입니다.</figcaption>
+  </figure>
+  <div class="note"><b class="k">제안</b>앱 이름은 ‘노포 천년 미식가’를 그대로 쓰고, 도장 속에 千年(천년) 문양을 넣어 이름과 보상을 하나로 묶습니다.</div>
+</section>
+
+<!-- 2. 사용자 -->
+<section id="users">
+  <p class="label">Users</p>
+  <h2>사용자와 사용 순간</h2>
+  <p>처음에는 세 부류를 떠올리되, 이번 APK는 ‘노포 탐방러’ 한 부류에 맞춥니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>사용자</th><th>상황</th><th>원하는 것</th><th>앱이 주는 것</th><th>우선순위</th></tr></thead>
+      <tbody>
+        <tr class="rec"><td><b>노포 탐방러</b><br>20~30대 (가설)</td><td>주말에 새로운 노포를 찾아다닌다</td><td>가 본 곳을 모으고 자랑하고 싶다</td><td>도장, 칭호, 공유 카드</td><td>첫 버전</td></tr>
+        <tr><td><b>단골 기록러</b><br>40~50대 (가설)</td><td>오래 다닌 가게가 있다</td><td>나만의 단골집을 남기고 싶다</td><td>재방문 횟수, 단골 배지</td><td>다음 버전</td></tr>
+        <tr><td><b>타지·외국인 방문객</b></td><td>여행 중 현지 노포를 찾는다</td><td>믿을 수 있는 노포 목록</td><td>공식 인증 표시, 영어 설명</td><td>이후</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 290" style="min-width:640px" role="img" aria-label="출발 전부터 일상까지 사용 흐름과 설렘의 변화 곡선">
+      <text x="14" y="100" font-size="12" class="t2" text-anchor="middle" transform="rotate(-90 14 100)">설렘</text>
+      <line x1="40" y1="170" x2="740" y2="170" class="s-grid"/>
+      <line x1="40" y1="30" x2="740" y2="30" class="s-grid"/>
+      <path d="M80 150 C150 150 160 110 230 110 S310 80 380 80 S470 30 530 30 S620 60 680 60" class="s-line" style="stroke:var(--teal);stroke-width:3"/>
+      <g class="s-dash">
+        <line x1="80" y1="150" x2="80" y2="170"/><line x1="230" y1="110" x2="230" y2="170"/><line x1="380" y1="80" x2="380" y2="170"/><line x1="530" y1="30" x2="530" y2="170"/><line x1="680" y1="60" x2="680" y2="170"/>
+      </g>
+      <circle cx="80" cy="150" r="7" class="s-teal"/><circle cx="230" cy="110" r="7" class="s-teal"/><circle cx="380" cy="80" r="7" class="s-teal"/>
+      <circle cx="530" cy="30" r="11" class="s-stamp"/><circle cx="680" cy="60" r="7" class="s-teal"/>
+      <text x="548" y="26" font-size="12" style="font-weight:700">도장 순간</text>
+      <g font-size="12">
+        <rect x="15" y="190" width="130" height="84" rx="10" class="s-box"/><text x="80" y="212" text-anchor="middle" style="font-weight:700">출발 전</text><text x="80" y="234" text-anchor="middle" class="t2">근처 노포 찾기</text><text x="80" y="252" text-anchor="middle" class="t2">저장해 두기</text>
+        <rect x="165" y="190" width="130" height="84" rx="10" class="s-box"/><text x="230" y="212" text-anchor="middle" style="font-weight:700">도착</text><text x="230" y="234" text-anchor="middle" class="t2">업력·메뉴 확인</text><text x="230" y="252" text-anchor="middle" class="t2">인증 준비</text>
+        <rect x="315" y="190" width="130" height="84" rx="10" class="s-box"/><text x="380" y="212" text-anchor="middle" style="font-weight:700">식사 중</text><text x="380" y="234" text-anchor="middle" class="t2">사진 한 장</text><text x="380" y="252" text-anchor="middle" class="t2">방해 없이 촬영</text>
+        <rect x="465" y="190" width="130" height="84" rx="10" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="530" y="212" text-anchor="middle" style="font-weight:700">식후</text><text x="530" y="234" text-anchor="middle" class="t2">도장 찍기</text><text x="530" y="252" text-anchor="middle" class="t2">세월 적립</text>
+        <rect x="615" y="190" width="130" height="84" rx="10" class="s-box"/><text x="680" y="212" text-anchor="middle" style="font-weight:700">일상</text><text x="680" y="234" text-anchor="middle" class="t2">내 연대기 보기</text><text x="680" y="252" text-anchor="middle" class="t2">칭호까지 남은 년</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>설렘이 가장 높은 순간은 식후의 도장입니다. 이 순간에 연출 비용을 집중합니다.</figcaption>
+  </figure>
+</section>
+
+<!-- 3. 세월 규칙 -->
+<section id="loop">
+  <p class="label">Core loop</p>
+  <h2>핵심 규칙: 세월을 모은다</h2>
+  <ul class="plain">
+    <li>방문 인증 1회에 그 가게의 업력(올해 − 개업연도)만큼 세월이 쌓입니다.</li>
+    <li>같은 가게는 처음 한 번만 세월을 올리고, 다시 가면 단골 횟수만 늘어납니다.</li>
+    <li>가게가 문을 닫아도 이미 쌓은 세월은 그대로 남습니다.</li>
+    <li>노포의 기준은 업력 30년 이상으로 둡니다. 공공 인증 제도의 기준과 같습니다.</li>
+    <li>창업연도를 모르는 가게는 업력 30년(공식 지정 최소 기준)으로 계산하고 “업력 확인 중”으로 표시합니다.</li>
+  </ul>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 640 300" style="min-width:520px" role="img" aria-label="칭호별 필요 세월을 보여주는 막대 그래프">
+      <g class="s-grid"><line x1="150" y1="14" x2="150" y2="262"/><line x1="385" y1="14" x2="385" y2="262"/><line x1="620" y1="14" x2="620" y2="262"/></g>
+      <g font-size="14">
+        <text x="10" y="50" style="font-weight:500">새싹 식객</text>
+        <text x="10" y="98" style="font-weight:500">단골 식객</text>
+        <text x="10" y="146" style="font-weight:500">동네 어른</text>
+        <text x="10" y="194" style="font-weight:500">장인 식객</text>
+        <text x="10" y="242" style="font-weight:700">천년 미식가</text>
+      </g>
+      <rect x="150" y="30" width="5" height="28" class="s-teal"/>
+      <rect x="150" y="78" width="47" height="28" rx="3" class="s-teal"/>
+      <rect x="150" y="126" width="141" height="28" rx="3" class="s-teal"/>
+      <rect x="150" y="174" width="282" height="28" rx="3" class="s-teal"/>
+      <rect x="150" y="222" width="470" height="28" rx="3" class="s-stamp"/>
+      <g font-size="13" class="mono">
+        <text x="164" y="49" class="t2">시작</text>
+        <text x="206" y="97">100년</text>
+        <text x="300" y="145">300년</text>
+        <text x="441" y="193">600년</text>
+        <text x="612" y="241" text-anchor="end" class="ts" style="font-weight:600">1,000년</text>
+      </g>
+      <line x1="358" y1="16" x2="358" y2="262" class="s-dash"/>
+      <text x="364" y="14" font-size="12" style="font-weight:700">내 세월 442년 (예시)</text>
+      <g font-size="12" class="mono t2"><text x="150" y="284" text-anchor="middle" class="t2">0</text><text x="385" y="284" text-anchor="middle" class="t2">500</text><text x="620" y="284" text-anchor="middle" class="t2">1,000</text></g>
+    </svg>
+    </div>
+    <figcaption>칭호는 5단계입니다. 숫자는 초안이며 시드 데이터의 평균 업력을 본 뒤 조정합니다.</figcaption>
+  </figure>
+  <h3>도장 등급은 업력으로 정합니다</h3>
+  <div class="stamps">
+    <div>
+      <svg viewBox="0 0 100 100" aria-hidden="true" style="color:var(--teal)"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="62" text-anchor="middle" font-size="34" class="disp" style="fill:currentColor">38</text></svg>
+      <p style="margin:0"><b>일반 도장</b><span>업력 30~49년</span></p>
+    </div>
+    <div>
+      <svg viewBox="0 0 100 100" aria-hidden="true" style="color:var(--stamp)"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="62" text-anchor="middle" font-size="34" class="disp" style="fill:currentColor">62</text></svg>
+      <p style="margin:0"><b>붉은 도장</b><span>업력 50~99년</span></p>
+    </div>
+    <div>
+      <svg viewBox="0 0 100 100" aria-hidden="true" style="color:var(--mus)"><circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="50" y="60" text-anchor="middle" font-size="28" class="disp" style="fill:currentColor">100</text><text x="50" y="76" text-anchor="middle" font-size="8" style="fill:currentColor;letter-spacing:.15em">百年</text></svg>
+      <p style="margin:0"><b>금빛 도장</b><span>업력 100년 이상</span></p>
+    </div>
+  </div>
+  <div class="note"><b class="k">제안</b>세월 합계는 가게마다 올해가 바뀌면 1년씩 늘어납니다. 이미 적립한 값은 인증한 날의 업력으로 고정하는 안을 기본으로 둡니다. 계산이 단순해지고 기록이 흔들리지 않습니다.</div>
+</section>
+
+<!-- 4. UX -->
+<section id="ux">
+  <p class="label">UX flow</p>
+  <h2>화면 설계: 세 번 눌러 도장까지</h2>
+  <p>수집 흐름의 핵심 화면은 다섯 개입니다. 지도에서 핀을 누르면 상세, 상세에서 인증, 인증이 끝나면 도장 연출, 마지막에 패스포트로 이어집니다. 주요 버튼은 모두 화면 아래쪽 엄지 영역에 둡니다. 로그인·리뷰·프로필 화면은 ‘평점·리뷰와 다른 미식가의 프로필’ 장에 있습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 980 460" style="min-width:900px" role="img" aria-label="지도, 가게 상세, 방문 인증, 도장 연출, 내 패스포트 다섯 화면의 와이어프레임">
+      <!-- 화면 1 지도 -->
+      <g transform="translate(20,0)">
+        <rect x="0" y="20" width="156" height="380" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <rect x="6" y="26" width="144" height="250" rx="19" class="s-tealsoft"/>
+        <g stroke="var(--surface)" stroke-width="6" fill="none"><path d="M6 110 L150 90"/><path d="M60 26 L80 276"/><path d="M6 190 L150 212"/></g>
+        <circle cx="36" cy="82" r="5" class="s-teal"/><circle cx="112" cy="66" r="5" class="s-teal"/><circle cx="30" cy="160" r="5" class="s-teal"/><circle cx="122" cy="156" r="5" class="s-teal"/><circle cx="104" cy="240" r="5" class="s-teal"/>
+        <circle cx="76" cy="132" r="10" class="s-stamp"/><circle cx="76" cy="132" r="3.5" fill="var(--on-stamp)"/>
+        <rect x="16" y="36" width="124" height="26" rx="13" class="s-box"/><text x="30" y="53" font-size="9.5" class="t2">근처 노포 찾기</text>
+        <rect x="6" y="270" width="144" height="124" rx="16" class="s-box"/>
+        <rect x="62" y="277" width="32" height="3" rx="1.5" class="s-lf"/>
+        <text x="18" y="302" font-size="12" style="font-weight:700">예시 설렁탕</text>
+        <text x="18" y="317" font-size="9" class="t2">서울 · 62년 · 340m</text>
+        <rect x="18" y="326" width="68" height="18" rx="9" class="s-mussoft"/><text x="52" y="338" font-size="8.5" text-anchor="middle" style="fill:var(--ink)">공식 오래가게</text>
+        <rect x="18" y="354" width="120" height="30" rx="15" class="s-teal"/><text x="78" y="373" font-size="10.5" text-anchor="middle" class="tw" style="font-weight:700">자세히 보기</text>
+        <text x="78" y="424" font-size="12" text-anchor="middle" style="font-weight:700">지도</text>
+        <text x="78" y="442" font-size="10" text-anchor="middle" class="t2">핀과 하단 시트</text>
+      </g>
+      <path d="M180 210 H208" class="s-line" marker-end="url(#ah)"/>
+      <!-- 화면 2 상세 -->
+      <g transform="translate(216,0)">
+        <rect x="0" y="20" width="156" height="380" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <rect x="6" y="26" width="144" height="116" rx="19" class="s-tealsoft"/>
+        <ellipse cx="78" cy="96" rx="36" ry="13" class="s-box"/><path d="M42 96 Q78 140 114 96" class="s-box"/>
+        <path d="M66 70 q-5 -8 0 -14 M80 68 q-5 -8 0 -14 M94 70 q-5 -8 0 -14" class="s-line" style="stroke-width:1.5"/>
+        <text x="18" y="186" font-size="46" class="disp" style="fill:var(--stamp)">62</text>
+        <text x="76" y="186" font-size="16" style="font-weight:700">년</text>
+        <text x="18" y="208" font-size="12.5" style="font-weight:700">예시 설렁탕</text>
+        <text x="18" y="224" font-size="9" class="t2">1964년 개업 · 서울 중구</text>
+        <rect x="18" y="234" width="44" height="17" rx="8.5" class="s-tealsoft"/><text x="40" y="246" font-size="9" text-anchor="middle">설렁탕</text>
+        <rect x="66" y="234" width="38" height="17" rx="8.5" class="s-tealsoft"/><text x="85" y="246" font-size="9" text-anchor="middle">수육</text>
+        <rect x="18" y="262" width="120" height="46" rx="10" class="s-mussoft"/>
+        <text x="78" y="281" font-size="10.5" text-anchor="middle" style="font-weight:700">인증하면 세월 +62년</text>
+        <text x="78" y="297" font-size="9" text-anchor="middle" class="t2">내 세월 380 → 442</text>
+        <rect x="18" y="340" width="120" height="38" rx="19" class="s-stamp"/><text x="78" y="364" font-size="12.5" text-anchor="middle" class="ts" style="font-weight:700">방문 인증하기</text>
+        <text x="78" y="424" font-size="12" text-anchor="middle" style="font-weight:700">가게 상세</text>
+        <text x="78" y="442" font-size="10" text-anchor="middle" class="t2">큰 업력 숫자와 보상 미리보기</text>
+      </g>
+      <path d="M376 210 H404" class="s-line" marker-end="url(#ah)"/>
+      <!-- 화면 3 인증 -->
+      <g transform="translate(412,0)">
+        <rect x="0" y="20" width="156" height="380" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <rect x="6" y="26" width="144" height="368" rx="19" fill="#1B2624"/>
+        <rect x="22" y="42" width="112" height="22" rx="11" class="s-teal"/><text x="78" y="57" font-size="9.5" text-anchor="middle" class="tw" style="font-weight:700">영수증 인증</text>
+        <g stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round"><path d="M30 104 V84 H50"/><path d="M126 104 V84 H106"/><path d="M30 252 V272 H50"/><path d="M126 252 V272 H106"/></g>
+        <text x="78" y="182" font-size="9.5" text-anchor="middle" style="fill:#FFFFFF;opacity:.85">영수증을 칸 안에 맞춰 주세요</text>
+        <circle cx="78" cy="344" r="25" fill="none" stroke="#FFFFFF" stroke-width="3"/><circle cx="78" cy="344" r="18" fill="#FFFFFF"/>
+        <text x="24" y="348" font-size="10" style="fill:#FFFFFF;opacity:.85">취소</text>
+        <text x="78" y="424" font-size="12" text-anchor="middle" style="font-weight:700">방문 인증</text>
+        <text x="78" y="442" font-size="10" text-anchor="middle" class="t2">실패하면 간판으로 전환</text>
+      </g>
+      <path d="M572 210 H600" class="s-line" marker-end="url(#ah)"/>
+      <!-- 화면 4 도장 -->
+      <g transform="translate(608,0)">
+        <rect x="0" y="20" width="156" height="380" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <rect x="6" y="26" width="144" height="368" rx="19" class="s-tealsoft"/>
+        <text x="78" y="68" font-size="11" text-anchor="middle" class="t2">인증 완료</text>
+        <g transform="translate(78,146) rotate(-10)">
+          <circle r="54" fill="none" stroke="var(--stamp)" stroke-width="5"/><circle r="45" fill="none" stroke="var(--stamp)" stroke-width="1.5"/>
+          <text y="-14" font-size="10" text-anchor="middle" style="fill:var(--stamp);letter-spacing:.2em">세월</text>
+          <text y="20" font-size="34" text-anchor="middle" class="disp" style="fill:var(--stamp)">+62년</text>
+        </g>
+        <circle cx="26" cy="92" r="3" class="s-mus"/><circle cx="130" cy="84" r="4" class="s-mus"/><circle cx="136" cy="190" r="3" class="s-mus"/><circle cx="20" cy="196" r="4" class="s-mus"/>
+        <text x="78" y="238" font-size="12" text-anchor="middle" style="font-weight:700">내 세월 380 → 442년</text>
+        <rect x="22" y="250" width="112" height="9" rx="4.5" class="s-box"/><rect x="22" y="250" width="50" height="9" rx="4.5" class="s-teal"/>
+        <text x="78" y="282" font-size="9.5" text-anchor="middle" class="t2">다음 칭호까지 158년</text>
+        <rect x="18" y="340" width="120" height="38" rx="19" class="s-teal"/><text x="78" y="364" font-size="12" text-anchor="middle" class="tw" style="font-weight:700">패스포트 보기</text>
+        <text x="78" y="424" font-size="12" text-anchor="middle" style="font-weight:700">도장 연출</text>
+        <text x="78" y="442" font-size="10" text-anchor="middle" class="t2">0.4초 안에 찍히고 가볍게 진동</text>
+      </g>
+      <path d="M768 210 H796" class="s-line" marker-end="url(#ah)"/>
+      <!-- 화면 5 패스포트 -->
+      <g transform="translate(804,0)">
+        <rect x="0" y="20" width="156" height="380" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <text x="18" y="56" font-size="13" style="font-weight:700">내 패스포트</text>
+        <text x="18" y="96" font-size="30" class="disp">442</text><text x="68" y="96" font-size="10" class="t2">/ 1,000년</text>
+        <rect x="18" y="106" width="120" height="8" rx="4" class="s-lf"/><rect x="18" y="106" width="53" height="8" rx="4" class="s-teal"/>
+        <text x="18" y="132" font-size="9.5" class="t2">다음 칭호 · 장인 식객 600년</text>
+        <g fill="none" stroke-width="3">
+          <circle cx="36" cy="176" r="16" stroke="var(--stamp)"/><circle cx="78" cy="176" r="16" stroke="var(--teal)"/><circle cx="120" cy="176" r="16" stroke="var(--mus)"/>
+          <circle cx="36" cy="226" r="16" stroke="var(--teal)"/><circle cx="78" cy="226" r="16" stroke="var(--stamp)"/>
+          <g stroke="var(--line)" stroke-width="2" stroke-dasharray="4 3"><circle cx="120" cy="226" r="16"/><circle cx="36" cy="276" r="16"/><circle cx="78" cy="276" r="16"/><circle cx="120" cy="276" r="16"/></g>
+        </g>
+        <g font-size="12" text-anchor="middle" class="disp"><text x="36" y="181" style="fill:var(--stamp)">62</text><text x="78" y="181" style="fill:var(--teal)">41</text><text x="120" y="181" style="fill:var(--mus)">100</text><text x="36" y="231" style="fill:var(--teal)">35</text><text x="78" y="231" style="fill:var(--stamp)">51</text></g>
+        <text x="78" y="332" font-size="9.5" text-anchor="middle" class="t2">빈 칸은 다음에 갈 노포 자리</text>
+        <rect x="6" y="358" width="144" height="36" rx="18" class="s-bg"/>
+        <circle cx="40" cy="376" r="5" class="s-lf"/><circle cx="78" cy="376" r="5" class="s-lf"/><circle cx="116" cy="376" r="5" class="s-teal"/>
+        <text x="78" y="424" font-size="12" text-anchor="middle" style="font-weight:700">내 패스포트</text>
+        <text x="78" y="442" font-size="10" text-anchor="middle" class="t2">도장 칸과 세월 게이지</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>가게 이름과 숫자는 예시입니다. 모든 화면이 한 손 엄지 범위 안에서 끝나도록 배치했습니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>UX 원칙</th><th>적용 방식</th></tr></thead>
+      <tbody>
+        <tr><td>세 번 안에 인증</td><td>지도 핀 → 상세 → 인증하기. 중간에 로그인이나 설문을 끼우지 않습니다.</td></tr>
+        <tr><td>보상을 먼저 보여 주기</td><td>상세 화면에 “인증하면 세월 +62년”을 먼저 노출해 눌러 볼 이유를 만듭니다.</td></tr>
+        <tr><td>빈 상태도 설계</td><td>아직 비어 있는 도장 칸은 점선으로 두고 “다음에 갈 노포 자리”라는 문구를 붙입니다.</td></tr>
+        <tr><td>한 손 조작</td><td>주요 버튼은 화면 하단 3분의 1 안에 둡니다.</td></tr>
+        <tr><td>읽기 쉬운 글자</td><td>본문 14sp 이상, 글자와 배경 대비 4.5:1 이상을 기준으로 삼습니다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 5. UI -->
+<section id="ui">
+  <p class="label">Visual design</p>
+  <h2>디자인 시스템: 골목 간판과 인주</h2>
+  <p>오래된 가게 간판의 청록 법랑, 종이 영수증의 회녹색 바탕, 도장의 붉은 인주를 기본 색으로 삼습니다. 붉은색은 도장과 핵심 버튼에만 쓰고, 나머지 화면은 청록과 종이 톤으로 차분하게 둡니다.</p>
+  <figure class="fig">
+    <div class="sw">
+      <div style="background:var(--sign);color:var(--on-sign)"><b>간판 청록</b><code>#17504A</code>상단 바, 칭호 배너</div>
+      <div style="background:var(--teal);color:var(--on-teal)"><b>포인트 청록</b><code>#1F6B63</code>기본 버튼, 링크</div>
+      <div style="background:var(--stamp);color:var(--on-stamp)"><b>인주 빨강</b><code>#C23B2A</code>도장, 인증 버튼</div>
+      <div style="background:var(--mus);color:var(--on-mus)"><b>놋쇠 노랑</b><code>#D9A22C</code>금빛 도장, 보상</div>
+      <div style="background:var(--bg);color:var(--ink);border:1px solid var(--line)"><b>종이 바탕</b><code>#EDF0EA</code>화면 배경</div>
+      <div style="background:var(--surface);color:var(--ink);border:1px solid var(--line)"><b>카드 면</b><code>#F8F9F5</code>시트, 카드</div>
+    </div>
+    <figcaption>다크 모드는 같은 이름의 색을 어둡게 바꿔 한 벌 더 준비합니다. 안드로이드 화면에서는 Material 3의 색 역할(primary, secondary, surface)에 이 값을 연결합니다.</figcaption>
+  </figure>
+  <h3>글꼴과 움직임</h3>
+  <div class="type-spec">
+    <div><small>DISPLAY · Black Han Sans</small><span class="disp" style="font-family:var(--display);font-size:44px;line-height:1.1;color:var(--stamp)">62년</span><br><span style="font-size:13px;color:var(--ink2)">업력 숫자와 칭호에만 사용</span></div>
+    <div><small>BODY · Noto Sans KR</small><span style="font-size:20px;font-weight:700">예시 설렁탕</span><br><span style="font-size:15px">1964년 개업 · 서울 중구</span><br><span style="font-size:13px;color:var(--ink2)">본문과 버튼 글자</span></div>
+    <div><small>DATA · JetBrains Mono</small><span style="font-family:var(--mono);font-size:22px;font-variant-numeric:tabular-nums">442 / 1,000</span><br><span style="font-size:13px;color:var(--ink2)">게이지, 거리, 횟수 같은 숫자</span></div>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>요소</th><th>규격</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>도장 찍는 모션</td><td class="num">380ms · 크게 시작해 살짝 튕기며 안착</td><td>앱의 가장 큰 보상 순간입니다. 짧고 묵직해야 합니다.</td></tr>
+        <tr><td>숫자 올라가기</td><td class="num">600ms · 380 → 442</td><td>적립이 눈으로 확인되어 성취감이 생깁니다.</td></tr>
+        <tr><td>진동</td><td class="num">도장이 닿는 순간 1회, 가볍게</td><td>소리 없이도 도장 느낌을 줍니다.</td></tr>
+        <tr><td>여백과 모서리</td><td class="num">8dp 단위 · 카드 16dp 둥글기</td><td>간격이 일정해야 화면이 정돈되어 보입니다.</td></tr>
+        <tr><td>터치 영역</td><td class="num">최소 48dp</td><td>안드로이드 접근성 기본 권장 크기입니다.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- S. 1일차 기능 검증 -->
+<section id="spike">
+  <p class="label">Day 1 morning</p>
+  <h2>1일차 오전: 빈 앱으로 실기기 기능 검증</h2>
+  <p>본 개발에 들어가기 전에 빈 앱 하나에 <b>지도·카메라·한국어 글자 인식·위치</b>만 넣고 실제 폰에서 도는지 확인합니다. 이 네 가지는 기기마다 다르게 동작하고, 나중에 문제가 드러나면 고치기 가장 비싼 부분입니다. 이때 만든 화면은 버리지 않고 최종 앱의 <b>진단 화면</b>으로 남깁니다. 계정과 서버는 처음부터 쓰기 때문에 <b>Firebase 가입·로그인·DB 왕복</b>도 같은 날 오전에 실기기에서 확인합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" style="min-width:640px" role="img" aria-label="1일차 9시부터 13시 30분까지 기능 검증 항목별 시간 막대, Firebase 확인 포함">
+      <g class="s-grid"><line x1="110" y1="30" x2="110" y2="282"/><line x1="250" y1="30" x2="250" y2="282"/><line x1="390" y1="30" x2="390" y2="282"/><line x1="530" y1="30" x2="530" y2="282"/><line x1="670" y1="30" x2="670" y2="282"/></g>
+      <g font-size="11.5" class="mono" text-anchor="middle"><text x="110" y="22" class="t2">09:00</text><text x="250" y="22" class="t2">10:00</text><text x="390" y="22" class="t2">11:00</text><text x="530" y="22" class="t2">12:00</text><text x="670" y="22" class="t2">13:00</text></g>
+      <g font-size="12.5">
+        <text x="10" y="55">진단 화면 뼈대</text>
+        <text x="10" y="90" style="font-weight:700">지도</text>
+        <text x="10" y="125" style="font-weight:700">카메라</text>
+        <text x="10" y="160" style="font-weight:700">한국어 OCR</text>
+        <text x="10" y="195" style="font-weight:700">위치</text>
+        <text x="10" y="230" style="font-weight:700">Firebase 로그인·DB</text>
+        <text x="10" y="265">릴리스 APK·보고서</text>
+      </g>
+      <rect x="110" y="42" width="70" height="18" rx="5" class="s-teal"/>
+      <rect x="180" y="77" width="105" height="18" rx="5" class="s-stamp"/>
+      <rect x="285" y="112" width="105" height="18" rx="5" class="s-stamp"/>
+      <rect x="390" y="147" width="105" height="18" rx="5" class="s-stamp"/>
+      <rect x="495" y="182" width="105" height="18" rx="5" class="s-stamp"/>
+      <rect x="600" y="217" width="70" height="18" rx="5" class="s-stamp"/>
+      <rect x="670" y="252" width="70" height="18" rx="5" class="s-teal"/>
+      <text x="380" y="314" font-size="12" text-anchor="middle" class="t2">붉은 막대 5개(기기 기능 4개 + Firebase)가 통과해야 본 개발로 넘어갑니다</text>
+    </svg>
+    </div>
+    <figcaption>각 항목은 Claude Code에 그대로 붙여 넣을 요청문과 통과 기준이 <code>nopo-06-spike-plan.md</code>에 있습니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>항목</th><th>통과 기준 (요약)</th><th>실패하면</th></tr></thead>
+      <tbody>
+        <tr><td><b>지도</b></td><td>5초 안에 지도 표시, 인증 오류 없음, 마커 1,000개에서 끊김 확인, 회전·앱 전환 후 정상</td><td>401 패키지명 / 429 Dynamic Map 미선택 / 800 키 미지정 확인, 그래도 안 되면 카카오맵으로 같은 시험</td></tr>
+        <tr><td><b>카메라</b></td><td>미리보기 1초, 사진 방향 정상, 권한 거부·“다시 묻지 않음” 처리</td><td>생명주기 바인딩, 해상도 낮추기</td></tr>
+        <tr><td><b>한국어 OCR</b></td><td>영수증의 상호·전화·결제일시, 간판 이름이 인식됨. 3초 이내, 비행기 모드에서도 동작</td><td>한국어 모델 의존성, 사진 회전, 더 가까이·밝게</td></tr>
+        <tr><td><b>위치</b></td><td>실외·실내·<b>실제 노포 문 앞</b> 정확도 기록, 모의 위치 감지, 15초 후 측정 중지</td><td>측정값을 기록하고 30m 기준 유지 여부 결정</td></tr>
+        <tr><td><b>Firebase</b></td><td>테스트 계정 가입·로그인, Firestore 쓰기·읽기 왕복 2초 이내, 비행기 모드에서 쓴 값이 복귀 후 반영</td><td><code>google-services.json</code> 패키지명, 이메일 로그인 사용 설정, 보안 규칙 게시 확인</td></tr>
+        <tr><td>릴리스 APK</td><td>R8을 켠 릴리스 APK에서도 다섯 기능 동작, 서명 키가 없으면 디버그 키로 서명돼 설치됨</td><td>SDK별 keep 규칙 추가</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- D. 노포 데이터 -->
+<section id="data">
+  <p class="label">Q1 · Data · collected 2026-10-18</p>
+  <h2>노포 데이터: 전국 백년가게와 서울 오래가게</h2>
+  <p>소상공인마당에 소개 페이지가 있는 백년가게 1,139곳은 목록과 상세(창업일·소개·영업시간·이용정보)를 <b>전부</b> 수집했고, 서울시 오래가게는 선정 발표 자료를 회차별로 모았습니다. 공식 지정리스트(공공데이터포털, 2026-08-20 기준)는 1,511행이라 소개 페이지가 없는 가게가 더 있습니다. 이 CSV는 이 작업 환경에서 내려받을 수 없어, 개발 컴퓨터에서 내려받아 <code>tools/import_official_list.py</code>로 대조하면 빠진 가게가 카탈로그에 더해집니다(이름·주소·전화, 창업연도는 미상이라 업력 30년).</p>
+  <div class="kpis">
+    <div><b>1,139</b><span>백년가게 (소상공인마당)</span></div>
+    <div><b>751</b><span>그중 음식점업</span></div>
+    <div><b>1,139</b><span>상세 정보 수집</span></div>
+    <div><b>1,139</b><span>창업일 확보</span></div>
+    <div><b>173</b><span>서울 오래가게</span></div>
+    <div><b>0</b><span>좌표 (보강 전)</span></div>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>공개 자료</th><th>담긴 것</th><th class="num" style="white-space:nowrap">가게 수</th><th>이 기획에서 쓰는 곳</th></tr></thead>
+      <tbody>
+        <tr class="rec"><td>소상공인마당 백년가게 목록·상세</td><td>이름, 업종, 주소, 전화, 창업일, 소개, 영업시간, 이용정보</td><td class="num" style="white-space:nowrap">1,139</td><td>카탈로그 본체 (전부 수집)</td></tr>
+        <tr><td>공공데이터포털 백년가게 지정리스트 CSV</td><td>연번, 업체명, 업체주소, 연락처 (4열)</td><td class="num" style="white-space:nowrap">1,511행</td><td>빠진 가게 보충: <code>tools/import_official_list.py</code></td></tr>
+        <tr class="rec"><td>서울시 오래가게 선정 발표·미디어허브</td><td>회차별 가게명, 업종, 창업연도, 대표 품목</td><td class="num" style="white-space:nowrap">173 / 175</td><td>오래가게 카탈로그</td></tr>
+        <tr><td>서울시 오래가게 누리집</td><td>가게별 소개·주소</td><td class="num" style="white-space:nowrap">-</td><td>이 작업 환경에서 접속되지 않음 → 주소는 좌표 보강 때 이름 검색으로</td></tr>
+        <tr><td>영문 위키백과 Oraegage 표</td><td>영문 가게명·업종 (2022년경 107곳)</td><td class="num" style="white-space:nowrap">-</td><td>2017 회차 대조, 폐업 추정</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 640 472" style="min-width:540px" role="img" aria-label="시도별 백년가게 수와 그중 음식점 수 막대 그래프">
+      <text x="10" y="20" font-size="13" style="font-weight:700">시도별 백년가게 (전체 / 음식점)</text>
+      <line x1="130" y1="28" x2="130" y2="442" class="s-grid"/><text x="130" y="458" font-size="11" text-anchor="middle" class="t2 mono">0</text>
+<line x1="202" y1="28" x2="202" y2="442" class="s-grid"/><text x="202" y="458" font-size="11" text-anchor="middle" class="t2 mono">25</text>
+<line x1="273" y1="28" x2="273" y2="442" class="s-grid"/><text x="273" y="458" font-size="11" text-anchor="middle" class="t2 mono">50</text>
+<line x1="345" y1="28" x2="345" y2="442" class="s-grid"/><text x="345" y="458" font-size="11" text-anchor="middle" class="t2 mono">75</text>
+<line x1="417" y1="28" x2="417" y2="442" class="s-grid"/><text x="417" y="458" font-size="11" text-anchor="middle" class="t2 mono">100</text>
+<line x1="488" y1="28" x2="488" y2="442" class="s-grid"/><text x="488" y="458" font-size="11" text-anchor="middle" class="t2 mono">125</text>
+<line x1="560" y1="28" x2="560" y2="442" class="s-grid"/><text x="560" y="458" font-size="11" text-anchor="middle" class="t2 mono">150</text>
+<text x="10" y="46" font-size="12">경기</text>
+<rect x="130" y="34" width="435.7" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="34" width="237.9" height="15" rx="3" class="s-stamp"/>
+<text x="572" y="46" font-size="11.5" class="mono">152 / 83</text>
+<text x="10" y="70" font-size="12">서울</text>
+<rect x="130" y="58" width="375.5" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="58" width="278.1" height="15" rx="3" class="s-stamp"/>
+<text x="512" y="70" font-size="11.5" class="mono">131 / 97</text>
+<text x="10" y="94" font-size="12">경북</text>
+<rect x="130" y="82" width="312.5" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="82" width="209.3" height="15" rx="3" class="s-stamp"/>
+<text x="448" y="94" font-size="11.5" class="mono">109 / 73</text>
+<text x="10" y="118" font-size="12">경남</text>
+<rect x="130" y="106" width="275.2" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="106" width="192.1" height="15" rx="3" class="s-stamp"/>
+<text x="411" y="118" font-size="11.5" class="mono">96 / 67</text>
+<text x="10" y="142" font-size="12">강원</text>
+<rect x="130" y="130" width="215.0" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="130" width="160.5" height="15" rx="3" class="s-stamp"/>
+<text x="351" y="142" font-size="11.5" class="mono">75 / 56</text>
+<text x="10" y="166" font-size="12">충북</text>
+<rect x="130" y="154" width="206.4" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="154" width="163.4" height="15" rx="3" class="s-stamp"/>
+<text x="342" y="166" font-size="11.5" class="mono">72 / 57</text>
+<text x="10" y="190" font-size="12">전북</text>
+<rect x="130" y="178" width="200.7" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="178" width="151.9" height="15" rx="3" class="s-stamp"/>
+<text x="337" y="190" font-size="11.5" class="mono">70 / 53</text>
+<text x="10" y="214" font-size="12">전남</text>
+<rect x="130" y="202" width="197.8" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="202" width="123.3" height="15" rx="3" class="s-stamp"/>
+<text x="334" y="214" font-size="11.5" class="mono">69 / 43</text>
+<text x="10" y="238" font-size="12">부산</text>
+<rect x="130" y="226" width="186.3" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="226" width="108.9" height="15" rx="3" class="s-stamp"/>
+<text x="322" y="238" font-size="11.5" class="mono">65 / 38</text>
+<text x="10" y="262" font-size="12">충남</text>
+<rect x="130" y="250" width="180.6" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="250" width="129.0" height="15" rx="3" class="s-stamp"/>
+<text x="317" y="262" font-size="11.5" class="mono">63 / 45</text>
+<text x="10" y="286" font-size="12">대구</text>
+<rect x="130" y="274" width="166.3" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="274" width="131.9" height="15" rx="3" class="s-stamp"/>
+<text x="302" y="286" font-size="11.5" class="mono">58 / 46</text>
+<text x="10" y="310" font-size="12">광주</text>
+<rect x="130" y="298" width="154.8" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="298" width="57.3" height="15" rx="3" class="s-stamp"/>
+<text x="291" y="310" font-size="11.5" class="mono">54 / 20</text>
+<text x="10" y="334" font-size="12">인천</text>
+<rect x="130" y="322" width="117.5" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="322" width="77.4" height="15" rx="3" class="s-stamp"/>
+<text x="254" y="334" font-size="11.5" class="mono">41 / 27</text>
+<text x="10" y="358" font-size="12">대전</text>
+<rect x="130" y="346" width="103.2" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="346" width="57.3" height="15" rx="3" class="s-stamp"/>
+<text x="239" y="358" font-size="11.5" class="mono">36 / 20</text>
+<text x="10" y="382" font-size="12">울산</text>
+<rect x="130" y="370" width="63.1" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="370" width="31.5" height="15" rx="3" class="s-stamp"/>
+<text x="199" y="382" font-size="11.5" class="mono">22 / 11</text>
+<text x="10" y="406" font-size="12">제주</text>
+<rect x="130" y="394" width="51.6" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="394" width="25.8" height="15" rx="3" class="s-stamp"/>
+<text x="188" y="406" font-size="11.5" class="mono">18 / 9</text>
+<text x="10" y="430" font-size="12">세종</text>
+<rect x="130" y="418" width="22.9" height="15" rx="3" class="s-tealsoft"/>
+<rect x="130" y="418" width="17.2" height="15" rx="3" class="s-stamp"/>
+<text x="159" y="430" font-size="11.5" class="mono">8 / 6</text>
+    </svg>
+    </div>
+    <figcaption><span class="pill" style="background:var(--teal-soft)">연한 막대 = 전체</span> <span class="pill" style="background:var(--stamp);color:var(--on-stamp)">진한 막대 = 음식점업</span> 서울 오래가게는 이 그래프에 포함하지 않았습니다.</figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 776 240" style="min-width:560px" role="img" aria-label="창업 연대별 가게 수 세로 막대 그래프">
+      <text x="10" y="20" font-size="13" style="font-weight:700">창업 연대별 백년가게 (창업연도 확보 1,139곳)</text>
+      <line x1="50" y1="210" x2="766" y2="210" class="s-grid"/>
+      <rect x="60" y="209.6" width="46" height="0.4" rx="3" class="s-mus"/><text x="83.0" y="203.6" font-size="11.5" text-anchor="middle" class="mono">1</text><text x="83.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1900년대</text><rect x="118" y="209.6" width="46" height="0.4" rx="3" class="s-mus"/><text x="141.0" y="203.6" font-size="11.5" text-anchor="middle" class="mono">1</text><text x="141.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1910년대</text><rect x="176" y="208.9" width="46" height="1.1" rx="3" class="s-mus"/><text x="199.0" y="202.9" font-size="11.5" text-anchor="middle" class="mono">3</text><text x="199.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1930년대</text><rect x="234" y="208.5" width="46" height="1.5" rx="3" class="s-mus"/><text x="257.0" y="202.5" font-size="11.5" text-anchor="middle" class="mono">4</text><text x="257.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1940년대</text><rect x="292" y="206.6" width="46" height="3.4" rx="3" class="s-mus"/><text x="315.0" y="200.6" font-size="11.5" text-anchor="middle" class="mono">9</text><text x="315.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1950년대</text><rect x="350" y="193.5" width="46" height="16.5" rx="3" class="s-teal"/><text x="373.0" y="187.5" font-size="11.5" text-anchor="middle" class="mono">44</text><text x="373.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1960년대</text><rect x="408" y="156.1" width="46" height="53.9" rx="3" class="s-teal"/><text x="431.0" y="150.1" font-size="11.5" text-anchor="middle" class="mono">144</text><text x="431.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1970년대</text><rect x="466" y="40.0" width="46" height="170.0" rx="3" class="s-teal"/><text x="489.0" y="34.0" font-size="11.5" text-anchor="middle" class="mono">454</text><text x="489.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1980년대</text><rect x="524" y="76.7" width="46" height="133.3" rx="3" class="s-teal"/><text x="547.0" y="70.7" font-size="11.5" text-anchor="middle" class="mono">356</text><text x="547.0" y="228" font-size="11.5" text-anchor="middle" class="t2">1990년대</text><rect x="582" y="182.3" width="46" height="27.7" rx="3" class="s-teal"/><text x="605.0" y="176.3" font-size="11.5" text-anchor="middle" class="mono">74</text><text x="605.0" y="228" font-size="11.5" text-anchor="middle" class="t2">2000년대</text><rect x="640" y="195.4" width="46" height="14.6" rx="3" class="s-teal"/><text x="663.0" y="189.4" font-size="11.5" text-anchor="middle" class="mono">39</text><text x="663.0" y="228" font-size="11.5" text-anchor="middle" class="t2">2010년대</text><rect x="698" y="206.3" width="46" height="3.7" rx="3" class="s-teal"/><text x="721.0" y="200.3" font-size="11.5" text-anchor="middle" class="mono">10</text><text x="721.0" y="228" font-size="11.5" text-anchor="middle" class="t2">2020년대</text>
+    </svg>
+    </div>
+    <figcaption>1980~90년대 창업이 가장 많습니다. 소상공인마당의 창업일은 현재 사업자 기준이라 2000년 이후 날짜는 대를 이으며 다시 등록한 날짜로 보입니다. 소개글에 더 이른 창업연도가 있으면 그 연도를 썼고, 그래도 업력이 30년 미만으로 나오는 207곳은 앱에서 30년(지정 최소 기준)으로 계산합니다. 노란 막대는 1960년 이전입니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>서울 오래가게 선정 회차</th><th class="num">발표</th><th class="num">수집</th></tr></thead>
+      <tbody><tr><td>2017 종로·을지로</td><td class="num">39</td><td class="num">37</td></tr><tr><td>2018 서북권</td><td class="num">26</td><td class="num">26</td></tr><tr><td>2019 서남권</td><td class="num">22</td><td class="num">22</td></tr><tr><td>2020 동북권</td><td class="num">21</td><td class="num">21</td></tr><tr><td>2021 동남권</td><td class="num">13</td><td class="num">13</td></tr><tr><td>2024 도심권(중구·종로구 음식점 등)</td><td class="num">24</td><td class="num">24</td></tr><tr><td>2025 서북권 음식점</td><td class="num">15</td><td class="num">15</td></tr><tr><td>2026 동북권 음식점</td><td class="num">15</td><td class="num">15</td></tr><tr><td><b>합계</b></td><td class="num"><b>175</b></td><td class="num"><b>173</b></td></tr></tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--ink2)">2017년 첫 회차는 한글 명단 원문을 찾지 못해 39곳 중 2곳은 이름을 확인하지 못했습니다. 서울시는 2026년 9월 발표에서 현재 오래가게를 누적 150곳으로 안내했고, 앱 카탈로그의 오래가게는 폐업 의심·상호 미확인을 뺀 151곳입니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>가장 오래된 백년가게</th><th>지역</th><th class="num">창업</th><th class="num">업력</th></tr></thead>
+      <tbody><tr><td>경방루</td><td>전북</td><td class="num">1909</td><td class="num">117년</td></tr><tr><td>황산옥</td><td>충남</td><td class="num">1915</td><td class="num">111년</td></tr><tr><td>야래향</td><td>경남</td><td class="num">1930</td><td class="num">96년</td></tr><tr><td>주식회사 예향</td><td>전남</td><td class="num">1930</td><td class="num">96년</td></tr><tr><td>㈜한일관</td><td>서울</td><td class="num">1939</td><td class="num">87년</td></tr><tr><td>복화루</td><td>인천</td><td class="num">1945</td><td class="num">81년</td></tr><tr><td>남창문구사</td><td>인천</td><td class="num">1945</td><td class="num">81년</td></tr><tr><td>태화루</td><td>경남</td><td class="num">1947</td><td class="num">79년</td></tr></tbody>
+    </table>
+  </div>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 640 256" style="min-width:540px" role="img" aria-label="업종별 백년가게 수 막대 그래프">
+      <text x="10" y="20" font-size="13" style="font-weight:700">업종별 백년가게</text>
+      <line x1="130" y1="28" x2="130" y2="226" class="s-grid"/><text x="130" y="242" font-size="11" text-anchor="middle" class="t2 mono">0</text>
+<line x1="159" y1="28" x2="159" y2="226" class="s-grid"/><text x="159" y="242" font-size="11" text-anchor="middle" class="t2 mono">50</text>
+<line x1="187" y1="28" x2="187" y2="226" class="s-grid"/><text x="187" y="242" font-size="11" text-anchor="middle" class="t2 mono">100</text>
+<line x1="216" y1="28" x2="216" y2="226" class="s-grid"/><text x="216" y="242" font-size="11" text-anchor="middle" class="t2 mono">150</text>
+<line x1="245" y1="28" x2="245" y2="226" class="s-grid"/><text x="245" y="242" font-size="11" text-anchor="middle" class="t2 mono">200</text>
+<line x1="273" y1="28" x2="273" y2="226" class="s-grid"/><text x="273" y="242" font-size="11" text-anchor="middle" class="t2 mono">250</text>
+<line x1="302" y1="28" x2="302" y2="226" class="s-grid"/><text x="302" y="242" font-size="11" text-anchor="middle" class="t2 mono">300</text>
+<line x1="331" y1="28" x2="331" y2="226" class="s-grid"/><text x="331" y="242" font-size="11" text-anchor="middle" class="t2 mono">350</text>
+<line x1="359" y1="28" x2="359" y2="226" class="s-grid"/><text x="359" y="242" font-size="11" text-anchor="middle" class="t2 mono">400</text>
+<line x1="388" y1="28" x2="388" y2="226" class="s-grid"/><text x="388" y="242" font-size="11" text-anchor="middle" class="t2 mono">450</text>
+<line x1="417" y1="28" x2="417" y2="226" class="s-grid"/><text x="417" y="242" font-size="11" text-anchor="middle" class="t2 mono">500</text>
+<line x1="445" y1="28" x2="445" y2="226" class="s-grid"/><text x="445" y="242" font-size="11" text-anchor="middle" class="t2 mono">550</text>
+<line x1="474" y1="28" x2="474" y2="226" class="s-grid"/><text x="474" y="242" font-size="11" text-anchor="middle" class="t2 mono">600</text>
+<line x1="503" y1="28" x2="503" y2="226" class="s-grid"/><text x="503" y="242" font-size="11" text-anchor="middle" class="t2 mono">650</text>
+<line x1="531" y1="28" x2="531" y2="226" class="s-grid"/><text x="531" y="242" font-size="11" text-anchor="middle" class="t2 mono">700</text>
+<line x1="560" y1="28" x2="560" y2="226" class="s-grid"/><text x="560" y="242" font-size="11" text-anchor="middle" class="t2 mono">750</text>
+<text x="10" y="46" font-size="12">음식점업</text>
+<rect x="130" y="34" width="430.6" height="15" rx="3" class="s-teal"/>
+<text x="567" y="46" font-size="11.5" class="mono">751</text>
+<text x="10" y="70" font-size="12">도소매업</text>
+<rect x="130" y="58" width="144.5" height="15" rx="3" class="s-teal"/>
+<text x="280" y="70" font-size="11.5" class="mono">252</text>
+<text x="10" y="94" font-size="12">서비스업</text>
+<rect x="130" y="82" width="54.5" height="15" rx="3" class="s-teal"/>
+<text x="190" y="94" font-size="11.5" class="mono">95</text>
+<text x="10" y="118" font-size="12">제조업</text>
+<rect x="130" y="106" width="20.6" height="15" rx="3" class="s-teal"/>
+<text x="157" y="118" font-size="11.5" class="mono">36</text>
+<text x="10" y="142" font-size="12">건설업</text>
+<rect x="130" y="130" width="1.1" height="15" rx="3" class="s-teal"/>
+<text x="137" y="142" font-size="11.5" class="mono">2</text>
+<text x="10" y="166" font-size="12">축산업</text>
+<rect x="130" y="154" width="1.0" height="15" rx="3" class="s-teal"/>
+<text x="137" y="166" font-size="11.5" class="mono">1</text>
+<text x="10" y="190" font-size="12">숙박업</text>
+<rect x="130" y="178" width="1.0" height="15" rx="3" class="s-teal"/>
+<text x="137" y="190" font-size="11.5" class="mono">1</text>
+<text x="10" y="214" font-size="12">농업</text>
+<rect x="130" y="202" width="1.0" height="15" rx="3" class="s-teal"/>
+<text x="137" y="214" font-size="11.5" class="mono">1</text>
+    </svg>
+    </div>
+    <figcaption>지도는 기본으로 음식점만 보여 주고, 필터로 전체 노포를 볼 수 있습니다.</figcaption>
+  </figure>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 900 170" style="min-width:760px" role="img" aria-label="수집 원본에서 CSV, SQLite, 앱용 JSON, 앱 DB로 이어지는 데이터 흐름">
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10" y="40" width="150" height="70" rx="12" class="s-box"/><text x="85" y="68" style="font-weight:700">수집 원본</text><text x="85" y="88" font-size="11" class="t2">data/raw/*.jsonl</text>
+        <rect x="190" y="40" width="150" height="70" rx="12" class="s-box"/><text x="265" y="68" style="font-weight:700">좌표 보강</text><text x="265" y="88" font-size="11" class="t2">tools/geocode.py</text>
+        <rect x="370" y="40" width="150" height="70" rx="12" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="445" y="68" style="font-weight:700">카탈로그 생성</text><text x="445" y="88" font-size="11" class="t2">tools/build_catalog.py</text>
+        <rect x="550" y="20" width="160" height="50" rx="10" class="s-box"/><text x="630" y="42" style="font-weight:700">CSV · SQLite</text><text x="630" y="60" font-size="11" class="t2">확인·분석용</text>
+        <rect x="550" y="84" width="160" height="50" rx="10" class="s-teal"/><text x="630" y="106" class="tw" style="font-weight:700">stores.json</text><text x="630" y="124" font-size="11" class="tw">앱 assets</text>
+        <rect x="740" y="84" width="150" height="50" rx="10" class="s-box"/><text x="815" y="106" style="font-weight:700">Room</text><text x="815" y="124" font-size="11" class="t2">첫 실행 시 적재</text>
+      </g>
+      <g class="s-line"><path d="M160 75 H186" marker-end="url(#ah)"/><path d="M340 75 H366" marker-end="url(#ah)"/><path d="M520 70 L546 50" marker-end="url(#ah)"/><path d="M520 80 L546 105" marker-end="url(#ah)"/><path d="M710 109 H736" marker-end="url(#ah)"/></g>
+      <text x="450" y="160" font-size="12" text-anchor="middle" class="t2">좌표 보강은 네이버 또는 카카오 API 키가 필요해, 개발 첫날 컴퓨터에서 한 번 실행합니다</text>
+    </svg>
+    </div>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>파일</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td><code>data/nopo_stores.csv</code></td><td>통합 카탈로그 1,300행: 가게명, 별칭(영수증·간판 대조용), 지정 제도, 업종, 시도·시군구, 주소, 전화, 창업일·창업연도와 출처, 현재 업력, n대째, 대표 메뉴, 영업시간, 이용정보, 홈페이지, 소개 요약, 출처 URL, 좌표, 데이터 상태 표시</td></tr>
+        <tr><td><code>data/nopo_stores.db</code></td><td>같은 내용의 SQLite (DB Browser 등으로 열람)</td></tr>
+        <tr><td><code>app/src/main/assets/stores.json</code></td><td>앱이 첫 실행에 Room으로 적재하는 카탈로그</td></tr>
+        <tr><td><code>data/raw/</code></td><td>수집 원본(JSON Lines)과 오래가게 발표 회차 정보</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b class="k">알아 둘 점</b>소개글은 수집 도구가 원문을 짧게 요약한 문장이라 그대로 인용하지 않았습니다. 출시 전에는 가게별로 다시 쓰거나 출처를 함께 표시합니다. 창업연도가 비어 있는 가게는 앱에서 업력 30년으로 계산합니다. 상세 정보가 빠진 가게는 <code>tools/crawl_baeknyeon.py --only-missing</code>으로 컴퓨터에서 보충할 수 있습니다. 서울 오래가게 중 한글 상호를 확인하지 못했거나 폐업이 의심되는 22곳은 CSV에만 두고 앱 카탈로그(1,277곳)에서는 뺐습니다. 주소가 없는 오래가게는 좌표 보강 때 카카오 이름 검색으로 찾고 표시를 붙입니다.</div>
+</section>
+
+
+<!-- V. 인증 -->
+<section id="verify">
+  <p class="label">Q6 · Verification</p>
+  <h2>방문 인증: 영수증 먼저, 안 되면 30m 안 가게 사진</h2>
+  <p>요청하신 규칙 그대로입니다. <b>영수증 인증은 위치를 전혀 쓰지 않고</b>, 영수증이 없거나 인식되지 않을 때만 위치를 확인합니다. 가게에서 30m 안에 있으면 간판·메뉴판·출입문처럼 <b>가게 이름이나 전화번호가 보이는 사진</b>으로 대신 인증합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 960 400" style="min-width:820px" role="img" aria-label="영수증 인증 흐름과, 실패 시 30미터 안 가게 사진 인증으로 넘어가는 흐름도">
+      <text x="10" y="24" font-size="13" style="font-weight:700">① 영수증 인증 · 위치 사용 안 함</text>
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10" y="40" width="120" height="56" rx="28" class="s-teal"/><text x="70" y="73" class="tw" style="font-weight:700">인증하기</text>
+        <rect x="160" y="40" width="130" height="56" rx="10" class="s-box"/><text x="225" y="64" style="font-weight:700">영수증 촬영</text><text x="225" y="83" font-size="11" class="t2">앱 안 카메라, 저장 안 함</text>
+        <rect x="320" y="40" width="130" height="56" rx="10" class="s-box"/><text x="385" y="64" style="font-weight:700">기기 안 OCR</text><text x="385" y="83" font-size="11" class="t2">상호·전화·결제일시</text>
+        <path d="M480 68 L560 30 L640 68 L560 106 Z" class="s-box"/><text x="560" y="64">전화 또는 상호 일치</text><text x="560" y="81">+ 24시간 이내?</text>
+        <rect x="670" y="40" width="125" height="56" rx="10" class="s-box"/><text x="732" y="64" style="font-weight:700">중복 영수증?</text><text x="732" y="83" font-size="11" class="t2">해시 서버 확인</text>
+        <rect x="820" y="40" width="130" height="56" rx="10" class="s-stamp"/><text x="885" y="64" class="ts" style="font-weight:700">도장</text><text x="885" y="83" font-size="11" class="ts">세월 +업력</text>
+      </g>
+      <g class="s-line"><path d="M130 68 H156" marker-end="url(#ah)"/><path d="M290 68 H316" marker-end="url(#ah)"/><path d="M450 68 H476" marker-end="url(#ah)"/><path d="M640 68 H666" marker-end="url(#ah)"/><path d="M795 68 H816" marker-end="url(#ah)"/></g>
+      <text x="652" y="60" font-size="11.5" class="t2">예</text>
+
+      <path d="M560 106 V150 H70 V206" class="s-line" marker-end="url(#ah)"/>
+      <text x="320" y="143" font-size="12" text-anchor="middle" class="t2">아니오 · 인식 실패 · 날짜 없음 · “영수증이 없어요”</text>
+
+      <text x="86" y="196" font-size="13" style="font-weight:700;fill:var(--stamp)">② 가게 사진 인증 · 대체</text>
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10" y="210" width="120" height="56" rx="10" class="s-mussoft"/><text x="70" y="234" style="font-weight:700">가게 사진으로</text><text x="70" y="252">인증하기</text>
+        <rect x="160" y="210" width="130" height="56" rx="10" class="s-box"/><text x="225" y="234" style="font-weight:700">위치 측정</text><text x="225" y="253" font-size="11" class="t2">최대 15초 · 모의 위치 거부</text>
+        <path d="M320 238 L400 200 L480 238 L400 276 Z" class="s-box"/><text x="400" y="234">거리 ≤ 30m</text><text x="400" y="251">정확도 ≤ 30m?</text>
+        <rect x="510" y="210" width="130" height="56" rx="10" class="s-box"/><text x="575" y="234" style="font-weight:700">가게 정보 사진</text><text x="575" y="253" font-size="11" class="t2">간판·메뉴판·출입문</text>
+        <path d="M670 238 L740 200 L810 238 L740 276 Z" class="s-box"/><text x="740" y="234">이름·전화가</text><text x="740" y="251">보이나?</text>
+        <rect x="830" y="210" width="120" height="56" rx="10" class="s-stamp"/><text x="890" y="234" class="ts" style="font-weight:700">도장</text><text x="890" y="252" font-size="11" class="ts">사진 확인</text>
+        <rect x="320" y="320" width="160" height="50" rx="10" class="s-bg"/><text x="400" y="341">거리·정확도 표시</text><text x="400" y="359" font-size="11" class="t2">재측정 버튼</text>
+        <rect x="660" y="320" width="160" height="50" rx="10" class="s-mussoft" style="stroke:var(--mus);stroke-width:1.5"/><text x="740" y="341" style="font-weight:700">3번 실패하면</text><text x="740" y="359" font-size="11" class="t2">위치 확인 도장 선택</text>
+      </g>
+      <g class="s-line"><path d="M130 238 H156" marker-end="url(#ah)"/><path d="M290 238 H316" marker-end="url(#ah)"/><path d="M480 238 H506" marker-end="url(#ah)"/><path d="M640 238 H666" marker-end="url(#ah)"/><path d="M810 238 H826" marker-end="url(#ah)"/><path d="M400 276 V316" marker-end="url(#ah)"/><path d="M740 276 V316" marker-end="url(#ah)"/></g>
+      <g font-size="11.5" class="t2"><text x="488" y="230" class="t2">예</text><text x="412" y="298" class="t2">아니오</text><text x="814" y="230" class="t2">예</text><text x="752" y="298" class="t2">아니오</text></g>
+    </svg>
+    </div>
+    <figcaption>영수증 이미지는 판정 직후 메모리에서 지우고, 가게 사진은 기기에만 인증샷으로 남깁니다. 위치 좌표는 서버에 보내지 않습니다.</figcaption>
+  </figure>
+  <h3>왜 정확도도 30m 이하여야 하나</h3>
+  <p>폰이 알려 주는 위치에는 “이 반경 안에 있을 확률이 약 68%”라는 정확도 값이 붙습니다. 정확도가 ±80m인 값으로 “가게에서 25m”라고 판정하면 실제로는 100m 밖일 수도 있습니다. 그래서 거리 30m와 정확도 30m를 함께 만족할 때만 판정하고, 둘 다 화면에 숫자로 보여 줍니다. 1일차 기능 검증에서 실제 노포 문 앞 측정값을 기록해 이 기준이 현장에서 통과되는지 먼저 확인합니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>설정값 (<code>VerificationConfig</code>)</th><th>값</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td>영수증 결제일시 허용</td><td class="num">24시간</td><td>당일 방문 인증</td></tr>
+        <tr><td>영수증 상호 유사도(전화가 없거나 맞지 않을 때)</td><td class="num">0.70</td><td>법인명·띄어쓰기 차이 흡수</td></tr>
+        <tr><td>사진 인증 거리 / 정확도</td><td class="num">30m / 30m</td><td>사용자 지정 거리 + 판정 신뢰도</td></tr>
+        <tr><td>사진 글자 유사도</td><td class="num">0.60</td><td>간판의 생략·변형 표기</td></tr>
+        <tr><td>글자 확인 시도</td><td class="num">3회 후 위치 확인 도장</td><td>한자·붓글씨 간판에서 막히지 않게</td></tr>
+        <tr><td>위치 측정 제한</td><td class="num">15초</td><td>가장 정확한 값 선택</td></tr>
+        <tr><td>하루 인증</td><td class="num">5곳, 같은 가게 1회</td><td>몰아 찍기 방지</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b class="k">실기기에서 부딪힐 것</b>감열지가 흐린 영수증, 법인명이 찍힌 영수증, 종이 영수증을 받지 않은 경우가 영수증 경로의 주된 실패 원인입니다. 그래서 첫 화면부터 “가게 사진으로 인증하기” 버튼을 함께 둡니다. 화면에 띄운 남의 영수증은 완벽히 막을 수 없어 24시간·중복 해시·하루 5곳으로 피해를 제한합니다.</div>
+  <h3>폰에서 정말 되나: 부딪힐 문제와 대응</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>문제</th><th>영향</th><th>대응</th></tr></thead>
+      <tbody>
+        <tr><td>영수증 양식이 단말기마다 다름</td><td>상호·일시 위치가 제각각</td><td>자리가 아니라 패턴(전화번호, 날짜 형식)으로 찾기. 요일 괄호·두 자리 연도도 인식</td></tr>
+        <tr><td>영수증 상호가 간판 이름과 다름(법인명)</td><td>상호 대조 실패</td><td>전화 일치 <b>또는</b> 상호 0.70 이상이면 통과, 카탈로그 별칭(㈜·괄호를 뺀 이름)과도 비교</td></tr>
+        <tr><td>카탈로그 전화번호가 바뀌었거나 여러 개</td><td>정상 방문인데 전화 불일치</td><td>전화가 달라도 상호가 맞으면 통과, 형식이 틀린 번호는 비워 둠</td></tr>
+        <tr><td>감열지가 흐리거나 구겨짐</td><td>인식 실패</td><td>밝은 곳·평평하게 안내, 실패하면 가게 사진 경로</td></tr>
+        <tr><td>종이 영수증을 안 받음</td><td>영수증 경로 불가</td><td>30m 안 가게 사진 경로를 항상 열어 둠. 카드사 앱 결제내역 캡처는 위조가 쉬워 받지 않음</td></tr>
+        <tr><td>남의 영수증·화면에 띄운 영수증</td><td>부정 인증</td><td>24시간, 영수증 해시 중복 차단, 하루 5곳. 완벽 차단은 불가</td></tr>
+        <tr><td>카드번호·승인번호 노출</td><td>개인정보</td><td>영수증 사진은 저장하지 않고 폰 안에서 필요한 칸만 뽑은 뒤 버림</td></tr>
+        <tr><td>골목·실내 위치 오차, 주소→좌표 오차</td><td>30m 판정 실패</td><td>거리·정확도 모두 30m, 15초 측정 중 최선값. 1일차 실측 후 조정. 영수증 경로는 위치를 쓰지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- A. 계정·서버 -->
+<section id="account">
+  <p class="label">Accounts &amp; server</p>
+  <h2>계정과 서버: 처음부터 로그인해서 쓰는 앱</h2>
+  <p>앱을 처음 열면 가입·로그인 화면만 보입니다. 이메일과 비밀번호, 닉네임으로 가입하고, 로그인 상태는 앱을 다시 켜도 유지됩니다. 서버는 Firebase 하나로 로그인과 데이터베이스를 함께 처리합니다. 노포 카탈로그는 앱 안에 들어 있고, 서버에는 <b>유저가 만든 데이터</b>만 저장합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 900 360" style="min-width:760px" role="img" aria-label="앱의 기기 저장소와 Firebase 로그인, Firestore 컬렉션의 관계도">
+      <rect x="10" y="20" width="270" height="320" rx="16" class="s-bg"/>
+      <text x="26" y="48" font-size="14" style="font-weight:700">앱 (폰)</text>
+      <g font-size="12.5">
+        <rect x="26" y="64" width="238" height="54" rx="10" class="s-box"/><text x="40" y="86" style="font-weight:700">노포 카탈로그</text><text x="40" y="106" font-size="11.5" class="t2">stores.json → Room, 오프라인</text>
+        <rect x="26" y="128" width="238" height="54" rx="10" class="s-box"/><text x="40" y="150" style="font-weight:700">내 방문 기록</text><text x="40" y="170" font-size="11.5" class="t2">기기에 먼저 저장</text>
+        <rect x="26" y="192" width="238" height="54" rx="10" class="s-box"/><text x="40" y="214" style="font-weight:700">전송 대기열</text><text x="40" y="234" font-size="11.5" class="t2">WorkManager, 연결되면 전송</text>
+        <rect x="26" y="256" width="238" height="68" rx="10" class="s-box"/><text x="40" y="278" style="font-weight:700">인증샷</text><text x="40" y="298" font-size="11.5" class="t2">기기에만 · 영수증 이미지는</text><text x="40" y="314" font-size="11.5" class="t2">저장하지 않음</text>
+      </g>
+      <rect x="360" y="20" width="530" height="320" rx="16" class="s-bg"/>
+      <text x="376" y="48" font-size="14" style="font-weight:700">Firebase (무료 요금제)</text>
+      <g font-size="12.5">
+        <rect x="376" y="64" width="160" height="70" rx="10" class="s-teal"/><text x="390" y="90" class="tw" style="font-weight:700">Authentication</text><text x="390" y="110" font-size="11.5" class="tw">이메일 / 비밀번호</text>
+        <rect x="376" y="146" width="160" height="70" rx="10" class="s-box"/><text x="390" y="172" style="font-weight:700">Crashlytics</text><text x="390" y="192" font-size="11.5" class="t2">크래시 0 확인</text>
+        <rect x="552" y="64" width="322" height="260" rx="10" class="s-tealsoft"/>
+        <text x="566" y="88" style="font-weight:700">Cloud Firestore (서울 리전)</text>
+        <g font-size="12" class="mono">
+          <text x="566" y="116">users/{uid}</text>
+          <text x="566" y="140">  └ visits/{storeId}</text>
+          <text x="566" y="164">nicknames/{닉네임}</text>
+          <text x="566" y="188">reviews/{storeId}_{uid}</text>
+          <text x="566" y="212">receiptHashes/{hash}</text>
+          <text x="566" y="236">reports/{id}  (P1)</text>
+          <text x="566" y="260">diagnostics/{uid}  (1일차 검증)</text>
+        </g>
+        <text x="566" y="292" font-size="11.5" class="t2">좌표·영수증 이미지·시:분은 저장 안 함</text>
+        <text x="566" y="310" font-size="11.5" class="t2">보안 규칙으로 본인 데이터만 쓰기</text>
+      </g>
+      <g class="s-line"><path d="M280 99 H372" marker-end="url(#ah)" marker-start="url(#ah)"/><path d="M280 219 C 330 219, 340 252, 548 252" marker-end="url(#ah)"/></g>
+      <text x="326" y="91" font-size="11.5" text-anchor="middle" class="t2">로그인</text>
+      <text x="420" y="244" font-size="11.5" text-anchor="middle" class="t2">방문·리뷰 전송</text>
+    </svg>
+    </div>
+    <figcaption>카탈로그를 서버에 두지 않는 이유: 무료 요금제의 하루 읽기 5만 건 한도에서, 지도를 열 때마다 1,000곳 넘게 읽으면 테스트 몇십 번에 한도가 찹니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>기능</th><th>동작</th><th>막는 장치</th></tr></thead>
+      <tbody>
+        <tr><td>회원가입</td><td>이메일·비밀번호(8자, 영문+숫자)·닉네임(2~12자)</td><td>닉네임 문서로 중복 방지, 가입 중 실패하면 “닉네임 정하기”로 복구</td></tr>
+        <tr><td>로그인 유지</td><td>앱을 다시 켜면 바로 지도</td><td>로그인 게이트: 로그인 전에는 가입·로그인 화면만</td></tr>
+        <tr><td>비밀번호 재설정</td><td>메일 발송</td><td>계정 존재 여부를 알려 주지 않는 같은 문구</td></tr>
+        <tr><td>재설치·기기 변경</td><td>로그인하면 방문 기록·리뷰 복원</td><td>세월·도장 수 일치 확인 (QA M-6)</td></tr>
+        <tr><td>로그아웃</td><td>보내지 못한 기록이 있으면 경고</td><td>다른 계정에 이전 데이터가 보이지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- R. 평점·리뷰·프로필 -->
+<section id="review">
+  <p class="label">Ratings &amp; profiles</p>
+  <h2>평점·리뷰와 다른 미식가의 프로필</h2>
+  <p>평점은 별 1~5개이고, 리뷰 글은 쓰고 싶을 때만 덧붙입니다. 가게 리뷰 목록에서 다른 유저의 닉네임이나 별점을 누르면 그 사람의 <b>칭호(등급)</b>, 쌓은 세월, 다녀온 노포, 매긴 평점을 볼 수 있습니다. 평점은 그 가게를 <b>방문 인증한 사람만</b> 남길 수 있게 했습니다. 이 앱의 평점이 다른 맛집 앱과 다른 점이 바로 “실제로 다녀온 사람의 평점”이기 때문입니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 800 480" style="min-width:700px" role="img" aria-label="리뷰 작성, 가게 상세의 평점 영역, 유저 프로필 세 화면 와이어프레임">
+      <g transform="translate(20,0)">
+        <rect x="0" y="20" width="170" height="390" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <text x="16" y="56" font-size="12.5" style="font-weight:700">평점 남기기</text>
+        <text x="16" y="74" font-size="10" class="t2">예시 설렁탕 · 방문 인증 완료</text>
+        <g fill="var(--mus)"><path d="M30 104 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z"/><path d="M62 104 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z"/><path d="M94 104 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z"/><path d="M126 104 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z"/></g>
+        <path d="M158 104 l6 13 14 1-11 9 4 14-13-8-13 8 4-14-11-9 14-1z" transform="translate(-20,0)" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <rect x="14" y="160" width="142" height="130" rx="10" class="s-bg"/>
+        <g class="s-lf"><rect x="24" y="174" width="110" height="7" rx="3"/><rect x="24" y="190" width="120" height="7" rx="3"/><rect x="24" y="206" width="96" height="7" rx="3"/></g>
+        <text x="146" y="282" font-size="10" text-anchor="end" class="t2 mono">86/500</text>
+        <text x="16" y="312" font-size="10" class="t2">글은 쓰지 않아도 돼요</text>
+        <rect x="14" y="350" width="142" height="40" rx="20" class="s-stamp"/><text x="85" y="375" font-size="12.5" text-anchor="middle" class="ts" style="font-weight:700">저장</text>
+        <text x="85" y="436" font-size="12" text-anchor="middle" style="font-weight:700">리뷰 작성</text>
+        <text x="85" y="454" font-size="10" text-anchor="middle" class="t2">별점만으로도 저장</text>
+      </g>
+      <g transform="translate(315,0)">
+        <rect x="0" y="20" width="170" height="390" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <text x="16" y="56" font-size="13" style="font-weight:700">예시 설렁탕</text>
+        <text x="16" y="96" font-size="34" class="disp" style="fill:var(--stamp)">62</text><text x="62" y="96" font-size="13" style="font-weight:700">년</text>
+        <text x="16" y="126" font-size="20" class="disp">★ 4.6</text><text x="86" y="126" font-size="10" class="t2">평점 28개</text>
+        <rect x="14" y="138" width="142" height="30" rx="15" class="s-teal"/><text x="85" y="158" font-size="11" text-anchor="middle" class="tw" style="font-weight:700">내 평점 남기기</text>
+        <g>
+          <rect x="14" y="182" width="142" height="88" rx="10" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:2"/>
+          <text x="24" y="202" font-size="11" style="font-weight:700">국밥장인</text>
+          <rect x="80" y="191" width="56" height="15" rx="7.5" class="s-mus"/><text x="108" y="202" font-size="8.5" text-anchor="middle" class="tm">동네 어른</text>
+          <text x="24" y="221" font-size="11" style="fill:var(--mus)">★★★★★</text>
+          <g class="s-lf"><rect x="24" y="232" width="118" height="6" rx="3"/><rect x="24" y="245" width="92" height="6" rx="3"/></g>
+          <text x="24" y="262" font-size="9" class="t2">단골 3회 · 10.12</text>
+          <circle cx="44" cy="200" r="13" fill="none" stroke="var(--stamp)" stroke-width="2"/>
+        </g>
+        <g>
+          <rect x="14" y="280" width="142" height="80" rx="10" class="s-bg"/>
+          <text x="24" y="300" font-size="11" style="font-weight:700">면식가</text>
+          <rect x="70" y="289" width="56" height="15" rx="7.5" class="s-tealsoft"/><text x="98" y="300" font-size="8.5" text-anchor="middle">단골 식객</text>
+          <text x="24" y="319" font-size="11" style="fill:var(--mus)">★★★★☆</text>
+          <g class="s-lf"><rect x="24" y="330" width="110" height="6" rx="3"/></g>
+          <text x="24" y="352" font-size="9" class="t2">10.03</text>
+        </g>
+        <text x="85" y="390" font-size="10" text-anchor="middle" class="t2">20개씩 더보기</text>
+        <text x="85" y="436" font-size="12" text-anchor="middle" style="font-weight:700">가게 상세 · 평점 영역</text>
+        <text x="85" y="454" font-size="10" text-anchor="middle" class="t2">닉네임이나 별점을 누르면 →</text>
+      </g>
+      <g transform="translate(610,0)">
+        <rect x="0" y="20" width="170" height="390" rx="24" class="s-box" style="stroke:var(--ink2);stroke-width:2"/>
+        <text x="16" y="56" font-size="13" style="font-weight:700">국밥장인</text>
+        <rect x="16" y="66" width="70" height="20" rx="10" class="s-mus"/><text x="51" y="80" font-size="10" text-anchor="middle" class="tm" style="font-weight:700">동네 어른</text>
+        <text x="16" y="118" font-size="26" class="disp">412</text><text x="66" y="118" font-size="10" class="t2">/ 1,000년</text>
+        <rect x="16" y="126" width="138" height="8" rx="4" class="s-lf"/><rect x="16" y="126" width="57" height="8" rx="4" class="s-teal"/>
+        <text x="16" y="154" font-size="10" class="t2">노포 9곳 · 평점 7개</text>
+        <rect x="16" y="166" width="66" height="24" rx="12" class="s-teal"/><text x="49" y="182" font-size="10" text-anchor="middle" class="tw" style="font-weight:700">다녀온 노포</text>
+        <rect x="88" y="166" width="66" height="24" rx="12" class="s-bg"/><text x="121" y="182" font-size="10" text-anchor="middle">매긴 평점</text>
+        <g font-size="10.5">
+          <circle cx="30" cy="214" r="11" fill="none" stroke="var(--stamp)" stroke-width="2.5"/><text x="48" y="211" style="font-weight:700">예시 설렁탕</text><text x="48" y="225" font-size="9" class="t2">서울 중구 · 62년 · 10.12</text>
+          <circle cx="30" cy="252" r="11" fill="none" stroke="var(--teal)" stroke-width="2.5"/><text x="48" y="249" style="font-weight:700">예시 냉면</text><text x="48" y="263" font-size="9" class="t2">부산 · 41년 · 10.08</text>
+          <circle cx="30" cy="290" r="11" fill="none" stroke="var(--mus)" stroke-width="2.5"/><text x="48" y="287" style="font-weight:700">예시 한정식</text><text x="48" y="301" font-size="9" class="t2">전남 · 102년 · 10.01</text>
+        </g>
+        <text x="85" y="390" font-size="10" text-anchor="middle" class="t2">좌표·인증 시각은 보이지 않음</text>
+        <text x="85" y="436" font-size="12" text-anchor="middle" style="font-weight:700">유저 프로필</text>
+        <text x="85" y="454" font-size="10" text-anchor="middle" class="t2">칭호·세월·다녀온 노포·매긴 평점</text>
+      </g>
+      <g class="s-line"><path d="M311 155 H194" marker-end="url(#ah)"/><path d="M489 225 H606" marker-end="url(#ah)"/></g>
+      <text x="252" y="146" font-size="11" text-anchor="middle" class="t2">평점 남기기</text>
+      <text x="548" y="216" font-size="11" text-anchor="middle" class="t2">닉네임 탭</text>
+    </svg>
+    </div>
+    <figcaption>이름과 숫자는 예시입니다. 리뷰 항목마다 작성자의 칭호 배지와 단골 횟수를 보여 줘 “얼마나 다녀 본 사람의 평가인지”를 바로 알 수 있게 했습니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>규칙</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>작성 자격</td><td>그 가게를 방문 인증한 유저 (보안 규칙으로도 확인)</td></tr>
+        <tr><td>형식</td><td>별점 1~5 필수, 글 0~500자 선택, 유저당 가게당 1개(수정·삭제 가능)</td></tr>
+        <tr><td>가게 평균</td><td>서버 집계(개수·평균)로 계산, 저장 직후 갱신</td></tr>
+        <tr><td>저장 시점</td><td>내 인증 기록이 서버에 올라간 뒤, 인터넷이 연결된 상태에서만 저장. 오프라인이면 쓰던 글을 그대로 두고 연결되면 저장 버튼이 다시 켜짐 (나중에 서버에서 거부돼 리뷰가 사라지는 버그 예방)</td></tr>
+        <tr><td>프로필 공개 범위</td><td>칭호, 세월, 다녀온 노포(가게·날짜), 매긴 평점. 좌표·인증 방법·시각은 비공개</td></tr>
+        <tr><td>신고</td><td>P1: 사유를 골라 신고 접수</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 8. 지도 -->
+<section id="map">
+  <p class="label">Q2 · Map SDK</p>
+  <h2>지도 SDK: 네이버와 카카오</h2>
+  <p><b>네이버 지도를 추천합니다.</b> 이 앱에서 지도는 디자인의 일부라서, 지도 색을 앱 색에 맞출 수 있는 커스텀 스타일과 Jetpack Compose 연동이 가장 중요합니다. 카카오는 장소 검색 API가 강점인데, 이 앱은 가게 목록을 직접 갖고 있어 그 강점을 쓸 일이 적습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 720 340" style="min-width:600px" role="img" aria-label="여섯 가지 기준으로 네이버와 카카오 지도를 5점 만점으로 비교한 막대 그래프">
+      <g class="s-grid"><line x1="220" y1="20" x2="220" y2="300"/><line x1="320" y1="20" x2="320" y2="300"/><line x1="420" y1="20" x2="420" y2="300"/><line x1="520" y1="20" x2="520" y2="300"/><line x1="620" y1="20" x2="620" y2="300"/><line x1="720" y1="20" x2="720" y2="300"/></g>
+      <g font-size="11.5" class="mono" text-anchor="middle"><text x="220" y="318" class="t2">0</text><text x="320" y="318" class="t2">1</text><text x="420" y="318" class="t2">2</text><text x="520" y="318" class="t2">3</text><text x="620" y="318" class="t2">4</text><text x="712" y="318" class="t2" text-anchor="end">5</text></g>
+      <g font-size="13">
+        <text x="10" y="48">Compose 연동</text>
+        <text x="10" y="94">지도 스타일 꾸미기</text>
+        <text x="10" y="140">설정 난이도</text>
+        <text x="10" y="186">문서·예제</text>
+        <text x="10" y="232">장소 검색 API</text>
+        <text x="10" y="278">무료 이용량 명확성</text>
+      </g>
+      <g>
+        <rect x="220" y="30" width="400" height="14" rx="3" class="s-teal"/><rect x="220" y="46" width="200" height="14" rx="3" class="s-mus"/>
+        <rect x="220" y="76" width="500" height="14" rx="3" class="s-teal"/><rect x="220" y="92" width="300" height="14" rx="3" class="s-mus"/>
+        <rect x="220" y="122" width="400" height="14" rx="3" class="s-teal"/><rect x="220" y="138" width="300" height="14" rx="3" class="s-mus"/>
+        <rect x="220" y="168" width="400" height="14" rx="3" class="s-teal"/><rect x="220" y="184" width="300" height="14" rx="3" class="s-mus"/>
+        <rect x="220" y="214" width="300" height="14" rx="3" class="s-teal"/><rect x="220" y="230" width="500" height="14" rx="3" class="s-mus"/>
+        <rect x="220" y="260" width="200" height="14" rx="3" class="s-teal"/><rect x="220" y="276" width="300" height="14" rx="3" class="s-mus"/>
+      </g>
+          </svg>
+    </div>
+    <figcaption><span class="pill" style="background:var(--teal);color:var(--on-teal)">네이버</span> <span class="pill" style="background:var(--mus);color:var(--on-mus)">카카오</span> 점수는 아래 근거를 바탕으로 한 기획자 판단입니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>항목</th><th>네이버 지도 Android SDK</th><th>카카오맵 Android SDK v2</th></tr></thead>
+      <tbody>
+        <tr><td>Compose</td><td>공식은 View 방식. 커뮤니티 래퍼 <code>naver-map-compose</code>가 Compose 1.9까지 지원 (비공식)</td><td>Compose 지원 언급 없음. <code>AndroidView</code>로 감싸 써야 함</td></tr>
+        <tr><td>꾸미기</td><td>Map Style Editor로 지도 색·요소를 직접 꾸밀 수 있음. 마커 캡션, 겹침 처리, 야간 모드</td><td>라벨, 폴리곤, 경로선 지원. 커스텀 스타일 범위는 확인 필요</td></tr>
+        <tr><td>설정</td><td>네이버 클라우드에서 애플리케이션 등록, 패키지명 등록, Client ID</td><td>카카오 디벨로퍼스 앱 등록, 네이티브 앱 키, <b>키 해시</b> 등록. 액티비티 <code>resume/pause</code> 호출을 빠뜨리면 크래시 가능</td></tr>
+        <tr><td>버전·상태</td><td>3.x, Maven 배포</td><td>2.15.2. 구 SDK는 2024년에 종료되어 반드시 v2를 써야 함</td></tr>
+        <tr><td>무료 이용량</td><td>대표 계정에만 무료 이용량 제공. 모바일 지도 수치는 이번 조사에서 확인하지 못함</td><td>2026년 7월 21일 정책 변경. 지도·로컬 API는 기존 제공량 유지, 새 경로 API는 하루 1,000건 무료</td></tr>
+        <tr><td>장소 검색</td><td>지오코딩 API 제공</td><td>로컬 API(키워드 장소 검색) 강점</td></tr>
+        <tr><td>이 앱과의 궁합</td><td><b>디자인 일관성, Compose 개발 속도</b></td><td>나중에 사용자 제보로 장소를 찾을 때 유리</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b class="k">v0.4 결정</b>안정성을 위해 비공식 Compose 래퍼는 쓰지 않고 공식 <code>MapView</code>를 직접 감쌉니다. 1일차 오전 기능 검증의 첫 항목이 지도이며, 실패하면 같은 시험을 카카오맵으로 합니다.</div>
+</section>
+
+
+<!-- 9. 백엔드 -->
+<section id="backend">
+  <p class="label">Q3 · Backend</p>
+  <h2>Firebase와 Vercel, 어느 쪽이 맞나</h2>
+  <p><b>Firebase를 추천합니다.</b> Vercel은 웹사이트와 서버 함수를 올리는 곳이라, 로그인과 데이터베이스는 다른 서비스를 붙이고 API 코드를 직접 써야 합니다. Firebase는 안드로이드용 SDK가 로그인, 데이터베이스, 오프라인 동기화까지 한 번에 줍니다. 짧은 개발 일정에서는 이 차이가 큽니다.</p>
+  <p>v0.4에서 <b>Firebase로 확정</b>했습니다. 계정·평점·리뷰가 더해지면서 로그인과 데이터베이스, 오프라인 동기화를 한 곳에서 해결하는 장점이 더 커졌습니다. 앱은 Kotlin + Compose로 개발합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 300" style="min-width:640px" role="img" aria-label="Firebase와 Vercel 각각에서 직접 만들어야 하는 부분을 쌓은 막대로 비교">
+      <text x="190" y="24" font-size="14" text-anchor="middle" style="font-weight:700">Firebase</text>
+      <text x="560" y="24" font-size="14" text-anchor="middle" style="font-weight:700">Vercel</text>
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="60" y="40" width="260" height="44" rx="8" class="s-teal"/><text x="190" y="67" class="tw">로그인 (이메일·구글) · 제공</text>
+        <rect x="60" y="90" width="260" height="44" rx="8" class="s-teal"/><text x="190" y="117" class="tw">데이터베이스 (Firestore) · 제공</text>
+        <rect x="60" y="140" width="260" height="44" rx="8" class="s-teal"/><text x="190" y="167" class="tw">오프라인 캐시·동기화 · 제공</text>
+        <rect x="60" y="190" width="260" height="44" rx="8" class="s-tealsoft"/><text x="190" y="217">보안 규칙 · 직접 작성(짧음)</text>
+
+        <rect x="430" y="40" width="260" height="44" rx="8" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="560" y="67">로그인 · 외부 서비스 연결</text>
+        <rect x="430" y="90" width="260" height="44" rx="8" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="560" y="117">데이터베이스 · 외부 서비스 연결</text>
+        <rect x="430" y="140" width="260" height="44" rx="8" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="560" y="167">오프라인 · 앱에서 직접 구현</text>
+        <rect x="430" y="190" width="260" height="44" rx="8" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="560" y="217">REST API 함수 · 직접 작성</text>
+        <rect x="430" y="240" width="260" height="34" rx="8" class="s-tealsoft"/><text x="560" y="262">배포·HTTPS · 제공</text>
+      </g>
+      <g font-size="11.5" class="t2"><text x="20" y="292" class="t2">청록 = 서비스가 제공 · 붉은 테두리 = 직접 만들거나 연결해야 함</text></g>
+    </svg>
+    </div>
+    <figcaption>Vercel에서 붉은 칸이 많을수록 개발 기간에 직접 써야 할 코드가 늘어납니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>항목</th><th>Firebase (Spark 무료)</th><th>Vercel (Hobby 무료)</th></tr></thead>
+      <tbody>
+        <tr><td>무료 한도</td><td>Firestore 하루 읽기 5만, 쓰기 2만. 넘으면 월말까지 정지</td><td>함수 호출 월 100만, CPU 4시간, 전송 100GB</td></tr>
+        <tr><td>상업적 이용</td><td>가능</td><td><b>Hobby는 비상업·개인용만</b>. 수익이 생기면 Pro($20/월) 필요</td></tr>
+        <tr><td>서버 코드</td><td>Cloud Functions는 Blaze(종량제) 필요</td><td>서버 함수는 무료 플랜에서도 가능</td></tr>
+        <tr><td>Android 통합</td><td>공식 SDK, 오프라인 지원</td><td>HTTP 통신을 직접 구현</td></tr>
+        <tr><td>심사용 데모</td><td>콘솔에서 데이터가 바로 보여 설명하기 좋음</td><td>DB 콘솔은 연결한 서비스마다 다름</td></tr>
+        <tr><td>Vercel이 나은 경우</td><td colspan="2">나중에 웹 랜딩 페이지, 사장님용 웹 관리 화면을 만들 때. 앱 백엔드는 Firebase, 웹은 Vercel로 나눠 쓰면 됩니다</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+
+<!-- T. 아키텍처 -->
+<section id="tech">
+  <p class="label">Q9 · Architecture</p>
+  <h2>아키텍처: Kotlin · Compose · MVVM, 공식 SDK를 직접</h2>
+  <p>v0.3보다 라이브러리를 줄였습니다. 의존성 주입 라이브러리(Hilt)와 비공식 지도 래퍼를 빼고, 네이버 지도는 공식 지도 화면을 직접 감쌉니다. 빌드 설정에서 생기는 오류와 기기별 호환 문제를 줄이기 위해서입니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 900 420" style="min-width:760px" role="img" aria-label="화면, 뷰모델, 도메인, 데이터와 기기 기능 계층, 외부 서비스로 이루어진 구조도">
+      <g font-size="13">
+        <rect x="20" y="20" width="640" height="62" rx="12" class="s-tealsoft"/>
+        <text x="38" y="44" style="font-weight:700">화면 · Jetpack Compose</text>
+        <text x="38" y="66" font-size="12" class="t2">로그인·지도·가게 상세·영수증/사진 인증·도장·패스포트·리뷰·프로필·설정·진단</text>
+        <rect x="20" y="96" width="640" height="62" rx="12" class="s-box"/>
+        <text x="38" y="120" style="font-weight:700">ViewModel · StateFlow&lt;UiState&gt; · SavedStateHandle</text>
+        <text x="38" y="142" font-size="12" class="t2">수동 주입(AppContainer) · 로그인 게이트(SessionState)</text>
+        <rect x="20" y="172" width="640" height="62" rx="12" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/>
+        <text x="38" y="196" style="font-weight:700">도메인 · 순수 Kotlin (폰 없이 단위 테스트)</text>
+        <text x="38" y="218" font-size="12" class="t2">업력·칭호·등급 · 영수증 파서·판정·해시 · 사진 판정 · 하루 한도 · 리뷰 규칙 · VerificationConfig</text>
+        <rect x="20" y="248" width="312" height="80" rx="12" class="s-box"/>
+        <text x="38" y="272" style="font-weight:700">데이터</text>
+        <text x="38" y="294" font-size="12" class="t2">Room(카탈로그·내 방문·대기열) · DataStore</text>
+        <text x="38" y="314" font-size="12" class="t2">Firestore 원격 · WorkManager 동기화</text>
+        <rect x="348" y="248" width="312" height="80" rx="12" class="s-box"/>
+        <text x="366" y="272" style="font-weight:700">기기 기능 (포트)</text>
+        <text x="366" y="294" font-size="12" class="t2">공식 MapView · CameraX · ML Kit 한국어</text>
+        <text x="366" y="314" font-size="12" class="t2">Fused Location · 모의 위치 판정 · 진동</text>
+      </g>
+      <rect x="700" y="20" width="180" height="308" rx="12" class="s-bg"/>
+      <g font-size="12.5" text-anchor="middle">
+        <text x="790" y="46" style="font-weight:700">외부</text>
+        <rect x="716" y="60" width="148" height="38" rx="8" class="s-teal"/><text x="790" y="84" class="tw">Firebase Auth</text>
+        <rect x="716" y="106" width="148" height="38" rx="8" class="s-teal"/><text x="790" y="130" class="tw">Firestore</text>
+        <rect x="716" y="152" width="148" height="38" rx="8" class="s-box"/><text x="790" y="176">Crashlytics</text>
+        <rect x="716" y="198" width="148" height="38" rx="8" class="s-box"/><text x="790" y="222">네이버 지도 3.24.0</text>
+        <rect x="716" y="244" width="148" height="38" rx="8" class="s-box"/><text x="790" y="268">Play 위치 서비스</text>
+        <rect x="716" y="290" width="148" height="30" rx="8" class="s-box"/><text x="790" y="310" font-size="11.5">ML Kit 모델(앱 포함)</text>
+      </g>
+      <g class="s-line"><path d="M340 82 V92" marker-end="url(#ah)"/><path d="M340 158 V168" marker-end="url(#ah)"/><path d="M176 244 V238" marker-end="url(#ah)"/><path d="M504 244 V238" marker-end="url(#ah)"/><path d="M660 288 H696" class="s-dash"/></g>
+      <text x="450" y="364" font-size="12" text-anchor="middle" class="t2">화살표 = 의존 방향. 데이터와 기기 기능 계층은 도메인이 정한 인터페이스를 구현합니다</text>
+      <text x="450" y="388" font-size="12" text-anchor="middle" class="t2">단일 모듈 · Gradle Kotlin DSL · 버전 카탈로그 · minSdk 26 · QA는 릴리스(R8) APK로</text>
+    </svg>
+    </div>
+    <figcaption>패키지 구조, Gradle·매니페스트 설정, Room 엔터티, Firestore 보안 규칙 전문은 <code>nopo-02-architecture.md</code>에 있습니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>안정성 규칙</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>제한 시간</td><td>위치 15초, 글자 인식 10초, 서버 15초. 넘으면 정해진 오류 코드</td></tr>
+        <tr><td>생명주기</td><td>카메라는 화면 생명주기에 연결, 지도 생명주기 전달, 인식기는 화면을 떠날 때 해제</td></tr>
+        <tr><td>복원</td><td>인증 단계·시도 횟수·리뷰 초안은 프로세스가 종료돼도 복원</td></tr>
+        <tr><td>기기 먼저 저장</td><td>방문 기록은 폰에 먼저 쓰고, 연결되면 WorkManager가 서버로 전송</td></tr>
+        <tr><td>조기 발견</td><td>디버그 빌드에서 StrictMode·LeakCanary 경고 0, QA는 릴리스 APK</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>왜 Kotlin인가: Flutter와 비교</h3>
+  <p>개발 속도와 실기기 안정성을 함께 놓고 비교했습니다. 이 앱은 안드로이드 전용이고, 핵심 기능이 지도·카메라·글자 인식·위치처럼 <b>기기 기능</b>에 몰려 있습니다. 그래서 각 기능의 공식 안드로이드 라이브러리를 중간 층 없이 바로 쓰는 Kotlin이 “폰에서 버그 없이”라는 목표에 더 맞습니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>기준</th><th>Kotlin + Compose (선택)</th><th>Flutter</th></tr></thead>
+      <tbody>
+        <tr><td>네이버 지도</td><td>네이버 공식 Android SDK를 직접 사용</td><td>네이버가 아닌 외부 개발자가 만든 플러그인(<code>flutter_naver_map</code>)을 거침</td></tr>
+        <tr><td>한국어 글자 인식</td><td>ML Kit 공식 Android 라이브러리</td><td>Google이 직접 관리하지 않는 플러그인(<code>google_mlkit_text_recognition</code>)을 거침</td></tr>
+        <tr><td>카메라·위치</td><td>CameraX, Fused Location 공식 API</td><td><code>camera</code>·<code>geolocator</code> 플러그인을 거침</td></tr>
+        <tr><td>기기 버그 추적</td><td>오류가 Kotlin 코드 한 층에서 보임</td><td>Dart ↔ 플러그인 ↔ Android 코드를 오가며 찾아야 함</td></tr>
+        <tr><td>개발 속도</td><td>Compose 미리보기·Live Edit, Claude Code가 빌드·설치·로그까지 처리</td><td>핫 리로드가 빠름</td></tr>
+        <tr><td>iOS</td><td>이번 범위 밖</td><td>한 코드로 함께 낼 수 있음</td></tr>
+        <tr class="rec"><td><b>결론</b></td><td><b>안드로이드 전용 + 기기 기능 중심 + 실기기 무결점 목표에 맞아 선택</b></td><td>iOS를 함께 낼 다음 단계에서 다시 검토</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- C. Claude Code -->
+<section id="claudecode">
+  <p class="label">Dev workflow</p>
+  <h2>Android Studio + Claude Code로 개발하는 법</h2>
+  <p>Claude Code가 코드를 쓰고, 빌드하고, 폰에 설치하고, 로그를 읽습니다. 사람은 <b>폰에서 직접 눌러 보고 결과를 알려 주는 일</b>과 <b>변경 내용 승인</b>을 맡습니다. BMAD 같은 별도 프레임워크는 설치하지 않습니다(이유는 아래 ‘BMAD를 쓸까’). 이 문서 묶음의 PRD·아키텍처·스토리·체크리스트가 같은 역할을 합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 900 230" style="min-width:780px" role="img" aria-label="스토리 하나를 요청부터 커밋까지 진행하는 여덟 단계 작업 루프">
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10" y="40" width="98" height="70" rx="12" class="s-teal"/><text x="59" y="68" class="tw" style="font-weight:700">① 요청</text><text x="59" y="88" font-size="10.5" class="tw">스토리 번호</text>
+        <rect x="120" y="40" width="98" height="70" rx="12" class="s-box"/><text x="169" y="68" style="font-weight:700">② 계획 확인</text><text x="169" y="88" font-size="10.5" class="t2">파일·테스트</text>
+        <rect x="230" y="40" width="98" height="70" rx="12" class="s-box"/><text x="279" y="68" style="font-weight:700">③ 테스트</text><text x="279" y="88" font-size="10.5" class="t2">규칙은 먼저</text>
+        <rect x="340" y="40" width="98" height="70" rx="12" class="s-box"/><text x="389" y="68" style="font-weight:700">④ 구현</text><text x="389" y="88" font-size="10.5" class="t2">IDE에서 비교</text>
+        <rect x="450" y="40" width="98" height="70" rx="12" class="s-box"/><text x="499" y="68" style="font-weight:700">⑤ 빌드·설치</text><text x="499" y="88" font-size="10.5" class="t2">gradlew·adb</text>
+        <rect x="560" y="40" width="98" height="70" rx="12" class="s-stamp"/><text x="609" y="68" class="ts" style="font-weight:700">⑥ 폰 확인</text><text x="609" y="88" font-size="10.5" class="ts">사람이 직접</text>
+        <rect x="670" y="40" width="98" height="70" rx="12" class="s-box"/><text x="719" y="68" style="font-weight:700">⑦ QA</text><text x="719" y="88" font-size="10.5" class="t2">nopo-qa 에이전트</text>
+        <rect x="780" y="40" width="110" height="70" rx="12" class="s-box"/><text x="835" y="68" style="font-weight:700">⑧ 커밋</text><text x="835" y="88" font-size="10.5" class="t2">S-xxx · /clear</text>
+      </g>
+      <g class="s-line"><path d="M108 75 H116" marker-end="url(#ah)"/><path d="M218 75 H226" marker-end="url(#ah)"/><path d="M328 75 H336" marker-end="url(#ah)"/><path d="M438 75 H446" marker-end="url(#ah)"/><path d="M548 75 H556" marker-end="url(#ah)"/><path d="M658 75 H666" marker-end="url(#ah)"/><path d="M768 75 H776" marker-end="url(#ah)"/><path d="M835 110 V160 H59 V114" marker-end="url(#ah)"/></g>
+      <text x="450" y="182" font-size="12" text-anchor="middle" class="t2">다음 스토리 (76개, 1일차 오전 검증부터)</text>
+      <text x="450" y="210" font-size="12" text-anchor="middle" class="t2">CLAUDE.md는 매번 자동으로 읽히고, 긴 문서는 필요한 장만 지정해서 읽게 합니다</text>
+    </svg>
+    </div>
+    <figcaption>⑥이 붉은 이유: 실기기에서 직접 눌러 보는 단계를 건너뛰면 “빌드는 되는데 폰에서 안 되는” 버그가 쌓입니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>준비</th><th>내용</th></tr></thead>
+      <tbody>
+        <tr><td>요금제</td><td>Claude Code는 Pro·Max·Team·Enterprise 또는 Console 계정이 필요합니다. 무료 요금제로는 쓸 수 없습니다</td></tr>
+        <tr><td>설치</td><td>Windows PowerShell <code>irm https://claude.ai/install.ps1 | iex</code> · macOS <code>curl -fsSL https://claude.ai/install.sh | bash</code> → <code>claude --version</code></td></tr>
+        <tr><td>Android Studio</td><td>플러그인 “Claude Code [Beta]” 설치 → 프로젝트 루트 터미널에서 <code>claude</code> → 변경은 IDE 비교 화면으로 확인</td></tr>
+        <tr><td>프로젝트 파일</td><td><code>CLAUDE.md</code>(작업 지침), <code>.claude/settings.json</code>(빌드·설치 명령 허용, 키 파일 읽기 차단), <code>.claude/agents/nopo-qa.md</code>(QA 서브에이전트)</td></tr>
+        <tr><td>요청문 틀</td><td>“S-___ 를 구현해줘. 계획을 5줄로 말하고 진행, 테스트 먼저, 끝나면 빌드·설치하고 폰 확인 목록을 줘”</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 12. BMAD -->
+<section id="bmad">
+  <p class="label">Q5 · Method</p>
+  <h2>BMAD를 쓸까: 방식만 빌려 Claude Code로</h2>
+  <p><b>전체 도입은 추천하지 않고, 방식만 빌려 쓰는 것을 추천합니다.</b> BMAD는 분석가, PM, 아키텍트, UX, 스크럼 마스터, 개발자, QA 역할의 AI 에이전트가 문서를 차례로 넘기며 개발하는 오픈소스 방법론입니다. 좋은 방법이지만, 지금 이 기획안에 들어 있는 PRD, 아키텍처, 스토리 분할, QA 체크리스트가 바로 BMAD가 앞 단계에서 만들어 내는 산출물입니다. 그 단계를 다시 도구로 돌리면 짧은 개발 기간 중 반나절 이상이 설치와 문서 재생성에 들어갑니다. v0.4에서는 남은 개발 단계를 Claude Code가 맡고, QA 역할은 <code>nopo-qa</code> 서브에이전트와 실기기 확인이 맡습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 880 250" style="min-width:760px" role="img" aria-label="BMAD 전체 흐름과 이 기획안의 가벼운 흐름을 비교한 두 줄 흐름도">
+      <text x="10" y="30" font-size="13" style="font-weight:700">BMAD 전체</text>
+      <g font-size="12" text-anchor="middle">
+        <rect x="10" y="44" width="96" height="44" rx="10" class="s-box"/><text x="58" y="71">분석가</text>
+        <rect x="122" y="44" width="96" height="44" rx="10" class="s-box"/><text x="170" y="71">PM · PRD</text>
+        <rect x="234" y="44" width="96" height="44" rx="10" class="s-box"/><text x="282" y="71">아키텍트</text>
+        <rect x="346" y="44" width="96" height="44" rx="10" class="s-box"/><text x="394" y="71">UX</text>
+        <rect x="458" y="44" width="96" height="44" rx="10" class="s-box"/><text x="506" y="71">스크럼 · 스토리</text>
+        <rect x="570" y="44" width="96" height="44" rx="10" class="s-teal"/><text x="618" y="71" class="tw">개발</text>
+        <rect x="682" y="44" width="96" height="44" rx="10" class="s-teal"/><text x="730" y="71" class="tw">QA</text>
+      </g>
+      <g class="s-line"><path d="M106 66 H118" marker-end="url(#ah)"/><path d="M218 66 H230" marker-end="url(#ah)"/><path d="M330 66 H342" marker-end="url(#ah)"/><path d="M442 66 H454" marker-end="url(#ah)"/><path d="M554 66 H566" marker-end="url(#ah)"/><path d="M666 66 H678" marker-end="url(#ah)"/></g>
+      <rect x="10" y="98" width="544" height="10" rx="5" class="s-stampsoft"/><text x="562" y="107" font-size="11.5" class="t2">설치·문서 생성에 시간이 드는 구간</text>
+
+      <text x="10" y="156" font-size="13" style="font-weight:700">추천: 이 문서 묶음 + Claude Code</text>
+      <g font-size="12" text-anchor="middle">
+        <rect x="10" y="170" width="544" height="44" rx="10" class="s-tealsoft"/><text x="282" y="197">이미 완료 · PRD · 아키텍처 · 76개 스토리 · QA 체크리스트</text>
+        <rect x="570" y="170" width="96" height="44" rx="10" class="s-teal"/><text x="618" y="197" class="tw">개발</text>
+        <rect x="682" y="170" width="96" height="44" rx="10" class="s-teal"/><text x="730" y="197" class="tw">QA</text>
+      </g>
+      <g class="s-line"><path d="M554 192 H566" marker-end="url(#ah)"/><path d="M666 192 H678" marker-end="url(#ah)"/></g>
+      <text x="794" y="197" font-size="12" class="t2">바로 시작</text>
+    </svg>
+    </div>
+    <figcaption>BMAD의 앞 다섯 단계가 만드는 문서를 이번에 만들었습니다. 남은 개발·QA 단계만 Claude Code로 진행하면 됩니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th></th><th>BMAD 전체 도입</th><th>방식만 차용 (추천)</th></tr></thead>
+      <tbody>
+        <tr><td>준비</td><td>안정판 v6.12는 Node.js 20.12 이상, uv와 Python 3.11 이상 필요. <code>npx bmad-method install</code></td><td>문서 묶음을 프로젝트 루트에 복사 (<code>START-HERE.md</code>)</td></tr>
+        <tr><td>장점</td><td>역할별 프롬프트가 잘 짜여 있음. 스토리 파일에 변경 기록이 남음. 평가에서 “체계적 개발 방법론 사용”으로 설명 가능</td><td>바로 코딩 시작. 문서가 이 앱에 맞게 이미 다듬어져 있음</td></tr>
+        <tr><td>단점</td><td>설치·학습 시간. V7이 예고돼 있지만 10월 18일 확인 기준 GitHub의 최신 정식 릴리스는 v6.12. 큰 개편을 앞두고 있어 호환이 깨질 수 있음</td><td>스토리 진행 기록을 직접 관리해야 함</td></tr>
+        <tr><td>어울리는 경우</td><td>여러 주 진행, 팀 작업</td><td>개발 4일 + QA 1일, 혼자</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>BMAD 역할</th><th>이 묶음에서 맡는 것</th></tr></thead>
+      <tbody>
+        <tr><td>분석가 · PM</td><td><code>docs/nopo-01-PRD.md</code> (요구사항 80개, 수락 기준, 오류 코드)</td></tr>
+        <tr><td>아키텍트</td><td><code>docs/nopo-02-architecture.md</code> (구조, 보안 규칙, Gradle)</td></tr>
+        <tr><td>UX</td><td>이 기획안의 화면 설계·디자인 시스템 장</td></tr>
+        <tr><td>스크럼 마스터</td><td><code>docs/nopo-03-stories.md</code> (스토리 76개, 5일 일정, 컷라인)</td></tr>
+        <tr class="rec"><td>개발자</td><td>Claude Code + <code>CLAUDE.md</code> (스토리 하나씩, 테스트 먼저)</td></tr>
+        <tr class="rec"><td>QA</td><td><code>nopo-qa</code> 서브에이전트 + <code>docs/nopo-04-dev-qa-checklist.md</code> + 실기기 확인</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b class="k">쓰는 방법</b>Claude Code에 매번 “<code>docs/nopo-03-stories.md</code>의 S-207을 구현해. <code>nopo-04</code>의 U-207 항목을 먼저 작성해.”처럼 스토리 하나만 시킵니다. PRD·아키텍처는 <code>CLAUDE.md</code>가 필요한 부분만 읽게 안내합니다. 이것이 BMAD의 Dev 에이전트가 하는 일과 같습니다. 꼭 BMAD를 쓰고 싶다면 안정판을 쓰고, 문서 생성 단계는 건너뛰어 이 문서들을 넣고 개발 단계부터 시작하세요.</div>
+</section>
+
+
+<!-- 11. UX 도구 -->
+<section id="uxtools">
+  <p class="label">Q4 · Design tools</p>
+  <h2>평가위원 눈에 띄는 UX/UI 만드는 법</h2>
+  <p>평가위원이 “예쁘다”고 느끼는 지점은 화려한 그림보다 <b>일관성, 빈 화면까지 챙긴 꼼꼼함, 한 번의 인상적인 순간</b>입니다. 이 앱에서는 도장이 찍히는 순간이 그 한 번입니다. 아래 순서로 도구를 쓰면 혼자서도 이 세 가지를 갖출 수 있습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 900 200" style="min-width:780px" role="img" aria-label="Stitch로 시안, Figma와 Material Theme Builder로 토큰, Compose 미리보기, 모션 도구, 스크린샷 점검으로 이어지는 다섯 단계">
+      <g font-size="13" text-anchor="middle">
+        <rect x="10" y="40" width="156" height="96" rx="14" class="s-box"/><text x="88" y="70" style="font-weight:700">① 시안</text><text x="88" y="92" font-size="12">Google Stitch</text><text x="88" y="112" font-size="11" class="t2">프롬프트 → 5개 화면</text>
+        <rect x="192" y="40" width="156" height="96" rx="14" class="s-box"/><text x="270" y="70" style="font-weight:700">② 다듬기·토큰</text><text x="270" y="92" font-size="12">Figma + Theme Builder</text><text x="270" y="112" font-size="11" class="t2">색·글꼴 → Theme.kt</text>
+        <rect x="374" y="40" width="156" height="96" rx="14" class="s-box"/><text x="452" y="70" style="font-weight:700">③ 구현</text><text x="452" y="92" font-size="12">Compose Preview</text><text x="452" y="112" font-size="11" class="t2">상태별 미리보기</text>
+        <rect x="556" y="40" width="156" height="96" rx="14" class="s-stampsoft" style="stroke:var(--stamp);stroke-width:1.5"/><text x="634" y="70" style="font-weight:700">④ 모션</text><text x="634" y="92" font-size="12">Compose 애니메이션</text><text x="634" y="112" font-size="11" class="t2">+ Lottie(승급 연출)</text>
+        <rect x="738" y="40" width="152" height="96" rx="14" class="s-box"/><text x="814" y="70" style="font-weight:700">⑤ 점검</text><text x="814" y="92" font-size="12">스크린샷 보드</text><text x="814" y="112" font-size="11" class="t2">라이트·다크·큰 글씨</text>
+      </g>
+      <g class="s-line"><path d="M166 88 H188" marker-end="url(#ah)"/><path d="M348 88 H370" marker-end="url(#ah)"/><path d="M530 88 H552" marker-end="url(#ah)"/><path d="M712 88 H734" marker-end="url(#ah)"/></g>
+      <text x="450" y="176" font-size="12" text-anchor="middle" class="t2">가장 많은 시간을 쓸 곳은 ④ 도장 연출입니다</text>
+    </svg>
+    </div>
+    <figcaption>①과 ②는 1일차 오전 2시간 안에 끝내고, 디자인을 코드로 옮긴 뒤에는 Figma로 돌아가지 않는 것이 짧은 개발 일정에 맞습니다.</figcaption>
+  </figure>
+
+  <h3>① Google Stitch로 시안 뽑기</h3>
+  <p>Google Labs의 AI 화면 디자인 도구입니다. 글로 설명하면 앱 화면을 한 번에 최대 5개까지 그려 주고, Figma로 보내거나 디자인 규칙 파일(<code>DESIGN.md</code>)로 내보낼 수 있습니다. 소개 자료 기준으로 Google 계정만 있으면 무료이며 월 생성 횟수 제한이 있습니다.</p>
+  <ol class="plain">
+    <li>stitch.withgoogle.com에 Google 계정으로 들어가 모바일 앱을 고릅니다.</li>
+    <li>아래 프롬프트를 붙여 넣습니다. 색 코드를 직접 주면 결과가 이 기획안과 맞게 나옵니다.</li>
+    <li>마음에 드는 화면을 고르고 “더 여백 넓게”, “도장을 더 크게”처럼 말로 고칩니다.</li>
+    <li>Figma로 내보내거나, <code>DESIGN.md</code>를 내려받아 AI 코딩 도구에 같이 넘깁니다.</li>
+  </ol>
+  <div class="tbl" style="padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap">Android 앱 "노포 천년 미식가" 화면 5개: 지도(하단 시트), 가게 상세, 영수증 인증 카메라, 도장 획득 연출, 내 패스포트.
+분위기: 오래된 골목 간판, 법랑 간판의 청록, 종이 영수증의 회녹색 바탕, 붉은 인주 도장.
+색: 배경 #EDF0EA, 카드 #F8F9F5, 주색 #1F6B63, 간판 #17504A, 도장 #C23B2A, 보상 #D9A22C, 글자 #14201E.
+글꼴: 큰 숫자와 제목은 굵은 한글 제목체(Black Han Sans 느낌), 본문은 Noto Sans KR.
+가게 상세에는 업력 숫자 "62년"을 아주 크게, 버튼은 화면 아래 엄지 영역에.
+Material 3 기준, 모서리 16dp, 터치 영역 48dp 이상.</div>
+  <p style="font-size:13px;color:var(--ink2)">Stitch는 실험 단계 서비스라 기능과 무료 한도가 바뀔 수 있습니다. 결과물을 그대로 쓰기보다 방향을 잡는 용도로 씁니다.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>넣는 것</th><th>받는 것</th><th>주의</th></tr></thead>
+      <tbody>
+        <tr><td>화면 설명 프롬프트 + 색 코드</td><td>모바일 화면 시안 (한 번에 최대 5개)</td><td>실험 단계 서비스, 월 생성 횟수 제한</td></tr>
+        <tr><td>“여백 넓게”, “도장 더 크게” 같은 말</td><td>고친 시안</td><td>방향 잡기용. 그대로 쓰지 않음</td></tr>
+        <tr><td>내보내기</td><td>Figma 파일 또는 <code>DESIGN.md</code></td><td><code>DESIGN.md</code>는 Claude Code에 같이 넘김</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>② Figma와 Material Theme Builder로 토큰 고정</h3>
+  <ol class="plain">
+    <li>Figma에서 Material Theme Builder 플러그인을 엽니다. 웹 버전(material-foundation.github.io/material-theme-builder)도 있습니다.</li>
+    <li>주색에 <code>#1F6B63</code>을 넣으면 라이트·다크 색 세트가 자동으로 만들어집니다. 도장 빨강은 보조색으로 직접 지정합니다.</li>
+    <li>내보내기에서 Jetpack Compose를 고르면 <code>Color.kt</code>, <code>Theme.kt</code>가 나옵니다. 이것을 그대로 프로젝트에 넣습니다.</li>
+    <li>이후 화면 코드에서는 색 코드를 직접 쓰지 않고 <code>MaterialTheme.colorScheme.primary</code>처럼 이름으로만 씁니다. 다크 모드가 자동으로 맞춰집니다.</li>
+  </ol>
+
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 150" style="min-width:640px" role="img" aria-label="주색 입력, Theme Builder, Compose로 내보내기, 이름으로만 사용으로 이어지는 색 토큰 흐름">
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10" y="30" width="160" height="78" rx="12" class="s-box"/><rect x="24" y="44" width="22" height="22" rx="5" style="fill:#1F6B63"/><text x="100" y="60" style="font-weight:700">주색 입력</text><text x="90" y="88" font-size="11.5" class="mono">#1F6B63</text>
+        <rect x="200" y="30" width="160" height="78" rx="12" class="s-box"/><text x="280" y="60" style="font-weight:700">Theme Builder</text><text x="280" y="88" font-size="11.5" class="t2">라이트·다크 세트 생성</text>
+        <rect x="390" y="30" width="160" height="78" rx="12" class="s-box"/><text x="470" y="60" style="font-weight:700">Compose로 내보내기</text><text x="470" y="88" font-size="11.5" class="t2">Color.kt · Theme.kt</text>
+        <rect x="580" y="30" width="170" height="78" rx="12" class="s-teal"/><text x="665" y="60" class="tw" style="font-weight:700">이름으로만 사용</text><text x="665" y="88" font-size="11.5" class="tw">colorScheme.primary</text>
+      </g>
+      <g class="s-line"><path d="M170 69 H196" marker-end="url(#ah)"/><path d="M360 69 H386" marker-end="url(#ah)"/><path d="M550 69 H576" marker-end="url(#ah)"/></g>
+      <text x="380" y="138" font-size="12" text-anchor="middle" class="t2">도장 빨강 #C23B2A는 보조색으로 직접 지정 · 화면 코드에 색 코드를 쓰지 않으면 다크 모드가 자동으로 맞춰짐</text>
+    </svg>
+    </div>
+  </figure>
+
+  <h3>③ Compose Preview로 모든 상태 확인</h3>
+  <p>화면 하나마다 <code>@Preview</code>를 라이트, 다크, 큰 글씨(<code>fontScale = 1.5f</code>) 세 개씩 만듭니다. 인증 화면은 “측정 중, 촬영, 분석 중, 실패, 성공” 상태마다 미리보기를 둡니다. 빈 화면과 오류 화면까지 디자인되어 있으면 평가에서 완성도가 확 올라갑니다.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>화면</th><th>미리보기로 만들 상태 (각각 라이트·다크·큰 글씨)</th></tr></thead>
+      <tbody>
+        <tr><td>영수증 인증</td><td>권한 요청, 촬영, 분석 중, 실패(코드별), 성공, 확인 중(오프라인)</td></tr>
+        <tr><td>사진·위치 인증</td><td>측정 중(남은 시간), 거리·정확도 미달, 촬영, 분석 중, 3회 실패 선택지</td></tr>
+        <tr><td>리뷰 작성</td><td>별점만, 글 포함, 글자 수 초과, 저장 중, 저장 실패, 오프라인 안내</td></tr>
+        <tr><td>패스포트</td><td>도장 0개, 1개 이상, 최고 칭호, 내 리뷰 0개</td></tr>
+        <tr><td>유저 프로필</td><td>로딩, 다녀온 노포 0개, 매긴 평점 0개, 존재하지 않는 유저</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>④ 도장 연출: Compose 애니메이션 + Lottie</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>도구</th><th>쓰는 곳</th><th>방법</th></tr></thead>
+      <tbody>
+        <tr class="rec"><td>Compose 애니메이션 (<code>Animatable</code>, <code>spring</code>)</td><td>도장 찍기, 숫자 올라가기</td><td>도장 크기를 1.6배에서 1.0배로 줄이며 살짝 튕기게(380ms), 동시에 회전 −10도. 닿는 순간 진동 1회. 앱 색 토큰을 그대로 써서 등급별 색이 자동으로 바뀜</td></tr>
+        <tr><td>Lottie (<code>lottie-compose</code>)</td><td>칭호 승급, 천년 미식가 달성</td><td>LottieFiles에서 무료 축하 효과를 고르거나 After Effects로 만든 JSON을 <code>res/raw</code>에 넣고 <code>LottieAnimation</code>으로 재생</td></tr>
+        <tr><td>Rive</td><td>(선택) 손으로 만지는 도장첩</td><td>상태 머신이 필요한 인터랙션에 강하지만 배우는 시간이 들어 이번 일정에는 비추천</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>⑤ 평가 직전 스크린샷 보드</h3>
+  <p>모든 화면을 라이트·다크로 캡처해 한 장에 늘어놓고 여백, 글자 크기, 색이 어긋나는 곳을 찾습니다. 시간이 있으면 Roborazzi 같은 스크린샷 테스트 도구로 자동화할 수 있지만, 이번 일정에서는 손 캡처로 충분합니다. 발표 자료에도 이 보드를 그대로 넣으면 “꼼꼼함”이 한눈에 보입니다.</p>
+
+  <div class="tbl">
+    <table>
+      <thead><tr><th>평가위원이 보는 것</th><th>이 앱에서 보여 줄 장면</th></tr></thead>
+      <tbody>
+        <tr><td>정체성</td><td>골목 간판 색, 千年 도장 아이콘, 업력 숫자를 크게 쓰는 일관된 규칙</td></tr>
+        <tr><td>인상적인 순간</td><td>도장이 쿵 찍히고 세월 숫자가 올라가는 1초</td></tr>
+        <tr><td>꼼꼼함</td><td>빈 패스포트, 위치 거부, 인식 실패 화면까지 디자인됨</td></tr>
+        <tr><td>접근성</td><td>다크 모드, 큰 글씨, 화면 읽기 지원</td></tr>
+        <tr><td>실제로 동작함</td><td>실제 노포에서 찍은 인증 영상, 측정한 정확도 수치</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- 13. 추가 기획 -->
+<section id="more">
+  <p class="label">Q7 · Build-up</p>
+  <h2>빠져 있던 기획, 더하면 좋은 기획</h2>
+  <p>지금까지의 기획은 사용자 한 명의 수집 경험에 집중되어 있었습니다. 평가에서 자주 나오는 질문은 “가게에는 무엇이 좋은가”, “부정 인증은 어떻게 막나”, “심사장에서 어떻게 보여 줄 건가”입니다. 이 세 질문에 답하는 기획을 더했습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 760 330" style="min-width:640px" role="img" aria-label="사용자, 노포 사장님, 지역과 기관 세 주체가 서로 주고받는 가치를 보여주는 삼각 관계도">
+      <circle cx="380" cy="70" r="52" class="s-teal"/><text x="380" y="66" font-size="14" text-anchor="middle" class="tw" style="font-weight:700">사용자</text><text x="380" y="86" font-size="11.5" text-anchor="middle" class="tw">노포 탐방러</text>
+      <circle cx="140" cy="260" r="52" class="s-stamp"/><text x="140" y="256" font-size="14" text-anchor="middle" class="ts" style="font-weight:700">노포 사장님</text><text x="140" y="276" font-size="11.5" text-anchor="middle" class="ts">가게</text>
+      <circle cx="620" cy="260" r="52" class="s-mus"/><text x="620" y="256" font-size="14" text-anchor="middle" class="tm" style="font-weight:700">지역·기관</text><text x="620" y="276" font-size="11.5" text-anchor="middle" class="tm">구청·관광</text>
+      <g class="s-line"><path d="M336 104 L180 222" marker-end="url(#ah)" marker-start="url(#ah)"/><path d="M424 104 L580 222" marker-end="url(#ah)" marker-start="url(#ah)"/><path d="M196 260 H564" marker-end="url(#ah)" marker-start="url(#ah)"/></g>
+      <g font-size="12">
+        <text x="150" y="150" class="t2">방문·재방문 ↔ QR 도장,</text><text x="150" y="168" class="t2">단골 혜택</text>
+        <text x="500" y="150" class="t2">스탬프 투어 ↔</text><text x="500" y="168" class="t2">지역 컬렉션</text>
+        <text x="380" y="250" text-anchor="middle" class="t2">방문 통계 ↔ 홍보·인증 지원</text>
+      </g>
+      <text x="380" y="320" font-size="12" text-anchor="middle" class="t2">세 주체가 모두 얻는 것이 있어야 서비스가 오래갑니다</text>
+    </svg>
+    </div>
+    <figcaption>이번 APK는 사용자 쪽만 만들고, 사장님과 기관 쪽은 발표에서 확장 계획으로 보여 줍니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>추가 기획</th><th>내용</th><th>왜 필요한가</th><th>시점</th></tr></thead>
+      <tbody>
+        <tr class="rec"><td><b>테스트 가게</b></td><td>진단 화면에서 현재 위치에 가상 가게를 만들고, 샘플 영수증·간판 이미지로 실제 인증 로직을 그대로 시험. 서버·프로필에는 남지 않음</td><td>심사장은 노포가 아님. 우회 없이 실제 로직으로 시연</td><td>첫 버전</td></tr>
+        <tr class="rec"><td><b>세 번째 인증: 가게 QR</b></td><td>협조하는 가게에 QR 스탠드를 두고, 찍으면 바로 인증</td><td>영수증·간판보다 확실하고 사장님과 연결되는 고리</td><td>확장</td></tr>
+        <tr><td>사장님 상생</td><td>가게별 방문 수 통계, “천년 미식가 인증 노포” 스티커, 단골 혜택 등록</td><td>“가게에는 무엇이 좋은가”에 대한 답</td><td>확장</td></tr>
+        <tr><td>지역 컬렉션·시즌 퀘스트</td><td>“을지로 노포 5곳”, “평양냉면 노포 도장첩”, 완성 배지</td><td>다음 방문 이유. 구청·관광 기관 제휴 모델</td><td>확장</td></tr>
+        <tr><td>사라진 맛 기록관</td><td>폐업한 노포의 도장은 “기록된 가게”로 남기고 추억 한 줄 남기기</td><td>노포가 사라지는 문제를 다루는 사회적 가치</td><td>확장</td></tr>
+        <tr><td>오류 신고와 업력 검증 배지</td><td>창업연도·위치 오류 신고, 공식 출처 확인 가게에 배지</td><td>데이터 신뢰</td><td>첫 버전(신고 링크)</td></tr>
+        <tr><td>오프라인 우선</td><td>가게 목록을 앱에 포함, 인증 기록을 먼저 폰에 저장</td><td>지하·골목 노포의 약한 전파</td><td>첫 버전</td></tr>
+        <tr><td>개인정보 최소화</td><td>좌표 대신 거리만 저장, 영수증 사진 비저장</td><td>심사 질문 대비, 법적 부담 축소</td><td>첫 버전</td></tr>
+        <tr><td>공유 카드</td><td>세월·칭호를 담은 세로 이미지</td><td>입소문</td><td>확장</td></tr>
+        <tr><td>수익 모델 가설</td><td>지자체 스탬프 투어 대행, 실물 패스포트 책자, 노포 굿즈 협업</td><td>“어떻게 지속하나”에 대한 답</td><td>발표용</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+
+<!-- D. 개발 문서 -->
+<section id="docs">
+  <p class="label">Q8–Q11 · Dev package v0.4</p>
+  <h2>개발자에게 넘기는 문서와 파일</h2>
+  <p>아래 파일을 Android Studio 프로젝트 루트에 복사하면 Claude Code가 바로 1일차 오전 기능 검증부터 시작할 수 있습니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>파일</th><th>내용</th><th class="num">분량</th></tr></thead>
+      <tbody>
+        <tr><td><code>START-HERE.md</code></td><td>묶음을 받은 뒤 할 일 순서, 들어 있는 파일, 데이터 현황</td><td class="num">5단계</td></tr>
+        <tr><td><code>docs/nopo-planning.html</code></td><td>이 기획안 (브라우저로 열기)</td><td class="num">1쪽</td></tr>
+        <tr><td><code>docs/nopo-01-PRD.md</code></td><td>목표·성공 기준, 기능 요구사항과 수락 기준, 인증 명세와 오류 코드, 데이터·서버 구조, 결정 기록</td><td class="num">요구사항 80개</td></tr>
+        <tr><td><code>docs/nopo-02-architecture.md</code></td><td>기술 스택, 패키지 구조, 인증·동기화·리뷰 설계, Room 엔터티, 보안 규칙, Gradle·매니페스트</td><td class="num">결정 12개</td></tr>
+        <tr><td><code>docs/nopo-03-stories.md</code></td><td>에픽 11개, 파일 단위 스토리, 5일 일정(개발 4 + QA 1), 컷라인</td><td class="num">스토리 76개</td></tr>
+        <tr><td><code>docs/nopo-04-dev-qa-checklist.md</code></td><td>단위·통합·실기기·안정성·회귀 테스트, 디버깅 포인트</td><td class="num">항목 130개</td></tr>
+        <tr><td><code>docs/nopo-05-precheck-checklist.md</code></td><td>개발 전에 직접 확인할 일</td><td class="num">항목 40개</td></tr>
+        <tr><td><code>docs/nopo-06-spike-plan.md</code></td><td>1일차 오전 기능 검증: 요청문·통과 기준·보고서 양식</td><td class="num">검증 7개</td></tr>
+        <tr><td><code>docs/nopo-07-firebase-setup.md</code></td><td>Firebase 프로젝트·로그인·DB·규칙·색인 설정</td><td class="num">10단계</td></tr>
+        <tr><td><code>docs/nopo-08-claude-code-guide.md</code></td><td>설치, 작업 루프, 요청문 예시, 폰 설치·로그 명령</td><td class="num"></td></tr>
+        <tr><td><code>CLAUDE.md</code>, <code>.claude/</code></td><td>Claude Code 작업 지침, 명령 허용 목록, QA 서브에이전트</td><td class="num"></td></tr>
+        <tr><td><code>firebase/</code></td><td>보안 규칙, 색인, 설정</td><td class="num"></td></tr>
+        <tr><td><code>data/</code>, <code>app/src/main/assets/stores.json</code></td><td>노포 CSV·SQLite·앱용 카탈로그, 데이터 설명서</td><td class="num"></td></tr>
+        <tr><td><code>tools/</code></td><td>카탈로그 생성, 좌표 보강, 상세 재수집, 공식 지정리스트 대조, 테스트 영수증·간판 이미지</td><td class="num"></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 720 330" style="min-width:600px" role="img" aria-label="에픽별 스토리 수 막대 그래프">
+      <text x="10" y="22" font-size="13" style="font-weight:700">에픽별 스토리 수</text>
+      <g class="s-grid"><line x1="190" y1="34" x2="190" y2="300"/><line x1="290" y1="34" x2="290" y2="300"/><line x1="390" y1="34" x2="390" y2="300"/></g>
+      <g font-size="11.5" class="mono" text-anchor="middle"><text x="190" y="318" class="t2">0</text><text x="290" y="318" class="t2">5</text><text x="390" y="318" class="t2">10</text></g>
+      <g font-size="12">
+        <text x="10" y="50">E0 1일차 기능 검증</text><text x="10" y="74">E1 기반</text><text x="10" y="98">E2 도메인 규칙</text><text x="10" y="122">E3 데이터·동기화</text>
+        <text x="10" y="146">E4 계정</text><text x="10" y="170">E5 지도·가게</text><text x="10" y="194">E6 방문 인증</text><text x="10" y="218">E7 도장·패스포트</text>
+        <text x="10" y="242">E8 리뷰·프로필</text><text x="10" y="266">E9 테스트 가게·설정</text><text x="10" y="290">E10 릴리스·QA</text>
+      </g>
+      <g>
+        <rect x="190" y="38" width="160" height="15" rx="3" class="s-stamp"/>
+        <rect x="190" y="62" width="120" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="86" width="240" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="110" width="160" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="134" width="160" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="158" width="120" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="182" width="180" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="206" width="100" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="230" width="100" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="254" width="60" height="15" rx="3" class="s-teal"/>
+        <rect x="190" y="278" width="120" height="15" rx="3" class="s-stamp"/>
+      </g>
+      <g font-size="11.5" class="mono"><text x="356" y="50">8</text><text x="316" y="74">6</text><text x="436" y="98">12</text><text x="356" y="122">8</text><text x="356" y="146">8</text><text x="316" y="170">6</text><text x="376" y="194">9</text><text x="296" y="218">5</text><text x="296" y="242">5</text><text x="256" y="266">3</text><text x="316" y="290">6</text></g>
+      <rect x="480" y="120" width="12" height="12" rx="2" class="s-stamp"/><text x="500" y="131" font-size="12" class="t2">실기기 검증 중심 에픽</text>
+      <rect x="480" y="144" width="12" height="12" rx="2" class="s-teal"/><text x="500" y="155" font-size="12" class="t2">기능 구현 에픽</text>
+    </svg>
+    </div>
+    <figcaption>첫 에픽과 마지막 에픽이 모두 실기기 검증입니다. 시작과 끝을 폰에서 확인하는 구조입니다.</figcaption>
+  </figure>
+</section>
+
+<!-- P. 일정 -->
+<section id="plan">
+  <p class="label">Schedule</p>
+  <h2>일정: 개발 4일(예비 포함) + 실기기 QA 1일</h2>
+  <p>스토리 크기로 다시 더하면 개발이 약 43시간, QA가 8시간입니다. 하루 12시간이면 개발에 3일 반이 걸려, 4일차는 밀린 것을 흡수하는 예비 겸 개발일로 두고 5일차는 실기기 QA와 버그 수정에만 씁니다. 무결점 동작이 최우선이라 <b>QA 시간은 줄이지 않습니다.</b> 3일 안에 끝내야 하면 아래 컷라인을 처음부터 적용합니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 880 440" style="min-width:760px" role="img" aria-label="5일 동안 오전과 오후로 나눈 에픽별 일정 막대: 1~4일차 개발, 4일차는 예비, 5일차 QA">
+      <g font-size="12.5" text-anchor="middle"><rect x="190" y="10" width="136" height="26" rx="6" class="s-tealsoft"/><text x="258" y="28" style="font-weight:700">1일차</text><rect x="326" y="10" width="136" height="26" rx="6" class="s-mussoft"/><text x="394" y="28" style="font-weight:700">2일차</text><rect x="462" y="10" width="136" height="26" rx="6" class="s-tealsoft"/><text x="530" y="28" style="font-weight:700">3일차</text><rect x="598" y="10" width="136" height="26" rx="6" class="s-mussoft"/><text x="666" y="28" style="font-weight:700">4일차 예비</text><rect x="734" y="10" width="136" height="26" rx="6" class="s-stampsoft"/><text x="802" y="28" style="font-weight:700">5일차 QA</text></g>
+      <g font-size="11" text-anchor="middle" class="t2"><text x="224" y="54" class="t2">오전</text><text x="292" y="54" class="t2">오후</text><text x="360" y="54" class="t2">오전</text><text x="428" y="54" class="t2">오후</text><text x="496" y="54" class="t2">오전</text><text x="564" y="54" class="t2">오후</text><text x="632" y="54" class="t2">오전</text><text x="700" y="54" class="t2">오후</text><text x="768" y="54" class="t2">오전</text><text x="836" y="54" class="t2">오후</text></g>
+      <g class="s-grid"><line x1="326" y1="60" x2="326" y2="404"/><line x1="462" y1="60" x2="462" y2="404"/><line x1="598" y1="60" x2="598" y2="404"/><line x1="734" y1="60" x2="734" y2="404"/></g>
+      <g font-size="12.5"><text x="10" y="86" style="font-weight:700">E0 기능 검증</text><text x="10" y="120">E1 기반</text><text x="10" y="154">E2 도메인 규칙</text><text x="10" y="188">E3 데이터·동기화</text><text x="10" y="222">E4 계정</text><text x="10" y="256">E5 지도·가게</text><text x="10" y="290">E6 방문 인증</text><text x="10" y="324">E7·E8 도장·리뷰·프로필</text><text x="10" y="358">E9 테스트 가게·설정</text><text x="10" y="392" style="font-weight:700">E10 QA·버그 수정</text></g>
+      <g class="s-grid"><line x1="10" y1="100" x2="870" y2="100"/><line x1="10" y1="134" x2="870" y2="134"/><line x1="10" y1="168" x2="870" y2="168"/><line x1="10" y1="202" x2="870" y2="202"/><line x1="10" y1="236" x2="870" y2="236"/><line x1="10" y1="270" x2="870" y2="270"/><line x1="10" y1="304" x2="870" y2="304"/><line x1="10" y1="338" x2="870" y2="338"/><line x1="10" y1="372" x2="870" y2="372"/></g>
+      <rect x="192" y="74" width="64" height="18" rx="5" class="s-stamp"/><rect x="260" y="108" width="64" height="18" rx="5" class="s-teal"/><rect x="260" y="142" width="132" height="18" rx="5" class="s-teal"/><rect x="328" y="176" width="132" height="18" rx="5" class="s-teal"/><rect x="396" y="210" width="64" height="18" rx="5" class="s-teal"/><rect x="464" y="244" width="64" height="18" rx="5" class="s-teal"/><rect x="532" y="278" width="64" height="18" rx="5" class="s-teal"/><rect x="600" y="312" width="64" height="18" rx="5" class="s-teal"/><rect x="668" y="346" width="64" height="18" rx="5" class="s-teal"/><rect x="736" y="380" width="132" height="18" rx="5" class="s-stamp"/>
+      <rect x="668" y="342" width="64" height="26" rx="6" style="fill:none;stroke:var(--mus);stroke-width:1.5;stroke-dasharray:4 3"/>
+      <text x="440" y="430" font-size="12" text-anchor="middle" class="t2">매일 저녁 릴리스 APK로 가입 → 인증 → 도장 → 리뷰 한 바퀴 (회귀 R-4) · 점선 칸 = 밀린 스토리 흡수</text>
+    </svg>
+    </div>
+    <figcaption>하루 12시간 기준 추정입니다(S≈25분, M≈50분, L≈1.5시간). 컷라인 순서: 닉네임 변경·탈퇴, 칭호 승급 연출, 리뷰 신고 → 지도 클러스터 연출 → 도장 세부 효과.</figcaption>
+  </figure>
+  <h3>APK 배포: 다른 폰에 설치하고 업데이트하기</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>단계</th><th>할 일</th><th>주의</th></tr></thead>
+      <tbody>
+        <tr><td>1. 만들기</td><td><code>./gradlew assembleRelease</code> → <code>app/build/outputs/apk/release/app-release.apk</code></td><td>서명 키가 있으면 그 키, 없으면 디버그 키로 서명됨</td></tr>
+        <tr><td>2. 보내기</td><td>구글 드라이브·메신저 등으로 APK 파일 전달, 파일 이름에 버전 표기</td><td>내 폰은 USB 연결 후 <code>adb install -r</code>로 바로 설치</td></tr>
+        <tr><td>3. 설치 허용</td><td>폰에서 파일을 열면 “이 출처의 앱 설치 허용”을 묻는 화면 → 허용 → 설치</td><td>Play 프로텍트 경고가 뜰 수 있음</td></tr>
+        <tr class="rec"><td>4. 업데이트</td><td><code>versionCode</code>를 올린 새 APK를 같은 방법으로 설치</td><td><b>같은 서명 키여야 덮어 설치됨.</b> 디버그 키 APK에서 정식 키 APK로 바꿀 때는 앱을 지우고 다시 설치(로그인하면 서버 기록 복원)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><b class="k">앞으로 바뀌는 것</b>Google은 2026년 9월 30일 인도네시아·싱가포르·태국부터 ‘개발자 인증’을 받은 앱만 설치되게 하고, 2027년에 전 세계 인증 기기로 넓힐 계획입니다. 한국은 아직 첫 대상에 들지 않았고, ADB 설치는 계속 허용됩니다. 테스트 기기 20대까지는 신분증 없이 무료인 ‘제한 배포 계정’으로 인증할 수 있습니다.</div>
+</section>
+
+<!-- Sc. 범위 -->
+<section id="scope">
+  <p class="label">Scope</p>
+  <h2>범위: 요구사항 80개 중 73개가 이번 APK 필수</h2>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 720 360" style="min-width:600px" role="img" aria-label="영역별 기능 요구사항 수와 우선순위 막대 그래프">
+      <text x="10" y="22" font-size="13" style="font-weight:700">영역별 기능 요구사항 수</text>
+      <g class="s-grid"><line x1="150" y1="34" x2="150" y2="326"/><line x1="270" y1="34" x2="270" y2="326"/><line x1="390" y1="34" x2="390" y2="326"/><line x1="510" y1="34" x2="510" y2="326"/></g>
+      <g font-size="11.5" class="mono" text-anchor="middle"><text x="150" y="344" class="t2">0</text><text x="270" y="344" class="t2">5</text><text x="390" y="344" class="t2">10</text><text x="510" y="344" class="t2">15</text></g>
+      <g font-size="12">
+        <text x="10" y="50">방문 인증</text><text x="10" y="74">계정</text><text x="10" y="98">평점·리뷰</text><text x="10" y="122">지도</text><text x="10" y="146">도장·세월</text><text x="10" y="170">프로필</text>
+        <text x="10" y="194">가게 상세</text><text x="10" y="218">패스포트</text><text x="10" y="242">데이터</text><text x="10" y="266">시스템</text><text x="10" y="290">기능 검증·진단</text><text x="10" y="314">테스트 가게</text>
+      </g>
+      <g class="s-teal">
+        <rect x="150" y="38" width="384" height="15" rx="3"/><rect x="150" y="62" width="192" height="15" rx="3"/><rect x="150" y="86" width="168" height="15" rx="3"/><rect x="150" y="110" width="168" height="15" rx="3"/>
+        <rect x="150" y="134" width="144" height="15" rx="3"/><rect x="150" y="158" width="144" height="15" rx="3"/><rect x="150" y="182" width="120" height="15" rx="3"/><rect x="150" y="206" width="96" height="15" rx="3"/>
+        <rect x="150" y="230" width="96" height="15" rx="3"/><rect x="150" y="254" width="96" height="15" rx="3"/><rect x="150" y="278" width="72" height="15" rx="3"/><rect x="150" y="302" width="72" height="15" rx="3"/>
+      </g>
+      <g class="s-mus">
+        <rect x="342" y="62" width="48" height="15" rx="3"/><rect x="318" y="86" width="24" height="15" rx="3"/><rect x="294" y="134" width="24" height="15" rx="3"/><rect x="294" y="158" width="24" height="15" rx="3"/><rect x="270" y="182" width="24" height="15" rx="3"/><rect x="246" y="206" width="24" height="15" rx="3"/>
+      </g>
+      <g font-size="11.5" class="mono"><text x="540" y="50">16</text><text x="396" y="74">10</text><text x="348" y="98">8</text><text x="324" y="122">7</text><text x="324" y="146">7</text><text x="324" y="170">7</text><text x="300" y="194">6</text><text x="276" y="218">5</text><text x="252" y="242">4</text><text x="252" y="266">4</text><text x="228" y="290">3</text><text x="228" y="314">3</text></g>
+      <rect x="560" y="140" width="12" height="12" rx="2" class="s-teal"/><text x="580" y="151" font-size="12" class="t2">P0 (73)</text>
+      <rect x="560" y="164" width="12" height="12" rx="2" class="s-mus"/><text x="580" y="175" font-size="12" class="t2">P1·P2 (7)</text>
+    </svg>
+    </div>
+    <figcaption>노란 부분이 다음으로 미뤄도 되는 항목입니다: 닉네임 변경, 회원 탈퇴, 리뷰 신고, 칭호 승급 연출, 방문 기록 비공개, 전화 걸기·오류 신고, 공유 카드.</figcaption>
+  </figure>
+</section>
+
+<!-- Rk. 위험 -->
+<section id="risk">
+  <p class="label">Risks</p>
+  <h2>위험과 대비</h2>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 560 350" style="min-width:480px" role="img" aria-label="발생 가능성과 영향도로 여덟 가지 위험을 놓은 3×3 표">
+      <g>
+        <rect x="90" y="20" width="140" height="84" class="s-mussoft"/><rect x="230" y="20" width="140" height="84" class="s-stampsoft"/><rect x="370" y="20" width="140" height="84" class="s-stampsoft"/>
+        <rect x="90" y="104" width="140" height="84" class="s-tealsoft"/><rect x="230" y="104" width="140" height="84" class="s-mussoft"/><rect x="370" y="104" width="140" height="84" class="s-stampsoft"/>
+        <rect x="90" y="188" width="140" height="84" class="s-tealsoft"/><rect x="230" y="188" width="140" height="84" class="s-tealsoft"/><rect x="370" y="188" width="140" height="84" class="s-mussoft"/>
+      </g>
+      <g class="s-grid"><line x1="90" y1="104" x2="510" y2="104"/><line x1="90" y1="188" x2="510" y2="188"/><line x1="230" y1="20" x2="230" y2="272"/><line x1="370" y1="20" x2="370" y2="272"/></g>
+      <g font-size="12.5"><text x="82" y="66" text-anchor="end" class="t2">높음</text><text x="82" y="150" text-anchor="end" class="t2">중간</text><text x="82" y="234" text-anchor="end" class="t2">낮음</text>
+      <text x="160" y="292" text-anchor="middle" class="t2">낮음</text><text x="300" y="292" text-anchor="middle" class="t2">중간</text><text x="440" y="292" text-anchor="middle" class="t2">높음</text></g>
+      <text x="300" y="318" font-size="13" text-anchor="middle" class="t2">영향</text>
+      <text x="20" y="146" font-size="13" text-anchor="middle" class="t2" transform="rotate(-90 20 146)">발생 가능성</text>
+      <g text-anchor="middle" font-size="12" style="font-weight:700">
+        <circle cx="420" cy="62" r="15" fill="var(--ink)"/><text x="420" y="66" style="fill:var(--bg)">R1</text>
+        <circle cx="462" cy="62" r="15" fill="var(--ink)"/><text x="462" y="66" style="fill:var(--bg)">R2</text>
+        <circle cx="300" cy="62" r="15" fill="var(--ink)"/><text x="300" y="66" style="fill:var(--bg)">R3</text>
+        <circle cx="440" cy="146" r="15" fill="var(--ink)"/><text x="440" y="150" style="fill:var(--bg)">R4</text>
+        <circle cx="280" cy="146" r="15" fill="var(--ink)"/><text x="280" y="150" style="fill:var(--bg)">R5</text>
+        <circle cx="322" cy="146" r="15" fill="var(--ink)"/><text x="322" y="150" style="fill:var(--bg)">R6</text>
+        <circle cx="300" cy="230" r="15" fill="var(--ink)"/><text x="300" y="234" style="fill:var(--bg)">R7</text>
+        <circle cx="160" cy="146" r="15" fill="var(--ink)"/><text x="160" y="150" style="fill:var(--bg)">R8</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>오른쪽 위일수록 먼저 대비합니다.</figcaption>
+  </figure>
+  <div class="tbl">
+    <table>
+      <thead><tr><th class="num">번호</th><th>위험</th><th>대비</th></tr></thead>
+      <tbody>
+        <tr><td class="num">R1</td><td>골목·실내 위치 오차로 30m 판정 실패</td><td>1일차 실측, 정확도 함께 표시, 기준은 설정값 한 곳에서 조정</td></tr>
+        <tr><td class="num">R2</td><td>일정 초과로 QA 시간 부족</td><td>QA 하루 고정, 4일차를 예비로, 컷라인 순서 미리 확정</td></tr>
+        <tr><td class="num">R3</td><td>카탈로그 좌표 미보강으로 지도가 빔</td><td>1일차에 좌표 보강 스크립트 실행, 좌표 없는 가게는 목록·영수증 인증으로 대체</td></tr>
+        <tr><td class="num">R4</td><td>영수증 인식 실패(흐린 감열지, 법인명)</td><td>전화번호 우선 비교, 사진 인증 버튼 상시 노출, 실제 영수증 20장 인식률 측정</td></tr>
+        <tr><td class="num">R5</td><td>네이버 지도 인증·요금 문제</td><td>1일차 오전 첫 검증 항목, 실패 시 카카오맵으로 같은 시험</td></tr>
+        <tr><td class="num">R6</td><td>Firestore 규칙 오류로 저장 실패</td><td>규칙 플레이그라운드로 사전 확인, 오류 로그 표준화</td></tr>
+        <tr><td class="num">R7</td><td>방문 기록 공개에 대한 거부감</td><td>날짜만 공개, 좌표·시각 비공개, 비공개 설정은 P1</td></tr>
+        <tr><td class="num">R8</td><td>남의 영수증·화면 속 영수증으로 부정 인증</td><td>24시간, 중복 해시, 하루 5곳. 완전 차단은 다음 버전의 서버 판정·가게 QR</td></tr>
+        <tr><td class="num">R9</td><td>업데이트 APK가 설치되지 않음(서명 키가 바뀜)</td><td>정식 서명 키를 1일차에 만들어 처음부터 그 키로 배포, 키 백업 2곳</td></tr>
+        <tr><td class="num">R10</td><td>Android 개발자 인증 확대(2027년 전 세계 예정)로 설치 제한</td><td>ADB 설치는 계속 가능. 필요하면 무료 제한 배포 계정(기기 20대)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Pc. 사전 체크리스트 -->
+<section id="precheck">
+  <p class="label">Q12 · Before you start</p>
+  <h2>개발 전에 직접 확인할 것</h2>
+  <p>체크하면 이 브라우저에 기억됩니다. 전체 40개 항목은 <code>nopo-05-precheck-checklist.md</code>에 있고, 여기에는 1일차를 막을 수 있는 항목만 모았습니다.</p>
+  <figure class="fig">
+    <div class="scroll">
+    <svg viewBox="0 0 720 230" style="min-width:600px" role="img" aria-label="개발 전 확인 항목을 분야별 개수로 보여주는 막대 그래프">
+      <g font-size="12.5">
+        <text x="10" y="30">A 꼭 먼저</text><text x="10" y="54">B 계정과 키</text><text x="10" y="78">C 데이터</text><text x="10" y="102">D 기능 검증 재료</text><text x="10" y="126">E 법·개인정보</text><text x="10" y="150">F APK 배포</text><text x="10" y="174">G 심사·발표</text><text x="10" y="198">H 개발 습관</text>
+      </g>
+      <g>
+        <rect x="150" y="18" width="180" height="16" rx="3" class="s-stamp"/>
+        <rect x="150" y="42" width="210" height="16" rx="3" class="s-stamp"/>
+        <rect x="150" y="66" width="180" height="16" rx="3" class="s-teal"/>
+        <rect x="150" y="90" width="120" height="16" rx="3" class="s-stamp"/>
+        <rect x="150" y="114" width="120" height="16" rx="3" class="s-teal"/>
+        <rect x="150" y="138" width="150" height="16" rx="3" class="s-teal"/>
+        <rect x="150" y="162" width="120" height="16" rx="3" class="s-teal"/>
+        <rect x="150" y="186" width="120" height="16" rx="3" class="s-teal"/>
+      </g>
+      <g font-size="12" class="mono"><text x="336" y="31">6</text><text x="366" y="55">7</text><text x="336" y="79">6</text><text x="276" y="103">4</text><text x="276" y="127">4</text><text x="306" y="151">5</text><text x="276" y="175">4</text><text x="276" y="199">4</text></g>
+      <rect x="470" y="40" width="12" height="12" rx="2" class="s-stamp"/><text x="490" y="51" font-size="12" class="t2">1일차 09:00 전에 끝낼 것</text>
+      <rect x="470" y="64" width="12" height="12" rx="2" class="s-teal"/><text x="490" y="75" font-size="12" class="t2">개발 중·QA 전</text>
+    </svg>
+    </div>
+  </figure>
+  <div class="checks" id="checks">
+    <fieldset><legend>꼭 먼저</legend>
+      <label><input type="checkbox" id="k1"> Claude 요금제 확인 (Claude Code는 Pro 이상 또는 Console 계정 필요)</label>
+      <label><input type="checkbox" id="k2"> Claude Code 설치, Android Studio 플러그인 “Claude Code [Beta]”</label>
+      <label><input type="checkbox" id="k3"> 테스트 폰 2대, USB 디버깅, <code>adb devices</code> 확인</label>
+      <label><input type="checkbox" id="k4"> 패키지명 <code>com.nopo.cheonnyeon</code> 확정</label>
+    </fieldset>
+    <fieldset><legend>계정과 키</legend>
+      <label><input type="checkbox" id="k5"> 네이버 Maps 애플리케이션: Dynamic Map·Geocoding 선택, 패키지명 등록, Key ID</label>
+      <label><input type="checkbox" id="k6"> 네이버 Maps 무료 이용량·결제수단 필요 여부 확인</label>
+      <label><input type="checkbox" id="k7"> Firebase: 이메일 로그인 켜기, Firestore 서울 리전, 규칙·색인 적용</label>
+      <label><input type="checkbox" id="k8"> 릴리스 서명 키 생성, 백업 2곳</label>
+    </fieldset>
+    <fieldset><legend>데이터·재료</legend>
+      <label><input type="checkbox" id="k9"> 좌표 보강 스크립트 실행 후 카탈로그 다시 생성</label>
+      <label><input type="checkbox" id="k10"> 자주 테스트할 가게 5곳 좌표를 지도에서 확인</label>
+      <label><input type="checkbox" id="k11"> 실제 영수증, 한글 간판 사진, 테스트 간판 이미지 준비 (테스트 영수증은 현재 시각이 찍히는 <code>test_receipt_live.html</code>을 PC에 띄워 촬영)</label>
+      <label><input type="checkbox" id="k12"> 근처 노포 1곳 (위치 정확도 실측)</label>
+    </fieldset>
+    <fieldset><legend>심사·배포</legend>
+      <label><input type="checkbox" id="k13"> 테스트 참가자 안내: 수집 항목, 좌표·영수증 이미지 미저장</label>
+      <label><input type="checkbox" id="k14"> APK 설치 안내문 (알 수 없는 앱 설치 허용)</label>
+      <label><input type="checkbox" id="k15"> 평가 기준표에서 UX/UI 가산점 항목 확인</label>
+      <label><input type="checkbox" id="k16"> 테스트 가게로 3분 시연 3회 연습, 백업 영상</label>
+    </fieldset>
+  </div>
+  <p id="checkCount" style="font-size:13px;color:var(--ink2);margin-top:10px">0 / 16 완료</p>
+</section>
+
+<!-- Dc. 결정 -->
+<section id="decide">
+  <p class="label">Decisions</p>
+  <h2>확정한 것과 그 이유</h2>
+  <p>“묻지 말고 진행”하라는 요청에 따라 아래 값은 기획 단계에서 정했습니다. 바꾸고 싶은 것만 말씀해 주시면 문서 전체에 반영하겠습니다.</p>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>항목</th><th>결정</th><th>이유</th></tr></thead>
+      <tbody>
+        <tr><td>개발</td><td>Kotlin · Compose · Android Studio + Claude Code</td><td>사용자 결정</td></tr>
+        <tr><td>서버</td><td>Firebase (Auth + Firestore + Crashlytics), 무료 요금제</td><td>로그인·DB·오프라인을 공식 SDK로</td></tr>
+        <tr><td>로그인</td><td>이메일·비밀번호 + 닉네임</td><td>APK 직접 설치에서 설정이 가장 단순</td></tr>
+        <tr><td>평점 자격</td><td>방문 인증한 가게만</td><td>“실제로 다녀온 사람의 평점”이 차별점</td></tr>
+        <tr><td>사진 인증</td><td>30m + 정확도 30m, 글자 확인 3회 실패 시 위치 확인 도장</td><td>사용자 기준 유지 + 판정 신뢰도 + 막힘 방지</td></tr>
+        <tr><td>창업연도 모름</td><td>업력 30년으로 계산</td><td>공식 지정 최소 기준</td></tr>
+        <tr><td>카탈로그</td><td>앱에 포함(JSON → Room), 서버에는 유저 데이터만</td><td>무료 한도 보호, 오프라인</td></tr>
+        <tr><td>지도</td><td>네이버 공식 MapView 직접 사용</td><td>비공식 래퍼 호환 위험 제거</td></tr>
+        <tr><td>시연</td><td>시연 모드 대신 테스트 가게</td><td>우회 로직은 실제 버그를 숨김</td></tr>
+        <tr><td>일정</td><td>개발 4일(예비 포함) + 실기기 QA 1일</td><td>개발 약 43시간, 무결점이 최우선이라 QA 하루는 지킴</td></tr>
+        <tr><td>방문 기록 공개</td><td>날짜만 공개, 좌표·시각 비공개</td><td>요구사항 7번 + 개인정보 최소화</td></tr>
+        <tr><td>영수증 대조</td><td>전화 일치 또는 상호 0.70 이상이면 통과</td><td>가게 전화번호가 바뀌었거나 여러 개여도 정상 방문이 막히지 않게</td></tr>
+        <tr><td>평점 저장 시점</td><td>인증 기록이 서버에 올라간 뒤, 온라인에서만</td><td>오프라인 저장이 나중에 거부돼 리뷰가 사라지는 버그 예방</td></tr>
+        <tr><td>릴리스 APK 서명</td><td>서명 키가 없으면 디버그 키로 서명</td><td>서명 없는 APK는 폰에 설치되지 않음</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>참고한 자료</h3>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>분야</th><th>자료</th><th>이 기획에서 확인한 것</th></tr></thead>
+      <tbody>
+        <tr><td>노포 데이터</td><td><a href="https://www.sbiz.or.kr/hdst/main/ohndMarketListSmba.do" target="_blank" rel="noopener">백년가게 목록·상세 (소상공인마당)</a></td><td>백년가게 전체 목록과 상세의 창업일·소개·영업시간·이용정보</td></tr>
+        <tr><td>노포 데이터</td><td><a href="https://www.data.go.kr/data/15132695/fileData.do" target="_blank" rel="noopener">전국 백년가게 지정리스트 (공공데이터포털)</a></td><td>지정 목록 대조. 창업연도 항목은 없음</td></tr>
+        <tr><td>노포 데이터</td><td><a href="https://news.seoul.go.kr/culture/archives/530586" target="_blank" rel="noopener">서울 오래가게 서북권 선정 (서울시)</a></td><td>오래가게 선정 발표</td></tr>
+        <tr><td>노포 데이터</td><td><a href="https://mediahub.seoul.go.kr/archives/2019458" target="_blank" rel="noopener">오래가게 15곳 추가 선정 (서울시 미디어허브)</a></td><td>추가 선정 가게와 업력</td></tr>
+        <tr><td>지도</td><td><a href="https://navermaps.github.io/android-map-sdk/guide-ko/1.html" target="_blank" rel="noopener">네이버 지도 Android SDK 시작하기</a></td><td>SDK 3.24.0, 저장소 주소, Key ID 설정, 인증 실패 처리</td></tr>
+        <tr><td>지도</td><td><a href="https://api.ncloud-docs.com/docs/application-maps-overview" target="_blank" rel="noopener">네이버 클라우드 Maps API 개요</a></td><td>Dynamic Map·Geocoding 서비스 구성과 이용 신청</td></tr>
+        <tr><td>서버</td><td><a href="https://firebase.google.com/docs/projects/billing/firebase-pricing-plans?hl=ko" target="_blank" rel="noopener">Firebase 요금제</a></td><td>Spark 무료 한도(Firestore 하루 읽기 5만·쓰기 2만)와 초과 시 정지</td></tr>
+        <tr><td>인증</td><td><a href="https://developers.google.com/ml-kit/vision/text-recognition/v2/android" target="_blank" rel="noopener">ML Kit 텍스트 인식 v2 (Android)</a></td><td>한국어 모델, 앱 포함 방식</td></tr>
+        <tr><td>인증</td><td><a href="https://developer.android.com/develop/sensors-and-location/location/permissions" target="_blank" rel="noopener">Android 위치 권한</a></td><td>정밀·대략 위치 권한 처리</td></tr>
+        <tr><td>개발 도구</td><td><a href="https://code.claude.com/docs/en/jetbrains.md" target="_blank" rel="noopener">Claude Code JetBrains IDE 연동</a></td><td>플러그인, 단축키, IDE 비교 화면</td></tr>
+        <tr><td>개발 도구</td><td><a href="https://code.claude.com/docs/en/setup.md" target="_blank" rel="noopener">Claude Code 설치</a></td><td>설치 명령, 필요한 요금제</td></tr>
+        <tr><td>개발 도구</td><td><a href="https://code.claude.com/docs/en/sub-agents.md" target="_blank" rel="noopener">Claude Code 서브에이전트</a></td><td>.claude/agents 파일 형식</td></tr>
+        <tr><td>APK 배포</td><td><a href="https://support.google.com/android-developer-console/answer/16561738" target="_blank" rel="noopener">Android 개발자 인증 안내 (Google)</a></td><td>2026-09-30 첫 적용 국가, 2027 전 세계 확대, ADB 허용, 제한 배포 계정(기기 20대)</td></tr>
+        <tr><td>개발 방법</td><td><a href="https://github.com/bmad-code-org/BMAD-METHOD/releases" target="_blank" rel="noopener">BMAD-METHOD 릴리스 (GitHub)</a></td><td>최신 정식 릴리스 v6.12, 설치 요건(Node.js 20.12+, uv·Python 3.11+), V7 예고</td></tr>
+        <tr><td>Kotlin vs Flutter</td><td><a href="https://pub.dev/packages/flutter_naver_map" target="_blank" rel="noopener">flutter_naver_map (pub.dev)</a></td><td>네이버가 아닌 외부 개발자(note11.dev)가 배포하는 플러그인</td></tr>
+        <tr><td>Kotlin vs Flutter</td><td><a href="https://pub.dev/packages/google_mlkit_text_recognition" target="_blank" rel="noopener">google_mlkit_text_recognition (pub.dev)</a></td><td>“Google이 후원·관리하지 않는 플러그인”, 한국어는 별도 의존성 추가</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">노포 천년 미식가 기획안 v0.4 · 가게 이름과 숫자는 모두 예시이며, 제도 기준은 해당 기관의 최신 공고로 다시 확인해야 합니다.</div>
+</footer>
+<script>
+(function(){
+  var box=document.getElementById('checks'); if(!box) return;
+  var inputs=box.querySelectorAll('input[type=checkbox]'); var out=document.getElementById('checkCount'); var KEY='nopo-precheck-v04';
+  var saved={}; try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){saved={};}
+  function count(){var n=0;inputs.forEach(function(i){if(i.checked)n++;}); if(out) out.textContent=n+' / '+inputs.length+' 완료';}
+  inputs.forEach(function(i){ if(saved[i.id]) i.checked=true; i.addEventListener('change',function(){saved[i.id]=i.checked; try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){} count();});});
+  count();
+})();
+</script>
+</body>
+</html>

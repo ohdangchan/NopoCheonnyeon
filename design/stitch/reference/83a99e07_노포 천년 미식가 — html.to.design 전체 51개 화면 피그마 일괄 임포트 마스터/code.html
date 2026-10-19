@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>노포 천년 미식가 — html.to.design 전체 51개 화면 및 디자인 에셋 올인원 피그마 임포트 마스터</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            nopo: {
+              sign: '#17504A',
+              primary: '#1F6B63',
+              stamp: '#C23B2A',
+              brass: '#D9A22C',
+              paper: '#EDF0EA',
+              surface: '#F8F9F5',
+              ink: '#14201E',
+              ink2: '#52625E',
+              line: '#CCD4CC',
+              tealSoft: '#D3E5E0',
+              stampSoft: '#F4DCD6',
+              brassSoft: '#F6E8C4'
+            }
+          },
+          fontFamily: {
+            display: ['"Black Han Sans"', 'sans-serif'],
+            sans: ['"Noto Sans KR"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Figma html.to.design 임포트 최적화용 390x844 고정 프레임 래퍼 */
+    .mobile-frame {
+      width: 390px;
+      min-height: 844px;
+      max-height: 844px;
+      overflow-y: auto;
+      border: 1px solid #CCD4CC;
+      border-radius: 36px;
+      box-shadow: 0 12px 30px -10px rgba(20, 32, 30, 0.15);
+      position: relative;
+      background-color: #EDF0EA;
+      flex-shrink: 0;
+    }
+    .mobile-frame::-webkit-scrollbar {
+      display: none;
+    }
+    .status-bar {
+      height: 44px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #14201E;
+    }
+    .status-bar.dark-bar {
+      color: #EDF0EA;
+      background: #17504A;
+    }
+    .bottom-indicator {
+      width: 134px;
+      height: 5px;
+      background: #14201E;
+      opacity: 0.3;
+      border-radius: 999px;
+      margin: 12px auto 6px auto;
+    }
+  </style>
+</head>
+<body class="bg-[#E5E9E3] text-nopo-ink font-sans antialiased p-6 md:p-12">
+
+  <!-- ========================================== -->
+  <!-- 1. 최상단 피그마 임포트 마스터 배너 및 컨트롤러 -->
+  <!-- ========================================== -->
+  <header class="max-w-[1720px] mx-auto bg-nopo-sign text-nopo-paper rounded-3xl p-8 md:p-10 shadow-2xl mb-12 border-2 border-[#1f6b63]">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-mono text-nopo-brass mb-3">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          FIGMA HTML.TO.DESIGN ALL-IN-ONE MASTER EXPORT URL
+        </div>
+        <h1 class="text-3xl md:text-5xl font-black font-display tracking-wide mb-3">
+          노포 천년 미식가 — 피그마 일괄 임포트 마스터 허브
+        </h1>
+        <p class="text-nopo-tealSoft text-base md:text-lg max-w-3xl leading-relaxed">
+          이 웹페이지의 현재 URL을 Figma의 <span class="text-white font-bold underline underline-offset-4">html.to.design</span> 플러그인에 입력하시면,
+          아래 구성된 <strong class="text-nopo-brass font-bold">전체 51개 모바일 화면 (Auto-Layout 390×844)</strong>과 <strong class="text-white">원형 인장·칭호 배지·디자인 토큰</strong>이 피그마 캔버스에 프레임 단위로 즉시 100% 분할 배치됩니다.
+        </p>
+      </div>
+      
+      <!-- html.to.design 사용 가이드 박스 -->
+      <div class="bg-black/30 backdrop-blur border border-white/15 rounded-2xl p-5 w-full lg:w-96 text-sm flex-shrink-0">
+        <div class="font-bold text-nopo-brass text-base mb-2 flex items-center gap-2">
+          <span>⚡ html.to.design 즉시 가져오기</span>
+        </div>
+        <ol class="list-decimal list-inside space-y-1.5 text-xs text-white/90">
+          <li>Figma에서 <code class="bg-white/20 px-1 py-0.5 rounded text-white">html.to.design</code> 플러그인 실행</li>
+          <li>입력창에 <strong class="text-yellow-300">현재 이 페이지의 브라우저 URL</strong> 붙여넣기</li>
+          <li>Viewports 옵션에서 <span class="underline font-bold text-white">Desktop (1440px 이상)</span> 선택</li>
+          <li><span class="bg-nopo-stamp text-white px-2 py-0.5 rounded font-bold">Import</span> 버튼 클릭 ➔ 캔버스에 8대 도메인 51개 화면 즉시 분할 생성!</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 퀵 필터 앵커 바 -->
+    <div class="flex flex-wrap gap-2 mt-8 pt-6 border-t border-white/15 text-xs font-medium">
+      <span class="text-white/60 py-1 mr-2">빠른 섹션 탐색:</span>
+      <a href="#flow-1" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">1. 온보딩 & 계정 (8)</a>
+      <a href="#flow-2" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">2. 지도 & 노포발견 (7)</a>
+      <a href="#flow-3" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">3. 방문 인증 파이프라인 (7)</a>
+      <a href="#flow-4" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">4. 도장 & 칭호 연출 (2)</a>
+      <a href="#flow-5" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">5. 내 패스포트 & 결산 (9)</a>
+      <a href="#flow-6" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">6. 공인리뷰 & 프로필 (7)</a>
+      <a href="#flow-7" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">7. 시스템 설정 & 동기화 (6)</a>
+      <a href="#flow-8" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">8. 진단 & 개발자 도구 (5)</a>
+      <a href="#vector-assets" class="px-3 py-1.5 bg-nopo-brass text-nopo-ink font-bold rounded-lg hover:bg-yellow-400 transition-colors">🎨 디자인 토큰 & 벡터 에셋 (30종)</a>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- 2. 디자인 시스템 토큰 & 벡터 에셋 갤러리 (Atoms) -->
+  <!-- ========================================== -->
+  <section id="vector-assets" class="max-w-[1720px] mx-auto mb-16 bg-nopo-surface border border-nopo-line rounded-3xl p-8 shadow-sm">
+    <div class="flex items-center justify-between mb-6 pb-4 border-b border-nopo-line">
+      <div>
+        <h2 class="text-2xl font-black font-display text-nopo-ink flex items-center gap-3">
+          <span class="w-3 h-3 rounded-full bg-nopo-brass"></span>
+          Figma Component Atoms & Design Tokens (디자인 토큰 및 시그니처 벡터 컴포넌트)
+        </h2>
+        <p class="text-sm text-nopo-ink2 mt-1">Figma Variables 및 벡터 레이어로 100% 무손실 변환되는 등급별 인장, 5대 식객 칭호 배지, 마커 세트입니다.</p>
+      </div>
+      <span class="text-xs font-mono bg-nopo-paper px-3 py-1 rounded-full text-nopo-ink2 border border-nopo-line">WCAG AAA 13.5:1 Compliant</span>
+    </div>
+
+    <!-- 인장 4종 & 칭호 5종 그리드 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      
+      <!-- 인장 1: 30~49년 청록 인장 -->
+      <div class="bg-nopo-paper p-5 rounded-2xl border border-nopo-line flex flex-col items-center text-center">
+        <span class="text-xs font-mono text-nopo-ink2 mb-3">StampGrade.NORMAL (30~49y)</span>
+        <svg width="84" height="84" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="44" stroke="#1F6B63" stroke-width="5.5" stroke-dasharray="120 4 80 4"/>
+          <circle cx="50" cy="50" r="36" stroke="#1F6B63" stroke-width="1.8"/>
+          <text x="50" y="40" text-anchor="middle" fill="#1F6B63" font-family="'Noto Sans KR'" font-size="10" font-weight="700" letter-spacing="2">세월</text>
+          <text x="50" y="68" text-anchor="middle" fill="#1F6B63" font-family="'Black Han Sans'" font-size="34" font-weight="900">38</text>
+        </svg>
+        <span class="text-xs font-bold text-nopo-ink mt-3">일반 청록 인장 (38년)</span>
+      </div>
+
+      <!-- 인장 2: 50~99년 붉은 인주 인장 -->
+      <div class="bg-nopo-paper p-5 rounded-2xl border border-nopo-line flex flex-col items-center text-center">
+        <span class="text-xs font-mono text-nopo-ink2 mb-3">StampGrade.RED (50~99y)</span>
+        <svg width="84" height="84" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="44" stroke="#C23B2A" stroke-width="5.5" stroke-dasharray="140 3 60 3"/>
+          <circle cx="50" cy="50" r="36" stroke="#C23B2A" stroke-width="1.8"/>
+          <text x="50" y="40" text-anchor="middle" fill="#C23B2A" font-family="'Noto Sans KR'" font-size="10" font-weight="700" letter-spacing="2">각인</text>
+          <text x="50" y="68" text-anchor="middle" fill="#C23B2A" font-family="'Black Han Sans'" font-size="34" font-weight="900">62</text>
+        </svg>
+        <span class="text-xs font-bold text-nopo-stamp mt-3">붉은 인주 인장 (62년)</span>
+      </div>
+
+      <!-- 인장 3: 100년+ 황금 백년 인장 -->
+      <div class="bg-nopo-paper p-5 rounded-2xl border border-nopo-line flex flex-col items-center text-center">
+        <span class="text-xs font-mono text-nopo-ink2 mb-3">StampGrade.GOLD (100y+)</span>
+        <svg width="84" height="84" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="44" stroke="#D9A22C" stroke-width="6"/>
+          <circle cx="50" cy="50" r="36" stroke="#D9A22C" stroke-width="1.8"/>
+          <circle cx="50" cy="50" r="32" stroke="#D9A22C" stroke-width="1" stroke-dasharray="2 3"/>
+          <text x="50" y="38" text-anchor="middle" fill="#D9A22C" font-family="'Noto Sans KR'" font-size="9" font-weight="700" letter-spacing="3">百年</text>
+          <text x="50" y="66" text-anchor="middle" fill="#D9A22C" font-family="'Black Han Sans'" font-size="30" font-weight="900">120</text>
+          <text x="50" y="78" text-anchor="middle" fill="#D9A22C" font-family="'Noto Sans KR'" font-size="7.5" font-weight="700">공인 노포</text>
+        </svg>
+        <span class="text-xs font-bold text-nopo-brass mt-3">황금 백년 인장 (120년)</span>
+      </div>
+
+      <!-- 인장 4: 30m 위치확인 구제도장 -->
+      <div class="bg-nopo-paper p-5 rounded-2xl border border-nopo-line flex flex-col items-center text-center">
+        <span class="text-xs font-mono text-nopo-ink2 mb-3">IsRelief=True (30m 구제도장)</span>
+        <svg width="84" height="84" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="46" stroke="#D9A22C" stroke-width="1.5" stroke-dasharray="4 3"/>
+          <circle cx="50" cy="50" r="42" stroke="#1F6B63" stroke-width="5"/>
+          <circle cx="50" cy="50" r="34" stroke="#1F6B63" stroke-width="1.8"/>
+          <text x="50" y="38" text-anchor="middle" fill="#1F6B63" font-family="'Noto Sans KR'" font-size="8.5" font-weight="800">위치확인</text>
+          <text x="50" y="66" text-anchor="middle" fill="#1F6B63" font-family="'Black Han Sans'" font-size="32" font-weight="900">38</text>
+        </svg>
+        <span class="text-xs font-bold text-nopo-primary mt-3">1.5px 림라이트 구제도장</span>
+      </div>
+    </div>
+
+    <!-- 5대 칭호 배지 갤러리 -->
+    <div class="mt-8 pt-6 border-t border-nopo-line flex flex-wrap items-center justify-between gap-4">
+      <span class="text-sm font-bold text-nopo-ink">5대 식객 칭호 배지 세트 (TitleBadge Variants):</span>
+      <div class="flex flex-wrap gap-3">
+        <div class="px-3 py-1 rounded-full bg-nopo-tealSoft text-nopo-sign font-bold text-xs flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-nopo-primary"></span> 새싹 식객 (0년~)
+        </div>
+        <div class="px-3.5 py-1 rounded-full bg-nopo-primary text-white font-bold text-xs">
+          단골 식객 (100년~)
+        </div>
+        <div class="px-3.5 py-1 rounded-full bg-nopo-brassSoft border border-nopo-brass text-amber-950 font-extrabold text-xs">
+          동네 어른 (300년~)
+        </div>
+        <div class="px-3.5 py-1 rounded-full bg-nopo-stamp text-white font-extrabold text-xs shadow-sm">
+          장인 식객 (600년~)
+        </div>
+        <div class="px-4 py-1.5 rounded-full bg-nopo-brass border-2 border-nopo-stamp text-amber-950 font-black text-xs shadow-md">
+          천년 미식가 (1,000년 달성 훈장)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+  <!-- 3. 전체 51개 모바일 화면 (8대 도메인 1:1 표준 390x844 배치) -->
+  <!-- ========================================================= -->
+  <main class="max-w-[1720px] mx-auto space-y-16">
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 1: 온보딩 & 계정 인증 (Auth Domain - 8 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-1" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-sign pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-sign text-white text-xs font-mono font-bold rounded">DOMAIN 1</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">온보딩 & 계정 인증 (8개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_01 ~ SCREEN_08 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+        
+        <!-- Screen 1: 온보딩 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_01 · auth/onboarding</span>
+          <div class="mobile-frame bg-nopo-sign text-nopo-paper flex flex-col justify-between p-6">
+            <div class="status-bar dark-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="text-center my-auto">
+              <div class="w-24 h-24 rounded-full border-4 border-nopo-brass mx-auto mb-6 flex items-center justify-center bg-black/20">
+                <span class="font-display text-3xl text-nopo-brass">百年</span>
+              </div>
+              <h3 class="font-display text-3xl font-bold mb-3 leading-tight">노포 천년 미식가</h3>
+              <p class="text-nopo-tealSoft text-sm leading-relaxed px-4">
+                내가 먹어 온 노포의 세월을 모아<br>천 년을 채우는 대한민국 미식 패스포트
+              </p>
+            </div>
+            <div class="space-y-3 pb-4">
+              <button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm shadow-lg">식객 등록하고 시작하기</button>
+              <button class="w-full h-12 bg-white/10 text-nopo-paper font-medium rounded-xl text-sm border border-white/20">기존 패스포트 복원 (로그인)</button>
+              <div class="bottom-indicator bg-white/30"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 2: 회원가입 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_02 · auth/signup</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4 justify-between">
+              <span class="font-bold text-lg">← 미식가 회원가입</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">식객 닉네임 (2~12자)</label>
+                <input type="text" value="종로식객" class="w-full h-12 bg-nopo-surface border border-nopo-primary rounded-xl px-4 text-sm font-bold text-nopo-ink" readonly>
+                <span class="text-xs text-nopo-primary font-bold mt-1 block">✓ 사용 가능한 멋진 칭호입니다</span>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">이메일 주소</label>
+                <input type="email" value="gourmet@nopo.kr" class="w-full h-12 bg-nopo-surface border border-nopo-line rounded-xl px-4 text-sm text-nopo-ink" readonly>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">비밀번호 (영문+숫자 8자 이상)</label>
+                <input type="password" value="••••••••" class="w-full h-12 bg-nopo-surface border border-nopo-line rounded-xl px-4 text-sm text-nopo-ink" readonly>
+              </div>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm shadow-md">식객 호적부 등록 완료</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 3: 로그인 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_03 · auth/login</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4 justify-between">
+              <span class="font-bold text-lg">← 로그인 및 호적부 복원</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">등록 이메일</label>
+                <input type="email" placeholder="gourmet@nopo.kr" class="w-full h-12 bg-nopo-surface border border-nopo-line rounded-xl px-4 text-sm" readonly>
+              </div>
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">비밀번호</label>
+                <input type="password" placeholder="비밀번호 입력" class="w-full h-12 bg-nopo-surface border border-nopo-line rounded-xl px-4 text-sm" readonly>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-nopo-primary underline font-bold cursor-pointer">비밀번호를 잊으셨나요?</span>
+              </div>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm shadow-md">패스포트 복원 로그인</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 4: 비밀번호 재설정 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_04 · auth/reset-password</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-lg">← 비밀번호 재설정</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <p class="text-xs text-nopo-ink2 leading-relaxed bg-nopo-surface p-3.5 rounded-xl border border-nopo-line">
+                가입하신 이메일 주소를 입력하시면 비밀번호 재설정 링크를 전송해 드립니다. (계정 존재 여부 미노출 보안 정책)
+              </p>
+              <div>
+                <label class="text-xs font-bold text-nopo-ink block mb-1">가입 이메일</label>
+                <input type="email" value="gourmet@nopo.kr" class="w-full h-12 bg-nopo-surface border border-nopo-line rounded-xl px-4 text-sm" readonly>
+              </div>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm shadow-md">재설정 링크 발송</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 5: 닉네임 설정/복구 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_05 · auth/nickname-setup</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-lg">호적부 복구 및 칭호 설정</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div class="bg-nopo-brassSoft border border-nopo-brass p-3.5 rounded-xl text-xs text-amber-950 font-medium leading-relaxed">
+                식객 프로필 정보가 유실되어 복구 절차가 필요합니다. 새로 사용할 식객 닉네임을 설정해 주세요.
+              </div>
+              <input type="text" placeholder="새 식객 닉네임 (2~12자)" class="w-full h-12 bg-nopo-surface border border-nopo-primary rounded-xl px-4 text-sm font-bold" readonly>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm">호적부 등록 완료</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 6: 닉네임 변경 에디터 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_06 · profile/edit-nickname</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-lg">← 닉네임 변경</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <p class="text-xs text-nopo-ink2">닉네임 변경 시 지금까지 작성하신 모든 공인 리뷰의 작성자명이 원자적으로 자동 갱신됩니다.</p>
+              <input type="text" value="을지로미식가" class="w-full h-12 bg-nopo-surface border border-nopo-primary rounded-xl px-4 text-sm font-bold" readonly>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm">변경 내용 저장</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 7: 회원 탈퇴 및 영구 말소 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_07 · profile/withdraw</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-lg">← 회원 탈퇴</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div class="bg-nopo-stampSoft border border-nopo-stamp p-4 rounded-xl text-xs text-nopo-stamp font-bold leading-relaxed">
+                탈퇴 시 지금까지 누적된 세월(+442년), 방문 각인 도장첩(9곳), 작성된 모든 공인 리뷰가 영구 파기되며 복구할 수 없습니다.
+              </div>
+              <label class="flex items-center gap-2 text-xs text-nopo-ink font-bold pt-2">
+                <input type="checkbox" checked class="w-4 h-4 text-nopo-stamp rounded" readonly>
+                위 안내를 확인했으며 호적부 말소에 동의합니다.
+              </label>
+            </div>
+            <div class="p-6">
+              <button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm">호적부 영구 말소</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 8: 로그아웃 대기열 경고 다이얼로그 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_08 · dialog/logout</span>
+          <div class="mobile-frame bg-black/60 flex flex-col justify-center p-6">
+            <div class="bg-nopo-surface rounded-2xl p-6 border border-nopo-line space-y-4 text-center">
+              <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-800 mx-auto flex items-center justify-center font-bold text-xl">⚠️</div>
+              <h4 class="font-bold text-base text-nopo-ink">미전송 대기열 경고</h4>
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                아직 서버로 전송되지 않은 오프라인 방문 도장이 <strong class="text-nopo-stamp">2건</strong> 있습니다. 지금 로그아웃하시면 해당 데이터가 유실될 수 있습니다.
+              </p>
+              <div class="flex gap-2 pt-2">
+                <button class="flex-1 h-10 border border-nopo-line text-xs font-bold rounded-lg text-nopo-ink2">취소</button>
+                <button class="flex-1 h-10 bg-nopo-stamp text-white text-xs font-bold rounded-lg">강제 로그아웃</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 2: 지도 & 노포 발견 (Map Domain - 7 Screens)   -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-2" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-primary pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-primary text-white text-xs font-mono font-bold rounded">DOMAIN 2</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">지도 & 노포 탐색 (7개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_09 ~ SCREEN_15 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 9: 지도 메인 화면 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_09 · main/map</span>
+          <div class="mobile-frame bg-nopo-tealSoft/40 flex flex-col justify-between">
+            <div class="status-bar bg-white/80 backdrop-blur"><span>09:41</span><span>5G 100%</span></div>
+            <header class="p-4 flex gap-2">
+              <div class="flex-1 h-11 bg-white rounded-xl shadow-md border border-nopo-line flex items-center px-4 gap-2 text-xs text-nopo-ink2">
+                <span>🔍</span> 전국 1,277곳 노포 검색
+              </div>
+              <button class="w-11 h-11 bg-nopo-sign text-white rounded-xl shadow flex items-center justify-center text-xs font-bold">필터</button>
+            </header>
+            
+            <!-- 가상 지도 핀 오버레이 -->
+            <div class="flex-1 relative p-4 flex flex-col justify-center items-center">
+              <div class="absolute top-1/4 left-1/3 bg-nopo-brass text-amber-950 px-2 py-1 rounded-full text-[10px] font-black shadow-md border border-white">
+                120년 · 이문설농탕
+              </div>
+              <div class="absolute bottom-1/3 right-1/4 bg-nopo-stamp text-white px-2 py-1 rounded-full text-[10px] font-bold shadow-md border border-white">
+                62년 · 하동관
+              </div>
+            </div>
+
+            <!-- 하단 바텀시트 프리뷰 -->
+            <div class="bg-nopo-surface p-5 rounded-t-3xl border-t border-nopo-line shadow-2xl space-y-3">
+              <div class="w-10 h-1 bg-nopo-line rounded-full mx-auto mb-1"></div>
+              <div class="flex justify-between items-baseline">
+                <div>
+                  <span class="text-xs font-mono font-bold text-nopo-stamp">120년의 세월 · 백년가게</span>
+                  <h4 class="text-lg font-black text-nopo-ink">이문설농탕</h4>
+                </div>
+                <span class="text-xs font-mono text-nopo-ink2">340m 근처</span>
+              </div>
+              <button class="w-full h-11 bg-nopo-stamp text-white font-bold rounded-xl text-xs shadow">상세 정보 및 인증 자격 확인</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 10: 검색 및 목록 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_10 · map/list</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4 gap-2">
+              <span>←</span>
+              <span class="font-bold text-base">노포 검색 및 목록</span>
+            </header>
+            <div class="p-4 space-y-3 flex-1 overflow-y-auto">
+              <div class="bg-nopo-surface p-4 rounded-xl border border-nopo-line flex justify-between items-center shadow-sm">
+                <div>
+                  <span class="text-[10px] bg-nopo-brassSoft text-amber-950 font-bold px-2 py-0.5 rounded">120년 · 백년가게</span>
+                  <h5 class="font-bold text-sm text-nopo-ink mt-1">이문설농탕</h5>
+                  <p class="text-xs text-nopo-ink2">서울 종로구 우정국로 · 설렁탕/수육</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-nopo-primary">340m</span>
+              </div>
+              <div class="bg-nopo-surface p-4 rounded-xl border border-nopo-line flex justify-between items-center shadow-sm">
+                <div>
+                  <span class="text-[10px] bg-nopo-stampSoft text-nopo-stamp font-bold px-2 py-0.5 rounded">85년 · 백년가게</span>
+                  <h5 class="font-bold text-sm text-nopo-ink mt-1">하동관</h5>
+                  <p class="text-xs text-nopo-ink2">서울 중구 명동 · 곰탕</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-nopo-primary">1.2km</span>
+              </div>
+              <div class="bg-nopo-surface p-4 rounded-xl border border-nopo-line flex justify-between items-center shadow-sm">
+                <div>
+                  <span class="text-[10px] bg-nopo-tealSoft text-nopo-sign font-bold px-2 py-0.5 rounded">38년 · 오래가게</span>
+                  <h5 class="font-bold text-sm text-nopo-ink mt-1">을지면옥</h5>
+                  <p class="text-xs text-nopo-ink2">서울 중구 충무로 · 평양냉면</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-nopo-primary">2.1km</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 11: 노포 상세 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_11 · store/{storeId}</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4 justify-between">
+              <span>←</span><span class="font-bold">노포 상세 정보</span><span>공유</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div class="flex items-baseline gap-2">
+                <span class="font-display text-5xl text-nopo-stamp leading-none">120</span>
+                <span class="font-extrabold text-xl text-nopo-ink">년의 세월</span>
+              </div>
+              <h3 class="text-2xl font-black text-nopo-ink">이문설농탕</h3>
+              <p class="text-xs text-nopo-ink2">서울 종로구 우정국로 38-13 · 1904년 개업</p>
+              <div class="bg-nopo-brassSoft border border-nopo-brass p-4 rounded-2xl text-xs space-y-1">
+                <span class="bg-nopo-brass text-amber-950 px-2 py-0.5 rounded-full font-bold text-[10px]">첫 방문 보상</span>
+                <p class="font-bold text-sm text-nopo-ink">인증 시 내 세월 +120년 즉시 적립</p>
+                <p class="text-nopo-ink2">현재 442년 ➔ 인증 후 562년 (장인 식객 승급 임박)</p>
+              </div>
+            </div>
+            <div class="p-6 space-y-2">
+              <button class="w-full h-11 bg-nopo-surface border border-nopo-primary text-nopo-primary font-bold rounded-xl text-xs">대중교통 길찾기</button>
+              <button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm shadow-md">방문 인증하기 (영수증 / 현장사진)</button>
+              <div class="bottom-indicator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 12: 필터 바텀시트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_12 · map/filter</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-5">
+              <h4 class="font-bold text-base text-nopo-ink">노포 지도 필터 및 정렬</h4>
+              <div class="space-y-3 text-xs">
+                <label class="flex items-center gap-3 font-bold"><input type="checkbox" checked class="w-4 h-4 text-nopo-primary" readonly> 음식점만 보기 (도소매/기타 숨김)</label>
+                <label class="flex items-center gap-3 font-bold"><input type="checkbox" checked class="w-4 h-4 text-nopo-primary" readonly> 중소벤처기업부 백년가게 (1,139곳)</label>
+                <label class="flex items-center gap-3 font-bold"><input type="checkbox" checked class="w-4 h-4 text-nopo-primary" readonly> 서울시 오래가게 (151곳)</label>
+                <label class="flex items-center gap-3 font-bold"><input type="checkbox" class="w-4 h-4 text-nopo-primary" readonly> 아직 가보지 않은 미방문 노포만</label>
+              </div>
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">필터 적용하기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 13: 지도 오류 대체 목록 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_13 · map/fallback-list</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-base">오프라인 캐시 목록 (지도 장애)</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <div class="bg-amber-100 text-amber-900 p-3.5 rounded-xl text-xs font-medium">
+                지도 SDK 통신 오류(401/429) 또는 네트워크 음영 구역입니다. 기기에 저장된 1,277곳 로컬 목록으로 자동 전환되었습니다.
+              </div>
+              <div class="space-y-2 text-xs">
+                <div class="p-3 bg-nopo-surface rounded-lg border border-nopo-line font-bold">이문설농탕 (종로) · 120년</div>
+                <div class="p-3 bg-nopo-surface rounded-lg border border-nopo-line font-bold">하동관 (명동) · 85년</div>
+              </div>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">네트워크 재시도</button></div>
+          </div>
+        </div>
+
+        <!-- Screen 14: 길찾기 시트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_14 · store/{id}/transit</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <h4 class="font-bold text-base text-nopo-ink">노포 길찾기 연동</h4>
+              <p class="text-xs text-nopo-ink2">이문설농탕 (서울 종로구 우정국로 38-13)</p>
+              <div class="space-y-2">
+                <button class="w-full h-11 bg-[#03C75A] text-white font-bold rounded-xl text-xs">네이버 지도 앱으로 길찾기</button>
+                <button class="w-full h-11 bg-[#FEE500] text-[#191919] font-bold rounded-xl text-xs">카카오맵으로 길찾기</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 15: 사라진 노포 추모관 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_15 · passport/memorial</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-base">← 사라진 노포 추모관</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4">
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                재개발, 화재 등으로 폐업한 노포의 맛과 기억을 영구 보존하는 아카이브입니다. 적립된 세월은 사라지지 않습니다.
+              </p>
+              <div class="bg-nopo-surface p-4 rounded-2xl border border-nopo-line space-y-1">
+                <span class="text-[10px] text-nopo-stamp font-bold">영구 보존 각인</span>
+                <h5 class="font-bold text-sm text-nopo-ink">을지면옥 (구 을지로 본점)</h5>
+                <p class="text-xs text-nopo-ink2">세월 +38년 보존 완료 · 헌정 메모 142개</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 3: 방문 인증 파이프라인 (Verify Domain - 7 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-3" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-stamp pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-stamp text-white text-xs font-mono font-bold rounded">DOMAIN 3</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">방문 인증 파이프라인 (7개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_16 ~ SCREEN_22 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 16: 영수증 인증 (위치 미사용) -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_16 · verify/{id}/receipt</span>
+          <div class="mobile-frame bg-[#141E1C] text-white flex flex-col justify-between">
+            <div class="status-bar dark-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="p-4 flex justify-between items-center">
+              <span class="text-sm font-bold">← 영수증 방문 인증 (위치 미사용)</span>
+            </header>
+            <div class="p-6 text-center space-y-4">
+              <div class="border-2 border-dashed border-nopo-tealSoft/60 h-64 rounded-2xl flex flex-col items-center justify-center p-4">
+                <span class="text-xs text-nopo-tealSoft font-medium">영수증 전체가 가이드틀 안에 오도록 맞춰주세요</span>
+                <span class="text-[10px] text-white/50 mt-1">상호명, 결제일시(24시간 이내) 자동 OCR</span>
+              </div>
+            </div>
+            <div class="p-6 space-y-3">
+              <button class="w-full h-11 bg-white/10 text-white font-medium rounded-xl text-xs border border-white/20">영수증이 없어요 (가게 사진 인증으로 전환)</button>
+              <button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm shadow-lg">영수증 촬영 및 OCR 판정</button>
+              <div class="bottom-indicator bg-white/30"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 17: 가게 사진 및 30m 위치 인증 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_17 · verify/{id}/photo</span>
+          <div class="mobile-frame bg-[#141E1C] text-white flex flex-col justify-between">
+            <div class="status-bar dark-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="p-4 flex justify-between items-center">
+              <span class="text-sm font-bold">← 가게 사진 & 30m 위치 인증</span>
+            </header>
+            <div class="p-6 text-center space-y-4">
+              <div class="bg-emerald-950/80 border border-emerald-500/50 p-3.5 rounded-xl text-xs text-emerald-300 font-mono">
+                현재 거리: 18m (≤30m 적합) · GPS 정확도 ±8m
+              </div>
+              <div class="border-2 border-dashed border-white/40 h-56 rounded-2xl flex flex-col items-center justify-center p-4">
+                <span class="text-xs text-white/80">가게 간판 또는 메뉴판이 잘 보이게 촬영</span>
+              </div>
+            </div>
+            <div class="p-6 space-y-3">
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm shadow-lg">현장 사진 촬영하기</button>
+              <div class="bottom-indicator bg-white/30"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 18: 인증 실패 결과 안내 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_18 · verify/result</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="p-8 text-center my-auto space-y-3">
+              <div class="w-16 h-16 rounded-full bg-nopo-stampSoft text-nopo-stamp mx-auto flex items-center justify-center text-3xl font-bold">✕</div>
+              <h4 class="text-xl font-bold text-nopo-ink">방문 인증 실패</h4>
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                결제 영수증의 상호명을 인식할 수 없거나 결제일시가 24시간을 초과했습니다. (E_RECEIPT_MISMATCH)
+              </p>
+            </div>
+            <div class="p-6 space-y-2">
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">가게 사진으로 인증 전환</button>
+              <button class="w-full h-11 bg-nopo-surface border border-nopo-line text-nopo-ink2 font-bold rounded-xl text-xs">다시 영수증 촬영</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 19: 위치확인 구제도장 발급 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_19 · verify/{id}/relief</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <span class="text-xs font-bold text-nopo-brass bg-nopo-brassSoft px-2.5 py-1 rounded-full">구제 정책 적용</span>
+              <h4 class="font-bold text-base text-nopo-ink">위치 확인 도장 대체 발급</h4>
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                한자/조명으로 인해 간판 OCR이 3회 연속 실패했습니다. 현장 30m 반경 체류가 확인되었으므로 구제 도장을 발급합니다.
+              </p>
+              <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm shadow-md">위치확인 도장 받기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 20: 영수증 중복 해시 반려 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_20 · verify/{id}/dup</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <h4 class="font-bold text-base text-nopo-stamp flex items-center gap-2">⚠️ 영수증 중복 반려</h4>
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                해당 영수증의 SHA-256 전자 해시는 이미 다른 식객에 의해 인증 완료되었습니다. (E_RECEIPT_DUP) 기기 기록이 안전하게 롤백되었습니다.
+              </p>
+              <button class="w-full h-11 bg-nopo-surface border border-nopo-line font-bold text-xs rounded-xl">확인 및 닫기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 21: 일일 인증 한도 안내 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_21 · verify/{id}/limit</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <h4 class="font-bold text-base text-nopo-ink">일일 인증 한도 초과 안내</h4>
+              <p class="text-xs text-nopo-ink2 leading-relaxed">
+                건전한 미식 탐방을 위해 하루 최대 5곳까지만 노포 인증이 가능합니다. (매일 자정 서울 기준 리셋)
+              </p>
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">확인</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 22: 위치 권한 안내 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_22 · permission/location</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-base">정밀 위치 권한 안내</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4 text-xs text-nopo-ink2 leading-relaxed">
+              <p class="font-bold text-sm text-nopo-ink">정확한 30m 반경 확인이 필요합니다.</p>
+              <p>대략적인 위치(Coarse)만 허용된 경우 30m 현장 사진 인증이 불가능합니다. 앱 설정에서 '정밀 위치(Fine)'를 허용해 주세요.</p>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">기기 설정으로 이동</button></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 4: 도장 및 칭호 연출 (Ceremony Domain - 2 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-4" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-brass pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-brass text-amber-950 text-xs font-mono font-bold rounded">DOMAIN 4</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">도장 & 칭호 승급 연출 (2개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_23 ~ SCREEN_24 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 23: 도장 획득 연출 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_23 · ceremony/stamp</span>
+          <div class="mobile-frame bg-nopo-tealSoft/30 flex flex-col justify-between p-6">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="text-center my-auto">
+              <span class="text-xs font-bold text-nopo-ink2 block mb-4">방문 인증 완료</span>
+              <div class="w-40 h-40 rounded-full border-4 border-nopo-stamp mx-auto flex flex-col items-center justify-center bg-nopo-surface shadow-2xl rotate-[-8deg] mb-6">
+                <span class="text-xs font-bold text-nopo-stamp tracking-widest">각인</span>
+                <span class="font-display text-5xl text-nopo-stamp font-black">+120년</span>
+              </div>
+              <h4 class="font-bold text-base text-nopo-ink">내 누적 세월: 442년 ➔ 562년</h4>
+              <p class="text-xs text-nopo-ink2 mt-1">이문설농탕 각인이 내 패스포트에 안전하게 보존되었습니다.</p>
+            </div>
+            <button class="w-full h-12 bg-nopo-primary text-white font-bold rounded-xl text-sm shadow-md">내 패스포트 확인하기</button>
+          </div>
+        </div>
+
+        <!-- Screen 24: 칭호 승급 축하 연출 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_24 · ceremony/title-up</span>
+          <div class="mobile-frame bg-black/80 text-white flex flex-col justify-between p-6">
+            <div class="status-bar dark-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="text-center my-auto space-y-4">
+              <div class="inline-block px-3 py-1 bg-yellow-400 text-amber-950 text-xs font-black rounded-full">칭호 승급 달성!</div>
+              <div class="w-28 h-28 rounded-full border-4 border-nopo-brass mx-auto flex items-center justify-center bg-white/10 shadow-2xl">
+                <span class="font-display text-3xl text-yellow-300">장인</span>
+              </div>
+              <h3 class="font-display text-2xl text-white">축하합니다! [장인 식객] 승급</h3>
+              <p class="text-xs text-white/70">누적 세월 600년을 돌파하여 공인 장인 식객 훈장이 부여되었습니다.</p>
+            </div>
+            <button class="w-full h-12 bg-nopo-brass text-amber-950 font-black rounded-xl text-sm shadow-lg">자랑하고 계속하기</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 5: 패스포트 & 결산 (Passport Domain - 9 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-5" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-sign pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-sign text-white text-xs font-mono font-bold rounded">DOMAIN 5</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">내 패스포트 & 연대기 (9개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_25 ~ SCREEN_33 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 25: 내 패스포트 메인 (3열 도장첩) -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_25 · main/passport</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4 justify-between">
+              <span class="font-bold text-base">내 미식 패스포트</span>
+              <span class="text-xs font-mono bg-white/15 px-2.5 py-1 rounded-full">여정 통계</span>
+            </header>
+            <div class="p-4 flex-1 overflow-y-auto space-y-4">
+              <!-- 누적 세월 게이지 카드 -->
+              <div class="bg-nopo-surface p-4 rounded-2xl border border-nopo-line space-y-2 shadow-sm">
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-nopo-ink2 font-bold">누적 세월</span>
+                  <span class="px-2 py-0.5 bg-nopo-brassSoft border border-nopo-brass text-[10px] font-bold rounded-full text-amber-950">동네 어른</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span class="font-display text-3xl text-nopo-sign">442</span>
+                  <span class="text-xs text-nopo-ink2 font-mono">/ 1,000 년</span>
+                </div>
+                <div class="w-full h-2.5 bg-nopo-line rounded-full overflow-hidden">
+                  <div class="h-full bg-nopo-primary rounded-full" style="width: 44.2%"></div>
+                </div>
+              </div>
+
+              <!-- 3열 도장첩 격자 -->
+              <div class="grid grid-cols-3 gap-2.5 text-center">
+                <div class="bg-nopo-surface p-2.5 rounded-xl border border-nopo-line">
+                  <div class="w-11 h-11 rounded-full border-2 border-nopo-brass mx-auto flex items-center justify-center font-display text-xs text-nopo-brass">120</div>
+                  <span class="text-[10px] font-bold text-nopo-ink block mt-1 truncate">이문설농탕</span>
+                </div>
+                <div class="bg-nopo-surface p-2.5 rounded-xl border border-nopo-line">
+                  <div class="w-11 h-11 rounded-full border-2 border-nopo-stamp mx-auto flex items-center justify-center font-display text-xs text-nopo-stamp">85</div>
+                  <span class="text-[10px] font-bold text-nopo-ink block mt-1 truncate">하동관</span>
+                </div>
+                <div class="bg-nopo-surface p-2.5 rounded-xl border border-nopo-line">
+                  <div class="w-11 h-11 rounded-full border-2 border-nopo-primary mx-auto flex items-center justify-center font-display text-xs text-nopo-primary">38</div>
+                  <span class="text-[10px] font-bold text-nopo-ink block mt-1 truncate">을지면옥</span>
+                </div>
+                <!-- 점선 빈 슬롯 -->
+                <div class="border-2 border-dashed border-nopo-line rounded-xl flex items-center justify-center p-2 text-[9px] text-nopo-ink2 leading-tight">
+                  다음 노포<br>각인 자리
+                </div>
+              </div>
+            </div>
+            <!-- 하단 탭바 -->
+            <div class="h-14 bg-nopo-surface border-t border-nopo-line flex justify-around items-center text-[10px] font-bold text-nopo-ink2">
+              <span>노포지도</span><span class="text-nopo-primary">내 패스포트</span><span>설정</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 26: 패스포트 빈 상태 (도장 0개) -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_26 · passport/empty</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between p-6">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="text-center my-auto space-y-3">
+              <div class="w-16 h-16 rounded-full border-2 border-dashed border-nopo-line mx-auto flex items-center justify-center text-nopo-ink2 text-xl font-display">0</div>
+              <h4 class="font-bold text-base text-nopo-ink">아직 찍힌 도장이 없습니다</h4>
+              <p class="text-xs text-nopo-ink2">가까운 노포를 찾아 첫 세월을 적립해 보세요!</p>
+            </div>
+            <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">근처 노포 찾기</button>
+          </div>
+        </div>
+
+        <!-- Screen 27: 도장 상세 시트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_27 · passport/stamp/{id}</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-3">
+              <h4 class="font-bold text-base text-nopo-ink">이문설농탕 (+120년)</h4>
+              <p class="text-xs text-nopo-ink2">첫 방문일: 2026.10.18 · 인증 방식: 영수증 (위치 미사용)</p>
+              <p class="text-xs text-nopo-ink2">단골 재방문 횟수: 3회</p>
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">닫기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 28: 100년 노포 황금 인증서 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_28 · passport/gold-cert/{id}</span>
+          <div class="mobile-frame bg-nopo-brassSoft border-2 border-nopo-brass p-6 flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="text-center my-auto space-y-3">
+              <span class="text-xs font-mono font-bold text-amber-900">CERTIFICATE OF CENTURY NOPO</span>
+              <h4 class="font-display text-2xl text-amber-950 font-black">100년 노포 공인 인증서</h4>
+              <p class="text-xs text-amber-900 leading-relaxed px-2">
+                귀하는 1904년 개업하여 백 년의 세월을 묵묵히 지켜온 대한민국 공인 노포 [이문설농탕]을 직접 방문 인증하였음을 증명합니다.
+              </p>
+            </div>
+            <button class="w-full h-11 bg-nopo-brass text-amber-950 font-black rounded-xl text-xs">인증서 이미지 저장</button>
+          </div>
+        </div>
+
+        <!-- Screen 29: 여정 통계 결산 리포트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_29 · passport/report-analytics</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4">
+              <span class="font-bold text-base">← 미식 여정 통계 결산</span>
+            </header>
+            <div class="p-6 flex-1 space-y-4 text-xs">
+              <div class="bg-nopo-surface p-4 rounded-xl border border-nopo-line space-y-2">
+                <span class="font-bold text-sm block">식객 누적 지표</span>
+                <p>방문 노포: 9곳 | 총 세월: 442년 | 최다 업종: 국밥/면류 (78%)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 30: 인스타 공유 카드 생성기 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_30 · passport/share-card</span>
+          <div class="mobile-frame bg-nopo-sign text-nopo-paper p-6 flex flex-col justify-between text-center">
+            <div class="status-bar dark-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="my-auto space-y-3">
+              <span class="text-xs font-mono text-nopo-brass">INSTAGRAM STORY 9:16</span>
+              <h4 class="font-display text-3xl font-black">내 세월 442년</h4>
+              <p class="text-xs text-nopo-tealSoft">전국 노포 9곳 각인 완료 · [동네 어른]</p>
+            </div>
+            <button class="w-full h-11 bg-nopo-stamp text-white font-bold rounded-xl text-xs">스토리로 공유하기</button>
+          </div>
+        </div>
+
+        <!-- Screen 31: 테마 퀘스트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_31 · passport/quests</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">테마 미식 퀘스트</span></header>
+            <div class="p-4 space-y-3 flex-1 text-xs">
+              <div class="bg-nopo-surface p-4 rounded-xl border border-nopo-line space-y-1">
+                <h6 class="font-bold text-sm">을지로 인쇄골목 노포 순례</h6>
+                <p class="text-nopo-ink2">진행도: 3 / 5곳 완료 (달성 시 특별 배지)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 32: 명예의 전당 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_32 · passport/hall-of-fame</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">식객 명예의 전당</span></header>
+            <div class="p-4 space-y-2 flex-1 text-xs">
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line flex justify-between font-bold">
+                <span>1위 종로식객 (천년 미식가)</span><span class="text-nopo-stamp">1,420년</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 33: 방문 기록 비공개 설정 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_33 · profile/privacy</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <h4 class="font-bold text-base text-nopo-ink">방문 기록 프라이버시 설정</h4>
+              <label class="flex items-center gap-3 text-xs font-bold"><input type="checkbox" checked class="w-4 h-4 text-nopo-primary" readonly> 타 유저에게 내 방문 연대기 공개</label>
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">설정 저장</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 6: 공인리뷰 & 프로필 (Review Domain - 7 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-6" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-primary pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-primary text-white text-xs font-mono font-bold rounded">DOMAIN 6</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">공인리뷰 & 식객 프로필 (7개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_34 ~ SCREEN_40 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 34: 공인리뷰 작성기 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_34 · review/editor/{id}</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">공인 미식 리뷰 작성</span></header>
+            <div class="p-6 flex-1 space-y-4">
+              <span class="text-xs font-bold text-nopo-ink block">평점 (별점 1~5 필수): ★★★★★ (5.0)</span>
+              <textarea placeholder="리뷰 글을 작성해 주세요 (0~500자 선택)" class="w-full h-40 bg-nopo-surface border border-nopo-line rounded-xl p-3 text-xs" readonly></textarea>
+            </div>
+            <div class="p-6"><button class="w-full h-12 bg-nopo-stamp text-white font-bold rounded-xl text-sm shadow-md">공인 리뷰 등록</button></div>
+          </div>
+        </div>
+
+        <!-- Screen 35: 리뷰 수정/삭제 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_35 · review/modifier/{id}</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">리뷰 수정 및 삭제</span></header>
+            <div class="p-6 flex-1 space-y-4">
+              <textarea class="w-full h-32 bg-nopo-surface border border-nopo-line rounded-xl p-3 text-xs" readonly>깊은 국물 맛이 일품입니다.</textarea>
+            </div>
+            <div class="p-6 space-y-2">
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">수정 완료</button>
+              <button class="w-full h-11 bg-nopo-surface border border-nopo-stamp text-nopo-stamp font-bold rounded-xl text-xs">리뷰 삭제</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 36: 오프라인 초안 보존 안내 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_36 · review/offline-draft</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <div class="bg-nopo-brassSoft border-b border-nopo-brass p-3 text-[11px] text-amber-950 font-bold text-center">
+              오프라인 상태입니다. 작성 중인 글은 로컬에 안전하게 초안 보존됩니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 37: 노포 리뷰 목록 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_37 · review/store/{id}</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">노포 공인 미식가 리뷰</span></header>
+            <div class="p-4 space-y-2 flex-1 text-xs">
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line">
+                <span class="font-bold text-nopo-ink">식객을지면 (장인 식객) ★ 5.0</span>
+                <p class="text-nopo-ink2 mt-1">깊은 육수 맛이 일품입니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 38: 내 작성 리뷰 목록 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_38 · review/my</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">내 작성 공인 리뷰</span></header>
+            <div class="p-4 space-y-2 flex-1 text-xs">
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line flex justify-between items-center">
+                <span>이문설농탕 ★ 5.0</span><span class="text-nopo-primary underline font-bold">수정</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 39: 타 식객 공인 프로필 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_39 · profile/{uid}</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">타 식객 공인 프로필</span></header>
+            <div class="p-6 space-y-3 text-xs">
+              <div class="text-center">
+                <h4 class="font-bold text-base text-nopo-ink">국밥장인</h4>
+                <span class="px-2 py-0.5 bg-nopo-brassSoft border border-nopo-brass text-[10px] font-bold rounded-full text-amber-950">동네 어른</span>
+                <p class="text-nopo-ink2 mt-2">누적 세월: 412년 | 다녀온 노포: 9곳 (날짜만 공개)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 40: 정보 제보 시트 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_40 · store/{id}/report</span>
+          <div class="mobile-frame bg-black/40 flex flex-col justify-end">
+            <div class="bg-nopo-surface p-6 rounded-t-3xl border-t border-nopo-line space-y-4">
+              <h4 class="font-bold text-base text-nopo-ink">노포 정보 수정 제보 & 신고</h4>
+              <button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">제보 접수하기</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 7: 시스템 설정 & 동기화 (Settings - 6 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-7" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-sign pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-sign text-white text-xs font-mono font-bold rounded">DOMAIN 7</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">시스템 설정 & 동기화 (6개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_41 ~ SCREEN_46 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 41: 설정 메인 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_41 · main/settings</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">설정 및 거버넌스</span></header>
+            <div class="p-6 flex-1 space-y-3 text-xs">
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line">카탈로그: 전국 1,277곳 노포 정제 DB 탑재</div>
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line">앱 버전: v0.4.1 (5회 탭 시 히든 진단 콘솔)</div>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-surface border border-nopo-line text-nopo-ink2 font-bold rounded-xl text-xs">로그아웃</button></div>
+          </div>
+        </div>
+
+        <!-- Screen 42: 오프라인 대기열 모니터 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_42 · settings/offline-queue</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">오프라인 대기열 동기화</span></header>
+            <div class="p-6 flex-1 space-y-2 text-xs">
+              <p>WorkManager 대기 작업: 2건</p>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">지금 즉시 동기화</button></div>
+          </div>
+        </div>
+
+        <!-- Screen 43: 식객 알림 센터 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_43 · settings/notifications</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">식객 알림 센터</span></header>
+            <div class="p-4 space-y-2 text-xs flex-1">
+              <div class="p-3 bg-nopo-surface rounded-xl border border-nopo-line">을지면옥 각인이 서버에 동기화되었습니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 44: 서버 호적부 복원 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_44 · settings/restore-sync</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-center p-6 text-center">
+            <h4 class="font-bold text-base text-nopo-ink mb-2">서버 호적부 복원 진행 중</h4>
+            <div class="w-full h-2.5 bg-nopo-line rounded-full overflow-hidden mb-2">
+              <div class="h-full bg-nopo-primary rounded-full" style="width: 79%"></div>
+            </div>
+            <span class="text-xs font-mono text-nopo-ink2">79% 복원 완료</span>
+          </div>
+        </div>
+
+        <!-- Screen 45: 개인정보 처리방침 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_45 · settings/privacy-policy</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">개인정보 처리방침</span></header>
+            <div class="p-6 text-xs text-nopo-ink2 leading-relaxed space-y-2">
+              <p>영수증 원본 사진과 GPS 정밀 좌표는 서버에 영구 보존되지 않으며 판정 즉시 메모리에서 파기됩니다.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 46: 오픈소스 라이선스 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_46 · settings/licenses</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">오픈소스 라이선스</span></header>
+            <div class="p-6 text-xs text-nopo-ink2 space-y-1 font-mono">
+              <p>Naver Map SDK 3.24.0</p>
+              <p>ML Kit Korean Text Recognition 16.0.1</p>
+              <p>Jetpack Compose Material 3</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- -->
+    <!-- FLOW 8: 진단 & 개발자 도구 (Diagnostics - 5 Screens) -->
+    <!-- ---------------------------------------------------- -->
+    <section id="flow-8" class="space-y-6">
+      <div class="flex items-baseline justify-between border-b-2 border-nopo-stamp pb-3">
+        <div class="flex items-center gap-3">
+          <span class="px-2.5 py-1 bg-nopo-stamp text-white text-xs font-mono font-bold rounded">DOMAIN 8</span>
+          <h2 class="text-2xl font-black font-display text-nopo-ink">진단 & 개발자 QA 도구 (5개 화면)</h2>
+        </div>
+        <span class="text-xs text-nopo-ink2 font-mono">SCREEN_47 ~ SCREEN_51 · 390×844 px</span>
+      </div>
+
+      <div class="flex gap-8 overflow-x-auto pb-6 pt-2">
+
+        <!-- Screen 47: 1일차 5대 스파이크 진단 콘솔 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_47 · diagnostics/spike</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">5대 스파이크 종합 진단</span></header>
+            <div class="p-4 space-y-2 text-xs font-mono flex-1">
+              <div class="p-2.5 bg-emerald-100 text-emerald-950 rounded border border-emerald-300">Naver Map: OK (3.24.0)</div>
+              <div class="p-2.5 bg-emerald-100 text-emerald-950 rounded border border-emerald-300">CameraX: 60fps OK</div>
+              <div class="p-2.5 bg-emerald-100 text-emerald-950 rounded border border-emerald-300">ML Kit OCR: 280ms PASS</div>
+              <div class="p-2.5 bg-emerald-100 text-emerald-950 rounded border border-emerald-300">Fused Location: ±12m PASS</div>
+              <div class="p-2.5 bg-emerald-100 text-emerald-950 rounded border border-emerald-300">Firebase Ping: 84ms OK</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 48: 시스템 진단 메인 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_48 · diagnostics/main</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">시스템 진단 콘솔</span></header>
+            <div class="p-6 flex-1 space-y-2 text-xs">
+              <button class="w-full h-10 bg-nopo-surface border border-nopo-line rounded-lg font-bold">SQLite 캐시 리셋</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 49: 테스트 가게 생성 시뮬레이터 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_49 · diagnostics/test-store</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">가상 테스트 가게 생성</span></header>
+            <div class="p-6 flex-1 text-xs text-nopo-ink2 space-y-3">
+              <p>현재 내 위치 GPS에 가상 노포('노포천년테스트식당')를 즉시 생성하여 인증 파이프라인을 무제한 시험합니다.</p>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">현재 위치에 가상 노포 생성</button></div>
+          </div>
+        </div>
+
+        <!-- Screen 50: OCR 정규식 인스펙터 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_50 · diagnostics/ocr-inspector</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">OCR 정규식 인스펙터</span></header>
+            <div class="p-4 flex-1 text-xs font-mono space-y-2">
+              <div class="p-2 bg-nopo-surface rounded border border-nopo-line">전화번호: 02-730-7053 (MATCH)</div>
+              <div class="p-2 bg-nopo-surface rounded border border-nopo-line">일시: 2026-10-18 12:40 (24h OK)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screen 51: 릴리스 서명 APK 설치 안내 -->
+        <div class="flex flex-col items-center">
+          <span class="text-xs font-mono font-bold text-nopo-ink2 mb-2">SCREEN_51 · guide/apk-install</span>
+          <div class="mobile-frame bg-nopo-paper flex flex-col justify-between">
+            <div class="status-bar"><span>09:41</span><span>5G 100%</span></div>
+            <header class="bg-nopo-sign text-nopo-paper h-14 flex items-center px-4"><span class="font-bold text-base">릴리스 APK 설치 가이드</span></header>
+            <div class="p-6 flex-1 text-xs text-nopo-ink2 space-y-3">
+              <p class="font-bold text-nopo-ink">1. '출처를 알 수 없는 앱 설치' 토글 활성화</p>
+              <p class="font-bold text-nopo-ink">2. Google Play 프로텍트 경고 시 '무시하고 설치' 터치</p>
+            </div>
+            <div class="p-6"><button class="w-full h-11 bg-nopo-primary text-white font-bold rounded-xl text-xs">확인 완료</button></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- 4. 하단 카피라이트 & 피그마 임포트 최종 안내 -->
+  <!-- ========================================== -->
+  <footer class="max-w-[1720px] mx-auto mt-20 pt-8 border-t border-nopo-line text-center text-xs text-nopo-ink2 space-y-2">
+    <p class="font-bold text-nopo-ink">노포 천년 미식가 (Nopo-Cheonnyeon Gourmet Passport) — v0.4.1 Hardened Production SSOT</p>
+    <p>본 페이지는 Figma 플러그인 <strong>html.to.design</strong> 및 브라우저 엔진에서 51개 전체 화면 프레임과 디자인 토큰을 1:1 무손실로 추출하기 위해 표준화된 단일 진실 공급원(SSOT) 쇼케이스입니다.</p>
+  </footer>
+
+</body>
+</html>

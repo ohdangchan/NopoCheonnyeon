@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>노포천년 인터랙티브 트랜지션 시연 프로토타입</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&amp;family=Epilogue:ital,wght@0,300..900;1,300..900&amp;family=Noto+Sans+KR:wght@300;400;500;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#1f6b63',
+        'primary-container': '#a6f2e7',
+        'on-primary': '#ffffff',
+        'on-primary-container': '#00201d',
+        'surface': '#effcf9',
+        'surface-container': '#e3f1ee',
+        'surface-container-high': '#dcebe7',
+        'surface-container-low': '#e9f7f3',
+        'surface-container-lowest': '#ffffff',
+        'stamp': '#c23b2a',
+        'stamp-soft': '#fce8e6',
+        'brass': '#d9a22c',
+        'ink': '#14201e',
+        'ink-muted': '#52625e'
+      },
+      fontFamily: {
+        'display': ['"Black Han Sans"', 'sans-serif'],
+        'sans': ['"Noto Sans KR"', 'Epilogue', 'sans-serif'],
+        'mono': ['"JetBrains Mono"', 'monospace']
+      }
+    }
+  }
+}
+</script>
+<style>
+/* 모션 물리 커브 정의 (PRD & Transition Guide v0.4) */
+:root {
+  --fast-out-slow-in: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --linear-out-slow: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --fast-out-linear: cubic-bezier(0.4, 0.0, 1, 1);
+  --spring-stamp: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.device-frame {
+  width: 100%;
+  max-width: 412px;
+  height: 860px;
+  max-height: 94vh;
+  box-shadow: 0 25px 60px -15px rgba(20, 32, 30, 0.35), 0 0 0 10px #1e2927;
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  background-color: #effcf9;
+}
+
+/* 화면 스테이지 */
+.screen-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: transform 300ms var(--fast-out-slow-in), opacity 260ms ease;
+  will-change: transform, opacity;
+  background-color: #effcf9;
+}
+
+/* 전환 상태 */
+.screen-stage.active {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+.screen-stage.slide-left {
+  transform: translateX(-100%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 5;
+}
+.screen-stage.slide-right {
+  transform: translateX(100%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* 바텀시트 트랜지션 */
+.bottom-sheet-scrim {
+  transition: opacity 260ms var(--linear-out-slow);
+}
+.bottom-sheet-content {
+  transition: transform 280ms var(--linear-out-slow);
+  transform: translateY(100%);
+}
+.bottom-sheet-active .bottom-sheet-scrim {
+  opacity: 1;
+  pointer-events: auto;
+}
+.bottom-sheet-active .bottom-sheet-content {
+  transform: translateY(0);
+}
+
+/* 카메라 셔터 화이트아웃 플래시 */
+@keyframes shutterFlash {
+  0% { opacity: 0; }
+  35% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+.animate-flash {
+  animation: shutterFlash 180ms ease-out forwards;
+}
+
+/* 도장 각인 스프링 모션 (380ms) */
+@keyframes stampImpact {
+  0% {
+    transform: scale(2.2) rotate(-22deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92) rotate(-8deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.05) rotate(-11deg);
+  }
+  100% {
+    transform: scale(1.0) rotate(-10deg);
+    opacity: 1;
+  }
+}
+.animate-stamp-drop {
+  animation: stampImpact 420ms var(--spring-stamp) forwards;
+}
+
+/* 햅틱 임팩트 진동 효과 */
+@keyframes deviceHaptic {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 4px); }
+  50% { transform: translate(3px, -3px); }
+  75% { transform: translate(-2px, 2px); }
+  100% { transform: translate(0, 0); }
+}
+.haptic-shake {
+  animation: deviceHaptic 140ms ease-in-out;
+}
+
+/* 반려 쉐이크 애니메이션 */
+@keyframes rejectShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-12px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+.animate-reject-shake {
+  animation: rejectShake 340ms ease-in-out forwards;
+}
+
+/* 뷰파인더 펄스 */
+@keyframes pulseCorner {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.03); }
+}
+.pulse-guide {
+  animation: pulseCorner 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen-stage, .bottom-sheet-content, .animate-stamp-drop, .animate-reject-shake {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+</style>
+</head>
+<body class="bg-slate-900 text-slate-800 flex flex-col items-center justify-center min-h-screen p-2 sm:p-6 font-sans select-none antialiased">
+<!-- 컨트롤 바 & 인터랙션 모드 안내 -->
+<header class="w-full max-w-xl mb-3 flex items-center justify-between px-3 py-2 bg-slate-800/80 backdrop-blur rounded-2xl border border-slate-700/60 text-xs text-slate-300"><div class="flex flex-col w-full gap-2"><div class="flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span><span class="font-bold text-white tracking-wide">노포천년 네비게이션 트랜지션 시연기</span><span class="bg-primary/30 text-teal-300 px-2 py-0.5 rounded-md text-[10px] font-mono">Compose NavHost</span></div><div class="flex items-center gap-1.5"><button class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg text-[11px] font-medium transition text-slate-200" id="speedBtn" onclick="toggleMotionSpeed()">속도: 1.0x (300ms)</button><button class="px-2.5 py-1 bg-primary text-white hover:bg-teal-700 rounded-lg text-[11px] font-medium transition flex items-center gap-1" onclick="resetFlow()"><span class="material-symbols-outlined text-[14px]">restart_alt</span> 처음부터</button></div></div><div class="flex items-center gap-1 overflow-x-auto pb-0.5 text-[11px]"><span class="text-slate-400 text-[10px] shrink-0 mr-1">시나리오 점프:</span><button class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded whitespace-nowrap" onclick="navigateTo('screen-map', 'slide-back')">지도 탐색</button><button class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded whitespace-nowrap" onclick="navigateTo('screen-detail', 'slide-horizontal')">가게 상세</button><button class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded whitespace-nowrap" onclick="navigateTo('screen-scan', 'slide-horizontal')">영수증 스캔</button><button class="px-2 py-0.5 bg-teal-700 text-teal-100 hover:bg-teal-600 rounded font-medium whitespace-nowrap border border-teal-400/40" onclick="navigateTo('screen-photo-gps', 'slide-horizontal')">30m 사진/GPS 인증</button><button class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded whitespace-nowrap" onclick="navigateTo('screen-ceremony', 'slide-horizontal')">도장 각인</button><button class="px-2 py-0.5 bg-amber-400 text-amber-950 font-bold hover:bg-amber-300 rounded whitespace-nowrap" onclick="showPromotionModal()">칭호 승급 축하</button><button class="px-2 py-0.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded whitespace-nowrap" onclick="navigateTo('screen-passport', 'slide-horizontal')">패스포트</button></div></div></header>
+<!-- 실기기 목업 컨테이너 -->
+<div class="device-frame flex flex-col" id="deviceContainer">
+<!-- 안드로이드 스테이터스 바 -->
+<div class="h-8 w-full bg-primary text-white/90 px-6 flex items-center justify-between text-[11px] font-mono z-40 shrink-0">
+<span>13:42</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[13px]">wifi</span>
+<span class="material-symbols-outlined text-[13px]">signal_cellular_4_bar</span>
+<span class="material-symbols-outlined text-[13px]">battery_charging_full</span>
+</div>
+</div>
+<!-- 플로우 내비게이션 상태 가이드 캡슐 -->
+<div class="bg-primary/95 text-on-primary border-b border-teal-600/30 px-4 py-1.5 flex items-center justify-between text-xs z-30 shrink-0 shadow-sm">
+<div class="flex items-center gap-1.5">
+<span class="bg-amber-300 text-amber-950 px-2 py-0.5 rounded font-mono font-bold text-[10px]" id="currentRouteBadge">ROUTE 1: MAP</span>
+<span class="text-teal-100 text-[11px] truncate" id="currentTransitionText">지도 탐색 (SCREEN_47)</span>
+</div>
+<span class="text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/70" id="hapticFeedbackBadge">햅틱 준비</span>
+</div>
+<!-- 메인 스테이지 뷰포트 (화면들이 오버랩되어 전환됨) -->
+<div class="relative flex-1 w-full overflow-hidden bg-surface">
+<!-- ==============================================
+           SCREEN 1: 지도 탐색 (SCREEN_47)
+           ============================================== -->
+<section class="screen-stage active flex flex-col justify-between" id="screen-map">
+<!-- 상단 앱바 -->
+<div class="p-4 bg-primary text-white flex items-center justify-between shadow-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-300">verified</span>
+<h1 class="font-display text-xl tracking-wider">노포천년 미식가</h1>
+</div>
+<button class="flex items-center gap-1 bg-white/15 px-3 py-1.5 rounded-full text-xs font-medium hover:bg-white/25 active:scale-95 transition" onclick="openFilterSheet()">
+<span class="material-symbols-outlined text-sm">tune</span>
+<span>필터</span>
+</button>
+</div>
+<!-- 지도 시각화 캔버스 -->
+<div class="relative flex-1 bg-teal-50/70 p-4 flex flex-col items-center justify-center overflow-hidden">
+<!-- 가상 지도 그리드 패턴 -->
+<div class="absolute inset-0 opacity-20 bg-[radial-gradient(#1f6b63_1.5px,transparent_1.5px)] [background-size:20px_20px]"></div>
+<!-- 지도 위 노포 핀들 -->
+<div class="relative w-full h-full">
+<!-- 핀 1: 청진옥 -->
+<div class="absolute top-16 left-12 flex flex-col items-center">
+<span class="px-2 py-0.5 bg-white text-[10px] font-bold rounded shadow-sm text-slate-700">청진옥 (87년)</span>
+<div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold shadow-md mt-1 ring-2 ring-white">87</div>
+</div>
+<!-- 핀 2: 용금옥 -->
+<div class="absolute top-36 right-10 flex flex-col items-center">
+<span class="px-2 py-0.5 bg-white text-[10px] font-bold rounded shadow-sm text-slate-700">용금옥 (92년)</span>
+<div class="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-[10px] font-bold shadow-md mt-1 ring-2 ring-white">92</div>
+</div>
+<!-- 타깃 핀: 이문설농탕 (선택됨) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-8 flex flex-col items-center cursor-pointer group" onclick="navigateTo('screen-detail', 'slide-horizontal')">
+<span class="px-2.5 py-1 bg-stamp text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 ring-2 ring-white animate-bounce">
+<span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+<span>이문설농탕 (120년)</span>
+</span>
+<div class="w-9 h-9 rounded-full bg-stamp text-white flex items-center justify-center font-display text-sm shadow-xl mt-1 ring-4 ring-stamp/30">
+                120
+              </div>
+<span class="text-[10px] font-bold text-slate-600 mt-1 bg-white/90 px-1.5 py-0.5 rounded shadow">탭하여 노포 상세 진입</span>
+</div>
+</div>
+<!-- 하단 슬라이드업 예고 미니 시트 -->
+<div class="w-full bg-surface-container-lowest p-4 rounded-3xl shadow-xl border border-teal-100 flex items-center justify-between z-20">
+<div>
+<div class="flex items-center gap-1.5 mb-1">
+<span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">백년가게 1호</span>
+<span class="text-xs text-ink-muted">종로구 견지동 · 340m</span>
+</div>
+<h2 class="font-bold text-slate-900 text-base">이문설농탕 <span class="text-stamp font-display text-lg">+120년</span></h2>
+</div>
+<button class="bg-primary text-white px-4 py-2.5 rounded-2xl text-xs font-bold shadow-md hover:bg-teal-700 active:scale-95 transition flex items-center gap-1" onclick="navigateTo('screen-detail', 'slide-horizontal')">
+<span>상세 보기</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- 하단 공통 네비게이션 바 -->
+<nav class="h-16 bg-surface-container-lowest border-t border-slate-200/80 px-6 flex items-center justify-around text-xs shrink-0 z-20">
+<div class="flex flex-col items-center text-primary font-bold">
+<span class="material-symbols-outlined text-xl">map</span>
+<span class="text-[10px]">지도 탐색</span>
+</div>
+<div class="flex flex-col items-center text-slate-400 hover:text-primary cursor-pointer transition" onclick="navigateTo('screen-passport', 'crossfade')">
+<span class="material-symbols-outlined text-xl">menu_book</span>
+<span class="text-[10px]">내 패스포트</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-[10px]">설정</span>
+</div>
+</nav>
+</section>
+<!-- ==============================================
+           SCREEN 2: 노포 상세 (SCREEN_46)
+           ============================================== -->
+<section class="screen-stage slide-right flex flex-col justify-between" id="screen-detail">
+<!-- 헤더 -->
+<div class="p-4 bg-primary text-white flex items-center justify-between shrink-0 shadow">
+<button class="p-1 hover:bg-white/10 rounded-full active:scale-90 transition" onclick="navigateTo('screen-map', 'slide-back')">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-bold text-sm tracking-wide">노포 상세 명록</span>
+<button class="p-1 hover:bg-white/10 rounded-full">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+<!-- 본문 스크롤 영역 -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- 히어로 카드: 업력 120년 강조 -->
+<div class="bg-surface-container-lowest p-5 rounded-3xl border border-teal-100 shadow-sm relative overflow-hidden">
+<div class="flex items-baseline justify-between mb-2">
+<span class="text-xs font-bold text-primary bg-teal-50 px-2.5 py-1 rounded-full">1904년 개업 · 120년째 계승</span>
+<span class="text-[11px] font-mono text-slate-400">#NP-1904-01</span>
+</div>
+<h1 class="text-2xl font-bold text-slate-900 mb-1">이문설농탕 <span class="text-sm font-normal text-slate-500">(利門雪濃湯)</span></h1>
+<p class="text-xs text-slate-600 mb-4">서울 종로구 우정국로 38-13 (견지동 피맛골 안길)</p>
+<div class="bg-amber-50 border border-amber-200/80 rounded-2xl p-4 flex items-center justify-between">
+<div>
+<span class="text-[11px] text-amber-900 block font-medium">첫 인증 시 적립 예정 세월</span>
+<span class="text-3xl font-display text-stamp">+120<span class="text-base font-sans font-bold text-slate-800 ml-1">년 자산</span></span>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded font-bold">도장 등급</span>
+<span class="block text-xs font-bold text-amber-950 mt-1">황금 도장 (100년+)</span>
+</div>
+</div>
+</div>
+<!-- 인증 안내 카드 -->
+<div class="bg-teal-900/5 p-4 rounded-2xl border border-teal-900/10">
+<div class="flex items-center gap-2 mb-2 text-primary font-bold text-sm">
+<span class="material-symbols-outlined text-base">receipt_long</span>
+<span>방문 인증 규정</span>
+</div>
+<ul class="text-xs text-slate-600 space-y-1.5 list-disc pl-4">
+<li>결제 영수증 스캔 시 <strong>위치 정보 미사용</strong> (안심 인증)</li>
+<li>상호명 유사도 또는 전화번호 일치 시 즉시 날인</li>
+<li>영수증이 없거나 실패 시 <strong>가게 30m 사진 인증</strong>으로 전환</li>
+</ul>
+</div>
+<!-- 길찾기 & 연동 옵션 버튼 -->
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 bg-surface-container text-slate-700 rounded-xl text-xs font-medium hover:bg-slate-200 transition flex items-center justify-center gap-1" onclick="showCustomAlert('길찾기 안내 시트가 슬라이드업(280ms)됩니다.')">
+<span class="material-symbols-outlined text-[16px]">near_me</span> 길찾기
+            </button>
+<button class="flex-1 py-2.5 bg-surface-container text-slate-700 rounded-xl text-xs font-medium hover:bg-slate-200 transition flex items-center justify-center gap-1" onclick="showCustomAlert('타 식객들의 28개 공인 리뷰 화면으로 전환됩니다.')">
+<span class="material-symbols-outlined text-[16px]">rate_review</span> 리뷰 28개
+            </button>
+</div>
+</div>
+<!-- 하단 메인 인증 시작 CTA -->
+<div class="p-4 bg-surface-container-lowest border-t border-slate-200 shrink-0">
+<button class="w-full py-4 bg-stamp text-white rounded-2xl font-bold text-sm shadow-lg shadow-stamp/30 hover:bg-red-700 active:scale-95 transition flex items-center justify-center gap-2" onclick="navigateTo('screen-scan', 'slide-horizontal')">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span>영수증 촬영으로 방문 인증하기 (+120년)</span>
+</button>
+</div>
+</section>
+<!-- ==============================================
+           SCREEN 3: 영수증 스캔 카메라 뷰파인더 (SCREEN_44)
+           ============================================== -->
+<section class="screen-stage slide-right bg-slate-950 text-white flex flex-col justify-between" id="screen-scan">
+<!-- 셔터 플래시 레이어 -->
+<div class="absolute inset-0 bg-white opacity-0 pointer-events-none z-50" id="cameraFlash"></div>
+<!-- 뷰파인더 상단 툴바 -->
+<div class="p-4 flex items-center justify-between z-20 bg-gradient-to-b from-black/80 to-transparent">
+<button class="p-2 hover:bg-white/10 rounded-full active:scale-90 transition" onclick="navigateTo('screen-detail', 'slide-back')">
+<span class="material-symbols-outlined">close</span>
+</button>
+<div class="text-center">
+<span class="text-xs font-bold text-teal-300 block">영수증 자동 스캔 중</span>
+<span class="text-[10px] text-white/60">가이드 프레임 안에 영수증을 놓아주세요</span>
+</div>
+<button class="p-2 hover:bg-white/10 rounded-full">
+<span class="material-symbols-outlined text-amber-300">flash_auto</span>
+</button>
+</div>
+<!-- 카메라 조리개 뷰파인더 가이드 프레임 -->
+<div class="flex-1 flex flex-col items-center justify-center px-8 z-10">
+<div class="relative w-full max-w-[280px] h-[340px] border-2 border-dashed border-teal-400/40 rounded-3xl p-4 flex flex-col items-center justify-between pulse-guide bg-teal-500/5">
+<!-- 4개 코너 브래킷 -->
+<div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-teal-400 rounded-tl-lg"></div>
+<div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-teal-400 rounded-tr-lg"></div>
+<div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-teal-400 rounded-bl-lg"></div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-teal-400 rounded-br-lg"></div>
+<span class="text-[10px] bg-black/60 px-3 py-1 rounded-full text-teal-200 font-mono">ML Kit OCR Live Engine</span>
+<!-- 모의 영수증 실루엣 -->
+<div class="w-full bg-white/10 rounded-xl p-3 text-[10px] font-mono text-white/70 space-y-1">
+<div class="h-2 bg-white/20 rounded w-2/3 mx-auto"></div>
+<div class="h-2 bg-white/20 rounded w-1/2 mx-auto"></div>
+<div class="my-2 border-t border-white/20"></div>
+<div class="flex justify-between"><span>설농탕 (특)</span><span>13,000</span></div>
+<div class="flex justify-between font-bold text-teal-300"><span>합계 금액</span><span>13,000</span></div>
+</div>
+<span class="text-[11px] text-white/80">상호명: [이문설농탕] 감지됨</span>
+</div>
+<!-- 시연용 시나리오 분기 선택기 -->
+<div class="mt-6 flex gap-2">
+<button class="px-4 py-2 bg-primary hover:bg-teal-600 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg active:scale-95 transition" onclick="triggerVerificationSuccess()">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+<span>촬영 &amp; 성공 각인 (380ms)</span>
+</button>
+<button class="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs text-rose-300 border border-rose-500/30 flex items-center gap-1 active:scale-95 transition" onclick="triggerVerificationReject()">
+<span class="material-symbols-outlined text-[16px]">sync_problem</span>
+<span>중복 반려</span>
+</button>
+</div>
+</div>
+<!-- 하단 대체 인증 링크 -->
+<div class="p-4 text-center z-20 bg-gradient-to-t from-black/90 to-transparent"><button class="text-xs text-teal-300 underline font-medium hover:text-white flex items-center justify-center gap-1 mx-auto" onclick="navigateTo('screen-photo-gps', 'slide-horizontal')"><span class="material-symbols-outlined text-[16px]">distance</span><span>영수증이 없으신가요? 30m 거리 &amp; 가게 사진으로 인증하기</span></button></div>
+</section><section class="screen-stage slide-right bg-slate-950 text-white flex flex-col justify-between" id="screen-photo-gps"><div class="p-4 flex items-center justify-between z-20 bg-gradient-to-b from-black/80 to-transparent"><button class="p-2 hover:bg-white/10 rounded-full active:scale-90 transition" onclick="navigateTo('screen-scan', 'slide-back')"><span class="material-symbols-outlined">arrow_back</span></button><div class="text-center"><span class="text-xs font-bold text-amber-300 block">30m 위치 기반 보조 인증</span><span class="text-[10px] text-white/60">GPS 실시간 거리 측정 &amp; 간판 사진 검증</span></div><div class="flex items-center gap-1 bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded text-[10px] font-mono"><span class="material-symbols-outlined text-[12px]">timer</span><span id="gpsTimerCountdown">15초</span></div></div><div class="flex-1 flex flex-col items-center justify-center px-6 z-10 space-y-4"><div class="relative w-44 h-44 rounded-full border border-teal-500/40 flex items-center justify-center bg-teal-950/30"><div class="absolute inset-2 rounded-full border border-dashed border-teal-400/30"></div><div class="absolute inset-8 rounded-full border border-teal-400/20"></div><div class="absolute inset-0 rounded-full border-t-2 border-teal-300/80 animate-radar-sweep pointer-events-none"></div><div class="w-4 h-4 rounded-full bg-emerald-400 shadow-lg ring-4 ring-emerald-400/30 flex items-center justify-center text-[8px] font-bold text-slate-900">나</div><div class="absolute top-6 right-8 flex flex-col items-center"><div class="w-5 h-5 rounded-full bg-stamp flex items-center justify-center text-[9px] font-bold shadow">120</div><span class="text-[9px] text-amber-300 font-bold mt-0.5">이문설농탕</span></div><div class="absolute bottom-2 text-center"><span class="text-[10px] text-teal-200 font-mono bg-black/60 px-2 py-0.5 rounded-full">직선 거리: <strong class="text-emerald-400">18m</strong> (±12m)</span></div></div><div class="w-full max-w-xs bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3.5 space-y-2 text-xs"><div class="flex items-center justify-between"><span class="font-bold text-slate-200 flex items-center gap-1"><span class="material-symbols-outlined text-sm text-teal-300">storefront</span> 간판·출입문 OCR 현황</span><span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded" id="failCounterBadge">실패: 0/3</span></div><p class="text-[11px] text-slate-400 leading-relaxed">노포 건물 번호판 또는 '利門설농탕' 현판을 뷰파인더 중앙에 맞춰주세요.</p><div class="hidden bg-amber-500/20 border border-amber-400/40 rounded-xl p-2.5 text-[11px] text-amber-200 flex items-center justify-between" id="reliefBanner"><div><span class="font-bold block text-amber-300">🚨 3회 인식 실패 구제 분기 활성화</span><span class="text-[10px] text-slate-300">GPS 18m 위치 확인으로 '황동 온기 인증 도장' 특별 발급</span></div><button class="px-2.5 py-1.5 bg-amber-400 text-amber-950 font-bold rounded-lg text-[10px] shrink-0" onclick="triggerReliefSuccess()">구제 발급</button></div></div><div class="flex gap-2 w-full max-w-xs"><button class="flex-1 py-3 bg-primary hover:bg-teal-600 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-lg active:scale-95 transition" onclick="triggerPhotoSuccess()"><span class="material-symbols-outlined text-[16px]">add_a_photo</span><span>간판 촬영 성공</span></button><button class="px-3 py-3 bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/30 rounded-xl text-xs flex items-center justify-center gap-1 active:scale-95 transition" onclick="triggerOcrFail()"><span class="material-symbols-outlined text-[16px]">warning</span><span>인식 실패 모의</span></button></div></div><div class="p-4 text-center z-20 bg-gradient-to-t from-black/90 to-transparent"><span class="text-[11px] text-slate-400">지오펜싱 반경 30m 이내 확인 시 사진 3회 실패해도 구제 인증이 보장됩니다.</span></div></section>
+<!-- ==============================================
+           SCREEN 4: 도장 각인 및 세월 적립 세레모니 (SCREEN_45)
+           ============================================== -->
+<section class="screen-stage slide-right flex flex-col items-center justify-between p-6 bg-gradient-to-b from-teal-900 to-teal-950 text-white" id="screen-ceremony">
+<!-- 상단 세레모니 축하 헤더 -->
+<div class="text-center mt-6">
+<span class="text-[11px] font-mono text-amber-300 tracking-widest block mb-1">NATIONAL HERITAGE ARCHIVE</span>
+<h1 class="text-2xl font-bold">인주 각인 완료!</h1>
+<p class="text-xs text-teal-200 mt-1">대한민국 1호 백년가게의 세월을 이어받았습니다.</p>
+</div>
+<!-- 중앙 인주 도장 낙하 스테이지 -->
+<div class="relative flex flex-col items-center justify-center my-auto">
+<!-- 도장 림 라이트 발광 후광 -->
+<div class="absolute w-56 h-56 rounded-full bg-stamp/20 blur-2xl"></div>
+<!-- 실제 380ms 낙하 스프링 애니메이션 대상 도장 인장 -->
+<div class="relative w-44 h-44 rounded-full border-4 border-stamp text-stamp p-2 flex flex-col items-center justify-center bg-white/95 shadow-2xl" id="stampSealElement">
+<div class="w-full h-full rounded-full border border-dashed border-stamp flex flex-col items-center justify-center p-2 text-center">
+<span class="text-[10px] font-bold tracking-widest">利門雪濃湯</span>
+<span class="font-display text-4xl my-0.5 tracking-tight text-stamp">120<span class="text-xl">年</span></span>
+<span class="text-[9px] font-mono font-bold">2026.10.18 · 眞印</span>
+</div>
+</div>
+<!-- 세월 적립 카운트업 롤링 표시 -->
+<div class="mt-6 text-center">
+<span class="text-xs text-teal-300 block mb-1">식객 누적 세월 자산</span>
+<div class="flex items-baseline justify-center gap-2">
+<span class="text-sm text-teal-200 line-through">442년</span>
+<span class="material-symbols-outlined text-amber-300 text-sm">arrow_forward</span>
+<span class="text-3xl font-display text-amber-300 font-bold" id="yearsCounter">562년</span>
+<span class="text-xs text-teal-200 font-bold">(+120년 적립)</span>
+</div>
+</div>
+</div>
+<!-- 하단 액션 버튼 -->
+<div class="w-full space-y-2 shrink-0"><button class="w-full py-3.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-amber-950 rounded-2xl font-bold text-xs shadow-xl active:scale-95 transition flex items-center justify-center gap-1.5 border border-amber-200" onclick="showPromotionModal()"><span class="material-symbols-outlined text-[16px]">military_tech</span><span>🎉 600년 돌파 칭호 승급 축하 연출 보기 (1.25x 줌)</span></button>
+<button class="w-full py-4 bg-amber-400 hover:bg-amber-300 text-slate-900 rounded-2xl font-bold text-sm shadow-xl active:scale-95 transition flex items-center justify-center gap-1.5" onclick="navigateTo('screen-passport', 'slide-horizontal')">
+<span class="material-symbols-outlined">menu_book</span>
+<span>내 패스포트에서 각인 확인하기</span>
+</button>
+<button class="w-full py-2.5 text-xs text-teal-200 hover:text-white transition" onclick="navigateTo('screen-map', 'slide-back')">
+            지도로 돌아가서 다른 노포 찾기
+          </button>
+</div>
+</section>
+<!-- ==============================================
+           SCREEN 5: 내 패스포트 (SCREEN_43)
+           ============================================== -->
+<section class="screen-stage slide-right flex flex-col justify-between" id="screen-passport">
+<!-- 헤더 -->
+<div class="p-4 bg-primary text-white flex items-center justify-between shadow shrink-0">
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-white/10 rounded-full" onclick="navigateTo('screen-map', 'slide-back')">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-bold text-base">나의 미식 패스포트</h1>
+</div>
+<span class="text-xs bg-amber-300 text-amber-950 font-bold px-2 py-0.5 rounded-full">동네 어른</span>
+</div>
+<!-- 본문 스크롤 영역 -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4">
+<!-- 세월 게이지 카드 -->
+<div class="bg-surface-container-lowest p-5 rounded-3xl border border-teal-100 shadow-sm">
+<div class="flex justify-between items-baseline mb-2">
+<span class="text-xs text-ink-muted">누적 세월</span>
+<span class="text-xs font-bold text-primary">다음 칭호까지 38년</span>
+</div>
+<div class="flex items-baseline gap-1.5 mb-3">
+<span class="text-4xl font-display text-slate-900">562</span>
+<span class="text-xs text-ink-muted font-bold">/ 1,000년 (천년 미식가)</span>
+</div>
+<div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+<div class="h-full bg-gradient-to-r from-teal-500 via-primary to-amber-400 rounded-full w-[56.2%] transition-all duration-700"></div>
+</div>
+</div>
+<!-- 도장 각인 격자첩 (3열 그리드) -->
+<div>
+<div class="flex items-center justify-between mb-2 px-1">
+<h2 class="text-xs font-bold text-slate-700">날인된 노포 도장 (15곳)</h2>
+<span class="text-[11px] text-primary font-medium">전체보기</span>
+</div>
+<div class="grid grid-cols-3 gap-2.5">
+<!-- 방금 찍힌 이문설농탕 황금 도장 -->
+<div class="bg-amber-50/80 border-2 border-amber-300 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition" onclick="showCustomAlert('100년 노포 황금 도장 상세 보증서(SCREEN_6)로 모핑 확장(320ms)됩니다.')">
+<div class="w-12 h-12 rounded-full border-2 border-stamp text-stamp flex items-center justify-center font-display text-base -rotate-6 bg-white shadow-sm">
+                  120
+                </div>
+<span class="text-[11px] font-bold text-slate-900 mt-1 truncate w-full">이문설농탕</span>
+<span class="text-[9px] text-amber-700 font-bold">황금 인증</span>
+</div>
+<!-- 기존 도장: 청진옥 -->
+<div class="bg-surface-container-lowest border border-slate-200 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center">
+<div class="w-12 h-12 rounded-full border-2 border-stamp/70 text-stamp flex items-center justify-center font-display text-base -rotate-12 bg-white">
+                  87
+                </div>
+<span class="text-[11px] font-bold text-slate-800 mt-1 truncate w-full">청진옥</span>
+<span class="text-[9px] text-slate-400">87년 해장국</span>
+</div>
+<!-- 빈 칸: 다음에 갈 노포 자리 -->
+<div class="border-2 border-dashed border-slate-300 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center opacity-60">
+<div class="w-12 h-12 rounded-full border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">
+                  ?
+                </div>
+<span class="text-[10px] text-slate-400 mt-1">다음 노포</span>
+</div>
+</div>
+</div>
+<!-- 바이럴 공유 카드 CTA -->
+<button class="w-full py-3 bg-surface-container hover:bg-teal-50 border border-teal-200 text-primary font-bold text-xs rounded-2xl flex items-center justify-center gap-1.5 transition" onclick="showCustomAlert('9:16 인스타그램 스토리 공유 카드 생성기(SCREEN_15)가 열립니다.')">
+<span class="material-symbols-outlined text-[16px]">share</span>
+<span>내 패스포트 공유 카드 만들기</span>
+</button>
+</div>
+<!-- 하단 공통 네비게이션 바 -->
+<nav class="h-16 bg-surface-container-lowest border-t border-slate-200 px-6 flex items-center justify-around text-xs shrink-0 z-20">
+<div class="flex flex-col items-center text-slate-400 hover:text-primary cursor-pointer transition" onclick="navigateTo('screen-map', 'crossfade')">
+<span class="material-symbols-outlined text-xl">map</span>
+<span class="text-[10px]">지도 탐색</span>
+</div>
+<div class="flex flex-col items-center text-primary font-bold">
+<span class="material-symbols-outlined text-xl">menu_book</span>
+<span class="text-[10px]">내 패스포트</span>
+</div>
+<div class="flex flex-col items-center text-slate-400">
+<span class="material-symbols-outlined text-xl">settings</span>
+<span class="text-[10px]">설정</span>
+</div>
+</nav>
+</section>
+<!-- ==============================================
+           MODAL 1: 지도 필터 바텀시트 (SCREEN_5)
+           ============================================== -->
+<div class="absolute inset-0 z-50 pointer-events-none flex flex-col justify-end" id="filterBottomSheet">
+<!-- 배경 딤 스크림 (Alpha 0 ➔ 0.6) -->
+<div class="bottom-sheet-scrim absolute inset-0 bg-black/60 opacity-0 pointer-events-none" onclick="closeFilterSheet()"></div>
+<!-- 바텀시트 본체 (Slide-Up 280ms) -->
+<div class="bottom-sheet-content relative bg-surface-container-lowest rounded-t-[32px] p-5 shadow-2xl border-t border-teal-100 z-10 max-h-[75%] overflow-y-auto">
+<!-- 핸들러 바 -->
+<div class="w-10 h-1 bg-slate-300 rounded-full mx-auto mb-4"></div>
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-slate-900 text-base">노포 탐색 조건 및 정렬</h3>
+<button class="p-1 text-slate-400 hover:text-slate-600" onclick="closeFilterSheet()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-4 text-xs">
+<div>
+<span class="font-bold text-slate-700 block mb-2">공식 지정 프로그램</span>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-primary text-white rounded-xl font-bold">중기부 백년가게 (1,139곳)</button>
+<button class="flex-1 py-2 bg-surface-container text-slate-700 rounded-xl font-medium">서울 오래가게 (151곳)</button>
+</div>
+</div>
+<div>
+<span class="font-bold text-slate-700 block mb-2">탐방 상태</span>
+<div class="space-y-2">
+<label class="flex items-center gap-2 p-2.5 rounded-xl border border-teal-100 bg-teal-50/50">
+<input checked="" class="text-primary focus:ring-primary" name="visitFilter" type="radio"/>
+<span class="font-bold text-slate-800">아직 안 가본 곳만 (새로운 세월 적립)</span>
+</label>
+<label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-100">
+<input class="text-primary focus:ring-primary" name="visitFilter" type="radio"/>
+<span class="text-slate-600">전체 노포 보기</span>
+</label>
+</div>
+</div>
+</div>
+<div class="mt-6 flex gap-2">
+<button class="flex-1 py-3 bg-primary text-white font-bold rounded-2xl hover:bg-teal-700 transition" onclick="closeFilterSheet()">
+              조건 적용하기 (83곳 보기)
+            </button>
+</div>
+</div>
+</div>
+<!-- ==============================================
+           MODAL 2: 중복 반려 팝업 (SCREEN_10)
+           ============================================== -->
+<div class="absolute inset-0 z-50 pointer-events-none flex items-center justify-center px-6" id="rejectModal">
+<div class="absolute inset-0 bg-black/70 opacity-0 transition-opacity duration-200 pointer-events-none" id="rejectScrim" onclick="closeRejectModal()"></div>
+<div class="relative bg-white rounded-3xl p-5 shadow-2xl border-2 border-rose-200 text-center z-10 max-w-xs transform scale-95 opacity-0 transition-all duration-200" id="rejectCard">
+<div class="w-16 h-16 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 font-display text-xl -rotate-12 border-2 border-dashed border-rose-500">
+            무효
+          </div>
+<h3 class="font-bold text-slate-900 text-base mb-1">이미 인증에 사용된 영수증입니다</h3>
+<p class="text-xs text-slate-500 mb-4">공정한 아카이브 보존을 위해 동일한 영수증은 계정당 1회만 인정됩니다. (E_RECEIPT_DUP)</p>
+<div class="space-y-2">
+<button class="w-full py-2.5 bg-stamp text-white font-bold rounded-xl text-xs hover:bg-red-700 transition" onclick="closeRejectModal(); showCustomAlert('30m 위치 기반 가게 사진 인증으로 전환됩니다.');">
+              가게 30m 사진으로 대체 인증하기
+            </button>
+<button class="w-full py-2 text-xs text-slate-500 hover:text-slate-700" onclick="closeRejectModal()">
+              다시 촬영하기
+            </button>
+</div>
+</div>
+</div><div class="absolute inset-0 z-50 pointer-events-none flex items-center justify-center px-4" id="promotionModal"><div class="absolute inset-0 bg-black/75 opacity-0 transition-opacity duration-300 pointer-events-none" id="promotionScrim" onclick="closePromotionModal()"></div><div class="relative bg-gradient-to-b from-slate-900 via-teal-950 to-slate-900 border-2 border-amber-400/80 rounded-3xl p-6 shadow-2xl text-center z-10 w-full max-w-xs transform scale-90 opacity-0 transition-all duration-300 text-white overflow-hidden" id="promotionCard"><div class="absolute -top-10 -left-10 w-32 h-32 bg-amber-400/20 rounded-full blur-2xl pointer-events-none"></div><div class="absolute -bottom-10 -right-10 w-32 h-32 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div><div class="flex justify-center gap-1.5 mb-2 text-amber-300 text-xs"><span class="material-symbols-outlined text-[18px]">auto_awesome</span><span class="font-mono tracking-widest uppercase font-bold text-[10px]">Level Up Ceremony</span><span class="material-symbols-outlined text-[18px]">auto_awesome</span></div><div class="w-24 h-24 mx-auto my-3 rounded-full bg-gradient-to-tr from-amber-500 via-amber-300 to-amber-100 border-4 border-amber-200 text-amber-950 flex flex-col items-center justify-center shadow-2xl shadow-amber-500/40 relative" id="promotionBadgeMedal"><div class="absolute -inset-1 rounded-full border-2 border-dashed border-amber-400 animate-spin pointer-events-none"></div><span class="material-symbols-outlined text-3xl">award_star</span><span class="font-display text-sm tracking-tight">장인 식객</span></div><h2 class="text-xl font-bold text-amber-300 mb-1">'장인 식객' 승급 축하!</h2><p class="text-xs text-teal-100/90 leading-relaxed mb-4">누적 세월 <strong class="text-amber-300 font-bold">562년</strong> 달성!<br/>서울 및 전국의 100년 노포를 수호하는 공인 미식가의 자격을 부여받았습니다.</p><div class="bg-white/10 rounded-2xl p-2.5 mb-4 text-[11px] text-teal-200 flex items-center justify-around font-mono border border-white/15"><div><span class="text-[9px] text-white/60 block">이전 칭호</span><span class="line-through text-slate-300">동네 어른</span></div><span class="material-symbols-outlined text-amber-300 text-sm">arrow_forward</span><div><span class="text-[9px] text-amber-300 block">신규 칭호</span><span class="font-bold text-white">장인 식객 (600년)</span></div></div><div class="space-y-2"><button class="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-amber-950 font-bold text-xs rounded-xl shadow-lg active:scale-95 transition flex items-center justify-center gap-1" onclick="confirmPromotion()"><span class="material-symbols-outlined text-[16px]">military_tech</span><span>호적부 새 칭호 각인하고 패스포트 확인</span></button><button class="w-full py-2 text-xs text-slate-400 hover:text-white transition" onclick="closePromotionModal()">닫기</button></div></div></div>
+</div>
+</div>
+<!-- 푸터: 트랜지션 물리 파라미터 실시간 모니터링 -->
+<footer class="w-full max-w-xl mt-3 text-center text-slate-400 text-[11px] font-mono">
+<span>Jetpack Compose Specs: FastOutSlowInEasing (300ms) · LinearOutSlowInEasing (280ms) · Spring Damping 0.55f (380ms)</span>
+</footer>
+<script>
+    // 전역 상태
+    let currentSpeed = 1.0;
+    const routes = ['screen-map', 'screen-detail', 'screen-scan', 'screen-ceremony', 'screen-passport'];
+    let currentRouteIndex = 0;
+
+    // 네비게이션 트랜지션 엔진
+    function navigateTo(targetId, transitionType = 'slide-horizontal') {
+      const currentActive = document.querySelector('.screen-stage.active');
+      const targetScreen = document.getElementById(targetId);
+
+      if (!targetScreen || currentActive === targetScreen) return;
+
+      // 햅틱 시뮬레이션
+      triggerDeviceHaptic();
+
+      // 라우트 정보 업데이트
+      updateRouteLabel(targetId, transitionType);
+
+      if (transitionType === 'slide-horizontal') {
+        // 전진: 현재 화면 좌측 슬라이드아웃, 타깃 화면 우측에서 슬라이드인
+        currentActive.className = 'screen-stage slide-left';
+        targetScreen.className = 'screen-stage slide-right';
+        
+        requestAnimationFrame(() => {
+          targetScreen.className = 'screen-stage active';
+        });
+      } else if (transitionType === 'slide-back') {
+        // 후진: 현재 화면 우측 슬라이드아웃, 타깃 화면 좌측에서 복귀
+        currentActive.className = 'screen-stage slide-right';
+        targetScreen.className = 'screen-stage slide-left';
+
+        requestAnimationFrame(() => {
+          targetScreen.className = 'screen-stage active';
+        });
+      } else if (transitionType === 'crossfade') {
+        // 크로스페이드 (글로벌 탭)
+        currentActive.style.transition = 'opacity 200ms ease';
+        targetScreen.style.transition = 'opacity 200ms ease';
+        currentActive.style.opacity = '0';
+        
+        setTimeout(() => {
+          currentActive.className = 'screen-stage slide-right';
+          currentActive.style.transition = '';
+          currentActive.style.opacity = '';
+          targetScreen.className = 'screen-stage active';
+        }, 120);
+      }
+    }
+
+    // 바텀시트 제어
+    function openFilterSheet() {
+      triggerDeviceHaptic();
+      const sheet = document.getElementById('filterBottomSheet');
+      sheet.classList.add('bottom-sheet-active');
+      sheet.querySelector('.bottom-sheet-scrim').style.pointerEvents = 'auto';
+      updateRouteLabel('sheet-filter', 'slideInVertically(280ms)');
+    }
+
+    function closeFilterSheet() {
+      const sheet = document.getElementById('filterBottomSheet');
+      sheet.classList.remove('bottom-sheet-active');
+      sheet.querySelector('.bottom-sheet-scrim').style.pointerEvents = 'none';
+      updateRouteLabel('screen-map', 'slideOutVertically(220ms)');
+    }
+
+    // 셔터 플래시 및 도장 각인 성공 세레모니 (380ms 스프링)
+    function triggerVerificationSuccess() {
+      const flash = document.getElementById('cameraFlash');
+      flash.classList.add('animate-flash');
+
+      // 셔터 사운드/햅틱 시뮬레이션
+      triggerDeviceHaptic(true);
+
+      setTimeout(() => {
+        flash.classList.remove('animate-flash');
+        navigateTo('screen-ceremony', 'slide-horizontal');
+
+        // 각인 도장 스프링 낙하 모션 시작
+        const seal = document.getElementById('stampSealElement');
+        seal.classList.remove('animate-stamp-drop');
+        void seal.offsetWidth; // reflow
+        seal.classList.add('animate-stamp-drop');
+
+        // 착지 순간(380ms) 햅틱 임팩트 진동
+        setTimeout(() => {
+          triggerDeviceHaptic(true);
+        }, 360);
+
+        // 숫자 롤링 카운트업
+        startYearCounter(442, 562, 600);
+      }, 180);
+    }
+
+    // 숫자 롤링 애니메이션 (600ms)
+    function startYearCounter(start, end, duration) {
+      const counterEl = document.getElementById('yearsCounter');
+      const startTime = performance.now();
+
+      function update(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // easeOutCubic
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(start + (end - start) * ease);
+        counterEl.textContent = `${current}년`;
+
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        }
+      }
+      requestAnimationFrame(update);
+    }
+
+    // 중복 해시 반려 쉐이크 모션
+    function triggerVerificationReject() {
+      const modal = document.getElementById('rejectModal');
+      const scrim = document.getElementById('rejectScrim');
+      const card = document.getElementById('rejectCard');
+
+      modal.style.pointerEvents = 'auto';
+      scrim.style.opacity = '1';
+      scrim.style.pointerEvents = 'auto';
+      card.style.opacity = '1';
+      card.style.transform = 'scale(1)';
+
+      // 진폭 쉐이크 실행
+      card.classList.remove('animate-reject-shake');
+      void card.offsetWidth;
+      card.classList.add('animate-reject-shake');
+
+      triggerDeviceHaptic(true);
+      updateRouteLabel('dialog-reject', 'Shake & Stamp Drop (320ms)');
+    }
+
+    function closeRejectModal() {
+      const modal = document.getElementById('rejectModal');
+      const scrim = document.getElementById('rejectScrim');
+      const card = document.getElementById('rejectCard');
+
+      scrim.style.opacity = '0';
+      scrim.style.pointerEvents = 'none';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95)';
+      modal.style.pointerEvents = 'none';
+      updateRouteLabel('screen-scan', 'Dismiss');
+    }
+
+    // 단말기 햅틱 피드백 시뮬레이션
+    function triggerDeviceHaptic(isStrong = false) {
+      const container = document.getElementById('deviceContainer');
+      const badge = document.getElementById('hapticFeedbackBadge');
+
+      container.classList.remove('haptic-shake');
+      void container.offsetWidth;
+      container.classList.add('haptic-shake');
+
+      badge.textContent = isStrong ? '💥 40ms 햅틱 방출' : '⚡ 탭 피드백';
+      badge.className = isStrong ? 'text-[10px] bg-stamp text-white px-2 py-0.5 rounded font-bold' : 'text-[10px] bg-teal-400 text-teal-950 px-2 py-0.5 rounded font-bold';
+
+      setTimeout(() => {
+        badge.textContent = '햅틱 준비';
+        badge.className = 'text-[10px] bg-white/10 px-2 py-0.5 rounded text-white/70';
+      }, 700);
+
+      // 실제 모바일 브라우저의 진동 API 지원 시
+      if (navigator.vibrate) {
+        navigator.vibrate(isStrong ? [40, 20, 30] : 15);
+      }
+    }
+
+    // 경로 라벨 갱신
+    function updateRouteLabel(targetId, type) {
+      const badge = document.getElementById('currentRouteBadge');
+      const label = document.getElementById('currentTransitionText');
+
+      const routeMap = {
+        'screen-map': 'MAP (탐색)',
+        'screen-detail': 'STORE_DETAIL (상세)',
+        'screen-scan': 'SCAN (영수증 OCR)',
+        'screen-ceremony': 'CEREMONY (도장 각인)',
+        'screen-passport': 'PASSPORT (패스포트)',
+        'sheet-filter': 'FILTER_SHEET (바텀시트)',
+        'dialog-reject': 'REJECT_DIALOG (반려)'
+      };
+
+      badge.textContent = routeMap[targetId] || targetId;
+      label.textContent = `모션: ${type}`;
+    }
+
+    // 속도 토글 (디버그 슬로우 모션)
+    function toggleMotionSpeed() {
+      const btn = document.getElementById('speedBtn');
+      if (currentSpeed === 1.0) {
+        currentSpeed = 0.3; // 3배 느리게
+        document.documentElement.style.setProperty('--fast-out-slow-in', 'cubic-bezier(0.4, 0.0, 0.2, 1)');
+        btn.textContent = '속도: 0.3x (슬로우 디버그)';
+        btn.classList.add('bg-amber-600', 'text-white');
+      } else {
+        currentSpeed = 1.0;
+        btn.textContent = '속도: 1.0x (300ms)';
+        btn.classList.remove('bg-amber-600', 'text-white');
+      }
+    }
+
+    // 처음으로 리셋
+    function resetFlow() {
+      closeFilterSheet();
+      closeRejectModal();
+      navigateTo('screen-map', 'slide-back');
+    }
+
+    // 커스텀 알림 토스트
+    function showCustomAlert(msg) {
+      triggerDeviceHaptic();
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-12 z-50 bg-slate-900/90 text-white px-4 py-2.5 rounded-2xl text-xs font-bold border border-teal-500/40 shadow-2xl backdrop-blur transition-all duration-300 transform translate-y-4 opacity-0 flex items-center gap-2';
+      toast.innerHTML = `<span class="material-symbols-outlined text-teal-400 text-sm">info</span><span>${msg}</span>`;
+      document.body.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 2200);
+    }
+  </script>
+</body>
+</html>

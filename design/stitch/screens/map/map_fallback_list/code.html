@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>노포천년 - 오프라인 노포 목록</title>
+<!-- Google Fonts: Noto Sans & Epilogue -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700;800;900&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-fixed-variant": "#005049",
+            "on-primary-container": "#a1e9de",
+            "tertiary": "#604400",
+            "inverse-primary": "#8dd3c9",
+            "secondary-fixed-dim": "#ffb4a8",
+            "primary": "#00524b",
+            "outline-variant": "#bec9c6",
+            "outline": "#6f7977",
+            "tertiary-container": "#7e5a00",
+            "error-container": "#ffdad6",
+            "on-background": "#121e1c",
+            "on-tertiary-fixed": "#271900",
+            "on-surface-variant": "#3f4947",
+            "on-error": "#ffffff",
+            "surface-container-low": "#e9f7f3",
+            "tertiary-fixed": "#ffdea7",
+            "surface-container-lowest": "#ffffff",
+            "inverse-surface": "#273331",
+            "secondary-container": "#ff6751",
+            "surface-container": "#e3f1ed",
+            "tertiary-fixed-dim": "#f7bd46",
+            "secondary-fixed": "#ffdad4",
+            "surface-dim": "#cfddd9",
+            "on-tertiary": "#ffffff",
+            "on-primary": "#ffffff",
+            "error": "#ba1a1a",
+            "surface": "#effcf9",
+            "on-secondary-container": "#690200",
+            "on-tertiary-container": "#ffd68d",
+            "inverse-on-surface": "#e6f4f0",
+            "on-secondary-fixed": "#410100",
+            "surface-bright": "#effcf9",
+            "on-tertiary-fixed-variant": "#5e4200",
+            "secondary": "#b02e1f",
+            "on-secondary-fixed-variant": "#8e1409",
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#00201d",
+            "surface-container-highest": "#d8e5e2",
+            "primary-fixed-dim": "#8dd3c9",
+            "surface-tint": "#1c6961",
+            "on-secondary": "#ffffff",
+            "primary-container": "#1f6b63",
+            "on-surface": "#121e1c",
+            "background": "#effcf9",
+            "surface-variant": "#d8e5e2",
+            "surface-container-high": "#ddebe7",
+            "primary-fixed": "#a8f0e5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-xl": "2.25rem",
+            "margin": "1.25rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-md": ["Noto Sans"],
+            "body-md": ["Noto Sans"],
+            "body-sm": ["Noto Sans"],
+            "display-lg": ["Epilogue"],
+            "label-sm": ["Noto Sans"],
+            "headline-md": ["Noto Sans"],
+            "body-lg": ["Noto Sans"],
+            "display-lg-mobile": ["Epilogue"],
+            "number-stat": ["Epilogue"],
+            "headline-lg": ["Epilogue"],
+            "headline-sm": ["Noto Sans"],
+            "label-lg": ["Noto Sans"]
+          },
+          "fontSize": {
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "body-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+            "display-lg": ["38px", {"lineHeight": "46px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "label-sm": ["10px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700"}],
+            "headline-md": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "500"}],
+            "display-lg-mobile": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+            "number-stat": ["32px", {"lineHeight": "36px", "letterSpacing": "-0.03em", "fontWeight": "900"}],
+            "headline-lg": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "700"}],
+            "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed antialiased pb-36">
+<!-- TOP APP BAR (Shared Components JSON Anchor) -->
+<header class="bg-primary dark:bg-primary-container text-on-primary dark:text-on-primary-container docked full-width top border-b-2 border-tertiary-fixed dark:border-tertiary shadow-sm flex justify-between items-center w-full px-space-md py-space-sm h-14 sticky top-0 z-40">
+<div class="flex items-center gap-space-sm">
+<button aria-label="뒤로가기" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container dark:hover:bg-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-on-primary dark:text-on-primary-container" data-icon="arrow_back">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-headline-sm font-headline-sm font-bold tracking-tight text-on-primary">노포 지도 탐색</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-label-sm font-label-sm bg-secondary text-on-secondary">오프라인 전환</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-primary-container opacity-90">FR-MAP-07 · 로컬 캐시 활성화</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="검색" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container dark:hover:bg-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-on-primary dark:text-on-primary-container" data-icon="search">search</span>
+</button>
+<button aria-label="필터" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-primary-container dark:hover:bg-primary active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-on-primary dark:text-on-primary-container" data-icon="tune">tune</span>
+</button>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="w-full max-w-lg mx-auto px-space-md pt-3 flex flex-col gap-3.5">
+<!-- WARNING BANNER: Map SDK Load Failure & Fallback notice -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm relative overflow-hidden" role="alert">
+<!-- Decorative left accent bar indicating degraded state -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary"></div>
+<div class="flex items-start gap-3 pl-1">
+<div class="w-9 h-9 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0 mt-0.5 text-secondary">
+<span class="material-symbols-outlined text-[20px]" data-icon="cloud_off" style="font-variation-settings: 'FILL' 1;">cloud_off</span>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<div class="flex items-center justify-between flex-wrap gap-1">
+<h1 class="text-headline-sm font-headline-sm text-secondary font-bold">지도 통신 지연 · 텍스트 목록으로 안전 전환</h1>
+<span class="text-label-sm font-label-sm text-on-surface-variant font-mono bg-surface-container-high px-1.5 py-0.5 rounded">S-502</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+            네이버 지도 SDK 인증 오류 또는 음영 지역 진입으로 타일 렌더링이 중단되었습니다. 기기 내부 Room 저장소에 기록된 검증 노포 데이터를 즉시 열람합니다.
+          </p>
+<div class="flex items-center gap-1.5 pt-1">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-label-sm font-label-sm bg-error-container text-on-error-container font-mono font-bold tracking-tight">
+<span class="material-symbols-outlined text-[13px]" data-icon="warning">warning</span>
+              NCP_ERR_429 / OFFLINE_CACHED
+            </span>
+<span class="text-label-sm font-label-sm text-outline">최종 동기화: 오늘 12:40</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTENARY HERITAGE GAUGE (세월 누적 바) -->
+<section class="bg-surface-container border border-outline-variant rounded-xl p-3 flex flex-col gap-1.5">
+<div class="flex justify-between items-center text-label-md font-label-md">
+<span class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-[16px]" data-icon="history_edu">history_edu</span>
+          오늘의 미식 탐험 세월 누적치
+        </span>
+<span class="text-secondary font-bold font-number-stat text-body-lg">304년 <span class="text-outline font-normal text-body-sm">/ 1,000년</span></span>
+</div>
+<div class="w-full h-3 bg-surface-container-highest rounded-full border border-outline-variant overflow-hidden relative">
+<div class="h-full bg-gradient-to-r from-primary-container via-tertiary-fixed-dim to-secondary rounded-full" style="width: 30.4%;"></div>
+</div>
+<div class="flex justify-between items-center text-label-sm font-label-sm text-on-surface-variant">
+<span>현재 3곳 인증 완료</span>
+<span class="text-tertiary font-bold">다음 놋쇠 인장까지 96년 남음</span>
+</div>
+</section>
+<!-- FILTER CHIPS (Horizontal Scrollable) -->
+<section aria-label="노포 정렬 및 필터" class="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary text-on-primary text-label-md font-label-md shadow-sm shrink-0 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="check" style="font-variation-settings: 'FILL' 1;">check</span>
+        가까운 순
+      </button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-on-surface text-label-md font-label-md shrink-0 hover:bg-surface-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="hourglass_top">hourglass_top</span>
+        업력 높은 순
+      </button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-on-surface text-label-md font-label-md shrink-0 hover:bg-surface-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="restaurant">restaurant</span>
+        음식점만
+      </button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container-low border border-outline-variant text-on-surface text-label-md font-label-md shrink-0 hover:bg-surface-container active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[16px]" data-icon="approval">approval</span>
+        도장 미각인
+      </button>
+</section>
+<!-- OFFLINE CACHED NOPO CARDS (Room Local DB Cache) -->
+<section aria-label="노포 대체 목록" class="flex flex-col gap-3">
+<!-- ITEM 1: 이문설농탕 (120년 - 금빛 100년 도장 배지) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:border-primary transition-all flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-3">
+<div class="flex-1 flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-tertiary-fixed text-on-tertiary-fixed font-bold border border-tertiary-fixed-dim">
+                업력 120년
+              </span>
+<span class="text-label-sm font-label-sm text-outline">1904년 개업</span>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-secondary font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.7 <span class="text-outline font-normal">(84)</span>
+</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface tracking-tight">이문설농탕</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline" data-icon="near_me">near_me</span>
+              서울 종로구 우정국로 · <strong>340m</strong>
+</p>
+</div>
+<!-- Inju Verification Stamp Graphic: Brass Gold Centenary Frame -->
+<div class="w-16 h-16 shrink-0 rounded-full border-2 border-tertiary-container p-0.5 flex items-center justify-center text-center rotate-[-3deg] bg-surface-container-low shadow-inner">
+<div class="w-full h-full rounded-full border border-tertiary flex flex-col items-center justify-center p-0.5 text-tertiary">
+<span class="text-[8px] font-bold leading-none tracking-tighter">노포천년</span>
+<span class="text-label-sm font-bold font-number-stat leading-tight text-tertiary">1904</span>
+<span class="text-[7px] font-bold leading-none text-tertiary-container">百 年 名 家</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">설렁탕</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">수육</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">도가니탕</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="add_circle">add_circle</span>
+            인증 시 세월 +120년
+          </span>
+</div>
+</article>
+<!-- ITEM 2: 용금옥 (92년 - 붉은 도장 배지, 방문 완료) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:border-primary transition-all flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-3">
+<div class="flex-1 flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-fixed text-on-secondary-fixed font-bold border border-secondary">
+                업력 92년
+              </span>
+<span class="text-label-sm font-label-sm text-outline">1932년 개업</span>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-secondary font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.5 <span class="text-outline font-normal">(56)</span>
+</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface tracking-tight">용금옥</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline" data-icon="near_me">near_me</span>
+              서울 중구 다동 · <strong>680m</strong>
+</p>
+</div>
+<!-- Inju Stamp Graphic: Crimson Authenticated Stamp -->
+<div class="w-16 h-16 shrink-0 rounded-full border-2 border-secondary p-0.5 flex items-center justify-center text-center rotate-[4deg] bg-surface-container-low" style="box-shadow: inset 0 1px 2px rgba(194, 59, 42, 0.25);">
+<div class="w-full h-full rounded-full border border-secondary flex flex-col items-center justify-center p-0.5 text-secondary">
+<span class="text-[8px] font-bold leading-none tracking-tighter">노포천년</span>
+<span class="text-label-sm font-bold font-number-stat leading-tight">1932</span>
+<span class="text-[7px] font-bold leading-none">각인완료</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">추어탕</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">미꾸리</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">추어튀김</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-primary-fixed text-on-primary-fixed font-bold text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+            단골 2회 방문 완료
+          </span>
+</div>
+</article>
+<!-- ITEM 3: 청진옥 (87년 - 붉은 도장 배지) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:border-primary transition-all flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-3">
+<div class="flex-1 flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-secondary-fixed text-on-secondary-fixed font-bold border border-secondary">
+                업력 87년
+              </span>
+<span class="text-label-sm font-label-sm text-outline">1937년 개업</span>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-secondary font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.6 <span class="text-outline font-normal">(92)</span>
+</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface tracking-tight">청진옥</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline" data-icon="near_me">near_me</span>
+              서울 종로구 종로 · <strong>910m</strong>
+</p>
+</div>
+<!-- Inju Stamp Graphic: Crimson Unauthenticated Target -->
+<div class="w-16 h-16 shrink-0 rounded-full border-2 border-secondary p-0.5 flex items-center justify-center text-center rotate-[-2deg] bg-surface-container-low">
+<div class="w-full h-full rounded-full border border-secondary flex flex-col items-center justify-center p-0.5 text-secondary">
+<span class="text-[8px] font-bold leading-none tracking-tighter">노포천년</span>
+<span class="text-label-sm font-bold font-number-stat leading-tight">1937</span>
+<span class="text-[7px] font-bold leading-none">해장원조</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">해장국</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">안주</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">수육</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="add_circle">add_circle</span>
+            인증 시 세월 +87년
+          </span>
+</div>
+</article>
+<!-- ITEM 4: 을지면옥 (39년 - 일반 도장 배지) -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm hover:border-primary transition-all flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-3">
+<div class="flex-1 flex flex-col gap-0.5">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-container-high text-on-surface-variant font-bold border border-outline-variant">
+                업력 39년
+              </span>
+<span class="text-label-sm font-label-sm text-outline">1985년 개업</span>
+<span class="inline-flex items-center gap-0.5 text-label-sm font-label-sm text-secondary font-bold">
+<span class="material-symbols-outlined text-[14px]" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+                4.4 <span class="text-outline font-normal">(110)</span>
+</span>
+</div>
+<h2 class="text-headline-md font-headline-md text-on-surface tracking-tight">을지면옥</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline" data-icon="near_me">near_me</span>
+              서울 중구 충무로 · <strong>1.4km</strong>
+</p>
+</div>
+<!-- Standard Slate Stamp Graphic -->
+<div class="w-16 h-16 shrink-0 rounded-full border-2 border-dashed border-outline p-0.5 flex items-center justify-center text-center rotate-[1deg] bg-surface-container-low opacity-90">
+<div class="w-full h-full rounded-full border border-outline flex flex-col items-center justify-center p-0.5 text-outline">
+<span class="text-[8px] font-bold leading-none tracking-tighter">노포천년</span>
+<span class="text-label-sm font-bold font-number-stat leading-tight">1985</span>
+<span class="text-[7px] font-bold leading-none">평양냉면</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-variant">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">평양냉면</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">수육</span>
+<span class="text-label-sm font-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">편육</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed text-label-sm font-label-sm font-bold shadow-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="add_circle">add_circle</span>
+            인증 시 세월 +39년
+          </span>
+</div>
+</article>
+</section>
+</main>
+<!-- FLOATING RETRY ACTION BAR (Thumb Zone Anchor: bottom 112dp standard) -->
+<aside class="fixed bottom-16 left-0 w-full z-40 px-space-md pb-2 pointer-events-none">
+<div class="max-w-lg mx-auto bg-inverse-surface text-inverse-on-surface rounded-xl shadow-lg p-2.5 flex items-center justify-between gap-3 border border-outline-variant pointer-events-auto">
+<div class="flex items-center gap-2 pl-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed animate-pulse"></span>
+<div class="flex flex-col">
+<span class="text-label-md font-label-md text-inverse-on-surface font-bold leading-tight">오프라인 캐시 1,277곳 이용 가능</span>
+<span class="text-label-sm font-label-sm text-outline-variant">GPS 도장 각인은 인터넷 없이 정상 동작</span>
+</div>
+</div>
+<button class="inline-flex items-center gap-1 px-3.5 py-2 rounded-lg bg-primary text-on-primary text-label-md font-label-md font-bold hover:bg-primary-container active:scale-95 transition-all shadow-sm shrink-0" id="retry-btn" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh" id="retry-icon">refresh</span>
+<span id="retry-label">지도 다시 연결 (15s)</span>
+</button>
+</div>
+</aside>
+<!-- BOTTOM NAVIGATION BAR (Shared Components JSON Anchor) -->
+<!-- Contextual State: Current screen is '지도 탐색' (Map Tab Active) -->
+<nav class="bg-surface dark:bg-surface-container text-primary dark:text-inverse-primary docked full-width bottom-0 border-t border-outline-variant dark:border-outline shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe px-space-md">
+<!-- Tab 1: 지도 탐색 (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-bold active:scale-95 transition-transform duration-150 py-1 px-3" href="#map">
+<span class="material-symbols-outlined text-[24px]" data-icon="map" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="text-label-sm font-label-sm mt-0.5">지도 탐색</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mt-0.5"></span>
+</a>
+<!-- Tab 2: 내 패스포트 (INACTIVE) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#passport">
+<span class="material-symbols-outlined text-[24px]" data-icon="menu_book">menu_book</span>
+<span class="text-label-sm font-label-sm mt-0.5">내 패스포트</span>
+<span class="w-1.5 h-1.5 rounded-full bg-transparent mt-0.5"></span>
+</a>
+<!-- Tab 3: 설정 (INACTIVE) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-inverse-primary active:scale-95 transition-transform duration-150 py-1 px-3" href="#settings">
+<span class="material-symbols-outlined text-[24px]" data-icon="settings">settings</span>
+<span class="text-label-sm font-label-sm mt-0.5">설정</span>
+<span class="w-1.5 h-1.5 rounded-full bg-transparent mt-0.5"></span>
+</a>
+</nav>
+<!-- Inline Micro-interaction: Countdown Timer for Map Reconnect -->
+<script>
+    (function() {
+      let seconds = 15;
+      const retryBtn = document.getElementById('retry-btn');
+      const retryLabel = document.getElementById('retry-label');
+      const retryIcon = document.getElementById('retry-icon');
+
+      const interval = setInterval(function() {
+        seconds -= 1;
+        if (seconds > 0) {
+          retryLabel.textContent = `지도 다시 연결 (${seconds}s)`;
+        } else {
+          clearInterval(interval);
+          retryLabel.textContent = '지도 다시 연결';
+          retryBtn.classList.remove('opacity-75');
+          retryBtn.classList.add('animate-bounce');
+        }
+      }, 1000);
+
+      retryBtn.addEventListener('click', function() {
+        retryIcon.classList.add('animate-spin');
+        retryLabel.textContent = '연결 시도 중...';
+        setTimeout(function() {
+          retryIcon.classList.remove('animate-spin');
+          seconds = 15;
+          retryLabel.textContent = '재시도 쿨타임 (15s)';
+        }, 1200);
+      });
+    })();
+  </script>
+</body></html>
