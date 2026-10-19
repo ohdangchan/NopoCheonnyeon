@@ -4,6 +4,12 @@ package com.nopo.cheonnyeon.core.navigation
 object Routes {
     const val SPLASH = "splash"
     const val LOGIN = "login"
+    const val SIGN_UP = "sign_up"
+    const val RESET = "reset"
+    const val NICKNAME = "nickname"
     const val HOME = "home"
     const val DIAGNOSTICS = "diagnostics"
+
+    /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
+    val signedOutRoutes = setOf(LOGIN, SIGN_UP, RESET)
 }

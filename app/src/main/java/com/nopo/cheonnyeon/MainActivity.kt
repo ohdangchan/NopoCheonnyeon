@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         val container = (application as NopoApp).container
         setContent {
             NopoTheme {
-                NopoNavHost(container.sessionState)
+                NopoNavHost(container)
             }
         }
     }

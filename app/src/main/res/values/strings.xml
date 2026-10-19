@@ -183,4 +183,41 @@
     <string name="diag_photo_next_store">다음 가게</string>
     <string name="diag_photo_next_photo">같은 가게 다음 사진</string>
     <string name="cd_diag_photo">%1$s 공식 사진</string>
+
+    <!-- 계정 (E4) -->
+    <string name="auth_login_title">미식 장부로 돌아오셨나요?</string>
+    <string name="auth_login_subtitle">가입한 이메일로 로그인하면 쌓은 세월과 도장이 그대로 돌아와요.</string>
+    <string name="auth_login_action">로그인</string>
+    <string name="auth_working">잠시만요…</string>
+    <string name="auth_email">이메일</string>
+    <string name="auth_password">비밀번호</string>
+    <string name="auth_password_confirm">비밀번호 확인</string>
+    <string name="auth_password_hint">8자 이상, 영문과 숫자를 모두 넣어 주세요</string>
+    <string name="auth_nickname">닉네임</string>
+    <string name="auth_nickname_hint">2~12자, 한글·영문·숫자만 쓸 수 있어요</string>
+    <string name="auth_nick_checking">확인하는 중…</string>
+    <string name="auth_nick_available">사용할 수 있는 닉네임이에요</string>
+    <string name="auth_nick_taken">이미 사용 중인 닉네임이에요</string>
+    <string name="auth_to_sign_up">처음이세요? 회원가입</string>
+    <string name="auth_to_reset">비밀번호를 잊으셨나요?</string>
+    <string name="auth_to_login">이미 계정이 있어요 · 로그인</string>
+    <string name="auth_offline_note">인터넷이 불안정해도 앱에 들어 있는 노포 목록은 볼 수 있어요.</string>
+    <string name="auth_sign_up_title">새 식객으로 등록해요</string>
+    <string name="auth_sign_up_subtitle">닉네임은 리뷰와 패스포트에 보여요.</string>
+    <string name="auth_sign_up_action">시작하기</string>
+    <string name="auth_privacy_note">위치 좌표와 영수증 내용은 서버에 저장하지 않아요.</string>
+    <string name="auth_reset_title">비밀번호 재설정</string>
+    <string name="auth_reset_subtitle">가입한 이메일로 재설정 메일을 보내 드려요.</string>
+    <string name="auth_reset_action">재설정 메일 보내기</string>
+    <string name="auth_reset_sent">메일을 보냈어요. 가입된 이메일이라면 곧 도착해요.</string>
+    <string name="auth_nick_setup_title">닉네임을 정해 주세요</string>
+    <string name="auth_nick_setup_subtitle">프로필 정보를 만드는 중 문제가 생겼어요. 닉네임을 정하면 이어서 쓸 수 있어요.</string>
+    <string name="auth_nick_setup_action">저장</string>
+    <string name="auth_sign_out">로그아웃</string>
+    <string name="auth_invalid_email">이메일 형식이 맞지 않아요</string>
+    <string name="auth_invalid_password_short">비밀번호는 8자 이상이어야 해요</string>
+    <string name="auth_invalid_password_weak">영문과 숫자를 모두 넣어 주세요</string>
+    <string name="auth_invalid_password_mismatch">비밀번호가 서로 달라요</string>
+    <string name="auth_invalid_nick_length">닉네임은 2~12자로 정해 주세요</string>
+    <string name="auth_invalid_nick_chars">한글·영문·숫자만 쓸 수 있어요</string>
 </resources>
