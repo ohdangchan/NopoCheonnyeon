@@ -1,0 +1,34 @@
+package com.nopo.cheonnyeon.core.common
+
+/**
+ * PRD 7.4의 오류 코드 전부. 화면에 보이는 문구는 코드마다 strings.xml의 `err_<소문자 코드>`에 있고
+ * (`AppErrorMessages.kt`가 연결), 이 파일은 안드로이드에 의존하지 않는다.
+ * 기기 기능·서버 호출은 예외를 던지지 않고 이 코드로 바꿔 올린다 (아키텍처 9장).
+ */
+enum class AppError(val code: String) {
+    E_AUTH_REQUIRED("E_AUTH_REQUIRED"),
+    E_CAM_DENIED("E_CAM_DENIED"),
+    E_LOC_DENIED("E_LOC_DENIED"),
+    E_LOC_APPROX_ONLY("E_LOC_APPROX_ONLY"),
+    E_LOC_TIMEOUT("E_LOC_TIMEOUT"),
+    E_LOC_MOCK("E_LOC_MOCK"),
+    E_FAR("E_FAR"),
+    E_ACCURACY("E_ACCURACY"),
+    E_NO_COORD("E_NO_COORD"),
+    E_RECEIPT_UNREADABLE("E_RECEIPT_UNREADABLE"),
+    E_RECEIPT_MISMATCH("E_RECEIPT_MISMATCH"),
+    E_RECEIPT_EXPIRED("E_RECEIPT_EXPIRED"),
+    E_RECEIPT_NO_DATE("E_RECEIPT_NO_DATE"),
+    E_RECEIPT_DUP("E_RECEIPT_DUP"),
+    E_PHOTO_NO_MATCH("E_PHOTO_NO_MATCH"),
+    E_DAILY_LIMIT("E_DAILY_LIMIT"),
+    E_ALREADY_TODAY("E_ALREADY_TODAY"),
+    E_NETWORK("E_NETWORK"),
+    E_VISIT_SYNCING("E_VISIT_SYNCING"),
+    E_REVIEW_OFFLINE("E_REVIEW_OFFLINE"),
+    AUTH_EMAIL_IN_USE("AUTH_EMAIL_IN_USE"),
+    AUTH_WEAK_PASSWORD("AUTH_WEAK_PASSWORD"),
+    AUTH_WRONG_CREDENTIAL("AUTH_WRONG_CREDENTIAL"),
+    AUTH_TOO_MANY("AUTH_TOO_MANY"),
+    AUTH_NICK_TAKEN("AUTH_NICK_TAKEN"),
+}

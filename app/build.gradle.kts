@@ -6,11 +6,13 @@ plugins {
     alias(libs.plugins.google.services)
 }
 
-// 키는 local.properties(git 제외)에서만 읽는다
-val localProps = Properties().apply {
-    val f = rootProject.file("local.properties")
+// 키는 local.properties·keystore.properties(둘 다 git 제외)에서만 읽는다
+fun loadProps(name: String) = Properties().apply {
+    val f = rootProject.file(name)
     if (f.exists()) f.inputStream().use { load(it) }
 }
+val localProps = loadProps("local.properties")
+val keystoreProps = loadProps("keystore.properties")
 
 android {
     namespace = "com.nopo.cheonnyeon"
@@ -32,8 +34,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystoreProps.isNotEmpty()) {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
+        // debug 블록에 패키지 접미사를 두지 않는다: 네이버 지도·Firebase에 등록한 패키지명과 같아야 한다
         release {
+            // keystore.properties가 없으면 디버그 키로 서명한다 (서명 없는 APK는 폰에 설치되지 않음, D-13)
+            signingConfig = if (keystoreProps.isNotEmpty()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            // 폰용 APK 크기 축소(D-15). 에뮬레이터(x86)는 디버그 빌드로 확인한다
+            ndk { abiFilters += listOf("arm64-v8a") }
             optimization {
                 enable = true
                 packageScope = setOf("androidx.**", "kotlin.**", "kotlinx.**")
@@ -72,7 +90,12 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.mlkit.text.korean)
     implementation(libs.naver.map)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test)
+    debugImplementation(libs.leakcanary)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)

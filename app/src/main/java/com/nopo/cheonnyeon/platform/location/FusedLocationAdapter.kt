@@ -95,10 +95,3 @@ private fun Location.toFix() = Fix(
     accuracyM = accuracy.toDouble(),
     isMock = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) isMock else @Suppress("DEPRECATION") isFromMockProvider,
 )
-
-/** 두 지점 사이 거리(m). S-204 GeoDistance가 생기면 그쪽으로 옮긴다. */
-fun distanceMeters(a: Fix, lat: Double, lng: Double): Double {
-    val out = FloatArray(1)
-    Location.distanceBetween(a.lat, a.lng, lat, lng, out)
-    return out[0].toDouble()
-}

@@ -37,7 +37,7 @@ import com.nopo.cheonnyeon.domain.rule.VerificationConfig
 import com.nopo.cheonnyeon.platform.location.Fix
 import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
 import com.nopo.cheonnyeon.platform.location.LocationSettingsResult
-import com.nopo.cheonnyeon.platform.location.distanceMeters
+import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
 import kotlinx.coroutines.Job
@@ -194,7 +194,7 @@ fun DiagnosticsLocationTab(modifier: Modifier = Modifier) {
         val lat = targetLat.toDoubleOrNull()
         val lng = targetLng.toDoubleOrNull()
         if (best != null && lat != null && lng != null) {
-            val d = distanceMeters(best, lat, lng)
+            val d = GeoDistance.meters(best.lat, best.lng, lat, lng)
             val pass = d <= VerificationConfig.PHOTO_MAX_DISTANCE_M && best.accuracyM <= VerificationConfig.PHOTO_MAX_ACCURACY_M && !best.isMock
             Text(stringResource(R.string.diag_loc_distance, d), style = NopoTheme.extraTypography.metric, color = c.ink)
             Text(

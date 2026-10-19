@@ -1,0 +1,4 @@
+# local.properties 샘플. 실제 값은 local.properties(git 제외)에 넣는다.
+# sdk.dir 는 Android Studio가 자동으로 채운다.
+NAVER_MAP_KEY_ID=네이버_클라우드_Maps_Client_ID
+NAVER_MAP_CLIENT_SECRET=네이버_클라우드_Maps_Client_Secret

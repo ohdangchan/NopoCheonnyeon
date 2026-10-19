@@ -5,16 +5,16 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
-import com.nopo.cheonnyeon.feature.diagnostics.DiagnosticsScreen
+import com.nopo.cheonnyeon.core.navigation.NopoNavHost
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val container = (application as NopoApp).container
         setContent {
             NopoTheme {
-                // 1일차 기능 검증 동안은 진단 화면만. S-105에서 NopoNavHost로 교체
-                DiagnosticsScreen()
+                NopoNavHost(container.sessionState)
             }
         }
     }

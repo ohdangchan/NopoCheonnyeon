@@ -10,3 +10,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# --- 노포천년 (아키텍처 7.4) ---
+# kotlinx.serialization 카탈로그 모델(E3에서 추가)
+-keepclassmembers class com.nopo.cheonnyeon.data.catalog.** { *; }
+# Firestore toObject()로 매핑하는 클래스를 쓰는 경우
+-keepclassmembers class com.nopo.cheonnyeon.data.remote.dto.** { *; }
+# 네이버 지도·ML Kit·Firebase는 라이브러리에 포함된 규칙을 쓴다. 릴리스에서 문제가 생기면 SDK 문서의 규칙을 추가
