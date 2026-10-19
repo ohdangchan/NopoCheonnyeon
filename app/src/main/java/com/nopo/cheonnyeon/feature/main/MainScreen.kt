@@ -26,6 +26,7 @@ import com.nopo.cheonnyeon.core.common.factoryOf
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.feature.map.MapScreen
+import com.nopo.cheonnyeon.feature.settings.SettingsScreen
 import com.nopo.cheonnyeon.feature.passport.PassportScreen
 import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 import com.nopo.cheonnyeon.feature.map.MapViewModel
@@ -41,13 +42,12 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onDiagnos
             when (tab) {
                 0 -> MapScreen(mapVm, onOpenStore)
                 1 -> PassportScreen(passportVm, onOpenStore)
-                else -> TabPlaceholder(R.string.tab_settings_placeholder) {
-                    if (BuildConfig.DEBUG) {
-                        NopoButton(stringResource(R.string.diag_title), onDiagnostics)
-                        TestStoreButton(container)
-                    }
-                    SignOutButton(container)
-                }
+                else -> SettingsScreen(
+                    container,
+                    signOutButton = { SignOutButton(container) },
+                    devTools = { TestStoreButton(container) },
+                    onDiagnostics = onDiagnostics,
+                )
             }
         }
         NavigationBar {

@@ -336,4 +336,26 @@
 
     <string name="signout_warn_title">아직 올라가지 않은 기록이 있어요</string>
     <string name="signout_warn_body">서버에 올라가지 않은 방문 기록 %1$d개가 있어요. 지금 로그아웃하면 이 기록은 사라져요.</string>
+
+    <!-- 온보딩·설정 (S-402·S-903) -->
+    <string name="onboarding_1_title">전국의 노포를 찾아가요</string>
+    <string name="onboarding_1_body">중소벤처기업부 백년가게와 서울시 오래가게 1,277곳을 지도에서 찾아볼 수 있어요.</string>
+    <string name="onboarding_2_title">방문하면 세월이 쌓여요</string>
+    <string name="onboarding_2_body">영수증이나 가게 사진으로 인증하면 가게의 업력만큼 세월을 얻고 도장이 찍혀요.</string>
+    <string name="onboarding_3_title">천 년을 모아 미식가가 되세요</string>
+    <string name="onboarding_3_body">세월이 쌓이면 칭호가 올라가요. 위치 좌표와 영수증 내용은 서버에 저장하지 않아요.</string>
+    <string name="onboarding_skip">건너뛰기</string>
+    <string name="onboarding_next">다음</string>
+    <string name="onboarding_start">시작하기</string>
+    <string name="settings_app_info">앱 정보</string>
+    <string name="settings_version">노포천년 버전 %1$s</string>
+    <string name="settings_catalog">노포 목록 %1$d곳 · 데이터 버전 %2$d</string>
+    <string name="settings_data_source">데이터 출처</string>
+    <string name="settings_data_source_body">백년가게는 중소벤처기업부·소상공인시장진흥공단 백년가게 정보, 오래가게는 서울특별시 오래가게 정보를 바탕으로 해요. 사진은 백년가게 공식 페이지의 사진을 불러와요. 주소의 좌표는 네이버 지도로 찾았어요.</string>
+    <string name="settings_privacy">개인정보</string>
+    <string name="settings_privacy_body">위치 좌표와 영수증 내용은 서버에 저장하지 않아요. 영수증 사진은 저장하지 않고, 가게 사진 인증 사진은 기기에만 남아요.</string>
+    <string name="settings_licenses">오픈소스 라이선스</string>
+    <string name="settings_licenses_hide">라이선스 접기</string>
+    <string name="settings_licenses_body">AndroidX·Jetpack Compose·Kotlin·kotlinx(Apache-2.0), Firebase(Apache-2.0), ML Kit(Google ML Kit 약관), 네이버 지도 SDK(네이버 약관), Coil(Apache-2.0), OkHttp(Apache-2.0), Room·WorkManager(Apache-2.0), Black Han Sans·JetBrains Mono(SIL OFL 1.1).</string>
+    <string name="settings_dev">개발자 도구</string>
 </resources>

@@ -26,6 +26,8 @@ import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.SessionState
 import com.nopo.cheonnyeon.feature.auth.AuthViewModel
 import com.nopo.cheonnyeon.feature.auth.LoginScreen
+import com.nopo.cheonnyeon.feature.auth.OnboardingScreen
+import kotlinx.coroutines.launch
 import com.nopo.cheonnyeon.feature.auth.NicknameSetupScreen
 import com.nopo.cheonnyeon.feature.auth.ResetPasswordScreen
 import com.nopo.cheonnyeon.feature.auth.SignUpScreen
@@ -56,11 +58,19 @@ fun NopoNavHost(container: AppContainer) {
         override fun <T : ViewModel> create(modelClass: Class<T>): T = AuthViewModel(container.auth) as T
     })
 
-    LaunchedEffect(state) {
+    val onboardingDone by container.settings.onboardingDone.collectAsStateWithLifecycle(initialValue = null)
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+
+    LaunchedEffect(state, onboardingDone) {
         val current = nav.currentDestination?.route
         val target = when (state) {
             SessionState.Loading -> Routes.SPLASH
-            SessionState.SignedOut -> if (current in Routes.signedOutRoutes) current else Routes.LOGIN
+            SessionState.SignedOut -> when {
+                onboardingDone == null -> Routes.SPLASH
+                onboardingDone == false -> Routes.ONBOARDING
+                current in Routes.signedOutRoutes -> current
+                else -> Routes.LOGIN
+            }
             SessionState.NeedsNickname -> Routes.NICKNAME
             SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
         }
@@ -69,6 +79,9 @@ fun NopoNavHost(container: AppContainer) {
 
     NavHost(navController = nav, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) { Placeholder(R.string.placeholder_splash) }
+        composable(Routes.ONBOARDING) {
+            OnboardingScreen(onDone = { scope.launch { container.settings.setOnboardingDone() } })
+        }
         composable(Routes.LOGIN) {
             LoginScreen(
                 vm = authVm,
