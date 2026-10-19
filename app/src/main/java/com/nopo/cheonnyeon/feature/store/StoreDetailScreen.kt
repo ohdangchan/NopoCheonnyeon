@@ -35,7 +35,7 @@ import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 
 /** 노포 상세 (S-505, FR-STORE-01·02·05): 큰 업력, 보상 미리보기, 영업·메뉴, 길찾기. 비어 있는 필드는 줄을 숨긴다. */
 @Composable
-fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit) {
+fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val store = state.store
@@ -73,7 +73,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit) {
             if (store.lat != null && store.lng != null) {
                 NopoButton(stringResource(R.string.detail_directions), { openDirections(context, store) }, style = NopoButtonStyle.Outline, modifier = Modifier.weight(1f))
             }
-            NopoButton(stringResource(R.string.detail_verify), {}, enabled = false, modifier = Modifier.weight(1.4f))
+            NopoButton(stringResource(R.string.detail_verify), onVerify, modifier = Modifier.weight(1.4f))
         }
     }
 }

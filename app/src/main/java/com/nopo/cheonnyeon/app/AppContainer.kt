@@ -10,7 +10,10 @@ import com.nopo.cheonnyeon.data.catalog.CatalogRepository
 import com.nopo.cheonnyeon.data.catalog.CatalogSeeder
 import com.nopo.cheonnyeon.data.local.AppDatabase
 import com.nopo.cheonnyeon.data.local.SettingsStore
+import com.google.firebase.firestore.FirebaseFirestore
 import com.nopo.cheonnyeon.data.remote.AuthRepository
+import com.nopo.cheonnyeon.data.visit.SyncScheduler
+import com.nopo.cheonnyeon.data.visit.VisitRepository
 import com.nopo.cheonnyeon.domain.model.SessionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +35,8 @@ class AppContainer(
     val settings = SettingsStore(appContext)
     val catalog = CatalogRepository(database.storeDao(), dispatchers)
     val auth = AuthRepository()
+    val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers)
+    val syncScheduler = SyncScheduler(appContext)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {
@@ -42,6 +47,9 @@ class AppContainer(
                 .onSuccess { Log.d("Nopo", "카탈로그 적재 완료 (새로 적재=$it)"); catalog.invalidate() }
         }
     }
+
+    /** 앱을 켤 때 올라가지 못한 기록이 있으면 다시 보낸다 */
+    fun syncPending() = syncScheduler.enqueue()
 
     /** 내비게이션이 보는 로그인 게이트 상태 */
     val sessionState: StateFlow<SessionState> = auth.sessionState.stateIn(scope, SharingStarted.Eagerly, SessionState.Loading)

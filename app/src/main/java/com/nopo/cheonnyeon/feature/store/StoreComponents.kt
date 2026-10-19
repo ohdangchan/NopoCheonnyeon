@@ -22,7 +22,7 @@ fun ProgramBadges(store: Store, modifier: Modifier = Modifier) {
     val c = NopoTheme.colors
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         if ("BAEKNYEON" in store.programs) Badge(stringResource(R.string.badge_baeknyeon), c.brassSoft, if (c.isDark) c.brass else c.onBrass)
-        if ("ORAE" in store.programs) Badge(stringResource(R.string.badge_orae), c.tealSoft, c.sign)
+        if ("ORAE" in store.programs) Badge(stringResource(R.string.badge_orae), c.tealSoft, if (c.isDark) c.ink else c.sign)
     }
 }
 

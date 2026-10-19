@@ -15,6 +15,7 @@ import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -80,16 +81,17 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            // 첫 실행에는 적재가 끝날 때까지 잠시 기다린다
-            repeat(40) {
-                val list = container.catalog.all()
-                if (list.isNotEmpty()) {
-                    allStores.value = list
-                    return@launch
+            container.catalog.changes.collectLatest {
+                // 첫 실행에는 적재가 끝날 때까지 잠시 기다린다
+                var list = container.catalog.all()
+                var tries = 0
+                while (list.isEmpty() && tries++ < 40) {
+                    kotlinx.coroutines.delay(250)
+                    list = container.catalog.all()
                 }
-                kotlinx.coroutines.delay(250)
+                allStores.value = list
+                if (list.isEmpty()) local.update { it.copy(loading = false) }
             }
-            local.update { it.copy(loading = false) }
         }
     }
 

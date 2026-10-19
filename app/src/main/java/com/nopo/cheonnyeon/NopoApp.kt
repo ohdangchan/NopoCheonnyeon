@@ -19,6 +19,7 @@ class NopoApp : Application(), SingletonImageLoader.Factory {
             StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectDiskReads().detectDiskWrites().detectNetwork().penaltyLog().build())
         }
         container = AppContainer(this)
+        container.syncPending()
     }
 
     /** 공식 사진 서버(sbiz24)는 Accept 헤더가 없는 요청에 500을 돌려줘서, 모든 요청에 Accept를 붙인다 */

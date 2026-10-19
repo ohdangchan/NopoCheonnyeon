@@ -31,6 +31,11 @@ import com.nopo.cheonnyeon.feature.auth.ResetPasswordScreen
 import com.nopo.cheonnyeon.feature.auth.SignUpScreen
 import com.nopo.cheonnyeon.feature.diagnostics.DiagnosticsScreen
 import com.nopo.cheonnyeon.feature.main.MainScreen
+import com.nopo.cheonnyeon.feature.verify.VerifyScreen
+import com.nopo.cheonnyeon.feature.verify.VerifyViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.createSavedStateHandle
 import com.nopo.cheonnyeon.feature.store.StoreDetailScreen
 import com.nopo.cheonnyeon.feature.store.StoreDetailViewModel
 import com.nopo.cheonnyeon.core.common.factoryOf
@@ -55,7 +60,7 @@ fun NopoNavHost(container: AppContainer) {
             SessionState.Loading -> Routes.SPLASH
             SessionState.SignedOut -> if (current in Routes.signedOutRoutes) current else Routes.LOGIN
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }
@@ -79,7 +84,16 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
-            StoreDetailScreen(vm, onBack = { nav.popBackStack() })
+            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) })
+        }
+        composable(Routes.VERIFY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            val id = entry.arguments?.getString("id").orEmpty()
+            val vm: VerifyViewModel = viewModel(factory = object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T =
+                    VerifyViewModel(container, id, extras.createSavedStateHandle()) as T
+            })
+            VerifyScreen(vm, onClose = { nav.popBackStack() })
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen() }
     }

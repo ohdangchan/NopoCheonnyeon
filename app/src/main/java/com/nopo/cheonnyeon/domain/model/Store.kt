@@ -29,4 +29,9 @@ data class Store(
 ) {
     /** 이름과 별칭 전부 (영수증·간판 글자와 맞춰 볼 후보) */
     val nameCandidates: List<String> get() = listOf(name) + aliases
+
+    companion object {
+        /** 테스트 가게 id 접두어 (FR-TST-01) */
+        const val TEST_PREFIX = "TEST-"
+    }
 }

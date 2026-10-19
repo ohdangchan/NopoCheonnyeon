@@ -36,13 +36,15 @@ interface MyVisitDao {
 
     @Query("SELECT * FROM my_visits ORDER BY lastVisitedAt DESC") fun observeAll(): Flow<List<MyVisitEntity>>
 
-    @Query("SELECT COALESCE(SUM(yearsAwarded), 0) FROM my_visits") fun observeTotalYears(): Flow<Int>
+    @Query("SELECT COALESCE(SUM(yearsAwarded), 0) FROM my_visits WHERE storeId NOT LIKE 'TEST-%'") fun observeTotalYears(): Flow<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun put(visit: MyVisitEntity)
 
     @Query("UPDATE my_visits SET synced = 1 WHERE storeId = :storeId") suspend fun markSynced(storeId: String)
 
     @Query("DELETE FROM my_visits") suspend fun clear()
+
+    @Query("DELETE FROM my_visits WHERE storeId = :storeId") suspend fun delete(storeId: String)
 
     /** 처음이면 새로 넣고, 이미 있으면 세월은 그대로 두고 횟수·마지막 시각만 갱신한다. */
     @Transaction

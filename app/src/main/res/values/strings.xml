@@ -267,4 +267,38 @@
     <string name="detail_amenities">이용 정보</string>
     <string name="detail_menu">대표 메뉴</string>
     <string name="detail_category">업종</string>
+
+    <!-- 방문 인증 (E6) -->
+    <string name="verify_receipt_title">영수증으로 인증</string>
+    <string name="verify_receipt_guide">24시간 안에 결제한 영수증을 평평하게 펴고, 가게 이름·전화번호·결제 날짜가 한 화면에 보이게 찍어 주세요. 사진은 저장하지 않아요.</string>
+    <string name="verify_receipt_capture">영수증 촬영하기</string>
+    <string name="verify_analyzing">글자 읽는 중…</string>
+    <string name="verify_no_receipt">영수증이 없어요 · 가게 사진으로 인증</string>
+    <string name="verify_locate_title">가게 근처인지 확인해요</string>
+    <string name="verify_locate_guide">가게 30m 안에서 위치를 확인한 뒤, 가게 이름이나 전화번호가 보이는 사진을 찍어요.</string>
+    <string name="verify_measure">내 위치 확인하기 (최대 15초)</string>
+    <string name="verify_measuring">위치 확인 중…</string>
+    <string name="verify_locating">위치 확인 중 · 가장 정확한 값 ±%1$s m</string>
+    <string name="verify_back_to_receipt">영수증으로 인증하기</string>
+    <string name="verify_photo_title">가게 사진 찍기</string>
+    <string name="verify_photo_guide">간판, 메뉴판, 출입문처럼 가게 이름이나 전화번호가 보이게 찍어 주세요.</string>
+    <string name="verify_photo_capture">가게 사진 촬영하기</string>
+    <string name="verify_attempts">글자 확인 %1$d / %2$d회 실패</string>
+    <string name="verify_location_only_note">가게 앞에서 위치는 확인됐어요. 글자 확인 없이 위치만으로 도장을 찍을 수 있어요.</string>
+    <string name="verify_location_only">위치 확인 도장 받기</string>
+    <string name="verify_cancel">그만두기</string>
+    <string name="verify_done_title">도장을 찍었어요</string>
+    <string name="verify_done_years">세월 +%1$d년</string>
+    <string name="verify_done_revisit">단골 방문이에요 (세월은 처음 한 번만 쌓여요)</string>
+    <string name="verify_done_total">내 세월 %1$d년</string>
+    <string name="verify_title_up">새 칭호: %1$s</string>
+    <string name="verify_done_location_only">위치로 확인한 도장이에요.</string>
+    <string name="verify_done_pending">기록은 연결되면 서버에 자동으로 올라가요.</string>
+    <string name="verify_done_close">확인</string>
+
+    <!-- 테스트 가게 (FR-TST, 디버그 전용) -->
+    <string name="test_store_create">테스트 가게 만들기 (현재 위치)</string>
+    <string name="test_store_working">위치를 확인하는 중…</string>
+    <string name="test_store_no_fix">위치를 찾지 못했어요. 하늘이 보이는 곳에서 다시 해 주세요</string>
+    <string name="test_store_done">노포천년테스트식당을 만들었어요. 지도 탐색에서 찾아 보세요</string>
 </resources>

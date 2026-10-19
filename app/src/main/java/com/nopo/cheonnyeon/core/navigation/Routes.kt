@@ -10,6 +10,8 @@ object Routes {
     const val HOME = "home"
     const val STORE = "store/{id}"
     fun store(id: String) = "store/$id"
+    const val VERIFY = "verify/{id}"
+    fun verify(id: String) = "verify/$id"
     const val DIAGNOSTICS = "diagnostics"
 
     /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
