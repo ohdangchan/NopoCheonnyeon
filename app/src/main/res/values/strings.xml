@@ -13,7 +13,7 @@
     <string name="stamp_label_normal">세월</string>
     <string name="stamp_label_red">각인</string>
     <string name="stamp_label_gold">百年</string>
-    <string name="stamp_gold_caption">공인 노포</string>
+    <string name="stamp_gold_caption">백년 노포</string>
     <string name="years_value">%1$d년</string>
     <string name="cd_stamp">%1$s 도장, 업력 %2$d년</string>
     <string name="cd_stamp_grade_normal">청록</string>

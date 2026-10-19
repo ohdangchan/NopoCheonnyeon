@@ -45,7 +45,7 @@ enum class StampSize(val dp: Dp) {
  * 인주 원형 도장. 선 굵기는 Grid(80dp) 기준 값을 크기에 비례해 키운다.
  * - NORMAL: 단일 외곽선 + 보조선, "세월"
  * - RED: 파선 외곽선 + 보조선, "각인"
- * - GOLD: 3중 원(내부 점선), "百年" + "공인 노포"
+ * - GOLD: 3중 원(내부 점선), "百年" + "백년 노포"
  * 회전·낙하 연출은 호출하는 쪽(StampCeremonyScreen)에서 graphicsLayer로 건다.
  */
 @Composable
