@@ -106,7 +106,7 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
 
 /** 내 패스포트 (S-702·S-703, FR-PAS-01~03): 세월 게이지, 칭호, 3열 도장 격자, 도장 상세 */
 @Composable
-fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit) {
+fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit, onOpenRoulette: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
@@ -152,7 +152,10 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
             androidx.compose.material3.FilterChip(reviewsTab, { reviewsTab = true; regionsTab = false; vm.loadReviews() }, label = { Text(stringResource(R.string.passport_tab_reviews)) })
             vm.myUid?.let { uid -> TextButton({ onOpenProfile(uid) }) { Text(stringResource(R.string.passport_my_profile)) } }
         }
-        TextButton({ onOpenHall() }) { Text(stringResource(R.string.hall_button)) }
+        Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+            TextButton({ onOpenHall() }) { Text(stringResource(R.string.hall_button)) }
+            TextButton({ onOpenRoulette() }) { Text(stringResource(R.string.roulette_button)) }
+        }
         if (regionsTab) {
             androidx.compose.foundation.lazy.LazyColumn(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                 item { Text(stringResource(R.string.regions_title), style = NopoTheme.typography.titleLarge, color = c.ink) }

@@ -76,6 +76,10 @@ data class ReviewsUiState(
     val demoItems: List<ReviewItem> = emptyList(),
     /** 시험용 가게: 리뷰가 서버가 아니라 이 기기에만 저장된다 */
     val localOnly: Boolean = false,
+    /** AI 리뷰 분석 */
+    val insight: com.nopo.cheonnyeon.data.ai.StoreInsight? = null,
+    val insightLoading: Boolean = false,
+    val insightError: AppError? = null,
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
@@ -162,6 +166,24 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                 id = r.id, storeId = store.id, storeName = store.name, uid = uid, nickname = nickname, titleId = "",
                 rating = r.rating, text = r.text, visitCount = visits, updatedAtMillis = r.at, photos = r.photos,
             )
+        }
+    }
+
+    val aiAvailable: Boolean get() = container.ai.available
+    val aiConsent get() = container.settings.aiConsent
+    fun agreeAi() { viewModelScope.launch { container.settings.setAiConsent(true) } }
+
+    /** 이 가게의 다른 이용자 리뷰(시연용 포함)를 AI가 분석한다 */
+    fun analyze() {
+        val s = _state.value
+        if (s.insightLoading) return
+        _state.update { it.copy(insightLoading = true, insightError = null) }
+        viewModelScope.launch {
+            val reviews = (s.items + s.demoItems).filter { it.uid != myUid || it.demo }.map { com.nopo.cheonnyeon.data.ai.InsightReview(it.rating, it.text) }
+            when (val r = container.ai.analyzeStore(store.id, store.name, store.menuItems, reviews)) {
+                is AppResult.Success -> _state.update { it.copy(insightLoading = false, insight = r.value) }
+                is AppResult.Failure -> _state.update { it.copy(insightLoading = false, insightError = r.error) }
+            }
         }
     }
 
@@ -275,6 +297,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
             )
         }
         state.error?.let { Text(it.message(LocalContext.current), color = c.stamp) }
+        AiInsightSection(vm, state)
 
         when (state.eligibility) {
             ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
@@ -414,4 +437,55 @@ private fun ReviewCardPreview() {
         ReviewCard(ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 4, "수육이 부드럽고 공기밥이 푸짐해요.", 2, 0L), onOpenProfile = {}, onReport = {})
         ReviewCard(ReviewItem("R2", "BN-1", "노포천년식당", "demo", "골목식객", "REGULAR", 5, "예시 리뷰입니다.", 1, 0L, demo = true), onOpenProfile = {}, onReport = null)
     }
+}
+
+/** AI 리뷰 분석: 특장점·추천 메뉴·아쉬운 점 (리뷰가 3개 이상일 때) */
+@Composable
+private fun AiInsightSection(vm: ReviewsViewModel, state: ReviewsUiState) {
+    if (!vm.aiAvailable) return
+    val c = NopoTheme.colors
+    val total = state.items.size + state.demoItems.size
+    var askConsent by rememberSaveable { mutableStateOf(false) }
+    val consent by vm.aiConsent.collectAsStateWithLifecycle(initialValue = false)
+    if (state.insight == null) {
+        if (total < 3) {
+            Text(stringResource(R.string.insight_need_reviews), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        } else {
+            NopoButton(
+                stringResource(if (state.insightLoading) R.string.insight_loading else R.string.insight_button),
+                { if (consent) vm.analyze() else askConsent = true },
+                enabled = !state.insightLoading,
+                style = NopoButtonStyle.Outline,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+    state.insightError?.let { Text(it.message(LocalContext.current), color = c.stamp) }
+    state.insight?.let { ins ->
+        Column(
+            Modifier.fillMaxWidth().background(c.tealSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
+        ) {
+            Text(stringResource(R.string.insight_title), style = NopoTheme.typography.titleSmall, color = c.primary)
+            if (ins.oneLine.isNotBlank()) Text(ins.oneLine, style = NopoTheme.typography.titleMedium, color = c.ink)
+            if (ins.strengths.isNotEmpty()) {
+                Text(stringResource(R.string.insight_strengths), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                ins.strengths.forEach { Text("• $it", style = NopoTheme.typography.bodyMedium, color = c.ink) }
+            }
+            if (ins.menus.isNotEmpty()) {
+                Text(stringResource(R.string.insight_menus), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                ins.menus.forEach { m -> Text("• ${m.menu}" + if (m.reason.isNotBlank()) " — ${m.reason}" else "", style = NopoTheme.typography.bodyMedium, color = c.ink) }
+            }
+            if (ins.weaknesses.isNotEmpty()) {
+                Text(stringResource(R.string.insight_weaknesses), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                ins.weaknesses.forEach { Text("• $it", style = NopoTheme.typography.bodyMedium, color = c.stamp) }
+            }
+            if (ins.bestFor.isNotBlank()) {
+                Text(stringResource(R.string.insight_best_for), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                Text(ins.bestFor, style = NopoTheme.typography.bodyMedium, color = c.ink)
+            }
+            Text(stringResource(R.string.insight_disclaimer), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        }
+    }
+    if (askConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyze() }, onDismiss = { askConsent = false })
 }

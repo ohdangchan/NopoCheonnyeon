@@ -21,6 +21,7 @@ class SettingsStore(private val context: Context) {
     private val foodOnlyKey = booleanPreferencesKey("filter_food_only")
     private val locationOnlyKey = booleanPreferencesKey("allow_location_only")
     private val demoDataKey = booleanPreferencesKey("demo_data")
+    private val aiConsentKey = booleanPreferencesKey("ai_consent")
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[onboardingDoneKey] ?: false }
     val foodOnly: Flow<Boolean> = context.dataStore.data.map { it[foodOnlyKey] ?: false }
@@ -71,6 +72,9 @@ class SettingsStore(private val context: Context) {
     suspend fun setCatalogVersion(v: Long) { context.dataStore.edit { it[catalogVersionKey] = v } }
     suspend fun setOnboardingDone() { context.dataStore.edit { it[onboardingDoneKey] = true } }
     suspend fun setAllowLocationOnly(v: Boolean) { context.dataStore.edit { it[locationOnlyKey] = v } }
+    /** AI 기능 안내(리뷰 글·음식 사진이 Google Gemini로 전송됨)에 동의했는지 */
+    val aiConsent: Flow<Boolean> = context.dataStore.data.map { it[aiConsentKey] ?: false }
+    suspend fun setAiConsent(v: Boolean) { context.dataStore.edit { it[aiConsentKey] = v } }
     suspend fun setDemoData(v: Boolean) { context.dataStore.edit { it[demoDataKey] = v } }
     suspend fun setFoodOnly(v: Boolean) { context.dataStore.edit { it[foodOnlyKey] = v } }
 
