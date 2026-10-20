@@ -38,6 +38,8 @@ data class MapUiState(
     val sort: ListSort = ListSort.NEAREST,
     val fix: Fix? = null,
     val locating: Boolean = false,
+    /** 올라갈 때마다 지도가 내 위치로 이동한다 */
+    val recenter: Int = 0,
     val currentYear: Int = LocalDate.now(SeoulZone).year,
 ) {
     val selected: Store? get() = filtered.firstOrNull { it.id == selectedId }
@@ -107,17 +109,18 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
     fun toggleListMode() = local.update { it.copy(listMode = !it.listMode) }
     fun setSort(s: ListSort) = local.update { it.copy(sort = s) }
 
-    /** 내 위치 한 번 찾기 (권한은 화면이 먼저 확인한다). 최대 8초 */
+    /**
+     * 내 위치 찾기 (권한은 화면이 먼저 확인한다).
+     * 이미 아는 위치가 있으면 바로 그곳으로 이동하고, 빠른 위치(보통 1~2초)로 먼저 옮긴 뒤 정확한 값으로 조용히 다듬는다.
+     */
     fun findMe() {
         if (local.value.locating) return
-        local.update { it.copy(locating = true) }
+        local.update { it.copy(locating = true, recenter = if (it.fix != null) it.recenter + 1 else it.recenter) }
         viewModelScope.launch {
-            val fix = try {
-                location.bestFix(timeoutMs = 8_000L)
-            } catch (_: Exception) {
-                null
-            }
-            local.update { it.copy(locating = false, fix = fix ?: it.fix) }
+            val quick = try { location.quickFix() } catch (_: Exception) { null }
+            local.update { it.copy(locating = false, fix = quick ?: it.fix, recenter = if (quick != null) it.recenter + 1 else it.recenter) }
+            val fine = try { location.bestFix(timeoutMs = 8_000L, earlyStopM = 30.0) } catch (_: Exception) { null }
+            if (fine != null) local.update { it.copy(fix = fine, recenter = if (quick == null && it.fix == null) it.recenter + 1 else it.recenter) }
         }
     }
 }

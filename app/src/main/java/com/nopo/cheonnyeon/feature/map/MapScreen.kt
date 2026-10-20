@@ -147,17 +147,19 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         onDispose { sdk.onAuthFailedListener = null }
     }
 
-    // 내 위치가 잡히면 표시하고 처음 한 번 이동
-    var movedToFix by rememberSaveable { mutableStateOf(false) }
+    // 내 위치가 잡히면 표시하고, 내 위치 버튼을 누르거나 처음 잡힐 때 그곳으로 이동
     LaunchedEffect(naverMap, state.fix) {
         val map = naverMap ?: return@LaunchedEffect
         val fix = state.fix ?: return@LaunchedEffect
-        val here = LatLng(fix.lat, fix.lng)
-        map.locationOverlay.apply { isVisible = true; position = here; circleRadius = fix.accuracyM.toInt() }
-        if (!movedToFix) {
-            movedToFix = true
-            map.moveCamera(CameraUpdate.scrollAndZoomTo(here, 14.0).animate(CameraAnimation.Easing))
-        }
+        map.locationOverlay.apply { isVisible = true; position = LatLng(fix.lat, fix.lng); circleRadius = fix.accuracyM.toInt() }
+    }
+    var movedTick by rememberSaveable { mutableStateOf(0) }
+    LaunchedEffect(naverMap, state.recenter) {
+        val map = naverMap ?: return@LaunchedEffect
+        val fix = state.fix ?: return@LaunchedEffect
+        if (state.recenter == movedTick) return@LaunchedEffect
+        movedTick = state.recenter
+        map.moveCamera(CameraUpdate.scrollAndZoomTo(LatLng(fix.lat, fix.lng), 14.0).animate(CameraAnimation.Easing))
     }
 
     // 화면 영역 안의 가게만 마커로 그린다 (FR-MAP-04). 카메라가 멈추거나 필터가 바뀌면 다시 계산

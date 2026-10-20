@@ -6,6 +6,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Looper
 import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -63,6 +64,22 @@ class FusedLocationAdapter(context: Context) {
         }
         client.requestLocationUpdates(request, callback, Looper.getMainLooper())
         awaitClose { client.removeLocationUpdates(callback) }
+    }
+
+    /**
+     * 지도 화면용 빠른 위치: 최근 값(1분 이내)이 있으면 바로, 없으면 저전력 한 번 요청(최대 3초).
+     * 정확도는 거칠 수 있어 인증에는 쓰지 않는다. 못 받으면 null.
+     */
+    @SuppressLint("MissingPermission")
+    suspend fun quickFix(): Fix? = try {
+        val req = CurrentLocationRequest.Builder()
+            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
+            .setMaxUpdateAgeMillis(60_000L)
+            .setDurationMillis(3_000L)
+            .build()
+        withTimeoutOrNull(3_500L) { client.getCurrentLocation(req, null).await() }?.toFix()
+    } catch (_: Exception) {
+        null
     }
 
     /**
