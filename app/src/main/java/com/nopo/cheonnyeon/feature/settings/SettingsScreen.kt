@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import com.nopo.cheonnyeon.core.common.message
 import kotlinx.coroutines.launch
@@ -83,7 +84,17 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
             style = NopoButtonStyle.Outline,
             modifier = Modifier.fillMaxWidth(),
         )
-        if (showLicenses) Text(stringResource(R.string.settings_licenses_body), color = c.ink2, style = NopoTheme.typography.bodySmall)
+        if (showLicenses) {
+            stringArrayResource(R.array.licenses_list).forEach { row ->
+                val (name, license, purpose) = row.split("|")
+                Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs)) {
+                    Text(name, color = c.ink, style = NopoTheme.typography.titleSmall)
+                    Text(license, color = c.primary, style = NopoTheme.typography.labelMedium)
+                    Text(purpose, color = c.ink2, style = NopoTheme.typography.bodySmall)
+                }
+            }
+            Text(stringResource(R.string.settings_licenses_body), color = c.ink2, style = NopoTheme.typography.bodySmall)
+        }
         NopoButton(
             stringResource(if (showPolicy) R.string.settings_policy_hide else R.string.settings_policy),
             { showPolicy = !showPolicy },

@@ -119,6 +119,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                             Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
                             com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
                             if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
+                            TextButton({ onOpenStore(r.storeId) }) { Text(stringResource(R.string.my_review_edit)) }
                         }
                     }
                 }

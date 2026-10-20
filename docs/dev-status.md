@@ -179,3 +179,8 @@
 
 **막힌 것(사용자 필요):** ① **Firebase CLI 로그인 만료** → `firebase login --reauth` 후 `cd firebase && firebase deploy --only firestore:rules --project nopocheonnyeon` (storeStats·공개 범위 규칙). 배포 전에는 재방문율이 0명, 공개 범위 저장은 오류 문구. 앱 자체는 정상(집계 쓰기는 실패해도 방문 기록에 영향 없게 분리). ② 구글 Places 키(사진). ③ 영수증 실촬영 등 수동 QA(`nopo-09`).
 **남은 개발 후보:** B-04(ViewModel·Repository·Room 테스트, Firestore 포트 분리 필요), B-15~B-24, 시안 보강(동기화 복원 진행 화면, 로그아웃 경고 대기 목록, 내 리뷰 수정·삭제 버튼, 개인정보 처리방침 화면, 라이선스 목록), D-01~D-04 데이터 보강.
+
+### 10-2. 이어진 진행 (같은 날)
+- B-04 일부: `SyncRejectionPolicy`(+테스트 4개) → 단위 테스트 156개. 로그아웃 경고에 올라가지 않은 가게 목록, 로그인 직후 "서버에서 기록을 불러오는 중" 배너(`AppContainer.restoring`), 설정의 개인정보 처리방침 전체 보기·라이선스 목록, 내 리뷰 "수정·삭제하러 가기".
+- lint 오류 0건(Compose `LocalContext` 리소스 호출 수정). 쓰지 않는 문자열 제거, `err_*`는 `getIdentifier`로 읽으므로 `tools:ignore="UnusedResources"`.
+- 이 PC에서 `./gradlew.bat lintDebug testDebugUnitTest assembleDebug`가 통과하는 상태에서 커밋.
