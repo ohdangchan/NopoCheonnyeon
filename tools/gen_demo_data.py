@@ -294,6 +294,12 @@ def main():
                 img.save(os.path.join(OUT_IMG, name), quality=82, optimize=True)
                 urls.append("file:///android_asset/demo/" + name)
             photos[s["id"]] = urls
+    test_store = {"id": "TEST-NOPO", "name": "노포천년테스트식당", "foundedYear": 1980, "sido": "서울", "sigungu": "우리 동네", "address": "내 현재 위치",
+                  "categoryGroup": "음식점", "menuItems": ["설렁탕", "수육", "공기밥"],
+                  "summary": "1980년 문을 연 뒤 한 솥 국물로 사십 년 넘게 손님을 맞아 온 시연용 노포예요."}
+    reviews += build_reviews(test_store, 12, users)
+    for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
+        fn(test_store, 46, n).save(os.path.join(OUT_IMG, f"TEST-NOPO_{n}.jpg"), quality=82, optimize=True)
     me = build_me(seoul)
     # 명예의 전당의 탐방 수·리뷰 수는 실제 생성된 리뷰 수와 맞춘다
     counts = {}

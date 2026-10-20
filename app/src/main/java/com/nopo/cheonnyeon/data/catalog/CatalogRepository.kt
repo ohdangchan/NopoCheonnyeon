@@ -42,6 +42,9 @@ class CatalogRepository(
             id = Store.TEST_PREFIX + "NOPO", name = "노포천년테스트식당", phone = "020000000", foundedYear = 1980,
             programs = listOf("BAEKNYEON"), sido = "테스트", sigungu = "테스트", address = "테스트 가게", lat = lat, lng = lng, isTest = true,
             summary = "진단 화면에서 만든 시험용 가게예요. 세월과 한도에 들어가지 않아요.",
+            categoryGroup = "음식점", menuItems = listOf("설렁탕", "수육", "공기밥"), hours = "매일 10:00~21:00",
+            story = "1980년 문을 연 뒤 한 솥 국물로 사십 년 넘게 손님을 맞아 온 시연용 노포예요. 영수증 인증을 직접 해 볼 수 있게 현재 위치에 만든 가게라서 세월과 하루 한도에는 들어가지 않아요.",
+            photoUrls = (1..3).map { "file:///android_asset/demo/" + Store.TEST_PREFIX + "NOPO_" + it + ".jpg" },
         )
         withContext(dispatchers.io) { dao.insertAll(listOf(com.nopo.cheonnyeon.data.local.StoreEntity.from(store))) }
         invalidate()

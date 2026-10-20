@@ -66,11 +66,11 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                     style = NopoTheme.typography.bodySmall,
                     color = c.ink2,
                 )
-                RewardBox(state)
+                RewardBox(state, store.isTest)
                 InfoSection(store)
-                store.story?.takeIf { it.isNotBlank() }?.let { StorySection(it) }
+                store.story?.takeIf { it.isNotBlank() }?.let { StorySection(it, showSource = !store.isTest) }
                 if (!store.isTest) InfoReport(vm)
-                if (!store.isTest) reviews(store)
+                reviews(store)
                 store.sourceUrl?.let { Text(stringResource(R.string.detail_source, it), style = NopoTheme.typography.bodySmall, color = c.ink2) }
             }
         }
@@ -89,7 +89,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
 
 /** 가게 이야기 (FR-STORE-01): 소상공인마당 '소개글' 원문. 길면 접어서 보여 주고 눌러서 펼친다 */
 @Composable
-private fun StorySection(story: String) {
+private fun StorySection(story: String, showSource: Boolean) {
     val c = NopoTheme.colors
     var expanded by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
     val long = story.length > STORY_PREVIEW_CHARS || story.count { it == '\n' } >= 3
@@ -104,7 +104,7 @@ private fun StorySection(story: String) {
                 Text(stringResource(if (expanded) R.string.store_story_less else R.string.store_story_more))
             }
         }
-        Text(stringResource(R.string.store_story_source), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        if (showSource) Text(stringResource(R.string.store_story_source), style = NopoTheme.typography.bodySmall, color = c.ink2)
     }
 }
 
@@ -169,7 +169,7 @@ private fun Photos(store: Store) {
 
 /** 첫 방문이면 얻을 세월과 다음 칭호까지, 방문했으면 방문 완료 · 단골 횟수 (FR-STORE-02) */
 @Composable
-private fun RewardBox(state: StoreDetailUiState) {
+private fun RewardBox(state: StoreDetailUiState, isTest: Boolean) {
     val c = NopoTheme.colors
     val fg = if (c.isDark) c.brass else c.onBrass
     Column(
@@ -179,6 +179,8 @@ private fun RewardBox(state: StoreDetailUiState) {
         val visit = state.visit
         if (visit != null) {
             Text(stringResource(R.string.detail_visited, visit.visitCount), style = NopoTheme.typography.titleMedium, color = fg)
+        } else if (isTest) {
+            Text(stringResource(R.string.detail_reward_test), style = NopoTheme.typography.titleMedium, color = fg)
         } else {
             Text(stringResource(R.string.detail_reward_title, state.years), style = NopoTheme.typography.titleMedium, color = fg)
             val after = state.myTotalYears + state.years

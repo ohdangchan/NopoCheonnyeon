@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** 리뷰를 쓸 수 있는 자격 (FR-STORE-04) */
-enum class ReviewEligibility { NOT_VISITED, SYNCING, OK }
+enum class ReviewEligibility { NOT_VISITED, SYNCING, OK, TEST_STORE }
 
 data class ReviewsUiState(
     val loading: Boolean = true,
@@ -79,6 +79,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     fun refresh() {
         _state.update { it.copy(loading = true, error = null) }
         viewModelScope.launch {
+            if (store.isTest) { refreshTestStore(); return@launch }
             val visit = container.database.myVisitDao().byStore(store.id)
             val eligibility = when {
                 visit == null -> ReviewEligibility.NOT_VISITED
@@ -104,11 +105,22 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                     items = page.valueOrNull?.items.orEmpty(),
                     hasMore = page.valueOrNull?.hasMore ?: false,
                     mine = mine,
-                    stats = stats,
+                    stats = mergeDemoStats(stats, demo),
                     eligibility = eligibility,
                     error = summary.errorOrNull ?: page.errorOrNull,
                 )
             }
+        }
+    }
+
+    /** 시험용 가게는 서버에 없으므로 시연용 예시 리뷰만 보여 준다 */
+    private suspend fun refreshTestStore() {
+        val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
+        _state.update {
+            it.copy(
+                loading = false, summary = com.nopo.cheonnyeon.data.remote.DemoReviews.merge(null, demo), demoItems = demo,
+                stats = mergeDemoStats(null, demo), eligibility = ReviewEligibility.TEST_STORE, error = null,
+            )
         }
     }
 
@@ -155,6 +167,17 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     }
 }
 
+/** 시연용 예시 리뷰어를 방문자로, 단골 2회 이상을 재방문자로 세어 서버 집계에 더한다 */
+internal fun mergeDemoStats(server: com.nopo.cheonnyeon.data.remote.StoreStats?, demo: List<ReviewItem>): com.nopo.cheonnyeon.data.remote.StoreStats? {
+    if (demo.isEmpty()) return server
+    val people = demo.filter { it.uid == com.nopo.cheonnyeon.data.remote.DemoReviews.DEMO_UID }
+    if (people.isEmpty()) return server
+    return com.nopo.cheonnyeon.data.remote.StoreStats(
+        visitors = (server?.visitors ?: 0) + people.size,
+        revisitors = (server?.revisitors ?: 0) + people.count { it.visitCount >= 2 },
+    )
+}
+
 /** 평점 요약 + 리뷰 목록 + 평점 남기기 (S-506, S-802, FR-STORE-03·04) */
 @Composable
 fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
@@ -187,6 +210,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
 
         when (state.eligibility) {
             ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            ReviewEligibility.TEST_STORE -> Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.SYNCING -> Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.OK -> NopoButton(
                 stringResource(if (state.mine != null) R.string.reviews_edit else R.string.reviews_write),

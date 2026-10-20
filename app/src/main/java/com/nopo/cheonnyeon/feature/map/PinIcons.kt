@@ -15,16 +15,17 @@ object PinIcons {
         return cache.getOrPut(key) { OverlayImage.fromBitmap(draw(fill, goldRim)) }
     }
 
-    private fun draw(fill: Int, goldRim: Int?): Bitmap {
+    internal fun draw(fill: Int, goldRim: Int?): Bitmap {
         val w = 88
         val h = 112
         val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         val cv = Canvas(bmp)
         val body = Path().apply {
             addCircle(w / 2f, 42f, 36f, Path.Direction.CW)
-            moveTo(w / 2f - 24f, 62f)
+            // 원(시계 방향)과 같은 방향으로 그려야 겹치는 부분이 비지 않는다
+            moveTo(w / 2f + 24f, 62f)
             lineTo(w / 2f, h - 4f)
-            lineTo(w / 2f + 24f, 62f)
+            lineTo(w / 2f - 24f, 62f)
             close()
         }
         val p = Paint(Paint.ANTI_ALIAS_FLAG)

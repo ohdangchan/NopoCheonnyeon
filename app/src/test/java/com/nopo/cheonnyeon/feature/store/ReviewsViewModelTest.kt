@@ -115,4 +115,19 @@ class ReviewsViewModelTest {
         assertEquals(1, vm.state.value.summary?.count)
         assertEquals(0, vm.state.value.demoItems.size)
     }
+
+    @Test fun `시험용 가게는 서버를 부르지 않고 예시 리뷰와 재방문 통계만 보여 준다`() {
+        val testStore = Store(id = "TEST-NOPO", name = "시험식당", isTest = true)
+        val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
+        every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(true)
+        val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
+        coEvery { demoRepo.forStore("TEST-NOPO") } returns listOf(demoItem(5), demoItem(3).copy(visitCount = 2))
+        val container = mockk<AppContainer>()
+        every { container.settings } returns settings
+        every { container.demoReviews } returns demoRepo
+        val vm = ReviewsViewModel(container, testStore)
+        assertEquals(ReviewEligibility.TEST_STORE, vm.state.value.eligibility)
+        assertEquals(2, vm.state.value.summary?.count)
+        assertEquals(StoreStats(2, 1), vm.state.value.stats)
+    }
 }
