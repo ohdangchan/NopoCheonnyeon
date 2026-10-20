@@ -256,6 +256,12 @@
     <string name="detail_reward_title">이 가게를 방문 인증하면 세월 +%1$d년!</string>
     <string name="detail_reward_test">시험용 가게예요. 인증해도 세월과 하루 한도에는 들어가지 않아요.</string>
     <string name="reviews_test_store">시험용 가게예요. 내 리뷰는 이 기기에만 저장되고, 나머지 리뷰는 시연용 예시예요.</string>
+    <string name="photo_credit_google">사진: Google 지도</string>
+    <string name="auth_consent">개인정보 처리방침에 동의해요 (필수)</string>
+    <string name="auth_consent_view">처리방침 전체 보기</string>
+    <string name="passport_stat_stamps">도장</string>
+    <string name="passport_stat_regions">방문 지역</string>
+    <string name="passport_stat_oldest">가장 오래된 노포</string>
     <string name="detail_reward_total">내 세월 %1$d년 → %2$d년</string>
     <string name="detail_visited">방문 완료 · 단골 %1$d회</string>
     <string name="detail_hours">영업시간</string>

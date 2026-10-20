@@ -127,6 +127,24 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
             TitleBadge(title)
         }
         YearsGauge(totalYears = state.totalYears, yearsToNextTitle = TitlePolicy.yearsToNext(state.totalYears))
+        val stats = com.nopo.cheonnyeon.domain.rule.PassportStats.of(state.stamps.filter { !it.isTest }.map { (it.store?.sido ?: "") to it.visit.yearsAwarded })
+        if (stats.stamps > 0) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                listOf(
+                    R.string.passport_stat_stamps to stats.stamps.toString(),
+                    R.string.passport_stat_regions to stats.regions.toString(),
+                    R.string.passport_stat_oldest to stringResource(R.string.hall_years, stats.oldestYears),
+                ).forEach { (label, value) ->
+                    Column(
+                        Modifier.weight(1f).background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.sm),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(value, style = NopoTheme.typography.titleLarge, color = c.stamp)
+                        Text(stringResource(label), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                    }
+                }
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
             androidx.compose.material3.FilterChip(!reviewsTab && !regionsTab, { reviewsTab = false; regionsTab = false }, label = { Text(stringResource(R.string.passport_tab_stamps)) })
             androidx.compose.material3.FilterChip(regionsTab, { regionsTab = true; reviewsTab = false }, label = { Text(stringResource(R.string.passport_tab_regions)) })

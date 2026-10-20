@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -118,13 +120,15 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirm by rememberSaveable { mutableStateOf("") }
+    var agreed by rememberSaveable { mutableStateOf(false) }
+    var showPolicy by rememberSaveable { mutableStateOf(false) }
     val nickInvalid = AuthValidation.nickname(nick).takeIf { nick.isNotEmpty() }
     val emailInvalid = AuthValidation.email(email).takeIf { email.isNotEmpty() }
     val pwInvalid = AuthValidation.password(password).takeIf { password.isNotEmpty() }
     val confirmInvalid = AuthValidation.passwordConfirm(password, confirm).takeIf { confirm.isNotEmpty() }
     val ready = AuthValidation.nickname(nick) == null && AuthValidation.email(email) == null &&
         AuthValidation.password(password) == null && AuthValidation.passwordConfirm(password, confirm) == null &&
-        state.nick != NickStatus.TAKEN
+        state.nick != NickStatus.TAKEN && agreed
     AuthFrame(stringResource(R.string.auth_sign_up_title), stringResource(R.string.auth_sign_up_subtitle)) {
         Field(
             nick, { nick = it; vm.onNicknameChanged(it) }, R.string.auth_nickname, error = nickInvalid,
@@ -139,6 +143,17 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
         Field(password, { password = it }, R.string.auth_password, error = pwInvalid, password = true, supporting = stringResource(R.string.auth_password_hint))
         Field(confirm, { confirm = it }, R.string.auth_password_confirm, error = confirmInvalid, password = true)
         Text(stringResource(R.string.auth_privacy_note), color = NopoTheme.colors.ink2, style = NopoTheme.typography.bodySmall)
+        androidx.compose.foundation.layout.Row(
+            Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch).toggleable(value = agreed, role = androidx.compose.ui.semantics.Role.Checkbox, onValueChange = { agreed = it }),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            androidx.compose.material3.Checkbox(checked = agreed, onCheckedChange = null)
+            Text(stringResource(R.string.auth_consent), color = NopoTheme.colors.ink, style = NopoTheme.typography.bodyMedium, modifier = Modifier.padding(start = NopoTheme.spacing.sm))
+        }
+        androidx.compose.material3.TextButton(onClick = { showPolicy = !showPolicy }) {
+            Text(stringResource(if (showPolicy) R.string.settings_policy_hide else R.string.auth_consent_view))
+        }
+        if (showPolicy) Text(stringResource(R.string.privacy_policy_full), color = NopoTheme.colors.ink2, style = NopoTheme.typography.bodySmall)
         ErrorLine(state)
         NopoButton(
             text = stringResource(if (state.busy) R.string.auth_working else R.string.auth_sign_up_action),

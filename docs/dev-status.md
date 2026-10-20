@@ -224,3 +224,8 @@
 - 시험용 가게(`TEST-NOPO`): 인증 전에는 "방문 인증한 사람만 평점을 남길 수 있어요", 인증 뒤에는 리뷰를 쓸 수 있다. 내 리뷰는 `SettingsStore.testReview`(DataStore, 키 `test_review_<가게 ID>`)에 이 기기에만 저장되고 평균·개수에 합쳐진다. "테스트 가게·기록 삭제"가 함께 지운다. 단위 시험 `ReviewsViewModelTest`에 2개.
 - `tools/gen_test_receipt.py`: 영수증 3종(성공·50시간 전·다른 가게)과 메뉴판, 시나리오 페이지 `demo_scenarios.html`. 시나리오 표는 `docs/demo-guide.md` 끝.
 - 미확인: 새 영수증 이미지들을 ML Kit으로 읽는 것(카메라 촬영 필요). 폰에서 시나리오 2~4는 사용자가 촬영해 확인.
+
+### 10-11. Google 지도 대표 사진·가입 동의·패스포트 통계 (2026-10-20)
+- **대표 사진:** `python tools/fetch_google_places.py`(키는 환경변수 `GOOGLE_PLACES_KEY`, 코드·로그에 없음) — 공식 사진이 없는 1,191곳 중 860곳에 Google Places(New) 사진 1장씩(폭 560px WebP, 약 26MB → `app/src/main/assets/places/<가게ID>.webp`). 이름 유사도 0.9 이상 + 시·군·구 일치일 때만 채택(0.75~0.89 구간은 오매칭이 많아 39곳 제외). 못 찾은 약 330곳은 글자 카드. 기록 `data/raw/google_places.jsonl`, 지도 `data/places_photos.json` → `build_catalog.py`가 공식 → Google → 시연용 순으로 최대 3장. 사진 위에 "사진: Google 지도" 표시. 현재 사진이 있는 가게 946/1,277곳. **사진 파일은 `.gitignore`(약관상 저장·재배포 제한) — 새로 받으려면 스크립트 재실행. 공개 배포 전 Google 지도 플랫폼 약관 재확인.** APK 79MB(arm64).
+- 가입 화면: 개인정보 처리방침 동의 체크박스(필수)·전체 보기. 패스포트: 도장·방문 지역·가장 오래된 노포 통계 카드(`PassportStats`, 단위 시험 2개).
+- 폰 확인: 설치까지만 했고 새 사진 표시는 미확인(폰을 사용 중이라 UI 자동 확인 중단).

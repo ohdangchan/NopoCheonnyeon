@@ -108,6 +108,7 @@ private fun StorySection(story: String, showSource: Boolean) {
     }
 }
 
+private const val GOOGLE_PHOTO_PREFIX = "file:///android_asset/places/"
 private const val STORY_PREVIEW_CHARS = 180
 private const val STORY_PREVIEW_LINES = 5
 
@@ -154,7 +155,20 @@ private fun Photos(store: Store) {
     val pager = rememberPagerState { count }
     Column(Modifier.statusBarsPadding()) {
         HorizontalPager(pager, Modifier.fillMaxWidth().aspectRatio(4f / 3f)) { page ->
-            StorePhoto(store, Modifier.fillMaxSize(), index = page)
+            androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+                StorePhoto(store, Modifier.fillMaxSize(), index = page)
+                // Google 지도 사진은 출처를 표시한다
+                if (store.photoUrls.getOrNull(page)?.startsWith(GOOGLE_PHOTO_PREFIX) == true) {
+                    Text(
+                        stringResource(R.string.photo_credit_google),
+                        style = NopoTheme.typography.labelMedium,
+                        color = NopoTheme.colors.onSign,
+                        modifier = Modifier.align(androidx.compose.ui.Alignment.BottomEnd).padding(NopoTheme.spacing.sm)
+                            .background(NopoTheme.colors.sign.copy(alpha = 0.7f), NopoTheme.shapes.sm)
+                            .padding(horizontal = NopoTheme.spacing.sm, vertical = NopoTheme.spacing.xxs),
+                    )
+                }
+            }
         }
         if (count > 1) {
             Text(

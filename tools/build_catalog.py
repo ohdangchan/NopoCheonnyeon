@@ -251,6 +251,12 @@ def main():
         with open(dpath, encoding="utf-8") as f:
             demo_photos = json.load(f)
 
+    google_photos = {}   # tools/fetch_google_places.py 가 받은 대표 사진(공식 사진 다음 순서). 앱이 "사진: Google 지도"를 표시한다
+    gpath = os.path.join("data", "places_photos.json")
+    if os.path.exists(gpath):
+        with open(gpath, encoding="utf-8") as f:
+            google_photos = json.load(f)
+
     stores = []
     for rid, l in by_id.items():
         d = det.get(rid, {})
@@ -484,7 +490,7 @@ def main():
             "story": s["story"] or None,
             "generation": s["generation"] if isinstance(s["generation"], int) else None,
             "sourceUrl": s["source_url"] or None,
-            "photoUrls": (photos.get(s["id"], []) + demo_photos.get(s["id"], []))[:3] if s["id"] in demo_photos else photos.get(s["id"], []),
+            "photoUrls": (photos.get(s["id"], []) + ([google_photos[s["id"]]] if s["id"] in google_photos else []) + demo_photos.get(s["id"], []))[:3],
         })
     with open(os.path.join(a.assets, "stores.json"), "w", encoding="utf-8") as f:
         json.dump({"version": a.version, "generatedAt": datetime.datetime.now().isoformat(timespec="seconds"),

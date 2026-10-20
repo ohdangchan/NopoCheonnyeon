@@ -22,3 +22,6 @@ __pycache__/
 __pycache__/
 .kotlin/
 app/release/
+
+# Google 지도 사진(약관상 저장·재배포 제한) — 스크립트로 다시 만든다
+app/src/main/assets/places/
