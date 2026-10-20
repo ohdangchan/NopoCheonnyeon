@@ -252,6 +252,14 @@ adb shell dumpsys package com.nopo.cheonnyeon | findstr versionName
 | N-20 | 오프라인 리뷰(트랜잭션) | 비행기 모드에서 리뷰 저장 | 즉시(최대 12초) 오프라인 안내, 글 유지. 연결 후 저장하면 한 번만 반영, 평균·개수 일치 | R | 미실시 |
 | N-21 | 릴리스에 Client Secret 없음 | `unzip -p app-release.apk 'classes*.dex'`에 키 문자열 검색 | 0건(2026-10-20 개발 PC에서 확인함) | R | PASS(dex 검색) |
 
+## 14. 가게 이야기·자동 시험 (2026-10-20)
+| ID | 시험 | 기대 | 상태 |
+|---|---|---|---|
+| G-01 | 가게 상세 "가게 이야기" | 백년가게 상세에 이야기 문단·출처 표시, 길면 "이야기 더 보기"로 펼침, 오래가게는 섹션 없음 | **PASS(2026-10-20 디버그, 모꼬지에: 섹션·출처 표시). 펼치기·오래가게는 미확인** |
+| G-02 | 카탈로그 v26102013 적재·DB 마이그레이션 | 기존 계정의 도장·세월이 유지된 채 앱 시작 | **PASS(2026-10-20 실기기 실제 데이터 DB v2→v3, 시작 후 내 패스포트 정상)** |
+| G-03 | 계측 시험(`adb shell am instrument`) | `AppDatabaseMigrationTest`·`RoomOnDeviceTest`·`AppLaunchSmokeTest` 등 6개 | **PASS(2026-10-20, 폰 R5KL806MA4W)** |
+> 폰 계측 시험 방법: `./gradlew assembleDebug assembleDebugAndroidTest` → `adb install -r app-debug.apk` → `adb install -r app-debug-androidTest.apk` → `adb shell am instrument -w com.nopo.cheonnyeon.test/androidx.test.runner.AndroidJUnitRunner`. 디버그 빌드도 `keystore.properties`가 있으면 릴리스 키로 서명돼 폰의 릴리스 앱 위에 **데이터를 지우지 않고** 덮어 설치된다. 끝나면 릴리스 APK를 다시 설치한다.
+
 ## 12. 요약 (2026-10-20 기준)
 - **실기기 확인됨(PASS)**: 계정 기본 흐름, 로그인 유지, 복원, 온보딩, 지도·필터·검색·목록, 상세·사진, 테스트 가게, 위치 → 글자 3회 실패 → 위치 확인 도장, 패스포트, 서버 동기화, 별점 저장·삭제, 내 프로필, 닉네임 변경, 설정, 릴리스 서명·시작.
 - **가장 먼저 해야 할 수동 시험**: O-01 오프라인 인증, R-03/Y-04 릴리스에서 영수증 실촬영, L-14 실제 노포 앞 30m, R-09 두 계정 같은 영수증, A-16 회원 탈퇴, V-10 리뷰 신고, Z-13 구형 기기.

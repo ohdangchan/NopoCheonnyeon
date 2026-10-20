@@ -190,3 +190,9 @@
 
 ### 10-4. Firebase 규칙 배포 완료
 `firebase login`(songpa24@iceu.kr) 재인증 후 `firebase deploy --only firestore:rules,firestore:indexes --project nopocheonnyeon`이 성공했다(DB 위치 asia-northeast3 확인). 이제 `nopo-09` 13장의 ★ 항목(N-01 재방문율, N-03 공개 범위)을 실기기로 시험할 수 있다. 앞의 "막힌 것 ①"은 해소됨. 인증 코드는 채팅에 노출됐으나 1회용이라 이미 사용돼 무효다.
+
+### 10-5. 테스트 라이브러리·가게 이야기·계측 시험 (사용자 승인 요청 사항)
+- **새 라이브러리(승인됨):** Robolectric 4.17(4.14는 JDK 25 클래스를 못 읽음), `androidx.test:core-ktx`, `androidx.room:room-testing`. `testOptions.unitTests.isIncludeAndroidResources=true`, Robolectric 시험은 `@Config(sdk=[34], application=android.app.Application::class)`(NopoApp이 Firebase를 초기화하므로 제외). ViewModel은 MockK로 `AppContainer`를 모킹하고, 위치·OCR·시계 확인은 지연 생성/주입으로 분리.
+- **시험 현황:** 단위 220개(도메인·유틸 + Room·저장소·ViewModel 5종), 폰 계측 6개. `app/src/test/.../testutil/TestSupport.kt`에 `MainDispatcherRule`·`FixedClock`.
+- **가게 이야기:** `nopo-11` 마지막 절 참고. DB v3(`MIGRATION_2_3`), 카탈로그 v26102013.
+- **서명:** 디버그 빌드도 `keystore.properties`가 있으면 릴리스 키로 서명(폰의 릴리스 앱 위에 덮어 설치 가능).

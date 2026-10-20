@@ -55,6 +55,8 @@ android {
 
     buildTypes {
         debug {
+            // 서명 키가 있으면 디버그 빌드도 같은 키로 서명한다: 폰에 깔린 릴리스 앱 위에 데이터를 지우지 않고 덮어 설치·시험할 수 있다
+            if (keystoreProps.isNotEmpty()) signingConfig = signingConfigs.getByName("release")
             // 진단 화면의 좌표→주소 시험에만 쓴다 (B-14)
             buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", "\"${localProps.getProperty("NAVER_MAP_CLIENT_SECRET", "")}\"")
         }
@@ -79,6 +81,10 @@ android {
     testOptions {
         // Robolectric(Room·ViewModel 단위 시험)이 리소스를 읽는다
         unitTests.isIncludeAndroidResources = true
+    }
+    sourceSets {
+        // Room 마이그레이션 시험이 내보낸 스키마를 읽는다
+        getByName("androidTest").assets.directories.add("$projectDir/schemas")
     }
     buildFeatures {
         compose = true
@@ -129,6 +135,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.room.testing)
+    androidTestImplementation(libs.androidx.test.core)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

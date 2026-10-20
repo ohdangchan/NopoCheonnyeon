@@ -41,6 +41,7 @@
 | generation | n대째 (소개에 적힌 경우) |
 | menu_items | 소개에 이름이 나온 대표 메뉴·상품 (`|` 구분) |
 | hours, amenities, homepage, sns | 영업시간, 이용정보, 홈페이지 |
+| story | 가게 이야기: 소상공인마당 상세 페이지의 '소개글' **원문**(앱 가게 상세의 "가게 이야기"). 백년가게 1,139곳에 있음(앱에는 1,138곳), 오래가게는 비어 있음. 수집 `python tools/fetch_stories.py`(요청 간격 0.3초, robots.txt 허용 경로) → `data/raw/bn_story.jsonl`. **공개 배포 전에 원문 이용 허락을 확인할 것** |
 | intro / intro_snippet | 소개 요약 (백년가게: 수집 도구가 원문을 짧게 요약 / 오래가게: 선정 연도·업종·창업연도·대표 품목으로 만든 한 줄) / 목록의 소개 앞부분 |
 | detail_collected | 상세 페이지 수집 여부 |
 | lat, lng | 좌표 (보강 전 빈 값) |

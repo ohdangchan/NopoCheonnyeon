@@ -234,6 +234,10 @@ def main():
                 except (KeyError, ValueError):
                     pass
 
+    stories = {}   # tools/fetch_stories.py 가 채운 가게 이야기(소개글 원문)
+    for r in read_jsonl([os.path.join(a.raw, "bn_story.jsonl")] if os.path.exists(os.path.join(a.raw, "bn_story.jsonl")) else []):
+        if r.get("id") and (r.get("story") or "").strip():
+            stories[r["id"]] = r["story"].strip()
     photos = {}
     ppath = os.path.join(a.out, "photo_cache.csv")   # tools/fetch_photos.py 가 채운다
     if os.path.exists(ppath):
@@ -437,6 +441,8 @@ def main():
             st_["homepage"] = ""
 
     stores.sort(key=lambda s: (s["programs"], -(s["list_no"] or 0) if isinstance(s["list_no"], int) else 0, s["name"]))
+    for st_ in stores:
+        st_["story"] = stories.get(st_["id"], "")   # 가게 이야기(소개글 원문). 오래가게 등은 비어 있다
     cols = list(stores[0].keys())
     with open(os.path.join(a.out, "nopo_stores.csv"), "w", encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=cols)
@@ -469,6 +475,7 @@ def main():
             "menuItems": [m for m in s["menu_items"].split("|") if m],
             "hours": s["hours"] or None, "amenities": [m for m in s["amenities"].split("|") if m],
             "summary": (s["intro"] or s["intro_snippet"]) or None,
+            "story": s["story"] or None,
             "generation": s["generation"] if isinstance(s["generation"], int) else None,
             "sourceUrl": s["source_url"] or None,
             "photoUrls": photos.get(s["id"], []),

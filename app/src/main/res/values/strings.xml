@@ -456,4 +456,8 @@
     <string name="queue_body">연결되면 자동으로 올라가요. 기다리는 가게: %1$s</string>
     <string name="queue_empty">올라가지 않은 기록이 없어요.</string>
     <string name="queue_sync_now">지금 올리기</string>
+    <string name="store_story_title">가게 이야기</string>
+    <string name="store_story_more">이야기 더 보기</string>
+    <string name="store_story_less">접기</string>
+    <string name="store_story_source">출처: 소상공인마당 백년가게 소개글</string>
 </resources>

@@ -31,11 +31,12 @@ data class StoreJson(
     val generation: Int? = null,
     val sourceUrl: String? = null,
     val photoUrls: List<String> = emptyList(),
+    val story: String? = null,
 ) {
     fun toDomain() = Store(
         id = id, name = name, aliases = aliases, programs = programs, categoryGroup = categoryGroup, isFood = isFood,
         sido = sido, sigungu = sigungu, address = address.orEmpty(), phone = phone, foundedYear = foundedYear,
         foundedDate = foundedDate, lat = lat, lng = lng, menuItems = menuItems, hours = hours, amenities = amenities,
-        summary = summary, generation = generation, sourceUrl = sourceUrl, photoUrls = photoUrls,
+        summary = summary, generation = generation, sourceUrl = sourceUrl, photoUrls = photoUrls, story = story,
     )
 }

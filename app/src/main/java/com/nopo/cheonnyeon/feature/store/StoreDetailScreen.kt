@@ -68,6 +68,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 )
                 RewardBox(state)
                 InfoSection(store)
+                store.story?.takeIf { it.isNotBlank() }?.let { StorySection(it) }
                 if (!store.isTest) InfoReport(vm)
                 if (!store.isTest) reviews(store)
                 store.sourceUrl?.let { Text(stringResource(R.string.detail_source, it), style = NopoTheme.typography.bodySmall, color = c.ink2) }
@@ -85,6 +86,30 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
         }
     }
 }
+
+/** 가게 이야기 (FR-STORE-01): 소상공인마당 '소개글' 원문. 길면 접어서 보여 주고 눌러서 펼친다 */
+@Composable
+private fun StorySection(story: String) {
+    val c = NopoTheme.colors
+    var expanded by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    val long = story.length > STORY_PREVIEW_CHARS || story.count { it == '\n' } >= 3
+    Column(
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
+    ) {
+        Text(stringResource(R.string.store_story_title), style = NopoTheme.typography.titleMedium, color = c.primary)
+        Text(story, style = NopoTheme.typography.bodyMedium, color = c.ink, maxLines = if (expanded || !long) Int.MAX_VALUE else STORY_PREVIEW_LINES)
+        if (long) {
+            androidx.compose.material3.TextButton(onClick = { expanded = !expanded }) {
+                Text(stringResource(if (expanded) R.string.store_story_less else R.string.store_story_more))
+            }
+        }
+        Text(stringResource(R.string.store_story_source), style = NopoTheme.typography.bodySmall, color = c.ink2)
+    }
+}
+
+private const val STORY_PREVIEW_CHARS = 180
+private const val STORY_PREVIEW_LINES = 5
 
 /** 정보 오류 제보 (FR-STORE-06): 사유를 고르면 운영자에게 접수된다 */
 @Composable

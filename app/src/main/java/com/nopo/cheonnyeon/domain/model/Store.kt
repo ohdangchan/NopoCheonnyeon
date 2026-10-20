@@ -26,6 +26,8 @@ data class Store(
     /** 공식 대표 사진 주소 (백년가게 상세 페이지, 없으면 빈 목록) */
     val photoUrls: List<String> = emptyList(),
     val isTest: Boolean = false,
+    /** 가게 이야기: 소상공인마당 상세 페이지 '소개글' 원문. 없으면 null */
+    val story: String? = null,
 ) {
     /** 이름과 별칭 전부 (영수증·간판 글자와 맞춰 볼 후보) */
     val nameCandidates: List<String> get() = listOf(name) + aliases

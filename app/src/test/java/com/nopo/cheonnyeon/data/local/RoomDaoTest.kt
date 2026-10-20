@@ -87,6 +87,12 @@ class RoomDaoTest {
         assertEquals(setOf("BN-3", "TEST-NOPO"), dao.all().map { it.id }.toSet())
     }
 
+    @Test fun `가게 이야기는 저장했다가 그대로 읽힌다`() = runBlocking {
+        val dao = db.storeDao()
+        dao.insertAll(listOf(StoreEntity.from(Store(id = "BN-1", name = "가게", story = "첫 줄\n둘째 줄"))))
+        assertEquals("첫 줄\n둘째 줄", dao.byId("BN-1")!!.toDomain().story)
+    }
+
     @Test fun `테스트 가게만 지운다`() = runBlocking {
         val dao = db.storeDao()
         dao.insertAll(listOf(store("BN-1"), store("TEST-NOPO", test = true)))
