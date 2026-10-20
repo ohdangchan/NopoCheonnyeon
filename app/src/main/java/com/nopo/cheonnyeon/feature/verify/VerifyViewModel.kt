@@ -49,6 +49,8 @@ data class VerifyUiState(
     val pendingResolution: com.google.android.gms.common.api.ResolvableApiException? = null,
     /** 한도 안내 화면에 보여 줄 오늘 인증한 가게 (이름, 얻은 세월) */
     val todayVisits: List<Pair<String, Int>> = emptyList(),
+    /** 기기 시계가 서버와 10분 넘게 어긋남 (영수증 24시간 판정이 틀릴 수 있다). 어긋난 분 */
+    val clockSkewMinutes: Long? = null,
 )
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
@@ -69,6 +71,12 @@ class VerifyViewModel(
     val state: StateFlow<VerifyUiState> = _state.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            val skew = com.nopo.cheonnyeon.platform.network.ClockSkewChecker().measureMillis()
+            if (skew != null && com.nopo.cheonnyeon.core.util.ClockSkew.exceedsWarning(skew)) {
+                _state.update { it.copy(clockSkewMinutes = kotlin.math.abs(skew) / 60_000L) }
+            }
+        }
         viewModelScope.launch {
             val store = container.catalog.byId(storeId)
             _state.update { it.copy(store = store) }

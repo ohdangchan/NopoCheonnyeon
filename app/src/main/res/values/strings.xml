@@ -451,4 +451,5 @@
         <item>Black Han Sans · JetBrains Mono|SIL Open Font License 1.1|숫자·제목 글꼴, 수치 글꼴</item>
     </string-array>
     <string name="map_failed_fallback">지도를 불러오지 못해 목록으로 보여 드려요.</string>
+    <string name="verify_clock_skew">기기 시계가 실제 시각과 %1$d분 어긋나 있어요. 영수증 시간 확인이 틀릴 수 있으니 설정에서 날짜·시간을 자동으로 맞춰 주세요.</string>
 </resources>

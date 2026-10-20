@@ -63,6 +63,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
     ) {
         Text(state.store?.name.orEmpty(), style = NopoTheme.typography.headlineMedium, color = c.primary)
+        state.clockSkewMinutes?.let { Text(stringResource(R.string.verify_clock_skew, it), style = NopoTheme.typography.bodySmall, color = c.stamp) }
 
         if (state.step == VerifyStep.DONE && state.award != null) {
             ResultSection(state, onClose)
