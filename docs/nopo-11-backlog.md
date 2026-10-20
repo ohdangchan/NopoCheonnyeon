@@ -39,6 +39,18 @@
 
 > **⚠ 배포 대기:** `firebase/firestore.rules`가 바뀌었다(storeStats 집계 문서 FR-STORE-07, 방문 기록 공개 범위 `visitsVisibility` FR-PRF-07). Firebase CLI 로그인이 만료돼 **아직 배포하지 못했다**. `firebase login --reauth` 후 `cd firebase && firebase deploy --only firestore:rules --project nopocheonnyeon`. 배포 전에도 앱은 동작하지만 재방문율은 0명으로 보이고 공개 범위 저장은 실패 문구가 나온다. F-01은 설계를 바꿔 컬렉션 그룹 쿼리 대신 `storeStats/{storeId}`(visitors, revisitors 증가 카운터)를 쓴다.
 
+## nopo-qa 점검(2026-10-20, 6f050bc..60755a5)에서 나온 항목
+| ID | 상태 | 내용 |
+|---|---|---|
+| Q-01 | **수정함** | 영수증 해시 없는 기록이 PERMISSION_DENIED로 거부되면 대기열 맨 앞을 영구히 막음 → 건너뛰고 계속 보내며 10회 거부되면 대기열에서 뺌(기기 기록은 "확인 중"으로 남음) |
+| Q-02 | **수정함** | 재방문 응답 유실 때 "중복 영수증" 오판 → 서버 방문 횟수가 기기 횟수 이상이면 이미 올라간 것으로 판정(`SyncRejectionPolicy`, 테스트 5개) |
+| Q-03 | **수정함(배포 대기)** | `storeStats` 임의 조작 → 내 방문 문서가 있는 가게에만 올릴 수 있게 규칙 보강, `is int` 검사, users create의 `visitsVisibility` 값 검증. **같은 사용자가 반복 호출로 부풀리는 것은 규칙만으로 막을 수 없음**(서버 함수가 필요) |
+| Q-04 | 남음(낮음) | `storeStats` 쓰기가 실패하면 재시도 없이 버려짐(통계 손실) → 별도 대기열 또는 배치 포함 |
+| Q-05 | 남음(보통) | `VisitRepository.record`가 로컬 기록과 대기열 추가를 한 트랜잭션으로 묶지 않음(그 사이 앱 종료 시 서버로 안 올라감) → `database.withTransaction` |
+| Q-06 | 남음(보통) | 재설치 직후 `restoreFromServer` 전에 인증하면 서버에 있는 가게를 첫 방문으로 보고 세월 중복 가산 가능 → 인증 전 복원 완료 대기 |
+| Q-07 | 알려진 한계 | 공개 범위가 PRIVATE여도 `reviews`·`users`(세월·방문 수·칭호)는 로그인한 누구나 읽음(리뷰는 공개 설계). 설정 화면 문구에는 "남긴 평점은 항상 공개"로 안내함. 서버 판정 없는 구조의 한계(규칙은 users 수정에서 totalYears 200/회 상한만 둠) |
+| Q-08 | 남음(낮음) | payload 파싱 실패 항목을 조용히 삭제, 같은 가게의 대기열 항목이 여럿일 때 첫 항목 성공 직후 `markSynced` |
+
 ## 데이터·콘텐츠
 | ID | 우선 | 내용 | 방법 |
 |---|---|---|---|

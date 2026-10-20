@@ -85,9 +85,12 @@ class VisitRepository(
 
     fun dismissDuplicateNotice() { _duplicateNotices.value = emptyList() }
 
-    /** 내 방문 문서가 서버에 있는지. 확인하지 못하면 null */
-    private suspend fun visitExistsOnServer(user: String, storeId: String): Boolean? = try {
-        withTimeout(SYNC_TIMEOUT_MS) { db().collection("users").document(user).collection("visits").document(storeId).get(com.google.firebase.firestore.Source.SERVER).await().exists() }
+    /** 내 방문 문서의 서버 쪽 방문 횟수(문서가 없으면 0). 확인하지 못하면 null */
+    private suspend fun serverVisitCount(user: String, storeId: String): Int? = try {
+        withTimeout(SYNC_TIMEOUT_MS) {
+            val d = db().collection("users").document(user).collection("visits").document(storeId).get(com.google.firebase.firestore.Source.SERVER).await()
+            if (d.exists()) (d.getLong("visitCount") ?: 1L).toInt() else 0
+        }
     } catch (e: CancellationException) {
         if (e is TimeoutCancellationException) null else throw e
     } catch (_: Exception) {
@@ -138,8 +141,7 @@ class VisitRepository(
             } catch (e: FirebaseFirestoreException) {
                 if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED && visit.receiptHash != null) {
                     // 거부됐다. 첫 방문 기록이 이미 서버에 있으면 앞선 전송이 성공했는데 응답만 못 받은 재전송이라 성공으로 본다 (아키텍처 5.3)
-                    val onServer = if (visit.firstVisit) visitExistsOnServer(user, visit.storeId) else null
-                    when (SyncRejectionPolicy.decide(visit.firstVisit, onServer)) {
+                    when (SyncRejectionPolicy.decide(visit.firstVisit, visit.visitCount, serverVisitCount(user, visit.storeId))) {
                         SyncRejection.RETRY_LATER -> { pendingDao.bumpAttempts(op.id); break } // 확인하지 못했으니 다음에 다시
                         SyncRejection.ALREADY_SYNCED -> { pendingDao.remove(op.id); visitDao.markSynced(visit.storeId) }
                         SyncRejection.DUPLICATE_RECEIPT -> {
@@ -149,6 +151,10 @@ class VisitRepository(
                             _duplicateNotices.update { it + visit.storeName }
                         }
                     }
+                } else if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                    // 영수증 해시가 없는 기록이 규칙에 막혔다. 뒤의 기록까지 막지 않도록 건너뛰고, 너무 여러 번 거부되면 대기열에서 뺀다
+                    // (기기 기록은 남아 "확인 중"으로 보이며, 원인을 고친 뒤 다시 인증하면 된다)
+                    if (op.attempts >= MAX_DENIED_ATTEMPTS) pendingDao.remove(op.id) else pendingDao.bumpAttempts(op.id)
                 } else {
                     pendingDao.bumpAttempts(op.id)
                     break
@@ -258,5 +264,6 @@ class VisitRepository(
     private companion object {
         const val TYPE_VISIT = "VISIT"
         const val SYNC_TIMEOUT_MS = 15_000L
+        const val MAX_DENIED_ATTEMPTS = 10
     }
 }

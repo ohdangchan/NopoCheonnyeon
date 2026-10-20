@@ -13,14 +13,14 @@ enum class SyncRejection {
 
 /**
  * 서버가 영수증 인증 기록을 거부(PERMISSION_DENIED)했을 때의 판정 (아키텍처 5.3).
- * 첫 방문이라면 서버에 방문 문서가 이미 있을 때 이전 전송이 성공한 것이다. 재방문은 서버에서 구분할 방법이 없어 중복으로 본다.
- * @param visitOnServer 첫 방문일 때 서버에 방문 문서가 있는지. 확인하지 못하면 null
+ * 서버의 내 방문 문서 횟수가 이 기록이 만든 횟수 이상이면, 이전 전송이 성공했는데 응답만 못 받은 재전송이다.
+ * 첫 방문은 횟수 1, 재방문은 기기가 센 방문 횟수([localVisitCount])가 기준이다.
+ * @param serverVisitCount 서버 방문 문서의 횟수(문서가 없으면 0). 확인하지 못하면 null
  */
 object SyncRejectionPolicy {
-    fun decide(firstVisit: Boolean, visitOnServer: Boolean?): SyncRejection = when {
-        !firstVisit -> SyncRejection.DUPLICATE_RECEIPT
-        visitOnServer == null -> SyncRejection.RETRY_LATER
-        visitOnServer -> SyncRejection.ALREADY_SYNCED
+    fun decide(firstVisit: Boolean, localVisitCount: Int, serverVisitCount: Int?): SyncRejection = when {
+        serverVisitCount == null -> SyncRejection.RETRY_LATER
+        serverVisitCount >= (if (firstVisit) 1 else localVisitCount) -> SyncRejection.ALREADY_SYNCED
         else -> SyncRejection.DUPLICATE_RECEIPT
     }
 }

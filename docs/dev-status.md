@@ -184,3 +184,6 @@
 - B-04 일부: `SyncRejectionPolicy`(+테스트 4개) → 단위 테스트 156개. 로그아웃 경고에 올라가지 않은 가게 목록, 로그인 직후 "서버에서 기록을 불러오는 중" 배너(`AppContainer.restoring`), 설정의 개인정보 처리방침 전체 보기·라이선스 목록, 내 리뷰 "수정·삭제하러 가기".
 - lint 오류 0건(Compose `LocalContext` 리소스 호출 수정). 쓰지 않는 문자열 제거, `err_*`는 `getIdentifier`로 읽으므로 `tools:ignore="UnusedResources"`.
 - 이 PC에서 `./gradlew.bat lintDebug testDebugUnitTest assembleDebug`가 통과하는 상태에서 커밋.
+
+### 10-3. nopo-qa 점검 반영
+`nopo-qa` 에이전트(정적 읽기·빌드)가 높음 3건을 지적해 수정했다(Q-01~Q-03, `nopo-11` 참고). 규칙 보강분도 **Firebase 로그인 재인증 후 배포**해야 적용된다. 한글 리터럴은 디버그 전용 버튼·진단 샘플·@Preview에만 남아 있다(허용). 에이전트가 제안한 폰 확인 목록은 `nopo-09`의 O-01·R-09·V-06·V-10 등과 겹친다.
