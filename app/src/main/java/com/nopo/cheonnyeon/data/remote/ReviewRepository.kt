@@ -79,24 +79,27 @@ class ReviewRepository(
         return call {
             val me = uid() ?: throw NotSignedIn()
             val firestore = db()
-            val profile = firestore.collection("users").document(me).get().await()
-            val nickname = profile.getString("nickname") ?: throw NotSignedIn()
+            val userRef = firestore.collection("users").document(me)
             val ref = reviews().document("${storeId}_$me")
-            val batch = firestore.batch()
-            if (existing) {
-                batch.update(ref, mapOf("rating" to check.rating, "text" to check.text, "nickname" to nickname, "titleId" to titleId, "visitCount" to visitCount, "updatedAt" to FieldValue.serverTimestamp()))
-            } else {
-                batch.set(
-                    ref,
-                    mapOf(
-                        "storeId" to storeId, "storeName" to storeName, "uid" to me, "nickname" to nickname, "titleId" to titleId,
-                        "rating" to check.rating, "text" to check.text, "visitCount" to visitCount,
-                        "createdAt" to FieldValue.serverTimestamp(), "updatedAt" to FieldValue.serverTimestamp(),
-                    ),
-                )
-                batch.update(firestore.collection("users").document(me), mapOf("reviewCount" to FieldValue.increment(1), "updatedAt" to FieldValue.serverTimestamp()))
-            }
-            batch.commit().await()
+            // 트랜잭션은 오프라인에서 바로 실패한다. 배치는 나중에 서버에서 거부돼 리뷰가 사라질 수 있어 쓰지 않는다 (D-12)
+            firestore.runTransaction { tx ->
+                val nickname = tx.get(userRef).getString("nickname") ?: throw NotSignedIn()
+                if (existing) {
+                    tx.update(ref, mapOf("rating" to check.rating, "text" to check.text, "nickname" to nickname, "titleId" to titleId, "visitCount" to visitCount, "updatedAt" to FieldValue.serverTimestamp()))
+                } else {
+                    tx.set(
+                        ref,
+                        mapOf(
+                            "storeId" to storeId, "storeName" to storeName, "uid" to me, "nickname" to nickname, "titleId" to titleId,
+                            "rating" to check.rating, "text" to check.text, "visitCount" to visitCount,
+                            "createdAt" to FieldValue.serverTimestamp(), "updatedAt" to FieldValue.serverTimestamp(),
+                        ),
+                    )
+                    tx.update(userRef, mapOf("reviewCount" to FieldValue.increment(1), "updatedAt" to FieldValue.serverTimestamp()))
+                }
+                null
+            }.await()
+            Unit
         }
     }
 
@@ -119,10 +122,17 @@ class ReviewRepository(
     suspend fun delete(storeId: String): AppResult<Unit> = call {
         val me = uid() ?: throw NotSignedIn()
         val firestore = db()
-        val batch = firestore.batch()
-        batch.delete(reviews().document("${storeId}_$me"))
-        batch.update(firestore.collection("users").document(me), mapOf("reviewCount" to FieldValue.increment(-1), "updatedAt" to FieldValue.serverTimestamp()))
-        batch.commit().await()
+        val ref = reviews().document("${storeId}_$me")
+        val userRef = firestore.collection("users").document(me)
+        firestore.runTransaction { tx ->
+            // 내 리뷰가 있을 때만 지우고 개수를 줄인다 (개수가 음수로 내려가지 않게)
+            if (tx.get(ref).exists()) {
+                tx.delete(ref)
+                tx.update(userRef, mapOf("reviewCount" to FieldValue.increment(-1), "updatedAt" to FieldValue.serverTimestamp()))
+            }
+            null
+        }.await()
+        Unit
     }
 
     private fun toItem(d: DocumentSnapshot) = ReviewItem(

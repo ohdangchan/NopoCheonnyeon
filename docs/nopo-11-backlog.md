@@ -19,12 +19,12 @@
 | B-12 | P1 (**2026-10-20 구현, 실기기 미확인**) | **방문 기록 비공개 설정(FR-PRF-07) 없음.** 서버 규칙은 로그인 사용자 누구나 `visits` 읽기 | `firebase/firestore.rules` | `users` 문서에 공개 범위 필드 + 규칙/화면. 시안 `settings/privacy_settings` |
 | B-13 | P1 (**2026-10-20 구현: v1에서만 재생성, v2 이상은 Migration 필수, `app/schemas/` 스키마 기록. Migration 테스트는 없음**) | **Room 정식 마이그레이션 필요.** `fallbackToDestructiveMigration(dropAllTables = true)`는 스키마(현재 v2) 변경 시 **`my_visits`·`pending_ops`(미전송 인증)까지 삭제**한다 | `data/local/AppDatabase.kt` | 출시 전 `Migration` 작성, `exportSchema` 켜고 스키마 JSON 보관, 마이그레이션 테스트 |
 | B-14 | P1 (**2026-10-20 구현: 릴리스 APK에서 Client Secret 제거, dex 검색 0건 확인. 공개 배포 전 콘솔에서 기존 키 교체는 사용자 몫**) | **네이버 Client Secret이 APK에 포함**(`BuildConfig.NAVER_MAP_CLIENT_SECRET`, 진단 역지오코딩 용도) | `app/build.gradle.kts`, `platform/map/ReverseGeocoder.kt` | 릴리스에서는 제거하거나 콘솔에서 사용 한도·허용 패키지 설정, 키 교체 |
-| B-15 | P2 | 리뷰 저장·삭제가 **배치**(문서는 트랜잭션). 오프라인은 12초 타임아웃과 `UNAVAILABLE` 매핑으로 막음 | `data/remote/ReviewRepository.kt` | 필요 시 트랜잭션 전환, M-49 확인 |
+| B-15 |  (**2026-10-20 구현: 저장·삭제를 트랜잭션으로, 실기기 오프라인 시험(M-49)은 미실시**) | 리뷰 저장·삭제가 **배치**(문서는 트랜잭션). 오프라인은 12초 타임아웃과 `UNAVAILABLE` 매핑으로 막음 | `data/remote/ReviewRepository.kt` | 필요 시 트랜잭션 전환, M-49 확인 |
 | B-16 | P2 | 리뷰 편집기·도장 연출·도장 상세가 별도 화면이 아니라 `AlertDialog`/인라인(아키텍처 2장의 `ReviewEditorScreen` 등과 다름) | `StoreReviewsSection`, `VerifyScreen`, `PassportScreen` | 시안에 맞춰 분리(선택). 도장 연출은 시안의 인증 전/후 게이지·칭호·"평점 남기기" 연결 포함 |
 | B-17 | P2 | 시계 오차 경고 없음(아키텍처 9장: 서버 시간과 10분 이상 차이 나면 경고) | — | `Timestamp` 비교 또는 서버 시각 문서 |
-| B-18 | P2 | **지도 오류 시 자동 목록 전환 없음.** 인증 오류가 나면 상단 빨간 배너만 표시하고 사용자가 "목록으로 보기"를 눌러야 한다(PRD 10.2 "지도 인증 오류(목록으로 전환)") | `feature/map/MapScreen.kt` | `authError != null`이면 자동 목록 모드 + 안내. M-09 |
+| B-18 |  (**2026-10-20 구현, 실기기 미확인**) | **지도 오류 시 자동 목록 전환 없음.** 인증 오류가 나면 상단 빨간 배너만 표시하고 사용자가 "목록으로 보기"를 눌러야 한다(PRD 10.2 "지도 인증 오류(목록으로 전환)") | `feature/map/MapScreen.kt` | `authError != null`이면 자동 목록 모드 + 안내. M-09 |
 | B-19 | P2 | 세션 게이트: 프로필 확인이 오프라인·타임아웃이면 "있음"으로 간주 | `AuthRepository.hasProfile` | 의도된 동작이나 문서화·시험 필요(A-17) |
-| B-20 | P2 | 안내 문구가 PRD 7.4와 약간 다름(예: `E_REVIEW_OFFLINE` "리뷰는 온라인에서만 쓸 수 있어요" vs PRD "인터넷에 연결되면 저장할 수 있어요…", `E_NETWORK` "네트워크에 연결되지 않았어요" vs "인터넷이 연결되면 자동으로 저장할게요") | `res/values/strings.xml` | PRD와 맞추거나 PRD 개정(결정 기록) |
+| B-20 |  (**2026-10-20 구현(E_REVIEW_OFFLINE 문구만 PRD와 일치, E_NETWORK는 로그인 오류에도 쓰여 현행 유지)**) | 안내 문구가 PRD 7.4와 약간 다름(예: `E_REVIEW_OFFLINE` "리뷰는 온라인에서만 쓸 수 있어요" vs PRD "인터넷에 연결되면 저장할 수 있어요…", `E_NETWORK` "네트워크에 연결되지 않았어요" vs "인터넷이 연결되면 자동으로 저장할게요") | `res/values/strings.xml` | PRD와 맞추거나 PRD 개정(결정 기록) |
 | B-21 |  (**2026-10-20 구현: lint 오류 0, 쓰지 않는 문자열 정리·err_* 예외 표시**) | 쓰지 않는 문자열 리소스(`placeholder_*`, `tab_*_placeholder`, `map_zoom_in_hint` 등), `android.media.ExifInterface` 사용(진단), `String.toUri` 권장 등 lint 경고 | `lintDebug` | 정리 |
 | B-22 |  (**2026-10-20 구현: 라이브러리별 목록(버전은 libs.versions.toml이 정본)**) | 라이선스 화면이 고정 문자열(+`assets/licenses` 2개). 시안은 라이브러리별 목록 | `SettingsScreen` | 라이브러리별 고지(의존성에서 생성) |
 | B-23 |  (**2026-10-20 일부: 설정에서 개인정보 처리방침 전체 보기(운영자·연락처 없음). 별도 화면·법적 검토는 남음**) | 개인정보 처리방침 별도 화면 없음(설정에 요약 문장). `docs/privacy-notice.md`에 초안 작성됨 | `SettingsScreen` | 실제 운영 정보(운영자·연락처) 확정 후 화면화 |
