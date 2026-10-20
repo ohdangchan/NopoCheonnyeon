@@ -32,6 +32,8 @@ data class MapUiState(
     val visitedIds: Set<String> = emptySet(),
     val totalYears: Int = 0,
     val selectedId: String? = null,
+    /** 지도 인증 오류가 나서 목록으로 바꿨다 (PRD 10.2) */
+    val mapFailed: Boolean = false,
     val listMode: Boolean = false,
     val sort: ListSort = ListSort.NEAREST,
     val fix: Fix? = null,
@@ -100,6 +102,8 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
     fun toggleProgram(p: Program) = local.update { it.copy(filter = it.filter.copy(program = if (it.filter.program == p) null else p), selectedId = null) }
     fun toggleUnvisited() = local.update { it.copy(filter = it.filter.copy(unvisitedOnly = !it.filter.unvisitedOnly), selectedId = null) }
     fun select(id: String?) = local.update { it.copy(selectedId = id) }
+    /** 지도 SDK 인증 오류: 목록으로 전환해 앱을 계속 쓸 수 있게 한다 */
+    fun onMapFailed() = local.update { if (it.mapFailed) it else it.copy(listMode = true, mapFailed = true) }
     fun toggleListMode() = local.update { it.copy(listMode = !it.listMode) }
     fun setSort(s: ListSort) = local.update { it.copy(sort = s) }
 

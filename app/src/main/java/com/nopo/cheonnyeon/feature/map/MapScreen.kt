@@ -93,7 +93,15 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit) {
 
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (state.showList) {
-                StoreListScreen(state, vm::setSort, onOpenStore)
+                Column(Modifier.fillMaxSize()) {
+                    if (state.mapFailed) {
+                        Text(
+                            stringResource(R.string.map_failed_fallback), style = NopoTheme.typography.labelMedium, color = c.ink,
+                            modifier = Modifier.fillMaxWidth().background(c.stampSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
+                        )
+                    }
+                    StoreListScreen(state, vm::setSort, onOpenStore)
+                }
             } else {
                 MapContent(state, vm, onOpenStore, onLocate = {
                     when (permission.status) {
@@ -135,7 +143,7 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
 
     DisposableEffect(Unit) {
         val sdk = NaverMapSdk.getInstance(context)
-        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> authError = e.errorCode; com.nopo.cheonnyeon.feature.diagnostics.DiagLast.mapAuthError = e.errorCode }
+        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> vm.onMapFailed(); authError = e.errorCode; com.nopo.cheonnyeon.feature.diagnostics.DiagLast.mapAuthError = e.errorCode }
         onDispose { sdk.onAuthFailedListener = null }
     }
 
