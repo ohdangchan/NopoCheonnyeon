@@ -65,15 +65,26 @@ service cloud.firestore {
     }
 
     match /reviews/{reviewId} {
+      function validPhoto(p) { return p is string && p.size() <= 170000; }
       function validReview() {
         let d = request.resource.data;
-        return d.uid == request.auth.uid
-          && (reviewId == d.storeId + '_' + request.auth.uid                               // 예전 형식(가게당 1개)
-              || reviewId.matches(d.storeId + '_' + request.auth.uid + '_[0-9]{10,16}'))  // 가게_uid_시각: 여러 번 쓸 수 있다
+        return d.keys().hasOnly(['storeId','storeName','uid','nickname','titleId','rating','text','visitCount','photos','createdAt','updatedAt'])
+          && d.uid == request.auth.uid
+          && d.storeId is string && d.storeId.matches('[A-Za-z0-9_-]{1,40}')
+          // 문서 ID: 예전 형식(가게_uid) 또는 가게_uid_슬롯(1~5). 한 사람이 한 가게에 남길 수 있는 리뷰는 최대 6개
+          && (reviewId == d.storeId + '_' + request.auth.uid
+              || reviewId.matches(d.storeId + '_' + request.auth.uid + '_[1-5]'))
           && d.rating is int && d.rating >= 1 && d.rating <= 5
           && d.text is string && d.text.size() <= 500
-          && (!('photo' in d) || (d.photo is string && d.photo.size() <= 170000))   // 예전 한 장짜리 필드
-          && (!('photos' in d) || (d.photos is list && d.photos.size() <= 3))        // 줄인 사진(base64) 최대 3장, 문서 1MB 한도가 총량을 막는다
+          && d.nickname is string && d.nickname == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.nickname
+          && d.titleId is string && d.titleId.size() <= 20
+          && d.visitCount is int && d.visitCount >= 1 && d.visitCount <= 100000
+          && d.storeName is string && d.storeName.size() <= 100
+          && d.updatedAt == request.time
+          && (!('photos' in d) || (d.photos is list && d.photos.size() <= 3
+              && (d.photos.size() < 1 || validPhoto(d.photos[0]))
+              && (d.photos.size() < 2 || validPhoto(d.photos[1]))
+              && (d.photos.size() < 3 || validPhoto(d.photos[2]))))   // 줄인 사진(base64) 최대 3장
           && exists(/databases/$(database)/documents/users/$(request.auth.uid)/visits/$(d.storeId));
       }
       allow read: if signedIn();

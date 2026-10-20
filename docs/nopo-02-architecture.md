@@ -23,6 +23,7 @@
 | 지도 | **네이버 지도 SDK 3.24.0 공식 `MapView`를 `AndroidView`로 직접 사용** | v0.3의 비공식 Compose 래퍼 제거. 공식 SDK의 마커·클러스터링 사용 |
 | 위치 | Play 서비스 Fused Location | 정확도·모의 위치 판정 |
 | 카메라 | CameraX (`ImageCapture`) | 기기별 차이를 라이브러리가 흡수 |
+| QR 만들기 | ZXing core 3.5.3(Apache-2.0, 2026-10-20 추가) | 패스포트 공유 카드의 QR. 읽기는 하지 않음 |
 | 글자 인식 | ML Kit Text Recognition v2 한국어, **앱에 포함** | 첫 사용 다운로드 없음, 오프라인 동작 |
 | 로그인·서버 | Firebase Authentication(이메일/비밀번호), Cloud Firestore | 공식 Android SDK, 오프라인 캐시 내장 |
 | 크래시 | Firebase Crashlytics | QA 중 크래시 0 확인 |

@@ -67,7 +67,7 @@ class ReviewRepository(
     }
 
     /** 한 사용자가 남긴 리뷰 최신순 (프로필·내 리뷰 탭) */
-    suspend fun byUser(uid: String, limit: Long = 60): AppResult<List<ReviewItem>> = call {
+    suspend fun byUser(uid: String, limit: Long = 30): AppResult<List<ReviewItem>> = call {
         reviews().whereEqualTo("uid", uid).orderBy("updatedAt", Query.Direction.DESCENDING).limit(limit).get().await().documents.map(::toItem)
     }
 
@@ -78,8 +78,8 @@ class ReviewRepository(
     }
 
     /**
-     * [reviewId]가 null이면 새 리뷰를 쌓고(문서 ID `가게_내uid_시각`), 있으면 그 리뷰를 고친다.
-     * 예전 형식(`가게_내uid`) 리뷰도 그 ID로 고칠 수 있다.
+     * [reviewId]가 null이면 새 리뷰를 쌓고(문서 ID `가게_내uid_슬롯`, 슬롯 1~[MAX_NEW_SLOTS] 중 빈 곳), 있으면 그 리뷰를 고친다.
+     * 슬롯이 모두 차면 [AppError.E_REVIEW_LIMIT]. 예전 형식(`가게_내uid`) 리뷰도 그 ID로 고칠 수 있다.
      */
     suspend fun save(storeId: String, storeName: String, rating: Int, text: String, visitCount: Int, titleId: String, reviewId: String? = null, photos: List<String> = emptyList()): AppResult<Unit> {
         val check = ReviewRules.validate(rating, text)
@@ -88,7 +88,12 @@ class ReviewRepository(
             val me = uid() ?: throw NotSignedIn()
             val firestore = db()
             val userRef = firestore.collection("users").document(me)
-            val ref = reviews().document(reviewId ?: "${storeId}_${me}_${System.currentTimeMillis()}")
+            val id = reviewId ?: run {
+                val used = reviews().whereEqualTo("storeId", storeId).whereEqualTo("uid", me).get().await().documents.map { it.id }.toSet()
+                val slot = (1..MAX_NEW_SLOTS).firstOrNull { "${storeId}_${me}_$it" !in used } ?: throw LimitReached()
+                "${storeId}_${me}_$slot"
+            }
+            val ref = reviews().document(id)
             // 트랜잭션은 오프라인에서 바로 실패한다. 배치는 나중에 서버에서 거부돼 리뷰가 사라질 수 있어 쓰지 않는다 (D-12)
             firestore.runTransaction { tx ->
                 val nickname = tx.get(userRef).getString("nickname") ?: throw NotSignedIn()
@@ -159,6 +164,7 @@ class ReviewRepository(
     )
 
     private class NotSignedIn : Exception()
+    private class LimitReached : Exception()
 
     private suspend fun <T> call(block: suspend () -> T): AppResult<T> = try {
         withTimeout(TIMEOUT_MS) { block().asSuccess() }
@@ -166,6 +172,8 @@ class ReviewRepository(
         if (e is TimeoutCancellationException) AppError.E_REVIEW_OFFLINE.asFailure() else throw e
     } catch (_: NotSignedIn) {
         AppError.E_AUTH_REQUIRED.asFailure()
+    } catch (_: LimitReached) {
+        AppError.E_REVIEW_LIMIT.asFailure()
     } catch (e: FirebaseFirestoreException) {
         android.util.Log.e("Nopo", "리뷰 서버 호출 실패: " + e.code + " " + e.message)
         when (e.code) {
@@ -180,7 +188,9 @@ class ReviewRepository(
         AppError.E_NETWORK.asFailure()
     }
 
-    private companion object {
-        const val TIMEOUT_MS = 12_000L
+    companion object {
+        /** 한 사람이 한 가게에 새로 남길 수 있는 리뷰 수(서버 규칙의 슬롯 1~5와 같아야 한다) */
+        const val MAX_NEW_SLOTS = 5
+        private const val TIMEOUT_MS = 12_000L
     }
 }

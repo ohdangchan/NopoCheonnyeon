@@ -48,10 +48,33 @@ object ReviewPhotoCodec {
                 decoder.allocator = android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE
             }
         } else {
-            context.contentResolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it) }
+            decodeLegacy(context, uri)
         }
         bmp?.let { encode(it, 0) }
     }.getOrNull()
+
+    /** API 26~27: 샘플링으로 메모리를 아끼고 EXIF 회전을 반영한다 */
+    private fun decodeLegacy(context: android.content.Context, uri: android.net.Uri): Bitmap? {
+        val resolver = context.contentResolver
+        val bounds = android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        resolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it, null, bounds) }
+        var sample = 1
+        while (max(bounds.outWidth, bounds.outHeight) / (sample * 2) >= MAX_SIDE) sample *= 2
+        val opts = android.graphics.BitmapFactory.Options().apply { inSampleSize = sample }
+        val bmp = resolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it, null, opts) } ?: return null
+        val degrees = runCatching {
+            resolver.openInputStream(uri)?.use {
+                when (android.media.ExifInterface(it).getAttributeInt(android.media.ExifInterface.TAG_ORIENTATION, 1)) {
+                    android.media.ExifInterface.ORIENTATION_ROTATE_90 -> 90
+                    android.media.ExifInterface.ORIENTATION_ROTATE_180 -> 180
+                    android.media.ExifInterface.ORIENTATION_ROTATE_270 -> 270
+                    else -> 0
+                }
+            } ?: 0
+        }.getOrDefault(0)
+        if (degrees == 0) return bmp
+        return Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, Matrix().apply { postRotate(degrees.toFloat()) }, true)
+    }
 
     fun decode(photo: String): ByteArray? = runCatching { Base64.decode(photo, Base64.DEFAULT) }.getOrNull()
 

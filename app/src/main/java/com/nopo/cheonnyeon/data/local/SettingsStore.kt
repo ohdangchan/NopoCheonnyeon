@@ -46,7 +46,7 @@ class SettingsStore(private val context: Context) {
 
     /** 같은 id가 있으면 고치고, 없으면 새로 쌓는다 */
     suspend fun saveTestReview(storeId: String, review: TestReview) {
-        val current = testReviews(storeId).filter { it.id != review.id } + review
+        val current = (testReviews(storeId).filter { it.id != review.id } + review).sortedByDescending { it.at }.take(MAX_TEST_REVIEWS)
         context.dataStore.edit {
             it[stringPreferencesKey(TEST_REVIEW_LIST_PREFIX + storeId)] = testJson.encodeToString(current)
             it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId))
@@ -78,6 +78,8 @@ class SettingsStore(private val context: Context) {
         const val TEST_REVIEW_PREFIX = "test_review_"
         const val TEST_REVIEW_PHOTO_PREFIX = "test_review_photo_"
         const val TEST_REVIEW_LIST_PREFIX = "test_review_list_"
+        /** 시험용 가게 리뷰는 DataStore에 들어가므로 개수를 제한한다 */
+        const val MAX_TEST_REVIEWS = 10
         private val testJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
     }
 }

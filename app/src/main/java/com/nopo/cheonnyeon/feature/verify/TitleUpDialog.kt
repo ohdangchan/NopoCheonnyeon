@@ -116,7 +116,7 @@ fun TitleUpDialog(title: Title, totalYears: Int, preview: Boolean = false, onDis
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Box(
-            Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(c.sign, Color(0xFF050B0A)))),
+            Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(c.sign, Color.Black))),
             contentAlignment = Alignment.TopCenter,
         ) {
             Canvas(Modifier.fillMaxSize()) {

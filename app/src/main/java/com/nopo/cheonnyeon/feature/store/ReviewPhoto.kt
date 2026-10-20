@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
@@ -60,8 +61,10 @@ const val ASSET_PREFIX = "asset:"
 /** 리뷰 사진을 그린다. 시연용 예시는 "asset:" 경로, 실제 리뷰는 base64 WebP 문자열이다. */
 @Composable
 fun ReviewPhotoImage(photo: String, modifier: Modifier = Modifier, contentScale: ContentScale = ContentScale.Crop) {
-    val model: Any? = remember(photo) {
-        if (photo.startsWith(ASSET_PREFIX)) "file:///android_asset/" + photo.removePrefix(ASSET_PREFIX) else ReviewPhotoCodec.decode(photo)
+    // base64 해독은 글자가 많아 메인 스레드 밖에서 한다(목록 스크롤 끊김 방지)
+    val model by produceState<Any?>(null, photo) {
+        value = if (photo.startsWith(ASSET_PREFIX)) "file:///android_asset/" + photo.removePrefix(ASSET_PREFIX)
+        else withContext(Dispatchers.Default) { ReviewPhotoCodec.decode(photo) }
     }
     SubcomposeAsyncImage(
         model = model,
