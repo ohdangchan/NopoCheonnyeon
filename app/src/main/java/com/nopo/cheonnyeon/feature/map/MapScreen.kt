@@ -203,20 +203,17 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         // 확대하면 묶음 원은 지우고 가게 마커로 바꾼다
         visible.forEach { s ->
             val years = state.yearsOf(s)
-            val color = when {
-                s.id in state.visitedIds -> c.stamp
-                StampGradePolicy.gradeFor(years) == StampGrade.GOLD -> c.brass
-                else -> c.primary
-            }
+            val gold = StampGradePolicy.gradeFor(years) == StampGrade.GOLD
+            val color = if (s.id in state.visitedIds) c.stamp else c.primary
+            val icon = PinIcons.pin(color.toArgb(), if (gold) c.brass.toArgb() else null)
             val marker = markers.getOrPut(s.id) {
                 Marker().apply {
-                    icon = MarkerIcons.BLACK
                     position = LatLng(s.lat!!, s.lng!!)
                     setOnClickListener { vm.select(s.id); true }
                     this.map = map
                 }
             }
-            marker.iconTintColor = color.toArgb()
+            marker.icon = icon
             marker.width = if (s.id == state.selectedId) 64 else 44
             marker.height = if (s.id == state.selectedId) 80 else 56
             marker.captionText = if (zoom >= CAPTION_ZOOM) captionYears.format(years, s.name) else ""

@@ -202,3 +202,8 @@
 - 앱: `DemoReviews`(assets 읽기) → `ReviewsViewModel`이 서버 평점 요약에 합산, 목록에서는 실제 리뷰 뒤에 "시연용 예시 리뷰 · 실제 이용자 글이 아닙니다" 표시, 신고·프로필 이동 없음. 설정 > 앱 정보 5탭 > 개발자 도구의 "시연용 예시 리뷰 표시" 스위치(기본 켜짐, `SettingsStore.demoData`). 사진 속에는 "시연용 예시 이미지" 문구가 박혀 있음.
 - **실사용 배포 전에는 스위치를 끄거나 `demo_reviews.json`·`assets/demo`·`data/demo_photos.json`을 지우고 카탈로그를 다시 만들 것.** 서버(Firestore)에는 아무것도 쓰지 않는다.
 - 폰 확인: 오금버드나무집 상세 사진 "1 / 3", 리뷰 10개와 표시 확인. 단위 시험 2개 추가.
+
+### 10-7. 기획서 대비 추가 구현 (2026-10-20)
+- FR-VER-11 설정 스위치(설정 > 방문 인증), FR-MAP-02 금빛 테두리 핀(`feature/map/PinIcons.kt`), PAS-05 패스포트 공유 카드(`platform/share/PassportShareCard.kt`, FileProvider `${applicationId}.fileprovider`, 캐시 `share/passport.png`), 지역 컬렉션(`domain/rule/RegionProgress.kt` + 패스포트 "지역" 탭, 단위 시험 3개).
+- **실기기 확인 대기**(폰 화면이 꺼져 있어 자동 확인 못 함): 설정 스위치 동작, 지도에서 100년 이상 가게 핀의 금빛 테두리, 패스포트 "지역" 탭, "패스포트 카드 공유"(공유 시트·카드 이미지).
+- 남은 미개발은 `nopo-12-unimplemented.md`(Analytics 이벤트, QR 인증, 서버 판정 등).

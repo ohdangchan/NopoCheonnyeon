@@ -75,6 +75,15 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
             )
             catalogInfo?.let { (v, n) -> Text(stringResource(R.string.settings_catalog, n, v), color = c.ink2, style = NopoTheme.typography.bodySmall) }
         }
+        Section(stringResource(R.string.settings_verify)) {
+            val locOnly by container.settings.allowLocationOnly.collectAsStateWithLifecycle(initialValue = true)
+            val locScope = androidx.compose.runtime.rememberCoroutineScope()
+            Row(Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch), verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.settings_location_only), Modifier.weight(1f), color = c.ink)
+                androidx.compose.material3.Switch(locOnly, { v -> locScope.launch { container.settings.setAllowLocationOnly(v) } })
+            }
+            Text(stringResource(R.string.settings_location_only_help), color = c.ink2, style = NopoTheme.typography.bodySmall)
+        }
         Section(stringResource(R.string.settings_data_source)) {
             Text(stringResource(R.string.settings_data_source_body), color = c.ink2, style = NopoTheme.typography.bodySmall)
         }

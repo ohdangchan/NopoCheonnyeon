@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -55,7 +56,12 @@ data class PassportStamp(val visit: MyVisitEntity, val store: Store?) {
     val isTest: Boolean get() = visit.storeId.startsWith(Store.TEST_PREFIX)
 }
 
-data class PassportUiState(val loading: Boolean = true, val stamps: List<PassportStamp> = emptyList(), val totalYears: Int = 0)
+data class PassportUiState(
+    val loading: Boolean = true,
+    val stamps: List<PassportStamp> = emptyList(),
+    val totalYears: Int = 0,
+    val regions: List<com.nopo.cheonnyeon.domain.rule.RegionProgress> = emptyList(),
+)
 
 class PassportViewModel(private val container: AppContainer) : ViewModel() {
     private val _reviews = kotlinx.coroutines.flow.MutableStateFlow<List<com.nopo.cheonnyeon.data.remote.ReviewItem>?>(null)
@@ -70,6 +76,8 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
 
     val myUid: String? get() = container.auth.currentUid
 
+    suspend fun nickname(): String = container.auth.currentNickname().orEmpty()
+
     val state: StateFlow<PassportUiState> = combine(
         container.database.myVisitDao().observeAll(),
         container.catalog.changes,
@@ -79,6 +87,7 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
             loading = false,
             stamps = visits.map { PassportStamp(it, stores[it.storeId]) },
             totalYears = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded },
+            regions = com.nopo.cheonnyeon.domain.rule.RegionProgressRule.compute(stores.values.toList(), visits.map { it.storeId }.toSet()),
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PassportUiState())
 }
@@ -90,8 +99,19 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
     val c = NopoTheme.colors
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
     var reviewsTab by rememberSaveable { mutableStateOf(false) }
+    var regionsTab by rememberSaveable { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var shareFailed by rememberSaveable { mutableStateOf(false) }
     val myReviews by vm.reviews.collectAsStateWithLifecycle()
     val title = TitlePolicy.titleFor(state.totalYears)
+    val titleName = stringResource(when (title) {
+        com.nopo.cheonnyeon.domain.model.Title.SPROUT -> R.string.title_sprout
+        com.nopo.cheonnyeon.domain.model.Title.REGULAR -> R.string.title_regular
+        com.nopo.cheonnyeon.domain.model.Title.ELDER -> R.string.title_elder
+        com.nopo.cheonnyeon.domain.model.Title.ARTISAN -> R.string.title_artisan
+        com.nopo.cheonnyeon.domain.model.Title.MASTER -> R.string.title_master
+    })
 
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
@@ -100,11 +120,28 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
         }
         YearsGauge(totalYears = state.totalYears, yearsToNextTitle = TitlePolicy.yearsToNext(state.totalYears))
         Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = Alignment.CenterVertically) {
-            androidx.compose.material3.FilterChip(!reviewsTab, { reviewsTab = false }, label = { Text(stringResource(R.string.passport_tab_stamps)) })
-            androidx.compose.material3.FilterChip(reviewsTab, { reviewsTab = true; vm.loadReviews() }, label = { Text(stringResource(R.string.passport_tab_reviews)) })
+            androidx.compose.material3.FilterChip(!reviewsTab && !regionsTab, { reviewsTab = false; regionsTab = false }, label = { Text(stringResource(R.string.passport_tab_stamps)) })
+            androidx.compose.material3.FilterChip(regionsTab, { regionsTab = true; reviewsTab = false }, label = { Text(stringResource(R.string.passport_tab_regions)) })
+            androidx.compose.material3.FilterChip(reviewsTab, { reviewsTab = true; regionsTab = false; vm.loadReviews() }, label = { Text(stringResource(R.string.passport_tab_reviews)) })
             vm.myUid?.let { uid -> TextButton({ onOpenProfile(uid) }) { Text(stringResource(R.string.passport_my_profile)) } }
         }
-        if (reviewsTab) {
+        if (regionsTab) {
+            androidx.compose.foundation.lazy.LazyColumn(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                item { Text(stringResource(R.string.regions_title), style = NopoTheme.typography.titleLarge, color = c.ink) }
+                items(state.regions.size) { i ->
+                    val r = state.regions[i]
+                    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(r.sido, color = c.ink, style = NopoTheme.typography.titleSmall)
+                            Text(stringResource(R.string.regions_row, r.visited, r.total, r.percent), color = c.ink2, style = NopoTheme.typography.bodySmall)
+                        }
+                        androidx.compose.material3.LinearProgressIndicator(
+                            progress = { r.percent / 100f }, modifier = Modifier.fillMaxWidth(), color = c.primary, trackColor = c.tealSoft,
+                        )
+                    }
+                }
+            }
+        } else if (reviewsTab) {
             val list = myReviews
             when {
                 list == null -> Text(stringResource(R.string.list_loading), color = c.ink2)
@@ -131,7 +168,31 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                 illustration = { StampView(years = 30, grade = com.nopo.cheonnyeon.domain.model.StampGrade.NORMAL, modifier = Modifier.alpha(0.25f)) },
             )
         } else {
+            Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
+            com.nopo.cheonnyeon.core.designsystem.component.NopoButton(
+                stringResource(R.string.share_card_button),
+                {
+                    scope.launch {
+                        val real = state.stamps.filter { !it.isTest }
+                        val data = com.nopo.cheonnyeon.platform.share.ShareCardData(
+                            nickname = vm.nickname().ifBlank { "-" },
+                            titleName = titleName,
+                            totalYears = state.totalYears,
+                            stampCount = real.size,
+                            recent = real.sortedByDescending { it.visit.firstVisitedAt }.take(3).map { (it.store?.name ?: it.visit.storeId) to it.visit.yearsAwarded },
+                            colors = com.nopo.cheonnyeon.platform.share.ShareCardColors(
+                                c.paper.toArgb(), c.surface.toArgb(), c.primary.toArgb(), c.stamp.toArgb(), c.brass.toArgb(), c.ink.toArgb(), c.ink2.toArgb(),
+                            ),
+                        )
+                        shareFailed = !com.nopo.cheonnyeon.platform.share.PassportShareCard.share(context, data)
+                    }
+                },
+                style = com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle.Outline,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (shareFailed) Text(stringResource(R.string.share_card_failed), color = c.stamp, style = NopoTheme.typography.bodySmall)
             LazyVerticalGrid(
+                modifier = Modifier.weight(1f),
                 columns = GridCells.Fixed(3),
                 horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
                 verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
@@ -156,6 +217,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                         Text(stringResource(R.string.passport_next_slot), style = NopoTheme.typography.labelMedium, color = c.ink2)
                     }
                 }
+            }
             }
         }
     }

@@ -18,6 +18,7 @@ class SettingsStore(private val context: Context) {
     private val onboardingDoneKey = booleanPreferencesKey("onboarding_done")
     private val catalogVersionKey = longPreferencesKey("catalog_version")
     private val foodOnlyKey = booleanPreferencesKey("filter_food_only")
+    private val locationOnlyKey = booleanPreferencesKey("allow_location_only")
     private val demoDataKey = booleanPreferencesKey("demo_data")
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[onboardingDoneKey] ?: false }
@@ -26,9 +27,13 @@ class SettingsStore(private val context: Context) {
     /** 시연용 예시 리뷰 표시(해커톤 시연 편의상 기본 켜짐) */
     val demoData: Flow<Boolean> = context.dataStore.data.map { it[demoDataKey] ?: true }
 
+    /** 글자 확인이 3번 실패해도 30m 안이면 위치 확인 도장을 허용 (FR-VER-11) */
+    val allowLocationOnly: Flow<Boolean> = context.dataStore.data.map { it[locationOnlyKey] ?: com.nopo.cheonnyeon.domain.rule.VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL }
+
     suspend fun catalogVersion(): Long = context.dataStore.data.first()[catalogVersionKey] ?: 0L
     suspend fun setCatalogVersion(v: Long) { context.dataStore.edit { it[catalogVersionKey] = v } }
     suspend fun setOnboardingDone() { context.dataStore.edit { it[onboardingDoneKey] = true } }
+    suspend fun setAllowLocationOnly(v: Boolean) { context.dataStore.edit { it[locationOnlyKey] = v } }
     suspend fun setDemoData(v: Boolean) { context.dataStore.edit { it[demoDataKey] = v } }
     suspend fun setFoodOnly(v: Boolean) { context.dataStore.edit { it[foodOnlyKey] = v } }
 }

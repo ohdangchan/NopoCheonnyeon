@@ -74,7 +74,13 @@ class VerifyViewModel(
     )
     val state: StateFlow<VerifyUiState> = _state.asStateFlow()
 
+    /** 사용자 설정(FR-VER-11). 읽지 못하면 기본값 */
+    @Volatile private var allowLocationOnly = VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL
+
     init {
+        viewModelScope.launch {
+            runCatching { allowLocationOnly = container.settings.allowLocationOnly.first() }
+        }
         viewModelScope.launch {
             val skew = measureClockSkew()
             if (skew != null && com.nopo.cheonnyeon.core.util.ClockSkew.exceedsWarning(skew)) {
@@ -203,13 +209,13 @@ class VerifyViewModel(
     fun acceptLocationOnly() {
         val s = _state.value
         val store = s.store ?: return
-        if (!PhotoMatcher.canOfferLocationOnly(s.failedPhotoAttempts, s.withinRange, VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL)) return
+        if (!PhotoMatcher.canOfferLocationOnly(s.failedPhotoAttempts, s.withinRange, allowLocationOnly)) return
         _state.update { it.copy(busy = true, error = null) }
         viewModelScope.launch { finish(store, VerifyMethod.LOCATION_ONLY, photoVerified = false, hash = null) }
     }
 
     fun canOfferLocationOnly(): Boolean = _state.value.let {
-        PhotoMatcher.canOfferLocationOnly(it.failedPhotoAttempts, it.withinRange, VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL)
+        PhotoMatcher.canOfferLocationOnly(it.failedPhotoAttempts, it.withinRange, allowLocationOnly)
     }
 
     private suspend fun finish(store: Store, method: VerifyMethod, photoVerified: Boolean, hash: String?) {
