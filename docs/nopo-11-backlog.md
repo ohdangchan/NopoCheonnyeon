@@ -29,6 +29,8 @@
 | B-22 | P2 | 라이선스 화면이 고정 문자열(+`assets/licenses` 2개). 시안은 라이브러리별 목록 | `SettingsScreen` | 라이브러리별 고지(의존성에서 생성) |
 | B-23 | P2 | 개인정보 처리방침 별도 화면 없음(설정에 요약 문장). `docs/privacy-notice.md`에 초안 작성됨 | `SettingsScreen` | 실제 운영 정보(운영자·연락처) 확정 후 화면화 |
 | B-24 | P2 | 하드코딩 한글: `MainScreen.DebugVisitButton`, `DiagnosticsSampleOcr`, `CatalogRepository.createTestStore`(테스트 가게 이름·소개) — 디버그/진단 한정 | — | 허용 예외로 두되 `nopo-qa` 검사에서 제외 목록으로 명시 |
+| B-25 | P1 | **촬영 버튼 중복 탭 방지 확인.** 이전 세션에서 진단 "파일로 촬영" 한 번에 사진 2장이 저장됐다(2.1초 간격). `VerifyViewModel`은 `busy`로 막지만 진단 탭(`DiagnosticsCameraTab`)과 `capturePhoto`/`captureReceipt`의 연타 방어를 실기기로 재현·확인 | `DiagnosticsCameraTab.kt`, `VerifyViewModel.kt` | 연속 탭에도 촬영 1회, 인증샷 1장 |
+| B-26 | P1 | **Firebase 시험 계정·문서 정리**: `spk5.f971n@nopo.test`, `spk5.emu37@nopo.test`와 `diagnostics/{uid}` | Firebase 콘솔 | QA 마지막 날 삭제 |
 
 ## 데이터·콘텐츠
 | ID | 우선 | 내용 | 방법 |
