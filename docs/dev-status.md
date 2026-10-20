@@ -229,3 +229,9 @@
 - **대표 사진:** `python tools/fetch_google_places.py`(키는 환경변수 `GOOGLE_PLACES_KEY`, 코드·로그에 없음) — 공식 사진이 없는 1,191곳 중 860곳에 Google Places(New) 사진 1장씩(폭 560px WebP, 약 26MB → `app/src/main/assets/places/<가게ID>.webp`). 이름 유사도 0.9 이상 + 시·군·구 일치일 때만 채택(0.75~0.89 구간은 오매칭이 많아 39곳 제외). 못 찾은 약 330곳은 글자 카드. 기록 `data/raw/google_places.jsonl`, 지도 `data/places_photos.json` → `build_catalog.py`가 공식 → Google → 시연용 순으로 최대 3장. 사진 위에 "사진: Google 지도" 표시. 현재 사진이 있는 가게 946/1,277곳. **사진 파일은 `.gitignore`(약관상 저장·재배포 제한) — 새로 받으려면 스크립트 재실행. 공개 배포 전 Google 지도 플랫폼 약관 재확인.** APK 79MB(arm64).
 - 가입 화면: 개인정보 처리방침 동의 체크박스(필수)·전체 보기. 패스포트: 도장·방문 지역·가장 오래된 노포 통계 카드(`PassportStats`, 단위 시험 2개).
 - 폰 확인: 설치까지만 했고 새 사진 표시는 미확인(폰을 사용 중이라 UI 자동 확인 중단).
+
+### 10-12. 지도 사용성 개선 (2026-10-20)
+- 하단 시트의 사진·상호를 눌러도 가게 상세로 이동(기존 "자세히 보기" 유지).
+- "내 위치" 버튼은 누를 때마다 지도를 내 위치로 이동(`MapUiState.recenter`). 빠른 위치(`FusedLocationAdapter.quickFix`: 1분 이내 값 또는 저전력 3초)로 먼저 표시한 뒤 `bestFix`(최대 8초, 30m 이하면 종료)로 다듬는다. 방문 인증은 기존 정확도 기준 그대로.
+- 폰 확인: Google 사진 표시("1 / 3", "사진: Google 지도")·패스포트 통계 확인됨. 지도 이동·시트 탭은 사용자가 육안 확인 필요.
+- `StoreSheet` @Preview(라이트·다크·1.5배 글씨) 추가. 남은 @Preview는 ViewModel에 묶인 화면이라 상태 분리가 필요.

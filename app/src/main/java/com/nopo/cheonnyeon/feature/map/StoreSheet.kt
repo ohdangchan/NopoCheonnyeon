@@ -132,3 +132,14 @@ private fun StoreRow(s: Store, state: MapUiState, onOpen: (String) -> Unit) {
         }
     }
 }
+
+private val previewStore = Store(id = "P-1", name = "노포천년식당", programs = listOf("백년가게"), sido = "서울", sigungu = "송파구", foundedYear = 1980)
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun StoreSheetPreview() {
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+        StoreSheet(previewStore, years = 46, distanceM = 320.0, visited = false, onOpen = {})
+        StoreSheet(previewStore, years = 46, distanceM = null, visited = true, onOpen = {})
+    }
+}
