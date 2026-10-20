@@ -294,13 +294,14 @@ data class PendingOpEntity(
     val lastError: String?
 )
 ```
-- 데이터베이스 버전 1부터 시작. 스키마를 바꾸면 버전을 올리고 마이그레이션을 쓴다(`fallbackToDestructiveMigration`은 `stores`만 다시 적재되는 구조가 아니므로 쓰지 않는다).
+- 데이터베이스 버전 1부터 시작. 스키마를 바꾸면 버전을 올리고 마이그레이션을 쓴다. **현재(v2)**: v1에서만 `fallbackToDestructiveMigrationFrom(true, 1)`로 다시 만들고(개발 중 DB), v2 이상은 `Migration`을 추가해야 한다. 스키마는 `app/schemas/`에 기록(`room.schemaLocation`). 실제 엔터티는 이 절의 예와 다르다(`MyVisitEntity`는 `synced: Boolean`, `StoreEntity`는 목록을 JSON 문자열로 저장 + `photoUrls`).
 - 카탈로그는 Room에 미리 만든 DB 파일을 넣지 않고 JSON을 적재한다. 미리 만든 DB는 스키마가 조금만 달라도 앱이 시작되지 않는 위험이 있다.
 
 ### 6.2 Firestore
 PRD 8.2 표 참고. 시간은 `Timestamp`, 화면 표시는 `Asia/Seoul` 날짜만. 방문 문서의 `firstVisitedAt`·`lastVisitedAt`과 `receiptHashes.createdAt`은 서울 기준 그날 0시로 잘라 저장한다(인증 시각의 시:분 비저장). 기기 `my_visits`에는 정확한 시각을 둬도 된다.
 
 ### 6.3 보안 규칙 (`firebase/firestore.rules`)
+> **정본은 `firebase/firestore.rules` 파일이다.** 아래 예는 초기 설계이며 실제 규칙은 닉네임 변경 허용(+`nicknameLower` 일치 검사), `users.visitsVisibility`(방문 기록 공개 범위, 본인 외에는 ALL일 때만 `visits` 읽기), `storeStats/{storeId}`(방문자·재방문자 카운터, 한 번에 +1까지) 등이 추가돼 있다.
 ```
 rules_version = '2';
 service cloud.firestore {
@@ -481,7 +482,7 @@ android {
             // keystore.properties가 없으면 디버그 키로 서명 — 서명 없는 APK는 폰에 설치되지 않는다
             signingConfig = if (keystoreProps.isNotEmpty()) signingConfigs.getByName("release")
                             else signingConfigs.getByName("debug")
-            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }   // 폰용 APK 크기 축소 (에뮬레이터는 디버그로)
+            ndk { abiFilters += listOf("arm64-v8a") }   // (실제) arm64만 — D-15, 147MB → 약 48MB. 네이버 Client Secret은 릴리스에 넣지 않는다(B-14)
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -500,6 +501,7 @@ android {
 # 네이버 지도·ML Kit·Firebase는 라이브러리에 포함된 규칙을 사용. 릴리스에서 문제가 생기면 각 SDK 문서의 keep 규칙을 추가
 ```
 QA는 반드시 릴리스 APK로 한다(디버그에서 되던 것이 R8 때문에 깨지는 경우를 잡기 위해).
+> **(실제)** R8 최적화를 켜면 Crashlytics와 충돌해 릴리스가 시작 시 `IllegalAccessError`로 종료되어 `app/src/main/keepRules/rules.keep`에 `-dontoptimize`를 넣었다(축소·난독화는 유지). 지우지 말 것.
 
 ---
 

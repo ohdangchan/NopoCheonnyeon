@@ -17,6 +17,11 @@ fun loadProps(name: String) = Properties().apply {
 val localProps = loadProps("local.properties")
 val keystoreProps = loadProps("keystore.properties")
 
+ksp {
+    // Room 스키마 기록: 스키마를 바꾸면 버전을 올리고 Migration을 쓴다 (B-13)
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
     namespace = "com.nopo.cheonnyeon"
     compileSdk {
@@ -32,7 +37,6 @@ android {
 
         manifestPlaceholders["NAVER_MAP_KEY_ID"] = localProps.getProperty("NAVER_MAP_KEY_ID", "")
         buildConfigField("String", "NAVER_MAP_KEY_ID", "\"${localProps.getProperty("NAVER_MAP_KEY_ID", "")}\"")
-        buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", "\"${localProps.getProperty("NAVER_MAP_CLIENT_SECRET", "")}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,8 +54,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            // 진단 화면의 좌표→주소 시험에만 쓴다 (B-14)
+            buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", "\"${localProps.getProperty("NAVER_MAP_CLIENT_SECRET", "")}\"")
+        }
         // debug 블록에 패키지 접미사를 두지 않는다: 네이버 지도·Firebase에 등록한 패키지명과 같아야 한다
         release {
+            // 릴리스 APK에는 Client Secret을 넣지 않는다 (B-14)
+            buildConfigField("String", "NAVER_MAP_CLIENT_SECRET", "\"\"")
             // keystore.properties가 없으면 디버그 키로 서명한다 (서명 없는 APK는 폰에 설치되지 않음, D-13)
             signingConfig = if (keystoreProps.isNotEmpty()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
             // 폰용 APK 크기 축소(D-15). 에뮬레이터(x86)는 디버그 빌드로 확인한다

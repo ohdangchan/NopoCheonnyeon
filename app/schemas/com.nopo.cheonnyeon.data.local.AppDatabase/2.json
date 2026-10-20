@@ -1,0 +1,266 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "b782f7857539639ba679848341d11c9f",
+    "entities": [
+      {
+        "tableName": "stores",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `aliases` TEXT NOT NULL, `programs` TEXT NOT NULL, `categoryGroup` TEXT NOT NULL, `isFood` INTEGER NOT NULL, `sido` TEXT NOT NULL, `sigungu` TEXT NOT NULL, `address` TEXT NOT NULL, `phone` TEXT, `foundedYear` INTEGER, `foundedDate` TEXT, `lat` REAL, `lng` REAL, `menuItems` TEXT NOT NULL, `hours` TEXT, `amenities` TEXT NOT NULL, `summary` TEXT, `generation` INTEGER, `sourceUrl` TEXT, `photoUrls` TEXT NOT NULL, `isTest` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aliases",
+            "columnName": "aliases",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "programs",
+            "columnName": "programs",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryGroup",
+            "columnName": "categoryGroup",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFood",
+            "columnName": "isFood",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sido",
+            "columnName": "sido",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sigungu",
+            "columnName": "sigungu",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "foundedYear",
+            "columnName": "foundedYear",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "foundedDate",
+            "columnName": "foundedDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "lng",
+            "columnName": "lng",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "menuItems",
+            "columnName": "menuItems",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hours",
+            "columnName": "hours",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "amenities",
+            "columnName": "amenities",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "summary",
+            "columnName": "summary",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "generation",
+            "columnName": "generation",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "sourceUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "photoUrls",
+            "columnName": "photoUrls",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTest",
+            "columnName": "isTest",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_stores_lat_lng",
+            "unique": false,
+            "columnNames": [
+              "lat",
+              "lng"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stores_lat_lng` ON `${TABLE_NAME}` (`lat`, `lng`)"
+          },
+          {
+            "name": "index_stores_sido_sigungu",
+            "unique": false,
+            "columnNames": [
+              "sido",
+              "sigungu"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_stores_sido_sigungu` ON `${TABLE_NAME}` (`sido`, `sigungu`)"
+          }
+        ]
+      },
+      {
+        "tableName": "my_visits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`storeId` TEXT NOT NULL, `yearsAwarded` INTEGER NOT NULL, `method` TEXT NOT NULL, `firstVisitedAt` INTEGER NOT NULL, `lastVisitedAt` INTEGER NOT NULL, `visitCount` INTEGER NOT NULL, `synced` INTEGER NOT NULL, PRIMARY KEY(`storeId`))",
+        "fields": [
+          {
+            "fieldPath": "storeId",
+            "columnName": "storeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "yearsAwarded",
+            "columnName": "yearsAwarded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "method",
+            "columnName": "method",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstVisitedAt",
+            "columnName": "firstVisitedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastVisitedAt",
+            "columnName": "lastVisitedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "visitCount",
+            "columnName": "visitCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "synced",
+            "columnName": "synced",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "storeId"
+          ]
+        }
+      },
+      {
+        "tableName": "pending_ops",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `payload` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `attempts` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payload",
+            "columnName": "payload",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attempts",
+            "columnName": "attempts",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b782f7857539639ba679848341d11c9f')"
+    ]
+  }
+}

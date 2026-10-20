@@ -13,12 +13,12 @@
 | B-06 | P1 (**2026-10-20 구현, 실기기 미확인**) | **진단 화면 정보 부족.** FR-SPK-03·S-901: 기기·Android·Play 서비스 버전·권한 상태·지도 인증 결과·마지막 위치 정확도·마지막 OCR 시간 + **텍스트로 복사**가 요구되나 모델·OS·앱 버전 3줄만 있다 | `feature/diagnostics/DiagnosticsScreen.kt DeviceInfo` | 위 항목 표시 + 복사 버튼(클립보드). Y-02 |
 | B-07 | P1 (**2026-10-20 구현, 실기기 미확인**) | **"테스트 기록 삭제" 없음**(FR-TST-03, S-902 "삭제"). 테스트 도장은 앱 데이터 삭제로만 지울 수 있다 | `CatalogRepository`, `MainScreen` | 테스트 가게·테스트 방문 삭제 버튼(서버 무관). Y-07 |
 | B-08 | P1 (**2026-10-20 구현, 실기기 미확인**) | **프로필 화면이 PRD보다 단순.** FR-PRF-02(가입일·게이지), FR-PRF-03(지역·등급·첫 방문일(날짜만)·단골 횟수, 20개씩), FR-PRF-04(탭 분리·날짜), 현재는 최대 60개를 한 화면에 가게명·세월만 표시. `ProfileRepository.profile()`은 `createdAt`을 읽지 않음 | `feature/profile/ProfileScreen.kt`, `data/remote/ProfileRepository.kt` | PRD 5.8 수락 기준 충족, 시안 `profile/user_profile` 참고(`PRD-차이점.md` 게이지 라벨 오류 주의) |
-| B-09 | P1 | **영수증 가이드 틀 오버레이 없음**(FR-VER-03). 카메라 미리보기에 틀·안내만 텍스트로 있음 | `feature/verify/VerifyScreen.kt CameraArea` | 영수증 모양 틀/모서리 표시. R-12 |
-| B-10 | P1 | **정보 오류 신고(FR-STORE-06) 없음.** 리뷰 신고만 있다(`reports` 컬렉션, 사유 4종) | `StoreReviewsSection` | 가게 상세에서 정보 오류 신고(사유 선택, 사진 첨부 없음). 규칙 `reports`는 `reporterUid`만 검사하므로 `kind`·`storeId` 필드 추가 시 규칙 확인 |
-| B-11 | P1 | **칭호 승급 연출(S-705) 없음.** 결과 화면에 "새 칭호: …" 텍스트 한 줄만 | `VerifyScreen.ResultSection` | 승급 오버레이(시안 `stamp/title_promotion`, "東네 어른" 오타·특권 문구 제외). Lottie 도입 전 먼저 물을 것(`CLAUDE.md`) |
+| B-09 | P1 (**2026-10-20 구현, 실기기 미확인**) | **영수증 가이드 틀 오버레이 없음**(FR-VER-03). 카메라 미리보기에 틀·안내만 텍스트로 있음 | `feature/verify/VerifyScreen.kt CameraArea` | 영수증 모양 틀/모서리 표시. R-12 |
+| B-10 | P1 (**2026-10-20 구현, 실기기 미확인**) | **정보 오류 신고(FR-STORE-06) 없음.** 리뷰 신고만 있다(`reports` 컬렉션, 사유 4종) | `StoreReviewsSection` | 가게 상세에서 정보 오류 신고(사유 선택, 사진 첨부 없음). 규칙 `reports`는 `reporterUid`만 검사하므로 `kind`·`storeId` 필드 추가 시 규칙 확인 |
+| B-11 | P1 (**2026-10-20 구현, 실기기 미확인**) | **칭호 승급 연출(S-705) 없음.** 결과 화면에 "새 칭호: …" 텍스트 한 줄만 | `VerifyScreen.ResultSection` | 승급 오버레이(시안 `stamp/title_promotion`, "東네 어른" 오타·특권 문구 제외). Lottie 도입 전 먼저 물을 것(`CLAUDE.md`) |
 | B-12 | P1 (**2026-10-20 구현, 실기기 미확인**) | **방문 기록 비공개 설정(FR-PRF-07) 없음.** 서버 규칙은 로그인 사용자 누구나 `visits` 읽기 | `firebase/firestore.rules` | `users` 문서에 공개 범위 필드 + 규칙/화면. 시안 `settings/privacy_settings` |
-| B-13 | P1 | **Room 정식 마이그레이션 필요.** `fallbackToDestructiveMigration(dropAllTables = true)`는 스키마(현재 v2) 변경 시 **`my_visits`·`pending_ops`(미전송 인증)까지 삭제**한다 | `data/local/AppDatabase.kt` | 출시 전 `Migration` 작성, `exportSchema` 켜고 스키마 JSON 보관, 마이그레이션 테스트 |
-| B-14 | P1 | **네이버 Client Secret이 APK에 포함**(`BuildConfig.NAVER_MAP_CLIENT_SECRET`, 진단 역지오코딩 용도) | `app/build.gradle.kts`, `platform/map/ReverseGeocoder.kt` | 릴리스에서는 제거하거나 콘솔에서 사용 한도·허용 패키지 설정, 키 교체 |
+| B-13 | P1 (**2026-10-20 구현: v1에서만 재생성, v2 이상은 Migration 필수, `app/schemas/` 스키마 기록. Migration 테스트는 없음**) | **Room 정식 마이그레이션 필요.** `fallbackToDestructiveMigration(dropAllTables = true)`는 스키마(현재 v2) 변경 시 **`my_visits`·`pending_ops`(미전송 인증)까지 삭제**한다 | `data/local/AppDatabase.kt` | 출시 전 `Migration` 작성, `exportSchema` 켜고 스키마 JSON 보관, 마이그레이션 테스트 |
+| B-14 | P1 (**2026-10-20 구현: 릴리스 APK에서 Client Secret 제거, dex 검색 0건 확인. 공개 배포 전 콘솔에서 기존 키 교체는 사용자 몫**) | **네이버 Client Secret이 APK에 포함**(`BuildConfig.NAVER_MAP_CLIENT_SECRET`, 진단 역지오코딩 용도) | `app/build.gradle.kts`, `platform/map/ReverseGeocoder.kt` | 릴리스에서는 제거하거나 콘솔에서 사용 한도·허용 패키지 설정, 키 교체 |
 | B-15 | P2 | 리뷰 저장·삭제가 **배치**(문서는 트랜잭션). 오프라인은 12초 타임아웃과 `UNAVAILABLE` 매핑으로 막음 | `data/remote/ReviewRepository.kt` | 필요 시 트랜잭션 전환, M-49 확인 |
 | B-16 | P2 | 리뷰 편집기·도장 연출·도장 상세가 별도 화면이 아니라 `AlertDialog`/인라인(아키텍처 2장의 `ReviewEditorScreen` 등과 다름) | `StoreReviewsSection`, `VerifyScreen`, `PassportScreen` | 시안에 맞춰 분리(선택). 도장 연출은 시안의 인증 전/후 게이지·칭호·"평점 남기기" 연결 포함 |
 | B-17 | P2 | 시계 오차 경고 없음(아키텍처 9장: 서버 시간과 10분 이상 차이 나면 경고) | — | `Timestamp` 비교 또는 서버 시각 문서 |
@@ -29,7 +29,7 @@
 | B-22 | P2 | 라이선스 화면이 고정 문자열(+`assets/licenses` 2개). 시안은 라이브러리별 목록 | `SettingsScreen` | 라이브러리별 고지(의존성에서 생성) |
 | B-23 | P2 | 개인정보 처리방침 별도 화면 없음(설정에 요약 문장). `docs/privacy-notice.md`에 초안 작성됨 | `SettingsScreen` | 실제 운영 정보(운영자·연락처) 확정 후 화면화 |
 | B-24 | P2 | 하드코딩 한글: `MainScreen.DebugVisitButton`, `DiagnosticsSampleOcr`, `CatalogRepository.createTestStore`(테스트 가게 이름·소개) — 디버그/진단 한정 | — | 허용 예외로 두되 `nopo-qa` 검사에서 제외 목록으로 명시 |
-| B-25 | P1 | **촬영 버튼 중복 탭 방지 확인.** 이전 세션에서 진단 "파일로 촬영" 한 번에 사진 2장이 저장됐다(2.1초 간격). `VerifyViewModel`은 `busy`로 막지만 진단 탭(`DiagnosticsCameraTab`)과 `capturePhoto`/`captureReceipt`의 연타 방어를 실기기로 재현·확인 | `DiagnosticsCameraTab.kt`, `VerifyViewModel.kt` | 연속 탭에도 촬영 1회, 인증샷 1장 |
+| B-25 | P1 (**2026-10-20 구현, 실기기 미확인**) | **촬영 버튼 중복 탭 방지 확인.** 이전 세션에서 진단 "파일로 촬영" 한 번에 사진 2장이 저장됐다(2.1초 간격). `VerifyViewModel`은 `busy`로 막지만 진단 탭(`DiagnosticsCameraTab`)과 `capturePhoto`/`captureReceipt`의 연타 방어를 실기기로 재현·확인 | `DiagnosticsCameraTab.kt`, `VerifyViewModel.kt` | 연속 탭에도 촬영 1회, 인증샷 1장 |
 | B-26 | P1 | **Firebase 시험 계정·문서 정리**: `spk5.f971n@nopo.test`, `spk5.emu37@nopo.test`와 `diagnostics/{uid}` | Firebase 콘솔 | QA 마지막 날 삭제 |
 
 ## 신규 기능 요청 (사용자, 2026-10-20)
