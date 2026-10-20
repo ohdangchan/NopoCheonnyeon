@@ -116,18 +116,42 @@ class ReviewsViewModelTest {
         assertEquals(0, vm.state.value.demoItems.size)
     }
 
-    @Test fun `시험용 가게는 서버를 부르지 않고 예시 리뷰와 재방문 통계만 보여 준다`() {
+    private fun testStoreVm(visited: Boolean, local: Triple<Int, Long, String>? = null): ReviewsViewModel {
         val testStore = Store(id = "TEST-NOPO", name = "시험식당", isTest = true)
         val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
         every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(true)
+        coEvery { settings.testReview("TEST-NOPO") } returns local
         val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
         coEvery { demoRepo.forStore("TEST-NOPO") } returns listOf(demoItem(5), demoItem(3).copy(visitCount = 2))
+        val visit = if (visited) MyVisitEntity("TEST-NOPO", 46, "RECEIPT", 0L, 0L, 1, false) else null
+        coEvery { dao.byStore("TEST-NOPO") } returns visit
+        val db = mockk<AppDatabase>()
+        every { db.myVisitDao() } returns dao
+        val auth = mockk<AuthRepository>()
+        every { auth.currentUid } returns "me"
+        coEvery { auth.currentNickname() } returns "나"
         val container = mockk<AppContainer>()
         every { container.settings } returns settings
         every { container.demoReviews } returns demoRepo
-        val vm = ReviewsViewModel(container, testStore)
-        assertEquals(ReviewEligibility.TEST_STORE, vm.state.value.eligibility)
+        every { container.database } returns db
+        every { container.auth } returns auth
+        return ReviewsViewModel(container, testStore)
+    }
+
+    @Test fun `시험용 가게는 인증 전에는 리뷰를 못 쓰고 서버를 부르지 않는다`() {
+        val vm = testStoreVm(visited = false)
+        assertEquals(ReviewEligibility.NOT_VISITED, vm.state.value.eligibility)
+        assertEquals(true, vm.state.value.localOnly)
         assertEquals(2, vm.state.value.summary?.count)
         assertEquals(StoreStats(2, 1), vm.state.value.stats)
+        assertNull(vm.state.value.mine)
+    }
+
+    @Test fun `시험용 가게는 인증 뒤 이 기기에 저장한 내 리뷰가 평점에 합쳐진다`() {
+        val vm = testStoreVm(visited = true, local = Triple(4, 1000L, "맛있어요"))
+        assertEquals(ReviewEligibility.OK, vm.state.value.eligibility)
+        assertEquals("맛있어요", vm.state.value.mine?.text)
+        assertEquals(3, vm.state.value.summary?.count)
+        assertEquals(4.0, vm.state.value.summary!!.average!!, 0.001)
     }
 }

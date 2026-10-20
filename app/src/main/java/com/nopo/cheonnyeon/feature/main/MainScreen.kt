@@ -160,6 +160,7 @@ private fun TestDataDeleteButton(container: AppContainer) {
     NopoButton(stringResource(R.string.test_store_delete), {
         scope.launch {
             container.visits.clearTestData()
+            container.settings.clearTestReviews()
             container.catalog.deleteTestStores()
             done = true
         }

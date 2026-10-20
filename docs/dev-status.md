@@ -219,3 +219,8 @@
 - **영수증:** `python tools/gen_test_receipt.py` → `tools/test-images/test_receipt_today.png`(현재 시각, 24시간 안에 사용). 모니터 등 다른 화면에 띄우고 앱 카메라로 찍는다. 같은 영수증은 중복(`E_RECEIPT_DUP`)이므로 다시 시험할 땐 다시 생성. `test_receipt_live.html`(현재 시각이 매번 찍힘)도 사용 가능.
 - **재방문율(F-01):** 가게 상세 "평점과 리뷰" 영역에 "재방문율 NN% · 방문 N명 중 N명이 다시 갔어요"(방문자 5명 미만이면 인원수만). 서버 집계(`storeStats`)에 시연용 예시 리뷰어(단골 2회 이상=재방문자)를 더해 보여 준다(`mergeDemoStats`).
 - **발견·수정한 결함:** 금빛 테두리 핀(`PinIcons`)의 몸통 경로 방향이 달라 겹치는 부분이 비는 문제를 Robolectric(NATIVE 그래픽) 시험으로 찾아 고침. 시험용 가게 상세의 "세월 +46년" 문구·"소상공인마당 출처" 표기도 바로잡음.
+
+### 10-10. 시연 가게 시나리오 (2026-10-20)
+- 시험용 가게(`TEST-NOPO`): 인증 전에는 "방문 인증한 사람만 평점을 남길 수 있어요", 인증 뒤에는 리뷰를 쓸 수 있다. 내 리뷰는 `SettingsStore.testReview`(DataStore, 키 `test_review_<가게 ID>`)에 이 기기에만 저장되고 평균·개수에 합쳐진다. "테스트 가게·기록 삭제"가 함께 지운다. 단위 시험 `ReviewsViewModelTest`에 2개.
+- `tools/gen_test_receipt.py`: 영수증 3종(성공·50시간 전·다른 가게)과 메뉴판, 시나리오 페이지 `demo_scenarios.html`. 시나리오 표는 `docs/demo-guide.md` 끝.
+- 미확인: 새 영수증 이미지들을 ML Kit으로 읽는 것(카메라 촬영 필요). 폰에서 시나리오 2~4는 사용자가 촬영해 확인.

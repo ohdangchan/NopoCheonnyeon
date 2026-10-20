@@ -50,7 +50,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** 리뷰를 쓸 수 있는 자격 (FR-STORE-04) */
-enum class ReviewEligibility { NOT_VISITED, SYNCING, OK, TEST_STORE }
+enum class ReviewEligibility { NOT_VISITED, SYNCING, OK }
 
 data class ReviewsUiState(
     val loading: Boolean = true,
@@ -65,6 +65,8 @@ data class ReviewsUiState(
     val stats: com.nopo.cheonnyeon.data.remote.StoreStats? = null,
     /** 시연용 예시 리뷰(실제 리뷰 뒤에 표시) */
     val demoItems: List<ReviewItem> = emptyList(),
+    /** 시험용 가게: 리뷰가 서버가 아니라 이 기기에만 저장된다 */
+    val localOnly: Boolean = false,
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
@@ -113,15 +115,30 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         }
     }
 
-    /** 시험용 가게는 서버에 없으므로 시연용 예시 리뷰만 보여 준다 */
+    /** 시험용 가게는 서버에 없다: 방문 인증을 해야 리뷰를 쓸 수 있고, 내 리뷰는 이 기기에만 저장하며, 나머지는 시연용 예시다 */
     private suspend fun refreshTestStore() {
         val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
+        val visited = container.database.myVisitDao().byStore(store.id) != null
+        val mine = if (visited) loadTestReview() else null
+        val own = listOfNotNull(mine)
+        val summary = if (own.isEmpty()) com.nopo.cheonnyeon.data.remote.DemoReviews.merge(null, demo)
+        else com.nopo.cheonnyeon.data.remote.DemoReviews.merge(ReviewSummary(own.size, own.sumOf { it.rating }.toDouble() / own.size), demo)
         _state.update {
             it.copy(
-                loading = false, summary = com.nopo.cheonnyeon.data.remote.DemoReviews.merge(null, demo), demoItems = demo,
-                stats = mergeDemoStats(null, demo), eligibility = ReviewEligibility.TEST_STORE, error = null,
+                loading = false, summary = summary, demoItems = demo, items = own, mine = mine, hasMore = false, localOnly = true,
+                stats = mergeDemoStats(null, demo),
+                eligibility = if (visited) ReviewEligibility.OK else ReviewEligibility.NOT_VISITED, error = null,
             )
         }
+    }
+
+    private suspend fun loadTestReview(): ReviewItem? {
+        val (rating, at, text) = container.settings.testReview(store.id) ?: return null
+        val visits = container.database.myVisitDao().byStore(store.id)?.visitCount ?: 1
+        return ReviewItem(
+            id = "local_" + store.id, storeId = store.id, storeName = store.name, uid = container.auth.currentUid.orEmpty(),
+            nickname = container.auth.currentNickname().orEmpty(), titleId = "", rating = rating, text = text, visitCount = visits, updatedAtMillis = at,
+        )
     }
 
     fun loadMore() {
@@ -144,6 +161,17 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
 
     fun save(rating: Int, text: String, onDone: () -> Unit) {
         if (_state.value.saving) return
+        if (store.isTest) {
+            viewModelScope.launch {
+                val check = com.nopo.cheonnyeon.domain.rule.ReviewRules.validate(rating, text)
+                if (check is ReviewCheck.Valid) {
+                    container.settings.setTestReview(store.id, check.rating, check.text, container.clock.now().toEpochMilli())
+                    com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(check.text.isNotBlank())
+                    onDone(); refresh()
+                }
+            }
+            return
+        }
         _state.update { it.copy(saving = true, error = null) }
         viewModelScope.launch {
             val visit = container.database.myVisitDao().byStore(store.id)
@@ -158,6 +186,10 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
 
     fun delete(onDone: () -> Unit) {
         if (_state.value.saving) return
+        if (store.isTest) {
+            viewModelScope.launch { container.settings.deleteTestReview(store.id); onDone(); refresh() }
+            return
+        }
         _state.update { it.copy(saving = true, error = null) }
         viewModelScope.launch {
             val result = container.reviews.delete(store.id)
@@ -210,7 +242,6 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
 
         when (state.eligibility) {
             ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
-            ReviewEligibility.TEST_STORE -> Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.SYNCING -> Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.OK -> NopoButton(
                 stringResource(if (state.mine != null) R.string.reviews_edit else R.string.reviews_write),
@@ -220,6 +251,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
             )
         }
 
+        if (state.localOnly) Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
         state.items.forEach { r -> ReviewCard(r, onOpenProfile, onReport = if (r.uid != myUid) ({ reportTarget = r.id }) else null) }
         state.demoItems.forEach { r -> ReviewCard(r, onOpenProfile, onReport = null) }
         if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)

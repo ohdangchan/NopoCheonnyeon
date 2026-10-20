@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -30,10 +31,34 @@ class SettingsStore(private val context: Context) {
     /** 글자 확인이 3번 실패해도 30m 안이면 위치 확인 도장을 허용 (FR-VER-11) */
     val allowLocationOnly: Flow<Boolean> = context.dataStore.data.map { it[locationOnlyKey] ?: com.nopo.cheonnyeon.domain.rule.VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL }
 
+    /** 시험용 가게에 남긴 내 리뷰(별점|시각|글). 시험용 가게는 서버에 없어서 이 기기에만 저장한다 */
+    suspend fun testReview(storeId: String): Triple<Int, Long, String>? {
+        val raw = context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] ?: return null
+        val parts = raw.split("|", limit = 3)
+        if (parts.size < 3) return null
+        return Triple(parts[0].toIntOrNull() ?: return null, parts[1].toLongOrNull() ?: return null, parts[2])
+    }
+
+    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long) {
+        context.dataStore.edit { it[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] = "$rating|$atMillis|$text" }
+    }
+
+    suspend fun deleteTestReview(storeId: String) {
+        context.dataStore.edit { it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)) }
+    }
+
+    suspend fun clearTestReviews() {
+        context.dataStore.edit { p -> p.asMap().keys.filter { it.name.startsWith(TEST_REVIEW_PREFIX) }.forEach { p.remove(it) } }
+    }
+
     suspend fun catalogVersion(): Long = context.dataStore.data.first()[catalogVersionKey] ?: 0L
     suspend fun setCatalogVersion(v: Long) { context.dataStore.edit { it[catalogVersionKey] = v } }
     suspend fun setOnboardingDone() { context.dataStore.edit { it[onboardingDoneKey] = true } }
     suspend fun setAllowLocationOnly(v: Boolean) { context.dataStore.edit { it[locationOnlyKey] = v } }
     suspend fun setDemoData(v: Boolean) { context.dataStore.edit { it[demoDataKey] = v } }
     suspend fun setFoodOnly(v: Boolean) { context.dataStore.edit { it[foodOnlyKey] = v } }
+
+    private companion object {
+        const val TEST_REVIEW_PREFIX = "test_review_"
+    }
 }
