@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -100,6 +101,12 @@ private fun AccountSection(container: AppContainer, c: com.nopo.cheonnyeon.core.
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     val context = LocalContext.current
     var nickDialog by rememberSaveable { mutableStateOf(false) }
+    var visDialog by rememberSaveable { mutableStateOf(false) }
+    var visibility by remember { mutableStateOf("ALL") }
+    var visSaved by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(visDialog) {
+        if (visDialog) container.auth.currentUid?.let { me -> container.profiles.profile(me).valueOrNull?.let { visibility = it.visibility } }
+    }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
     var nick by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -109,7 +116,46 @@ private fun AccountSection(container: AppContainer, c: com.nopo.cheonnyeon.core.
 
     Section(stringResource(R.string.settings_account)) {
         NopoButton(stringResource(R.string.settings_change_nick), { error = null; nick = ""; nickDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        NopoButton(stringResource(R.string.settings_visibility), { error = null; visSaved = false; visDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        if (visSaved) Text(stringResource(R.string.visibility_saved), color = c.primary, style = NopoTheme.typography.bodySmall)
         NopoButton(stringResource(R.string.settings_delete_account), { error = null; password = ""; deleteDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+    }
+
+    if (visDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { if (!busy) visDialog = false },
+            title = { Text(stringResource(R.string.settings_visibility)) },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+                    listOf("ALL" to R.string.visibility_all, "COUNT" to R.string.visibility_count, "PRIVATE" to R.string.visibility_private).forEach { (key, label) ->
+                        Row(
+                            Modifier.fillMaxWidth().clickable { visibility = key },
+                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+                        ) {
+                            androidx.compose.material3.RadioButton(selected = visibility == key, onClick = { visibility = key })
+                            Text(stringResource(label), color = c.ink)
+                        }
+                    }
+                    Text(stringResource(R.string.visibility_note), color = c.ink2, style = NopoTheme.typography.bodySmall)
+                    error?.let { Text(it.message(context), color = c.stamp) }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    enabled = !busy,
+                    onClick = {
+                        busy = true
+                        scope.launch {
+                            val r = container.auth.currentUid?.let { container.profiles.setVisibility(it, visibility) }
+                            busy = false
+                            error = r?.errorOrNull
+                            if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) { visSaved = true; visDialog = false }
+                        }
+                    },
+                ) { Text(stringResource(R.string.reviews_save)) }
+            },
+            dismissButton = { androidx.compose.material3.TextButton({ visDialog = false }, enabled = !busy) { Text(stringResource(R.string.detail_back)) } },
+        )
     }
 
     if (nickDialog) {

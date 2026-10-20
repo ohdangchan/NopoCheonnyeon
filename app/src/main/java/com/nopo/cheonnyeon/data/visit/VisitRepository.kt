@@ -231,6 +231,26 @@ class VisitRepository(
             ),
         )
         batch.commit().await()
+        updateStoreStats(firestore, v)
+    }
+
+    /**
+     * 가게별 방문자·재방문자 집계 (FR-STORE-07): 첫 방문이면 방문자 +1, 두 번째 인증이면 재방문자 +1.
+     * 방문 기록 전송과 따로 보내고, 실패해도 방문 기록에는 영향이 없다 (집계는 참고용).
+     */
+    private suspend fun updateStoreStats(firestore: FirebaseFirestore, v: PendingVisit) {
+        val ref = firestore.collection("storeStats").document(v.storeId)
+        val data = when {
+            v.firstVisit -> mapOf("visitors" to FieldValue.increment(1), "revisitors" to FieldValue.increment(0))
+            v.visitCount == 2 -> mapOf("visitors" to FieldValue.increment(0), "revisitors" to FieldValue.increment(1))
+            else -> return
+        }
+        try {
+            withTimeout(SYNC_TIMEOUT_MS) { ref.set(data, com.google.firebase.firestore.SetOptions.merge()).await() }
+        } catch (e: CancellationException) {
+            if (e !is TimeoutCancellationException) throw e
+        } catch (_: Exception) {
+        }
     }
 
     private companion object {

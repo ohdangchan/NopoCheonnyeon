@@ -61,6 +61,7 @@ data class ReviewsUiState(
     val error: AppError? = null,
     val saving: Boolean = false,
     val reported: Boolean = false,
+    val stats: com.nopo.cheonnyeon.data.remote.StoreStats? = null,
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
@@ -83,6 +84,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             }
             val summary = container.reviews.summary(store.id)
             val page = container.reviews.page(store.id)
+            val stats = container.storeStats.get(store.id).valueOrNull
             val mine = if (eligibility == ReviewEligibility.OK) container.reviews.mine(store.id).valueOrNull else null
             lastPage = page.valueOrNull
             _state.update {
@@ -92,6 +94,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                     items = page.valueOrNull?.items.orEmpty(),
                     hasMore = page.valueOrNull?.hasMore ?: false,
                     mine = mine,
+                    stats = stats,
                     eligibility = eligibility,
                     error = summary.errorOrNull ?: page.errorOrNull,
                 )
@@ -162,6 +165,13 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
                     Text(stringResource(R.string.reviews_summary, s.average, s.count), style = NopoTheme.typography.bodyMedium, color = c.ink)
                 }
             }
+        }
+        state.stats?.takeIf { it.visitors > 0 }?.let { st ->
+            val pct = com.nopo.cheonnyeon.domain.rule.RevisitStats.percent(st.visitors, st.revisitors)
+            Text(
+                if (pct != null) stringResource(R.string.revisit_line_percent, st.visitors, st.revisitors, pct) else stringResource(R.string.revisit_line, st.visitors, st.revisitors),
+                style = NopoTheme.typography.bodyMedium, color = c.ink,
+            )
         }
         state.error?.let { Text(it.message(LocalContext.current), color = c.stamp) }
 

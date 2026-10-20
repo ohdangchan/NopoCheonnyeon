@@ -5,7 +5,7 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
     function userKeys() {
-      return ['nickname','nicknameLower','titleId','totalYears','visitCount','reviewCount','createdAt','updatedAt'];
+      return ['nickname','nicknameLower','titleId','totalYears','visitCount','reviewCount','createdAt','updatedAt','visitsVisibility'];
     }
 
     match /users/{uid} {
@@ -31,11 +31,14 @@ service cloud.firestore {
         && request.resource.data.totalYears <= resource.data.totalYears + 200
         && request.resource.data.visitCount >= resource.data.visitCount
         && request.resource.data.visitCount <= resource.data.visitCount + 1
-        && request.resource.data.reviewCount >= 0;
+        && request.resource.data.reviewCount >= 0
+        && (!('visitsVisibility' in request.resource.data) || request.resource.data.visitsVisibility in ['ALL', 'COUNT', 'PRIVATE']);
       allow delete: if isMe(uid);
 
       match /visits/{storeId} {
-        allow read: if signedIn();
+        // 방문 기록 공개 범위(FR-PRF-07): 본인은 항상, 다른 사람은 공개 범위가 ALL(기본)일 때만
+        allow read: if isMe(uid) || (signedIn()
+          && get(/databases/$(database)/documents/users/$(uid)).data.get('visitsVisibility', 'ALL') == 'ALL');
         allow create: if isMe(uid)
           && request.resource.data.storeId == storeId
           && request.resource.data.yearsAwarded is int
@@ -76,6 +79,21 @@ service cloud.firestore {
         && resource.data.uid == request.auth.uid
         && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+
+    // 가게별 방문자·재방문자 수(FR-STORE-07). 한 번에 최대 1씩만 늘릴 수 있다
+    match /storeStats/{storeId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['visitors', 'revisitors'])
+        && request.resource.data.visitors is int && request.resource.data.visitors >= 0 && request.resource.data.visitors <= 1
+        && request.resource.data.revisitors is int && request.resource.data.revisitors >= 0 && request.resource.data.revisitors <= 1;
+      allow update: if signedIn()
+        && request.resource.data.keys().hasOnly(['visitors', 'revisitors'])
+        && request.resource.data.visitors - resource.data.visitors >= 0
+        && request.resource.data.visitors - resource.data.visitors <= 1
+        && request.resource.data.revisitors - resource.data.revisitors >= 0
+        && request.resource.data.revisitors - resource.data.revisitors <= 1;
     }
 
     match /receiptHashes/{hash} {
