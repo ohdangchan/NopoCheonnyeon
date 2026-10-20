@@ -24,6 +24,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -46,6 +47,8 @@ data class VerifyUiState(
     val blocked: Boolean = false,
     /** 기기 위치가 꺼져 있어 시스템 '위치 켜기' 대화상자를 띄워야 함 (S-605) */
     val pendingResolution: com.google.android.gms.common.api.ResolvableApiException? = null,
+    /** 한도 안내 화면에 보여 줄 오늘 인증한 가게 (이름, 얻은 세월) */
+    val todayVisits: List<Pair<String, Int>> = emptyList(),
 )
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
@@ -71,7 +74,13 @@ class VerifyViewModel(
             _state.update { it.copy(store = store) }
             if (store != null) {
                 val limit = DailyLimitPolicy.check(container.visits.visitRefs(), store.id, store.isTest, container.clock.now())
-                if (limit != null) _state.update { it.copy(blocked = true, error = limit) }
+                if (limit != null) {
+                    val today = container.clock.now().atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate()
+                    val list = container.database.myVisitDao().observeAll().first()
+                        .filter { !it.storeId.startsWith(Store.TEST_PREFIX) && java.time.Instant.ofEpochMilli(it.lastVisitedAt).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate() == today }
+                        .map { (container.catalog.byId(it.storeId)?.name ?: it.storeId) to it.yearsAwarded }
+                    _state.update { it.copy(blocked = true, error = limit, todayVisits = list) }
+                }
             }
         }
     }

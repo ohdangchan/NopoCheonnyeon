@@ -438,4 +438,7 @@
     <string name="store_report_menu">메뉴·가격이 달라요</string>
     <string name="store_report_other">기타</string>
     <string name="store_report_sent">제보해 주셔서 고마워요. 확인 후 반영할게요.</string>
+    <!-- 하루 한도 안내 (시안 daily_limit) -->
+    <string name="verify_today_title">오늘 인증한 노포 %1$d곳</string>
+    <string name="verify_today_item">%1$d. %2$s · 세월 %3$d년</string>
 </resources>

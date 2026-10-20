@@ -70,6 +70,12 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
         }
         if (state.blocked) {
             ErrorText(state.error, state.errorMeters)
+            if (state.todayVisits.isNotEmpty()) {
+                Text(stringResource(R.string.verify_today_title, state.todayVisits.size), style = NopoTheme.typography.titleSmall, color = c.ink)
+                state.todayVisits.forEachIndexed { i, (name, years) ->
+                    Text(stringResource(R.string.verify_today_item, i + 1, name, years), style = NopoTheme.typography.bodyMedium, color = c.ink2)
+                }
+            }
             NopoButton(stringResource(R.string.detail_back), onClose, modifier = Modifier.fillMaxWidth())
             return@Column
         }
@@ -232,6 +238,15 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
             color = c.primary,
         )
         Text(stringResource(R.string.verify_done_total, award.totalYearsAfter), style = NopoTheme.extraTypography.metric, color = c.ink)
+        // 인증 전 → 후 세월, 천 년 게이지와 현재 칭호 (시안 stamp_ceremony)
+        val before = award.totalYearsAfter - (if (award.firstVisit) award.years else 0)
+        if (award.firstVisit) Text(stringResource(R.string.detail_reward_total, before, award.totalYearsAfter), style = NopoTheme.extraTypography.metric, color = c.ink2)
+        com.nopo.cheonnyeon.core.designsystem.component.YearsGauge(
+            totalYears = award.totalYearsAfter,
+            yearsToNextTitle = com.nopo.cheonnyeon.domain.rule.TitlePolicy.yearsToNext(award.totalYearsAfter),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        com.nopo.cheonnyeon.core.designsystem.component.TitleBadge(com.nopo.cheonnyeon.domain.rule.TitlePolicy.titleFor(award.totalYearsAfter))
         award.titleUp?.let { Text(stringResource(R.string.verify_title_up, stringResource(titleLabel(it))), style = NopoTheme.typography.titleMedium, color = c.stamp) }
         var showTitleUp by remember { mutableStateOf(award.titleUp != null) }
         award.titleUp?.let { t -> if (showTitleUp) TitleUpDialog(t, award.totalYearsAfter) { showTitleUp = false } }
