@@ -5,8 +5,8 @@
 ## 결함·누락 (코드 확인 완료)
 | ID | 우선 | 내용 | 근거 | AC |
 |---|---|---|---|---|
-| B-01 | P0 | **중복 영수증 판정이 문서와 다름.** 동기화가 `PERMISSION_DENIED`면 방문 문서를 확인하지 않고 곧바로 "중복 영수증"으로 보고 첫 방문 기록을 지운다. 전송은 성공했는데 응답만 못 받아 재시도되면(규칙상 해시 문서가 이미 있어 거부) **정상 기록이 사라진다** | `data/visit/VisitRepository.kt` `sync()` (아키텍처 5.3, U-306-1) | 거부되면 `users/{uid}/visits/{storeId}`를 읽어 있으면 성공 처리(대기열 제거, `markSynced`), 없을 때만 되돌림. Repository 단위 테스트(가짜 Firestore 또는 포트 분리) |
-| B-02 | P0 | **중복 영수증을 사용자에게 알리지 않는다.** `VisitRepository.duplicates` 흐름을 **아무도 수집하지 않는다**(`grep duplicates` 결과 선언만 있음). 서버가 거부하면 "확인 중" 도장이 아무 설명 없이 사라진다. `AppError.E_RECEIPT_DUP` 문구는 있으나 화면에서 쓰지 않는다 | `MainScreen`/`NopoNavHost`에 수집 코드 없음 | 오프라인/지연 전송에서 거부 시 "이미 사용한 영수증이에요" 알림(스낵바/다이얼로그) + 사진 인증 안내. 실기기 R-09·O-05 |
+| B-01 | P0 (**2026-10-20 구현, 실기기 미확인**) | **중복 영수증 판정이 문서와 다름.** 동기화가 `PERMISSION_DENIED`면 방문 문서를 확인하지 않고 곧바로 "중복 영수증"으로 보고 첫 방문 기록을 지운다. 전송은 성공했는데 응답만 못 받아 재시도되면(규칙상 해시 문서가 이미 있어 거부) **정상 기록이 사라진다** | `data/visit/VisitRepository.kt` `sync()` (아키텍처 5.3, U-306-1) | 거부되면 `users/{uid}/visits/{storeId}`를 읽어 있으면 성공 처리(대기열 제거, `markSynced`), 없을 때만 되돌림. Repository 단위 테스트(가짜 Firestore 또는 포트 분리) |
+| B-02 | P0 (**2026-10-20 구현, 실기기 미확인**) | **중복 영수증을 사용자에게 알리지 않는다.** `VisitRepository.duplicates` 흐름을 **아무도 수집하지 않는다**(`grep duplicates` 결과 선언만 있음). 서버가 거부하면 "확인 중" 도장이 아무 설명 없이 사라진다. `AppError.E_RECEIPT_DUP` 문구는 있으나 화면에서 쓰지 않는다 | `MainScreen`/`NopoNavHost`에 수집 코드 없음 | 오프라인/지연 전송에서 거부 시 "이미 사용한 영수증이에요" 알림(스낵바/다이얼로그) + 사진 인증 안내. 실기기 R-09·O-05 |
 | B-03 | P1 | **지도 상단 "내 세월"이 테스트 방문을 포함.** `MapViewModel.state`는 `visits.sumOf { it.yearsAwarded }`, 패스포트·상세는 `TEST-` 제외 | `feature/map/MapViewModel.kt` | `observeTotalYears()`(테스트 제외)와 같은 값. T-08 |
 | B-04 | P1 | **ViewModel·Repository·Room 자동 테스트 없음.** nopo-04의 U-VM-1~7, U-301-*, U-302-1, U-306-* 대응 테스트가 없다(`androidTest`는 템플릿) | `app/src/test`, `app/src/androidTest` | 각 항목 테스트 추가. `VisitRepository`는 Firestore 의존을 포트로 분리해야 테스트 가능 |
 | B-05 | P1 | **인증 화면에 "기기 위치 꺼짐" 처리가 없다.** `FusedLocationAdapter.checkSettings()`는 진단 탭만 호출. 위치가 꺼져 있으면 15초 기다렸다가 `E_LOC_TIMEOUT` | `VerifyViewModel.measureLocation` (아키텍처 5.2 3단계, S-605) | 측정 전 `checkSettings()` → 시스템 "위치 켜기" 대화상자(`ResolvableApiException`) 처리. P-06 |
@@ -31,6 +31,11 @@
 | B-24 | P2 | 하드코딩 한글: `MainScreen.DebugVisitButton`, `DiagnosticsSampleOcr`, `CatalogRepository.createTestStore`(테스트 가게 이름·소개) — 디버그/진단 한정 | — | 허용 예외로 두되 `nopo-qa` 검사에서 제외 목록으로 명시 |
 | B-25 | P1 | **촬영 버튼 중복 탭 방지 확인.** 이전 세션에서 진단 "파일로 촬영" 한 번에 사진 2장이 저장됐다(2.1초 간격). `VerifyViewModel`은 `busy`로 막지만 진단 탭(`DiagnosticsCameraTab`)과 `capturePhoto`/`captureReceipt`의 연타 방어를 실기기로 재현·확인 | `DiagnosticsCameraTab.kt`, `VerifyViewModel.kt` | 연속 탭에도 촬영 1회, 인증샷 1장 |
 | B-26 | P1 | **Firebase 시험 계정·문서 정리**: `spk5.f971n@nopo.test`, `spk5.emu37@nopo.test`와 `diagnostics/{uid}` | Firebase 콘솔 | QA 마지막 날 삭제 |
+
+## 신규 기능 요청 (사용자, 2026-10-20)
+| ID | 우선 | 내용 | 설계(제안) | AC |
+|---|---|---|---|---|
+| F-01 | P1 | **가게별 재방문율**을 가게 상세·리뷰 목록·프로필에서 보기 | 정의: 재방문율 = 그 가게를 인증한 사용자 중 **2회 이상** 인증한 사용자 비율, "N명 중 K명(P%)"로 표시. 서버 함수 없이 Firestore **컬렉션 그룹 집계 쿼리**: `collectionGroup("visits").whereEqualTo("storeId", id)`의 count와 `…whereGreaterThanOrEqualTo("visitCount", 2)`의 count. 필요 변경: ① `firestore.rules`에 `match /{path=**}/visits/{storeId} { allow read: if signedIn(); }` ② 복합 색인 `visits`(COLLECTION_GROUP) `storeId ASC + visitCount ASC` 배포 ③ `ReviewRepository` 옆에 `VisitStatsRepository.revisitRate(storeId)` ④ 가게 상세 평점 영역에 "재방문 K/N명", 리뷰 항목에는 이미 있는 "단골 N회" 유지, 프로필의 "다녀온 노포"에 단골 횟수(B-08과 함께). 표본이 작으면(방문자 <5명) 비율 대신 "N명 중 K명"만 표시 | 상세에 재방문 수치 표시, 규칙·색인 배포 후 실기기 확인, 방문자 0명이면 줄 숨김, 사용자 개인 식별 없이 집계만 노출(PRD 8.2 날짜만 공개 원칙 유지). PRD에 FR-STORE-07 추가 |
 
 ## 데이터·콘텐츠
 | ID | 우선 | 내용 | 방법 |

@@ -41,6 +41,15 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
     androidx.compose.runtime.LaunchedEffect(online) { if (online) container.syncScheduler.enqueue() }
+    val duplicateNotices by container.visits.duplicateNotices.collectAsStateWithLifecycle()
+    if (duplicateNotices.isNotEmpty()) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = container.visits::dismissDuplicateNotice,
+            title = { Text(stringResource(com.nopo.cheonnyeon.R.string.dup_notice_title)) },
+            text = { Text(stringResource(com.nopo.cheonnyeon.R.string.dup_notice_body, duplicateNotices.joinToString(", "))) },
+            confirmButton = { androidx.compose.material3.TextButton(container.visits::dismissDuplicateNotice) { Text(stringResource(com.nopo.cheonnyeon.R.string.verify_done_close)) } },
+        )
+    }
     Column(Modifier.fillMaxSize()) {
         com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(visible = !online, pendingCount = pending, modifier = Modifier.fillMaxWidth())
         Column(Modifier.weight(1f)) {

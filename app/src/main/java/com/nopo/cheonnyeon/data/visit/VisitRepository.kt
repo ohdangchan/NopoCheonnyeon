@@ -19,8 +19,9 @@ import com.nopo.cheonnyeon.domain.rule.YearsCalculator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -75,10 +76,21 @@ class VisitRepository(
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val syncLock = Mutex()
-    private val _duplicates = MutableSharedFlow<String>(extraBufferCapacity = 4)
+    private val _duplicateNotices = MutableStateFlow<List<String>>(emptyList())
 
-    /** 서버가 같은 영수증을 이미 썼다고 거부해서 기록이 되돌려진 가게 이름 */
-    val duplicates: SharedFlow<String> = _duplicates
+    /** 서버가 같은 영수증을 이미 썼다고 거부해서 기록이 되돌려진 가게 이름들. 화면이 알린 뒤 [dismissDuplicateNotice]로 비운다 */
+    val duplicateNotices: StateFlow<List<String>> = _duplicateNotices
+
+    fun dismissDuplicateNotice() { _duplicateNotices.value = emptyList() }
+
+    /** 내 방문 문서가 서버에 있는지. 확인하지 못하면 null */
+    private suspend fun visitExistsOnServer(user: String, storeId: String): Boolean? = try {
+        withTimeout(SYNC_TIMEOUT_MS) { db().collection("users").document(user).collection("visits").document(storeId).get(com.google.firebase.firestore.Source.SERVER).await().exists() }
+    } catch (e: CancellationException) {
+        if (e is TimeoutCancellationException) null else throw e
+    } catch (_: Exception) {
+        null
+    }
 
     val pendingCount: Flow<Int> get() = pendingDao.observeCount()
 
@@ -123,10 +135,18 @@ class VisitRepository(
                 if (e is TimeoutCancellationException) { pendingDao.bumpAttempts(op.id); break } else throw e
             } catch (e: FirebaseFirestoreException) {
                 if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED && visit.receiptHash != null) {
-                    // 해시 문서가 이미 있음 = 같은 영수증 재사용. 기기 기록을 되돌린다
-                    pendingDao.remove(op.id)
-                    if (visit.firstVisit) visitDao.delete(visit.storeId)
-                    _duplicates.tryEmit(visit.storeName)
+                    // 거부됐다. 첫 방문 기록이 이미 서버에 있으면 앞선 전송이 성공했는데 응답만 못 받은 재전송이라 성공으로 본다 (아키텍처 5.3)
+                    val onServer = if (visit.firstVisit) visitExistsOnServer(user, visit.storeId) else false
+                    when {
+                        onServer == null -> { pendingDao.bumpAttempts(op.id); break } // 확인하지 못했으니 다음에 다시
+                        onServer -> { pendingDao.remove(op.id); visitDao.markSynced(visit.storeId) }
+                        else -> {
+                            // 해시 문서가 이미 있음 = 같은 영수증 재사용. 기기 기록을 되돌리고 사용자에게 알린다
+                            pendingDao.remove(op.id)
+                            if (visit.firstVisit) visitDao.delete(visit.storeId)
+                            _duplicateNotices.update { it + visit.storeName }
+                        }
+                    }
                 } else {
                     pendingDao.bumpAttempts(op.id)
                     break

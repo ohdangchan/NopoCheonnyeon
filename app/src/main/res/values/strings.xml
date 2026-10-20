@@ -391,4 +391,7 @@
     <string name="settings_nickname">닉네임 %1$s</string>
     <string name="settings_email">이메일 %1$s</string>
     <string name="stamp_proof_photo">인증샷 (이 기기에만 저장돼요)</string>
+    <!-- 중복 영수증 알림 (B-02) -->
+    <string name="dup_notice_title">이미 사용한 영수증이에요</string>
+    <string name="dup_notice_body">%1$s의 영수증은 이미 다른 인증에 쓰여서 기록이 취소됐어요. 영수증이 없으면 가게 앞에서 사진으로 인증해 보세요.</string>
 </resources>
