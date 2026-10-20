@@ -31,6 +31,8 @@ data class ReviewItem(
     val text: String,
     val visitCount: Int,
     val updatedAtMillis: Long,
+    /** 시연용 예시 리뷰(서버에 없음) */
+    val demo: Boolean = false,
 )
 
 data class ReviewSummary(val count: Int, val average: Double?)

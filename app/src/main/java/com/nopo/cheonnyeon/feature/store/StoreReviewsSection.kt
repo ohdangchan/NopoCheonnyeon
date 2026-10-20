@@ -63,6 +63,8 @@ data class ReviewsUiState(
     val saving: Boolean = false,
     val reported: Boolean = false,
     val stats: com.nopo.cheonnyeon.data.remote.StoreStats? = null,
+    /** 시연용 예시 리뷰(실제 리뷰 뒤에 표시) */
+    val demoItems: List<ReviewItem> = emptyList(),
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
@@ -88,10 +90,12 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val stats = container.storeStats.get(store.id).valueOrNull
             val mine = if (eligibility == ReviewEligibility.OK) container.reviews.mine(store.id).valueOrNull else null
             lastPage = page.valueOrNull
+            val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
             _state.update {
                 it.copy(
                     loading = false,
-                    summary = summary.valueOrNull,
+                    summary = com.nopo.cheonnyeon.data.remote.DemoReviews.merge(summary.valueOrNull, demo),
+                    demoItems = demo,
                     items = page.valueOrNull?.items.orEmpty(),
                     hasMore = page.valueOrNull?.hasMore ?: false,
                     mine = mine,
@@ -188,6 +192,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
         }
 
         state.items.forEach { r -> ReviewCard(r, onOpenProfile, onReport = if (r.uid != myUid) ({ reportTarget = r.id }) else null) }
+        state.demoItems.forEach { r -> ReviewCard(r, onOpenProfile, onReport = null) }
         if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)
         if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }
@@ -229,7 +234,7 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
-        Row(Modifier.heightIn(min = NopoTheme.spacing.minTouch).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenProfile(r.uid) }, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Row(Modifier.heightIn(min = NopoTheme.spacing.minTouch).then(if (r.demo) Modifier else Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenProfile(r.uid) }), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             Text(r.nickname, style = NopoTheme.typography.titleSmall, color = c.ink)
             Text(stringResource(R.string.reviews_visit_count, r.visitCount), style = NopoTheme.typography.bodySmall, color = c.ink2)
             Text(
@@ -238,6 +243,7 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
             )
         }
         StarRating(r.rating.toFloat())
+        if (r.demo) Text(stringResource(R.string.reviews_demo_badge), style = NopoTheme.typography.bodySmall, color = c.brass)
         if (r.text.isNotBlank()) Text(r.text, style = NopoTheme.typography.bodyMedium, color = c.ink)
         if (onReport != null) TextButton(onClick = onReport) { Text(stringResource(R.string.reviews_report)) }
     }

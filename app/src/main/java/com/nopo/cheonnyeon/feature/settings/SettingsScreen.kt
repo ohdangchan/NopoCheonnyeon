@@ -21,7 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -107,6 +109,12 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
         if (taps >= DEV_TAPS) {
             Section(stringResource(R.string.settings_dev)) {
                 NopoButton(stringResource(R.string.diag_title), onDiagnostics, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                val demoOn by container.settings.demoData.collectAsStateWithLifecycle(initialValue = true)
+                val demoScope = androidx.compose.runtime.rememberCoroutineScope()
+                Row(Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch), verticalAlignment = Alignment.CenterVertically) {
+                    Text(stringResource(R.string.settings_demo_data), Modifier.weight(1f), color = c.ink)
+                    androidx.compose.material3.Switch(demoOn, { v -> demoScope.launch { container.settings.setDemoData(v) } })
+                }
                 devTools()
             }
         }

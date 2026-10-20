@@ -196,3 +196,9 @@
 - **시험 현황:** 단위 220개(도메인·유틸 + Room·저장소·ViewModel 5종), 폰 계측 6개. `app/src/test/.../testutil/TestSupport.kt`에 `MainDispatcherRule`·`FixedClock`.
 - **가게 이야기:** `nopo-11` 마지막 절 참고. DB v3(`MIGRATION_2_3`), 카탈로그 v26102013.
 - **서명:** 디버그 빌드도 `keystore.properties`가 있으면 릴리스 키로 서명(폰의 릴리스 앱 위에 덮어 설치 가능).
+
+### 10-6. 시연용 예시 데이터 (사용자 요청 2026-10-20)
+- 서울 가게 270곳에 예시 리뷰 3개씩, 송파구 12곳은 예시 리뷰 10개 + 예시 사진 3장(총 리뷰 894개, 사진 36장 약 2MB). 생성: `python tools/gen_demo_data.py`(가게 ID로 난수 고정, 메뉴·업력·지역을 문장에 반영, 조사 자동) → `assets/demo_reviews.json`, `assets/demo/<가게ID>_<1~3>.jpg`, `data/demo_photos.json` → `python tools/build_catalog.py`가 `photoUrls`에 `file:///android_asset/demo/…`로 합침(공식 사진이 있으면 앞에 둠).
+- 앱: `DemoReviews`(assets 읽기) → `ReviewsViewModel`이 서버 평점 요약에 합산, 목록에서는 실제 리뷰 뒤에 "시연용 예시 리뷰 · 실제 이용자 글이 아닙니다" 표시, 신고·프로필 이동 없음. 설정 > 앱 정보 5탭 > 개발자 도구의 "시연용 예시 리뷰 표시" 스위치(기본 켜짐, `SettingsStore.demoData`). 사진 속에는 "시연용 예시 이미지" 문구가 박혀 있음.
+- **실사용 배포 전에는 스위치를 끄거나 `demo_reviews.json`·`assets/demo`·`data/demo_photos.json`을 지우고 카탈로그를 다시 만들 것.** 서버(Firestore)에는 아무것도 쓰지 않는다.
+- 폰 확인: 오금버드나무집 상세 사진 "1 / 3", 리뷰 10개와 표시 확인. 단위 시험 2개 추가.

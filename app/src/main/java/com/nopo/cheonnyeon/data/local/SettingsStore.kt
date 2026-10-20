@@ -18,12 +18,17 @@ class SettingsStore(private val context: Context) {
     private val onboardingDoneKey = booleanPreferencesKey("onboarding_done")
     private val catalogVersionKey = longPreferencesKey("catalog_version")
     private val foodOnlyKey = booleanPreferencesKey("filter_food_only")
+    private val demoDataKey = booleanPreferencesKey("demo_data")
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[onboardingDoneKey] ?: false }
     val foodOnly: Flow<Boolean> = context.dataStore.data.map { it[foodOnlyKey] ?: false }
 
+    /** 시연용 예시 리뷰 표시(해커톤 시연 편의상 기본 켜짐) */
+    val demoData: Flow<Boolean> = context.dataStore.data.map { it[demoDataKey] ?: true }
+
     suspend fun catalogVersion(): Long = context.dataStore.data.first()[catalogVersionKey] ?: 0L
     suspend fun setCatalogVersion(v: Long) { context.dataStore.edit { it[catalogVersionKey] = v } }
     suspend fun setOnboardingDone() { context.dataStore.edit { it[onboardingDoneKey] = true } }
+    suspend fun setDemoData(v: Boolean) { context.dataStore.edit { it[demoDataKey] = v } }
     suspend fun setFoodOnly(v: Boolean) { context.dataStore.edit { it[foodOnlyKey] = v } }
 }

@@ -35,7 +35,13 @@ class ReviewsViewModelTest {
 
     private fun myReview() = ReviewItem("BN-1_me", "BN-1", "백년식당", "me", "나", "SPROUT", 5, "", 1, 0L)
 
-    private fun newVm(visit: MyVisitEntity?, summary: AppResult<ReviewSummary> = AppResult.Success(ReviewSummary(0, null))): ReviewsViewModel {
+    private fun demoItem(rating: Int) = ReviewItem("demo_$rating", "BN-1", "", "demo", "예시", "SPROUT", rating, "맛있어요", 1, 0L, demo = true)
+
+    private fun newVm(
+        visit: MyVisitEntity?,
+        summary: AppResult<ReviewSummary> = AppResult.Success(ReviewSummary(0, null)),
+        demo: List<ReviewItem>? = null,
+    ): ReviewsViewModel {
         coEvery { dao.byStore("BN-1") } returns visit
         coEvery { reviews.summary("BN-1") } returns summary
         coEvery { reviews.page("BN-1", any()) } returns AppResult.Success(ReviewPage(emptyList(), null, false))
@@ -50,6 +56,12 @@ class ReviewsViewModelTest {
         every { container.reviews } returns reviews
         every { container.storeStats } returns storeStats
         every { container.auth } returns auth
+        val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
+        every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(demo != null)
+        every { container.settings } returns settings
+        val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
+        coEvery { demoRepo.forStore("BN-1") } returns demo.orEmpty()
+        every { container.demoReviews } returns demoRepo
         return ReviewsViewModel(container, store)
     }
 
@@ -87,5 +99,19 @@ class ReviewsViewModelTest {
         val vm = newVm(visit = null, summary = AppResult.Failure(AppError.E_REVIEW_OFFLINE))
         assertEquals(AppError.E_REVIEW_OFFLINE, vm.state.value.error)
         assertEquals(false, vm.state.value.loading)
+    }
+
+    @Test fun `시연용 예시 리뷰는 평균과 개수에 합쳐지고 목록에는 따로 담긴다`() {
+        val vm = newVm(visit = null, summary = AppResult.Success(ReviewSummary(1, 5.0)), demo = listOf(demoItem(3), demoItem(4)))
+        assertEquals(3, vm.state.value.summary?.count)
+        assertEquals(4.0, vm.state.value.summary!!.average!!, 0.001)
+        assertEquals(2, vm.state.value.demoItems.size)
+        assertEquals(0, vm.state.value.items.size)
+    }
+
+    @Test fun `시연용 예시를 끄면 서버 값만 보인다`() {
+        val vm = newVm(visit = null, summary = AppResult.Success(ReviewSummary(1, 5.0)), demo = null)
+        assertEquals(1, vm.state.value.summary?.count)
+        assertEquals(0, vm.state.value.demoItems.size)
     }
 }

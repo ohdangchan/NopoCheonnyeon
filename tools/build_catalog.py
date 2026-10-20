@@ -245,6 +245,12 @@ def main():
             for row in csv.DictReader(f):
                 photos[row["store_id"]] = [u for u in row["photo_urls"].split("|") if u]
 
+    demo_photos = {}   # 시연용 예시 사진(tools/gen_demo_data.py). 공식 사진이 있으면 앞에 두고 3장까지 채운다
+    dpath = os.path.join("data", "demo_photos.json")
+    if os.path.exists(dpath):
+        with open(dpath, encoding="utf-8") as f:
+            demo_photos = json.load(f)
+
     stores = []
     for rid, l in by_id.items():
         d = det.get(rid, {})
@@ -478,7 +484,7 @@ def main():
             "story": s["story"] or None,
             "generation": s["generation"] if isinstance(s["generation"], int) else None,
             "sourceUrl": s["source_url"] or None,
-            "photoUrls": photos.get(s["id"], []),
+            "photoUrls": (photos.get(s["id"], []) + demo_photos.get(s["id"], []))[:3] if s["id"] in demo_photos else photos.get(s["id"], []),
         })
     with open(os.path.join(a.assets, "stores.json"), "w", encoding="utf-8") as f:
         json.dump({"version": a.version, "generatedAt": datetime.datetime.now().isoformat(timespec="seconds"),
