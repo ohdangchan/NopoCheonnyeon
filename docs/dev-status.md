@@ -271,3 +271,11 @@
 - **규칙 시험 스크립트:** `tools/rules-test/rules.test.js`(에뮬레이터용, 18개 시나리오). 이 PC에서는 에뮬레이터 jar 다운로드가 실패해 **아직 실행하지 못함** → 실행 전까지 규칙의 동작은 컴파일·배포 확인뿐.
 - 사진 디코딩을 메인 스레드 밖으로, API 26~27 앨범 사진 샘플링·EXIF 회전, 시험용 가게 리뷰 최대 10개, 색 토큰(`Color(0xFF050B0A)` 제거), 아키텍처 문서에 zxing-core 추가.
 - 남은 지적(보통·낮음): 사진 선택 상태가 화면 회전 때 사라짐(용량 때문에 Bundle 미사용), 목록에서 사진 전체를 읽음(썸네일 필드 필요), QR 주소(배포 링크 확정 필요), `reviewCount` 위조 가능.
+
+### 10-18. AI 기능 (Gemini, 2026-10-21)
+- **키:** 빌드하는 PC의 환경변수 `GEMINI_API_KEY` → `BuildConfig.GEMINI_API_KEY`(저장소·문서·로그에 없음, 비어 있으면 AI 기능이 꺼지고 안내만 표시). 빌드 전 셸에 환경변수가 안 보이면 `export GEMINI_API_KEY=$(powershell -c "[Environment]::GetEnvironmentVariable('GEMINI_API_KEY','User')")` 후 `./gradlew.bat ...`. **앱에 들어간 키는 APK에서 추출될 수 있으니** GCP 콘솔에서 Generative Language API로만 제한하고(가능하면 Android 앱 패키지+SHA-1 제한) 예산 알림을 걸 것. 공개 배포 전에는 Firebase AI Logic/서버 경유로 바꾸는 것이 안전.
+- **모델:** `GeminiClient.DEFAULT_MODEL = gemini-3.1-flash-lite`(응답 약 3초, JSON 응답 모드). 키로 사용 가능한 모델 목록 확인 완료.
+- **① AI 메뉴 룰렛**(패스포트 > "AI 메뉴 룰렛", `feature/ai/MenuRouletteScreen`): 내 리뷰(서버·시험용 가게·시연용)와 가게 메뉴·음식 사진(최대 6장, base64 WebP)을 Gemini에 보내 메뉴 3개(이유·주재료·구성 성분)를 받고, 카탈로그에서 그 메뉴가 있는 노포를 연결. 다시 돌리면 이전 메뉴를 제외 목록으로 알려 주고(최근 9라운드 기억) 중복은 클라이언트에서도 거름, 최대 10번(= 30개) 후 "처음부터 다시". 규칙 `domain/rule/MenuRoulette`.
+- **② 가게 리뷰 AI 분석**(가게 상세 리뷰 영역, 리뷰 3개 이상): 한 줄 요약·특장점·추천 메뉴·아쉬운 점·어울리는 사람. 같은 리뷰 묶음은 캐시.
+- 처음 사용 전 전송 동의 대화상자(`SettingsStore.aiConsent`), 개인정보 안내(앱·`privacy-notice.md`) 갱신, 오류 코드 `E_AI_FAILED`(27개째).
+- 시험: `MenuRouletteTest`(5), `AiRepositoryTest`(가짜 전송 9: 파싱·중복 재요청·오류 변환·캐시). 폰(S9+)에서 룰렛 3회(곰탕→순대국→닭볶음탕, 중복 없음)·가게 분석 동작 확인.
