@@ -251,3 +251,16 @@ private fun dial(context: Context, phone: String) {
     } catch (_: ActivityNotFoundException) {
     }
 }
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun StoreDetailPartsPreview() {
+    val store = com.nopo.cheonnyeon.domain.model.Store(
+        id = "P-1", name = "노포천년식당", programs = listOf("백년가게"), sido = "서울", sigungu = "송파구", address = "서울 송파구 동남로 309",
+        foundedYear = 1980, hours = "매일 11:00 - 22:00", menuItems = listOf("설렁탕", "수육"), amenities = listOf("주차장", "예약"),
+    )
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+        RewardBox(StoreDetailUiState(loading = false, store = store, years = 46, myTotalYears = 668), isTest = false)
+        InfoSection(store)
+    }
+}

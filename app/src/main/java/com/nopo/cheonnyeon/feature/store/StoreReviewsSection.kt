@@ -361,3 +361,12 @@ private fun ReviewEditor(
         },
     )
 }
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun ReviewCardPreview() {
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+        ReviewCard(ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 4, "수육이 부드럽고 공기밥이 푸짐해요.", 2, 0L), onOpenProfile = {}, onReport = {})
+        ReviewCard(ReviewItem("R2", "BN-1", "노포천년식당", "demo", "골목식객", "REGULAR", 5, "예시 리뷰입니다.", 1, 0L, demo = true), onOpenProfile = {}, onReport = null)
+    }
+}

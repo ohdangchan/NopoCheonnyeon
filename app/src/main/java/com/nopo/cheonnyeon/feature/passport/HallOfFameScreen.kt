@@ -208,3 +208,15 @@ private fun StoreRow(rank: Int, s: HallStore, onOpenStore: (String) -> Unit) {
         }
     }
 }
+
+private val previewUsers = listOf(DemoUser("노포탐험가", 1474, 40, 22), DemoUser("국밥순례자", 1200, 33, 18), DemoUser("골목식객", 980, 28, 9))
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun HallOfFamePreview() {
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+        MyCard(HallUiState(loading = false, demo = true, nickname = "nptNew1", myYears = 668, myRank = 19, topPercent = 16))
+        Podium(previewUsers, byReviews = false)
+        UserRow(4, previewUsers[2], byReviews = true)
+    }
+}

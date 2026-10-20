@@ -61,3 +61,9 @@ private fun titleName(t: Title): Int = when (t) {
     Title.ARTISAN -> R.string.title_artisan
     Title.MASTER -> R.string.title_master
 }
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun TitleUpDialogPreview() {
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface { TitleUpDialog(com.nopo.cheonnyeon.domain.model.Title.ELDER, totalYears = 312, onDismiss = {}) }
+}

@@ -193,3 +193,15 @@ private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
         if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
     }
 }
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun ProfileCardsPreview() {
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+        VisitCard(VisitedStore("BN-1", "노포천년식당", "송파구", 46, 3), onOpenStore = {})
+        ReviewCard(
+            ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 5, "국물이 진하고 40년 넘은 맛이 그대로예요.", 3, 0L),
+            onOpenStore = {},
+        )
+    }
+}

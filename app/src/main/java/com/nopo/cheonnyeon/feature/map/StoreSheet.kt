@@ -143,3 +143,10 @@ private fun StoreSheetPreview() {
         StoreSheet(previewStore, years = 46, distanceM = null, visited = true, onOpen = {})
     }
 }
+
+@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@Composable
+private fun StoreListPreview() {
+    val stores = listOf(previewStore, previewStore.copy(id = "P-2", name = "오래된국수집", foundedYear = 1950))
+    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface { StoreListScreen(MapUiState(loading = false, filtered = stores), onSort = {}, onOpenStore = {}) }
+}
