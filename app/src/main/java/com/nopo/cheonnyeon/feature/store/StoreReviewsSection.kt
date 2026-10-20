@@ -140,7 +140,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                 store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, existing = _state.value.mine != null,
             )
             _state.update { it.copy(saving = false, error = result.errorOrNull) }
-            if (result is AppResult.Success) { onDone(); refresh() }
+            if (result is AppResult.Success) { com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(text.isNotBlank()); onDone(); refresh() }
         }
     }
 

@@ -78,6 +78,7 @@ class VerifyViewModel(
     @Volatile private var allowLocationOnly = VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL
 
     init {
+        com.nopo.cheonnyeon.core.common.Analytics.verifyStart()
         viewModelScope.launch {
             runCatching { allowLocationOnly = container.settings.allowLocationOnly.first() }
         }
@@ -224,6 +225,8 @@ class VerifyViewModel(
         val award = container.visits.record(store, method, photoVerified, hash)
         container.syncScheduler.enqueue()
         saved[KEY_STEP] = VerifyStep.DONE.name
+        com.nopo.cheonnyeon.core.common.Analytics.verifyResult(method.name, "success")
+        com.nopo.cheonnyeon.core.common.Analytics.stampAwarded(award.years, award.grade.name)
         _state.update { it.copy(busy = false, error = null, award = award, step = VerifyStep.DONE) }
     }
 

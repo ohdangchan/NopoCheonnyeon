@@ -49,7 +49,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val camera = rememberCameraController()
-    LaunchedEffect(state.error) { state.error?.let(com.nopo.cheonnyeon.core.common.ErrorLog::verifyFailed) }
+    LaunchedEffect(state.error) { state.error?.let { com.nopo.cheonnyeon.core.common.ErrorLog.verifyFailed(it); com.nopo.cheonnyeon.core.common.Analytics.verifyResult(state.step.name, "fail", it.code) } }
     val cameraPermission = rememberPermission(Manifest.permission.CAMERA)
     val locationPermission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     val resolver = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()) { result ->

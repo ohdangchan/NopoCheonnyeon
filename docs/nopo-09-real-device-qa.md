@@ -257,6 +257,7 @@ adb shell dumpsys package com.nopo.cheonnyeon | findstr versionName
 | N-25 | 패스포트 지역 탭·공유 카드 | 지역별 진행도 막대, "패스포트 카드 공유" → 공유 시트·이미지(닉네임·칭호·세월·최근 도장만) | M | 일부 PASS(지역 탭·공유 시트 열림 확인, 받은 앱의 이미지 미확인) |
 | N-26 | 금빛 테두리 핀·위치 확인 스위치 | 지도에서 100년 이상 가게 핀 금빛 테두리, 설정 > 방문 인증 스위치 끄면 3번 실패해도 위치 확인 도장 선택지 없음 | M | 미확인 |
 | N-27 | 시연용 패스포트 지우기 | 지우기 → 패스포트가 비고 서버(Firestore)에는 변화 없음 | M | 미확인 |
+| N-28 | 사용 통계(Analytics) 수집 | 릴리스 사용 후 Firebase 콘솔 이벤트(sign_up·login·verify_start·verify_result·stamp_awarded·review_saved·profile_open) 확인, 개인정보 없음 | M | 미확인 |
 
 ## 14. 가게 이야기·자동 시험 (2026-10-20)
 | ID | 시험 | 기대 | 상태 |

@@ -10,7 +10,7 @@
 | FR-MAP-04 축소 시 개수 원 | **일부** | 시·도별 개수 원(탭하면 확대)은 있으나 클러스터링 SDK 기능이 아니라 직접 그룹핑. 핀치 조작 실기기 확인 안 됨 |
 | FR-DATA-04 좌표 보강 | **일부** | 1,181/1,277곳(92.5%). 주소 없는 오래가게 등 96곳은 카카오 키가 있어야 보강 |
 | FR-SYS-03 Crashlytics "인증 실패 비치명 로그" | **방금 구현**(릴리스만, 코드만 기록) | 이 커밋에서 추가. 실제 수집은 릴리스 사용 후 콘솔에서 확인 필요 |
-| PRD 11장 Analytics 이벤트(`sign_up`, `login`, `verify_start`, `verify_result`, `stamp_awarded`, `review_saved`, `profile_open`) | **미개발(선택 항목)** | Firebase Analytics 의존성·이벤트 호출이 없음. PRD가 "선택"으로 표시 |
+| PRD 11장 Analytics 이벤트(`sign_up`, `login`, `verify_start`, `verify_result`, `stamp_awarded`, `review_saved`, `profile_open`) | **구현(2026-10-20, 릴리스만 수집)** | `firebase-analytics`(BoM 관리) 추가, `core/common/Analytics.kt`. 수집은 콘솔에서 확인 필요 |
 | PRD 9장 접근성: 글자 200%에서 잘림 없음, 대비 4.5:1, TalkBack | **미검증** | 코드상 점검·역할 지정만 했고 실기기 시험 안 함(`nopo-09` Z-10~Z-12) |
 | PRD 9장 성능: 콜드 스타트 2.5초, 전체 카탈로그 스크롤, OCR 3초 | **미측정** | 수치 기록 없음(`spike-report` 5장) |
 | PRD 9장 단위 테스트/안정성: Monkey 5,000회 × 2대, 기기 2대 | **미완** | Monkey는 개인 폰에서 돌리면 위험해 중단(1차 4,329회·2차 3,647회). 두 번째(구형) 기기 없음 |

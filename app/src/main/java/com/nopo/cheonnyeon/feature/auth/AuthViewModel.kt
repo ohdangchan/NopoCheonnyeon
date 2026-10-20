@@ -30,9 +30,9 @@ class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
     private var nickJob: Job? = null
 
-    fun signIn(email: String, password: String) = run { repo.signIn(email, password) }
+    fun signIn(email: String, password: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signIn(email, password) }
 
-    fun signUp(email: String, password: String, nickname: String) = run { repo.signUp(email, password, nickname) }
+    fun signUp(email: String, password: String, nickname: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.signUp() }) { repo.signUp(email, password, nickname) }
 
     fun createProfile(nickname: String) = run { repo.createProfile(nickname) }
 

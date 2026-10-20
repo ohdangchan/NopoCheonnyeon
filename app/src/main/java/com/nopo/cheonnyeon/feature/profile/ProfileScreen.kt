@@ -66,7 +66,7 @@ class ProfileViewModel(private val container: AppContainer, private val uid: Str
     private val _state = MutableStateFlow(ProfileUiState())
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
-    init { load() }
+    init { com.nopo.cheonnyeon.core.common.Analytics.profileOpen(); load() }
 
     fun load() {
         _state.update { it.copy(loading = true, error = null) }
