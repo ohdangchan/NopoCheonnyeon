@@ -426,4 +426,16 @@
     <!-- 재방문율 (FR-STORE-07, F-01) -->
     <string name="revisit_line">재방문 %2$d명 / 방문 %1$d명</string>
     <string name="revisit_line_percent">재방문율 %3$d%% · 방문 %1$d명 중 %2$d명이 다시 갔어요</string>
+    <!-- 칭호 승급 (FR-STP-06, B-11) -->
+    <string name="title_up_headline">새로운 칭호를 얻었어요!</string>
+    <string name="title_up_confirm">칭호 확인</string>
+    <!-- 가게 정보 오류 제보 (FR-STORE-06, B-10) -->
+    <string name="store_report_link">정보가 달라요? 제보하기</string>
+    <string name="store_report_title">어떤 정보가 달라요?</string>
+    <string name="store_report_closed">폐업했거나 다른 곳으로 이전했어요</string>
+    <string name="store_report_hours">영업시간·휴무일이 달라요</string>
+    <string name="store_report_phone">전화번호가 달라요</string>
+    <string name="store_report_menu">메뉴·가격이 달라요</string>
+    <string name="store_report_other">기타</string>
+    <string name="store_report_sent">제보해 주셔서 고마워요. 확인 후 반영할게요.</string>
 </resources>

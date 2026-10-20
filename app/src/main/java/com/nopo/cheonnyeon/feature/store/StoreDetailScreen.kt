@@ -20,6 +20,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
+import com.nopo.cheonnyeon.core.common.message
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +68,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 )
                 RewardBox(state)
                 InfoSection(store)
+                if (!store.isTest) InfoReport(vm)
                 if (!store.isTest) reviews(store)
                 store.sourceUrl?.let { Text(stringResource(R.string.detail_source, it), style = NopoTheme.typography.bodySmall, color = c.ink2) }
             }
@@ -79,6 +83,42 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
             }
             NopoButton(stringResource(R.string.detail_verify), onVerify, modifier = Modifier.weight(1.4f))
         }
+    }
+}
+
+/** 정보 오류 제보 (FR-STORE-06): 사유를 고르면 운영자에게 접수된다 */
+@Composable
+private fun InfoReport(vm: StoreDetailViewModel) {
+    val c = NopoTheme.colors
+    val context = LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var open by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
+    var message by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+    androidx.compose.material3.TextButton(onClick = { message = null; open = true }) { Text(stringResource(R.string.store_report_link), color = c.ink2) }
+    message?.let { Text(it, style = NopoTheme.typography.bodySmall, color = c.primary) }
+    if (open) {
+        val reasons = listOf(R.string.store_report_closed, R.string.store_report_hours, R.string.store_report_phone, R.string.store_report_menu, R.string.store_report_other)
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { open = false },
+            title = { Text(stringResource(R.string.store_report_title)) },
+            text = {
+                Column {
+                    reasons.forEach { res ->
+                        val label = stringResource(res)
+                        androidx.compose.material3.TextButton(onClick = {
+                            open = false
+                            scope.launch {
+                                val r = vm.reportInfo(label)
+                                message = if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) context.getString(R.string.store_report_sent)
+                                else r.errorOrNull?.message(context)
+                            }
+                        }) { Text(label) }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { open = false }) { Text(stringResource(R.string.detail_back)) } },
+        )
     }
 }
 

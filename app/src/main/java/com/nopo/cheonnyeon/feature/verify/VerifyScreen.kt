@@ -1,7 +1,10 @@
 package com.nopo.cheonnyeon.feature.verify
 
 import android.Manifest
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -75,7 +78,10 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
             VerifyStep.RECEIPT -> {
                 Text(stringResource(R.string.verify_receipt_title), style = NopoTheme.typography.titleMedium, color = c.ink)
                 Text(stringResource(R.string.verify_receipt_guide), style = NopoTheme.typography.bodyMedium, color = c.ink2)
-                CameraArea(camera, cameraPermission, Modifier.weight(1f))
+                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth()) {
+                    CameraArea(camera, cameraPermission, Modifier.fillMaxSize())
+                    if (cameraPermission.status == PermissionStatus.GRANTED) ReceiptGuideOverlay(Modifier.fillMaxSize())
+                }
                 ErrorText(state.error, state.errorMeters)
                 NopoButton(
                     text = stringResource(if (state.busy) R.string.verify_analyzing else R.string.verify_receipt_capture),
@@ -128,6 +134,28 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
             VerifyStep.DONE -> Unit
         }
         if (!state.busy) NopoButton(stringResource(R.string.verify_cancel), onClose, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+/** 영수증을 맞출 네 모서리 틀 (FR-VER-03). 가운데 세로로 긴 영수증 모양 */
+@Composable
+private fun ReceiptGuideOverlay(modifier: Modifier) {
+    val color = NopoTheme.colors.brass
+    Canvas(modifier) {
+        val w = size.width * 0.7f
+        val h = size.height * 0.85f
+        val left = (size.width - w) / 2
+        val top = (size.height - h) / 2
+        val len = 36.dp.toPx()
+        val stroke = 4.dp.toPx()
+        fun corner(x: Float, y: Float, dx: Float, dy: Float) {
+            drawLine(color, Offset(x, y), Offset(x + dx * len, y), stroke)
+            drawLine(color, Offset(x, y), Offset(x, y + dy * len), stroke)
+        }
+        corner(left, top, 1f, 1f)
+        corner(left + w, top, -1f, 1f)
+        corner(left, top + h, 1f, -1f)
+        corner(left + w, top + h, -1f, -1f)
     }
 }
 
@@ -205,6 +233,8 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
         )
         Text(stringResource(R.string.verify_done_total, award.totalYearsAfter), style = NopoTheme.extraTypography.metric, color = c.ink)
         award.titleUp?.let { Text(stringResource(R.string.verify_title_up, stringResource(titleLabel(it))), style = NopoTheme.typography.titleMedium, color = c.stamp) }
+        var showTitleUp by remember { mutableStateOf(award.titleUp != null) }
+        award.titleUp?.let { t -> if (showTitleUp) TitleUpDialog(t, award.totalYearsAfter) { showTitleUp = false } }
         if (award.method == com.nopo.cheonnyeon.domain.model.VerifyMethod.LOCATION_ONLY) {
             Text(stringResource(R.string.verify_done_location_only), style = NopoTheme.typography.bodySmall, color = c.ink2)
         }

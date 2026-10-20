@@ -88,6 +88,7 @@ fun DiagnosticsCameraTab(modifier: Modifier = Modifier) {
             NopoButton(
                 stringResource(R.string.diag_cam_memory),
                 onClick = {
+                    if (busy) return@NopoButton
                     busy = true
                     scope.launch {
                         resultLine = runCatching {
@@ -106,6 +107,7 @@ fun DiagnosticsCameraTab(modifier: Modifier = Modifier) {
             NopoButton(
                 stringResource(R.string.diag_cam_file),
                 onClick = {
+                    if (busy) return@NopoButton
                     busy = true
                     scope.launch {
                         val mark = TimeSource.Monotonic.markNow()

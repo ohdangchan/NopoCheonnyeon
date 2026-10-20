@@ -23,6 +23,9 @@ data class StoreDetailUiState(
 )
 
 class StoreDetailViewModel(private val container: AppContainer, private val storeId: String) : ViewModel() {
+    /** 가게 정보 오류 제보 (FR-STORE-06) */
+    suspend fun reportInfo(reason: String) = container.reviews.reportStoreInfo(storeId, reason)
+
     private val _state = MutableStateFlow(StoreDetailUiState())
     val state: StateFlow<StoreDetailUiState> = _state.asStateFlow()
 

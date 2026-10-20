@@ -107,6 +107,15 @@ class ReviewRepository(
         Unit
     }
 
+    /** 가게 정보 오류 제보 (FR-STORE-06, P1). 사유만 보내고 운영자가 확인한다 */
+    suspend fun reportStoreInfo(storeId: String, reason: String): AppResult<Unit> = call {
+        val me = uid() ?: throw NotSignedIn()
+        db().collection("reports").add(
+            mapOf("kind" to "STORE_INFO", "storeId" to storeId, "reason" to reason, "reporterUid" to me, "createdAt" to FieldValue.serverTimestamp()),
+        ).await()
+        Unit
+    }
+
     suspend fun delete(storeId: String): AppResult<Unit> = call {
         val me = uid() ?: throw NotSignedIn()
         val firestore = db()
