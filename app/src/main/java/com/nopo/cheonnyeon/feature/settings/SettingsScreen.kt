@@ -41,6 +41,7 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
     var taps by rememberSaveable { mutableIntStateOf(0) }
     var catalogInfo by remember { mutableStateOf<Pair<Long, Int>?>(null) }
     var showLicenses by rememberSaveable { mutableStateOf(false) }
+    var showPolicy by rememberSaveable { mutableStateOf(false) }
     val version = remember { runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty() }
 
     var nickname by remember { mutableStateOf<String?>(null) }
@@ -83,6 +84,13 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
             modifier = Modifier.fillMaxWidth(),
         )
         if (showLicenses) Text(stringResource(R.string.settings_licenses_body), color = c.ink2, style = NopoTheme.typography.bodySmall)
+        NopoButton(
+            stringResource(if (showPolicy) R.string.settings_policy_hide else R.string.settings_policy),
+            { showPolicy = !showPolicy },
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (showPolicy) Text(stringResource(R.string.privacy_policy_full), color = c.ink2, style = NopoTheme.typography.bodySmall)
 
         if (taps >= DEV_TAPS) {
             Section(stringResource(R.string.settings_dev)) {

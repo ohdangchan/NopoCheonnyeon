@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.main
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,6 +54,13 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     }
     Column(Modifier.fillMaxSize()) {
         com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(visible = !online, pendingCount = pending, modifier = Modifier.fillMaxWidth())
+        val restoring by container.restoring.collectAsStateWithLifecycle()
+        if (restoring) {
+            Text(
+                stringResource(R.string.restoring_banner), style = NopoTheme.typography.labelMedium, color = NopoTheme.colors.ink,
+                modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.tealSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
+            )
+        }
         Column(Modifier.weight(1f)) {
             when (tab) {
                 0 -> MapScreen(mapVm, onOpenStore)
@@ -139,12 +148,22 @@ private fun TestDataDeleteButton(container: AppContainer) {
 private fun SignOutButton(container: AppContainer) {
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
     var confirm by androidx.compose.runtime.remember { mutableStateOf(false) }
+    var unsynced by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(confirm) {
+        if (confirm) {
+            unsynced = container.database.myVisitDao().observeAll().first()
+                .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
+                .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+        }
+    }
     NopoButton(stringResource(R.string.auth_sign_out), { if (pending > 0) confirm = true else container.signOut() })
     if (confirm) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { confirm = false },
             title = { Text(stringResource(R.string.signout_warn_title)) },
-            text = { Text(stringResource(R.string.signout_warn_body, pending)) },
+            text = {
+                Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", ")))
+            },
             confirmButton = { androidx.compose.material3.TextButton({ confirm = false; container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
             dismissButton = { androidx.compose.material3.TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
         )

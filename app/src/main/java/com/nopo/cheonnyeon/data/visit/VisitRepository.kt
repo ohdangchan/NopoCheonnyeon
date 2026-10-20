@@ -14,6 +14,8 @@ import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.model.VerifyMethod
 import com.nopo.cheonnyeon.domain.model.VisitRef
 import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
+import com.nopo.cheonnyeon.domain.rule.SyncRejection
+import com.nopo.cheonnyeon.domain.rule.SyncRejectionPolicy
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import com.nopo.cheonnyeon.domain.rule.YearsCalculator
 import kotlinx.coroutines.CancellationException
@@ -136,11 +138,11 @@ class VisitRepository(
             } catch (e: FirebaseFirestoreException) {
                 if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED && visit.receiptHash != null) {
                     // 거부됐다. 첫 방문 기록이 이미 서버에 있으면 앞선 전송이 성공했는데 응답만 못 받은 재전송이라 성공으로 본다 (아키텍처 5.3)
-                    val onServer = if (visit.firstVisit) visitExistsOnServer(user, visit.storeId) else false
-                    when {
-                        onServer == null -> { pendingDao.bumpAttempts(op.id); break } // 확인하지 못했으니 다음에 다시
-                        onServer -> { pendingDao.remove(op.id); visitDao.markSynced(visit.storeId) }
-                        else -> {
+                    val onServer = if (visit.firstVisit) visitExistsOnServer(user, visit.storeId) else null
+                    when (SyncRejectionPolicy.decide(visit.firstVisit, onServer)) {
+                        SyncRejection.RETRY_LATER -> { pendingDao.bumpAttempts(op.id); break } // 확인하지 못했으니 다음에 다시
+                        SyncRejection.ALREADY_SYNCED -> { pendingDao.remove(op.id); visitDao.markSynced(visit.storeId) }
+                        SyncRejection.DUPLICATE_RECEIPT -> {
                             // 해시 문서가 이미 있음 = 같은 영수증 재사용. 기기 기록을 되돌리고 사용자에게 알린다
                             pendingDao.remove(op.id)
                             if (visit.firstVisit) visitDao.delete(visit.storeId)

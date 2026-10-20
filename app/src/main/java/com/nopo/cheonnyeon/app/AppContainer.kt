@@ -18,6 +18,7 @@ import com.nopo.cheonnyeon.domain.model.SessionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -41,6 +42,8 @@ class AppContainer(
     val storeStats = com.nopo.cheonnyeon.data.remote.StoreStatsRepository { FirebaseFirestore.getInstance() }
     val connectivity = com.nopo.cheonnyeon.platform.network.ConnectivityMonitor(appContext)
     val syncScheduler = SyncScheduler(appContext)
+    /** 로그인 직후 서버 기록을 내려받는 중 (시안 sync_restore) */
+    val restoring = MutableStateFlow(false)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {
@@ -60,7 +63,8 @@ class AppContainer(
         scope.launch {
             auth.sessionState.collect { st ->
                 if (st == SessionState.SignedIn) {
-                    visits.restoreFromServer()
+                    restoring.value = true
+                    try { visits.restoreFromServer() } finally { restoring.value = false }
                     syncScheduler.enqueue()
                 }
             }
