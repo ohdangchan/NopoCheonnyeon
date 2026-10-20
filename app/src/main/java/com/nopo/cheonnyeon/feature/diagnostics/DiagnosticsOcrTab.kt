@@ -119,6 +119,7 @@ fun DiagnosticsOcrTab(modifier: Modifier = Modifier, viewModel: DiagOcrViewModel
             enabled = !state.running,
             modifier = Modifier.fillMaxWidth(),
         )
+        DiagnosticsSampleOcr()
         state.error?.let { Text(stringResource(R.string.diag_cam_error, it), color = c.stamp, style = NopoTheme.extraTypography.metric) }
         state.text?.let { text ->
             Text(
