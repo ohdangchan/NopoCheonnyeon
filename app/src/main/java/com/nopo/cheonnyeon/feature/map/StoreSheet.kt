@@ -107,7 +107,7 @@ fun StoreListScreen(state: MapUiState, onSort: (ListSort) -> Unit, onOpenStore: 
 private fun StoreRow(s: Store, state: MapUiState, onOpen: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).background(c.surface).clickable { onOpen(s.id) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).background(c.surface).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpen(s.id) }.padding(NopoTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {

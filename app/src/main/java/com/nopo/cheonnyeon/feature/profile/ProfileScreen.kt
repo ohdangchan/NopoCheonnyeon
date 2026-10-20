@@ -162,7 +162,7 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
 private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -182,7 +182,7 @@ private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
 private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Column(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
         Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)

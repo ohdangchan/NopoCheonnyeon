@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -228,7 +229,7 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
-        Row(Modifier.clickable { onOpenProfile(r.uid) }, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Row(Modifier.heightIn(min = NopoTheme.spacing.minTouch).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenProfile(r.uid) }, verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             Text(r.nickname, style = NopoTheme.typography.titleSmall, color = c.ink)
             Text(stringResource(R.string.reviews_visit_count, r.visitCount), style = NopoTheme.typography.bodySmall, color = c.ink2)
             Text(

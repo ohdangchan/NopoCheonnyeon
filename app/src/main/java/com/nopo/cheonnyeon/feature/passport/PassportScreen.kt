@@ -113,7 +113,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                     items(list.size) { i ->
                         val r = list[i]
                         Column(
-                            Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
+                            Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
                             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
                         ) {
                             Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
@@ -138,7 +138,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
             ) {
                 items(state.stamps, key = { it.visit.storeId }) { s ->
                     Column(
-                        Modifier.clickable { detail = s.visit.storeId },
+                        Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { detail = s.visit.storeId },
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
                     ) {

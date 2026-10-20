@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -68,7 +69,7 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
             Text(
                 stringResource(R.string.settings_version, version),
                 color = c.ink,
-                modifier = Modifier.fillMaxWidth().clickable { taps++ },
+                modifier = Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch).clickable(role = androidx.compose.ui.semantics.Role.Button) { taps++ },
             )
             catalogInfo?.let { (v, n) -> Text(stringResource(R.string.settings_catalog, n, v), color = c.ink2, style = NopoTheme.typography.bodySmall) }
         }
@@ -148,7 +149,7 @@ private fun AccountSection(container: AppContainer, c: com.nopo.cheonnyeon.core.
                 Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
                     listOf("ALL" to R.string.visibility_all, "COUNT" to R.string.visibility_count, "PRIVATE" to R.string.visibility_private).forEach { (key, label) ->
                         Row(
-                            Modifier.fillMaxWidth().clickable { visibility = key },
+                            Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { visibility = key },
                             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
                         ) {
                             androidx.compose.material3.RadioButton(selected = visibility == key, onClick = { visibility = key })

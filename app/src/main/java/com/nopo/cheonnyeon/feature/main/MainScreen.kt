@@ -1,6 +1,7 @@
 package com.nopo.cheonnyeon.feature.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
+    var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
     androidx.compose.runtime.LaunchedEffect(online) { if (online) container.syncScheduler.enqueue() }
@@ -53,7 +55,11 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         )
     }
     Column(Modifier.fillMaxSize()) {
-        com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(visible = !online, pendingCount = pending, modifier = Modifier.fillMaxWidth())
+        com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(
+            visible = !online, pendingCount = pending,
+            modifier = Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { showQueue = true },
+        )
+        if (showQueue) PendingQueueDialog(container, onDismiss = { showQueue = false })
         val restoring by container.restoring.collectAsStateWithLifecycle()
         if (restoring) {
             Text(
@@ -126,6 +132,24 @@ private fun TestStoreButton(container: AppContainer) {
         }
     })
     message?.let { Text(stringResource(it), color = NopoTheme.colors.ink2) }
+}
+
+/** 올라가지 않은 기록 목록과 "지금 올리기" (시안 offline_queue) */
+@Composable
+private fun PendingQueueDialog(container: AppContainer, onDismiss: () -> Unit) {
+    var names by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        names = container.database.myVisitDao().observeAll().first()
+            .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
+            .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+    }
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.queue_title)) },
+        text = { Text(if (names.isEmpty()) stringResource(R.string.queue_empty) else stringResource(R.string.queue_body, names.joinToString(", "))) },
+        confirmButton = { androidx.compose.material3.TextButton({ container.syncScheduler.enqueue(); onDismiss() }) { Text(stringResource(R.string.queue_sync_now)) } },
+        dismissButton = { androidx.compose.material3.TextButton(onDismiss) { Text(stringResource(R.string.detail_back)) } },
+    )
 }
 
 /** 테스트 가게와 테스트 도장을 모두 지운다 (FR-TST-03). 서버 기록은 건드리지 않는다. */

@@ -2,6 +2,8 @@
 
 관련 문서: `nopo-01-PRD.md`, `nopo-02-architecture.md`, `nopo-06-spike-plan.md`, `nopo-04-dev-qa-checklist.md`
 
+> **진행 상태는 이 문서에 체크하지 않는다.** 스토리별 완료·미완 현황은 `docs/dev-status.md` 4장과 `docs/nopo-11-backlog.md`, 실기기 시험 결과는 `docs/nopo-09-real-device-qa.md`가 기준이다.
+
 ## 사용법 (Claude Code)
 1. 위에서부터 **스토리 하나씩** Claude Code에 맡긴다. 요청문 틀은 `nopo-08-claude-code-guide.md` 3장.
 2. 스토리 = 만들 파일 + 수락 기준(AC) + 먼저 쓸 테스트(U-번호, `nopo-04`). AC와 테스트가 모두 통과해야 완료.

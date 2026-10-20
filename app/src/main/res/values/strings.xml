@@ -452,4 +452,8 @@
     </string-array>
     <string name="map_failed_fallback">지도를 불러오지 못해 목록으로 보여 드려요.</string>
     <string name="verify_clock_skew">기기 시계가 실제 시각과 %1$d분 어긋나 있어요. 영수증 시간 확인이 틀릴 수 있으니 설정에서 날짜·시간을 자동으로 맞춰 주세요.</string>
+    <string name="queue_title">올라가지 않은 기록</string>
+    <string name="queue_body">연결되면 자동으로 올라가요. 기다리는 가게: %1$s</string>
+    <string name="queue_empty">올라가지 않은 기록이 없어요.</string>
+    <string name="queue_sync_now">지금 올리기</string>
 </resources>
