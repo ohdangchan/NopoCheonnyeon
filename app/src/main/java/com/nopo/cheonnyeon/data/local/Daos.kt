@@ -20,6 +20,8 @@ interface StoreDao {
 
     @Query("DELETE FROM stores WHERE isTest = 0") suspend fun deleteCatalog()
 
+    @Query("DELETE FROM stores WHERE isTest = 1") suspend fun deleteTestStores()
+
     @Query("SELECT COUNT(*) FROM stores") suspend fun count(): Int
 
     @Query("SELECT * FROM stores WHERE id = :id") suspend fun byId(id: String): StoreEntity?
@@ -45,6 +47,8 @@ interface MyVisitDao {
     @Query("DELETE FROM my_visits") suspend fun clear()
 
     @Query("DELETE FROM my_visits WHERE storeId = :storeId") suspend fun delete(storeId: String)
+
+    @Query("DELETE FROM my_visits WHERE storeId LIKE 'TEST-%'") suspend fun deleteTestVisits()
 
     /** 처음이면 새로 넣고, 이미 있으면 세월은 그대로 두고 횟수·마지막 시각만 갱신한다. */
     @Transaction

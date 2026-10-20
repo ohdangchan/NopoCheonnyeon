@@ -135,7 +135,7 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
 
     DisposableEffect(Unit) {
         val sdk = NaverMapSdk.getInstance(context)
-        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> authError = e.errorCode }
+        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> authError = e.errorCode; com.nopo.cheonnyeon.feature.diagnostics.DiagLast.mapAuthError = e.errorCode }
         onDispose { sdk.onAuthFailedListener = null }
     }
 

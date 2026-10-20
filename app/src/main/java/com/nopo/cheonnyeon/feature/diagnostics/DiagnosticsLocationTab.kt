@@ -95,6 +95,7 @@ class DiagLocationViewModel(private val location: FusedLocationAdapter) : ViewMo
                 location.updates()
                     .takeWhile { (_state.value.best?.accuracyM ?: Double.MAX_VALUE) > VerificationConfig.LOCATION_EARLY_STOP_ACCURACY_M }
                     .collect { fix ->
+                        DiagLast.locationAccuracyM = fix.accuracyM
                         _state.update {
                             val better = it.best == null || fix.accuracyM < it.best.accuracyM
                             it.copy(

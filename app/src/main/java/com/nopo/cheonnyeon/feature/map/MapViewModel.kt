@@ -75,7 +75,7 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
             filtered = StoreFilters.apply(stores, ui.filter, visited),
             total = stores.size,
             visitedIds = visited,
-            totalYears = visits.sumOf { it.yearsAwarded },
+            totalYears = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded },
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, MapUiState())
 

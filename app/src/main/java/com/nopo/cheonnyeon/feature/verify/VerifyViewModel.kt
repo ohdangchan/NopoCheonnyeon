@@ -44,6 +44,8 @@ data class VerifyUiState(
     val award: AwardResult? = null,
     /** 하루 한도 등으로 인증 자체를 시작할 수 없음 */
     val blocked: Boolean = false,
+    /** 기기 위치가 꺼져 있어 시스템 '위치 켜기' 대화상자를 띄워야 함 (S-605) */
+    val pendingResolution: com.google.android.gms.common.api.ResolvableApiException? = null,
 )
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
@@ -77,6 +79,12 @@ class VerifyViewModel(
     private fun setStep(step: VerifyStep) {
         saved[KEY_STEP] = step.name
         _state.update { it.copy(step = step, error = null) }
+    }
+
+    /** 위치 켜기 대화상자를 처리한 뒤: 켰으면 다시 측정, 아니면 안내 */
+    fun onLocationResolution(turnedOn: Boolean, approximateOnly: Boolean) {
+        _state.update { it.copy(pendingResolution = null, error = if (turnedOn) null else AppError.E_LOC_TIMEOUT) }
+        if (turnedOn) measureLocation(permissionGranted = true, approximateOnly = approximateOnly)
     }
 
     fun goToPhoto() = setStep(VerifyStep.LOCATE)
@@ -113,6 +121,12 @@ class VerifyViewModel(
         if (approximateOnly) { _state.update { it.copy(error = AppError.E_LOC_APPROX_ONLY) }; return }
         _state.update { it.copy(busy = true, error = null, locatingBest = null) }
         viewModelScope.launch {
+            // 기기 위치 설정이 꺼져 있으면 시스템 켜기 대화상자를 먼저 띄운다 (아키텍처 5.2 3단계)
+            val settings = try { location.checkSettings() } catch (_: Exception) { null }
+            if (settings is com.nopo.cheonnyeon.platform.location.LocationSettingsResult.Resolvable) {
+                _state.update { it.copy(busy = false, pendingResolution = settings.exception) }
+                return@launch
+            }
             val fix: Fix? = try {
                 location.bestFix { best -> _state.update { it.copy(locatingBest = best.accuracyM) } }
             } catch (_: Exception) {

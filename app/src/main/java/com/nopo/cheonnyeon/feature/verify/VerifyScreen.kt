@@ -48,6 +48,12 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
     val camera = rememberCameraController()
     val cameraPermission = rememberPermission(Manifest.permission.CAMERA)
     val locationPermission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    val resolver = androidx.activity.compose.rememberLauncherForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        vm.onLocationResolution(result.resultCode == android.app.Activity.RESULT_OK, locationPermission.approximateOnly)
+    }
+    LaunchedEffect(state.pendingResolution) {
+        state.pendingResolution?.let { resolver.launch(androidx.activity.result.IntentSenderRequest.Builder(it.resolution).build()) }
+    }
 
     Column(
         Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding().padding(NopoTheme.spacing.lg),

@@ -3,6 +3,8 @@ package com.nopo.cheonnyeon.feature.diagnostics
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -113,14 +115,49 @@ fun DiagnosticsScreen(modifier: Modifier = Modifier) {
 private fun DeviceInfo() {
     val style = NopoTheme.extraTypography.metric
     val color = NopoTheme.colors.onSign
-    Text(stringResource(R.string.diag_device, Build.MANUFACTURER, Build.MODEL), style = style, color = color)
-    Text(stringResource(R.string.diag_android, Build.VERSION.RELEASE, Build.VERSION.SDK_INT), style = style, color = color)
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val lines = remember { deviceInfoLines(context) }
+    lines.forEach { Text(it, style = style, color = color) }
     Text(
-        stringResource(R.string.diag_app_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+        stringResource(R.string.diag_copy),
         style = style,
-        color = color,
+        color = NopoTheme.colors.brass,
+        modifier = Modifier
+            .clickable {
+                // 마지막 측정값은 탭에서 측정할 때마다 바뀌므로 복사할 때 다시 읽는다
+                val text = (lines + lastMeasurementLines(context)).joinToString("\n")
+                val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                cm.setPrimaryClip(android.content.ClipData.newPlainText("nopo-diagnostics", text))
+                android.widget.Toast.makeText(context, context.getString(R.string.diag_copied), android.widget.Toast.LENGTH_SHORT).show()
+            }
+            .padding(vertical = NopoTheme.spacing.sm),
     )
 }
+
+/** 기기·OS·앱·Play 서비스·권한 상태. 개인정보(이메일·좌표)는 넣지 않는다. */
+private fun deviceInfoLines(context: android.content.Context): List<String> {
+    fun granted(p: String) = androidx.core.content.ContextCompat.checkSelfPermission(context, p) == android.content.pm.PackageManager.PERMISSION_GRANTED
+    val gms = runCatching { context.packageManager.getPackageInfo("com.google.android.gms", 0).versionName }.getOrNull() ?: "-"
+    fun yn(b: Boolean) = context.getString(if (b) R.string.diag_yes else R.string.diag_no)
+    return listOf(
+        context.getString(R.string.diag_device, Build.MANUFACTURER, Build.MODEL),
+        context.getString(R.string.diag_android, Build.VERSION.RELEASE, Build.VERSION.SDK_INT),
+        context.getString(R.string.diag_app_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+        context.getString(R.string.diag_play_services, gms),
+        context.getString(
+            R.string.diag_permissions,
+            yn(granted(android.Manifest.permission.CAMERA)),
+            yn(granted(android.Manifest.permission.ACCESS_FINE_LOCATION)),
+            yn(granted(android.Manifest.permission.ACCESS_COARSE_LOCATION)),
+        ),
+    )
+}
+
+private fun lastMeasurementLines(context: android.content.Context): List<String> = listOf(
+    context.getString(R.string.diag_last_map_auth, DiagLast.mapAuthError ?: context.getString(R.string.diag_none)),
+    context.getString(R.string.diag_last_location, DiagLast.locationAccuracyM?.let { "%.1f".format(it) } ?: "-"),
+    context.getString(R.string.diag_last_ocr, DiagLast.ocrMs?.toString() ?: "-"),
+)
 
 @NopoPreviews
 @Composable

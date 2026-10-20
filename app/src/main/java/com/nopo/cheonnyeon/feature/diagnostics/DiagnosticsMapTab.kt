@@ -130,7 +130,7 @@ fun DiagnosticsMapTab(modifier: Modifier = Modifier) {
     // 인증 실패(401/429/800 등)를 화면에 표시 (아키텍처 5.6)
     DisposableEffect(Unit) {
         val sdk = NaverMapSdk.getInstance(context)
-        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> authError = e.errorCode }
+        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> authError = e.errorCode; DiagLast.mapAuthError = e.errorCode }
         onDispose { sdk.onAuthFailedListener = null }
     }
 

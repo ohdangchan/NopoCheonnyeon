@@ -394,4 +394,18 @@
     <!-- 중복 영수증 알림 (B-02) -->
     <string name="dup_notice_title">이미 사용한 영수증이에요</string>
     <string name="dup_notice_body">%1$s의 영수증은 이미 다른 인증에 쓰여서 기록이 취소됐어요. 영수증이 없으면 가게 앞에서 사진으로 인증해 보세요.</string>
+    <!-- 진단 정보 (FR-SPK-03) -->
+    <string name="diag_play_services">Play 서비스 %1$s</string>
+    <string name="diag_permissions">권한 카메라 %1$s · 정밀 위치 %2$s · 대략 위치 %3$s</string>
+    <string name="diag_yes">허용</string>
+    <string name="diag_no">없음</string>
+    <string name="diag_none">없음</string>
+    <string name="diag_last_map_auth">지도 인증 오류 %1$s</string>
+    <string name="diag_last_location">마지막 위치 정확도 ±%1$s m</string>
+    <string name="diag_last_ocr">마지막 글자 인식 %1$s ms</string>
+    <string name="diag_copy">정보 복사</string>
+    <string name="diag_copied">진단 정보를 복사했어요</string>
+    <!-- 테스트 기록 삭제 (FR-TST-03) -->
+    <string name="test_store_delete">테스트 가게·기록 삭제</string>
+    <string name="test_store_deleted">테스트 가게와 테스트 도장을 지웠어요</string>
 </resources>

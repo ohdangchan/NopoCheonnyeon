@@ -192,6 +192,9 @@ class VisitRepository(
         }
     }
 
+    /** 테스트 가게의 방문 기록을 지운다. 서버에는 올라간 적이 없다 (FR-TST-03) */
+    suspend fun clearTestData() = withContext(dispatchers.io) { visitDao.deleteTestVisits() }
+
     /** 로그아웃 때 이 기기의 사용자 데이터를 지운다 (카탈로그는 유지, FR-AUTH-05). 다른 계정에 이전 기록이 보이면 안 된다. */
     suspend fun clearUserData() {
         visitDao.clear()

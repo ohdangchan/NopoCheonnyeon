@@ -72,7 +72,7 @@ class DiagOcrViewModel : ViewModel() {
                 DiagOcrState(
                     text = text,
                     lineCount = result.lines.size,
-                    millis = mark.elapsedNow().inWholeMilliseconds,
+                    millis = mark.elapsedNow().inWholeMilliseconds.also { DiagLast.ocrMs = it },
                     longSide = OCR_MAX_SIDE,
                     phone = PHONE.find(text)?.value,
                     paidAt = PAID_AT.find(text)?.value,

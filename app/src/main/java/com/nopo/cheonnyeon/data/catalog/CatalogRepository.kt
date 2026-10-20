@@ -30,6 +30,12 @@ class CatalogRepository(
         changes.value += 1
     }
 
+    /** 테스트 가게를 지운다 (FR-TST-03). 방문 기록은 VisitRepository.clearTestData가 지운다 */
+    suspend fun deleteTestStores() {
+        withContext(dispatchers.io) { dao.deleteTestStores() }
+        invalidate()
+    }
+
     /** 진단용 테스트 가게를 현재 위치에 만든다 (FR-TST-01). 카탈로그를 다시 적재해도 지워지지 않는다. */
     suspend fun createTestStore(lat: Double, lng: Double): Store {
         val store = Store(

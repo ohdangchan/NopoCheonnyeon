@@ -61,6 +61,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                     signOutButton = { SignOutButton(container) },
                     devTools = {
                         TestStoreButton(container)
+                        TestDataDeleteButton(container)
                         if (BuildConfig.DEBUG) DebugVisitButton(container)
                     },
                     onDiagnostics = onDiagnostics,
@@ -116,6 +117,21 @@ private fun TestStoreButton(container: AppContainer) {
         }
     })
     message?.let { Text(stringResource(it), color = NopoTheme.colors.ink2) }
+}
+
+/** 테스트 가게와 테스트 도장을 모두 지운다 (FR-TST-03). 서버 기록은 건드리지 않는다. */
+@Composable
+private fun TestDataDeleteButton(container: AppContainer) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var done by androidx.compose.runtime.remember { mutableStateOf(false) }
+    NopoButton(stringResource(R.string.test_store_delete), {
+        scope.launch {
+            container.visits.clearTestData()
+            container.catalog.deleteTestStores()
+            done = true
+        }
+    }, style = com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle.Outline)
+    if (done) Text(stringResource(R.string.test_store_deleted), color = NopoTheme.colors.ink2)
 }
 
 /** 올라가지 않은 기록이 있으면 경고한 뒤 로그아웃 (FR-AUTH-05) */
