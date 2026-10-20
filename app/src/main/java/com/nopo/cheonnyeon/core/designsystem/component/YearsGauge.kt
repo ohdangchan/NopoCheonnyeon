@@ -25,7 +25,7 @@ import com.nopo.cheonnyeon.domain.model.Title
 private const val MILLENNIUM = 1_000
 
 /**
- * 누적 세월 → 천 년 게이지 (FR-PAS-01). 칭호 경계(100/300/600/1,000)에 눈금을 찍는다.
+ * 누적 세월 → 천 년 게이지 (FR-PAS-01). 칭호 경계(100년마다)에 눈금을 찍는다.
  * [yearsToNextTitle]은 TitlePolicy가 계산해 넘긴다. null이면 최고 칭호.
  */
 @Composable

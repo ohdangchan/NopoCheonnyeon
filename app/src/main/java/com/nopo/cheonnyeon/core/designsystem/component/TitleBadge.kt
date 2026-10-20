@@ -20,16 +20,22 @@ import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.Title
 
+fun Title.labelRes(): Int = when (this) {
+    Title.SPROUT -> R.string.title_sprout
+    Title.REGULAR -> R.string.title_regular
+    Title.WANDERER -> R.string.title_wanderer
+    Title.ELDER -> R.string.title_elder
+    Title.CONNOISSEUR -> R.string.title_connoisseur
+    Title.PIONEER -> R.string.title_pioneer
+    Title.ARTISAN -> R.string.title_artisan
+    Title.KEEPER -> R.string.title_keeper
+    Title.SAGE -> R.string.title_sage
+    Title.LEGEND -> R.string.title_legend
+    Title.MASTER -> R.string.title_master
+}
+
 @Composable
-fun Title.label(): String = stringResource(
-    when (this) {
-        Title.SPROUT -> R.string.title_sprout
-        Title.REGULAR -> R.string.title_regular
-        Title.ELDER -> R.string.title_elder
-        Title.ARTISAN -> R.string.title_artisan
-        Title.MASTER -> R.string.title_master
-    },
-)
+fun Title.label(): String = stringResource(labelRes())
 
 private data class BadgeStyle(
     val container: Color,
@@ -45,9 +51,10 @@ fun TitleBadge(title: Title, modifier: Modifier = Modifier) {
     val c = NopoTheme.colors
     val style = when (title) {
         Title.SPROUT -> BadgeStyle(c.tealSoft, if (c.isDark) c.ink else c.sign, null, 22.dp)
-        Title.REGULAR -> BadgeStyle(c.primary, c.onPrimary, null, 22.dp)
-        Title.ELDER -> BadgeStyle(c.brassSoft, if (c.isDark) c.brass else c.onBrass, BorderStroke(1.2.dp, c.brass), 26.dp)
-        Title.ARTISAN -> BadgeStyle(c.stamp, c.onStamp, null, 26.dp, shadow = 2.dp)
+        Title.REGULAR, Title.WANDERER -> BadgeStyle(c.primary, c.onPrimary, null, 22.dp)
+        Title.ELDER, Title.CONNOISSEUR, Title.PIONEER -> BadgeStyle(c.brassSoft, if (c.isDark) c.brass else c.onBrass, BorderStroke(1.2.dp, c.brass), 26.dp)
+        Title.ARTISAN, Title.KEEPER -> BadgeStyle(c.stamp, c.onStamp, null, 26.dp, shadow = 2.dp)
+        Title.SAGE, Title.LEGEND -> BadgeStyle(c.stamp, c.onStamp, BorderStroke(1.5.dp, c.brass), 28.dp, shadow = 3.dp)
         Title.MASTER -> BadgeStyle(c.brass, c.onBrass, BorderStroke(2.dp, c.stamp), 30.dp)
     }
     val label = title.label()

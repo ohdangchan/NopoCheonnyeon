@@ -14,7 +14,7 @@ private data class DemoFile(
 )
 
 @Serializable
-private data class DemoRow(val s: String, val n: String, val t: String, val r: Int, val x: String = "", val v: Int = 1, val d: Int = 1)
+private data class DemoRow(val s: String, val n: String, val t: String, val r: Int, val x: String = "", val v: Int = 1, val d: Int = 1, val p: String = "")
 
 @Serializable
 private data class DemoUserRow(val n: String, val y: Int, val c: Int = 1, val rc: Int = 0)
@@ -73,7 +73,7 @@ class DemoReviews(private val context: Context, private val io: CoroutineDispatc
         val byStore = file.reviews.mapIndexed { i, r ->
             ReviewItem(
                 id = "demo_$i", storeId = r.s, storeName = "", uid = DEMO_UID, nickname = r.n, titleId = r.t, rating = r.r.coerceIn(1, 5),
-                text = r.x, visitCount = r.v, updatedAtMillis = now - r.d * DAY_MS, demo = true,
+                text = r.x, visitCount = r.v, updatedAtMillis = now - r.d * DAY_MS, demo = true, photo = r.p.takeIf { it.isNotBlank() }?.let { "asset:$it" },
             )
         }.groupBy { it.storeId }
         val mine = file.me.reviews.mapIndexed { i, r ->

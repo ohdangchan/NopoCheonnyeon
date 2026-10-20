@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
@@ -191,6 +193,7 @@ private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
             Text(dateOf(r.updatedAtMillis), color = c.ink2, style = NopoTheme.typography.bodySmall)
         }
         if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
+        r.photo?.let { com.nopo.cheonnyeon.feature.store.ReviewPhotoThumb(it, Modifier.fillMaxWidth().height(160.dp)) }
     }
 }
 

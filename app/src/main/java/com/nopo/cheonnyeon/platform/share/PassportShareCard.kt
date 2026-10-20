@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.core.content.FileProvider
@@ -27,7 +28,7 @@ data class ShareCardColors(val background: Int, val surface: Int, val primary: I
 /** 패스포트 공유 카드(1080×1350)를 Canvas로 그려 PNG로 저장하고 공유 시트를 띄운다 (PAS-05). */
 object PassportShareCard {
     const val WIDTH = 1080
-    const val HEIGHT = 1350
+    const val HEIGHT = 1560
 
     fun render(context: Context, d: ShareCardData): Bitmap {
         val bmp = Bitmap.createBitmap(WIDTH, HEIGHT, Bitmap.Config.ARGB_8888)
@@ -63,8 +64,27 @@ object PassportShareCard {
             cv.drawText(name.take(16), 150f, y, paint(38f, c.ink, align = Paint.Align.LEFT))
             cv.drawText(context.getString(R.string.share_card_years, years), WIDTH - 150f, y, paint(38f, c.stamp, align = Paint.Align.RIGHT))
         }
-        cv.drawText(context.getString(R.string.app_name), WIDTH / 2f, 1270f, paint(40f, c.ink2, title))
+        drawQr(context, cv, c, title)
         return bmp
+    }
+
+    /** 아래쪽: 앱 내려받기 QR(왼쪽)과 안내 글(오른쪽) */
+    private fun drawQr(context: Context, cv: Canvas, c: ShareCardColors, title: Typeface) {
+        val qr = QrCode.matrix(ShareConfig.DOWNLOAD_URL)
+        val top = 1230f
+        val side = 250f
+        val left = 100f
+        cv.drawRoundRect(left - 18f, top - 18f, left + side + 18f, top + side + 18f, 24f, 24f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        val cell = side / qr.width
+        val dark = Paint().apply { color = Color.BLACK }
+        for (y in 0 until qr.height) for (x in 0 until qr.width) {
+            if (qr.get(x, y)) cv.drawRect(left + x * cell, top + y * cell, left + (x + 1) * cell + 0.6f, top + (y + 1) * cell + 0.6f, dark)
+        }
+        fun text(s: String, size: Float, color: Int, face: Typeface, y: Float) =
+            cv.drawText(s, left + side + 60f, y, Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = size; this.color = color; typeface = face })
+        text(context.getString(R.string.app_name), 48f, c.primary, title, top + 70f)
+        text(context.getString(R.string.share_card_qr_line1), 36f, c.ink, Typeface.DEFAULT_BOLD, top + 140f)
+        text(context.getString(R.string.share_card_qr_line2), 36f, c.ink, Typeface.DEFAULT_BOLD, top + 190f)
     }
 
     /** 카드를 캐시 폴더에 저장하고 공유 시트를 연다. 실패하면 false. */
@@ -78,6 +98,7 @@ object PassportShareCard {
         val send = Intent(Intent.ACTION_SEND).apply {
             type = "image/png"
             putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_card_message, ShareConfig.DOWNLOAD_URL))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(Intent.createChooser(send, context.getString(R.string.share_card_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))

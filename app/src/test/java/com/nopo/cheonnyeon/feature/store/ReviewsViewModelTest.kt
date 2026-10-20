@@ -44,6 +44,7 @@ class ReviewsViewModelTest {
     ): ReviewsViewModel {
         coEvery { dao.byStore("BN-1") } returns visit
         coEvery { dao.demoVisitCount() } returns 0
+        every { dao.observeAll() } returns kotlinx.coroutines.flow.flowOf(emptyList())
         coEvery { reviews.summary("BN-1") } returns summary
         coEvery { reviews.page("BN-1", any()) } returns AppResult.Success(ReviewPage(emptyList(), null, false))
         coEvery { reviews.mine("BN-1") } returns AppResult.Success(myReview())
@@ -116,15 +117,17 @@ class ReviewsViewModelTest {
         assertEquals(0, vm.state.value.demoItems.size)
     }
 
-    private fun testStoreVm(visited: Boolean, local: Triple<Int, Long, String>? = null): ReviewsViewModel {
+    private fun testStoreVm(visited: Boolean, local: Triple<Int, Long, String>? = null, visits: kotlinx.coroutines.flow.Flow<List<MyVisitEntity>> = kotlinx.coroutines.flow.flowOf(emptyList())): ReviewsViewModel {
         val testStore = Store(id = "TEST-NOPO", name = "시험식당", isTest = true)
         val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
         every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(true)
         coEvery { settings.testReview("TEST-NOPO") } returns local
+        coEvery { settings.testReviewPhoto(any()) } returns null
         val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
         coEvery { demoRepo.forStore("TEST-NOPO") } returns listOf(demoItem(5), demoItem(3).copy(visitCount = 2))
         val visit = if (visited) MyVisitEntity("TEST-NOPO", 46, "RECEIPT", 0L, 0L, 1, false) else null
         coEvery { dao.byStore("TEST-NOPO") } returns visit
+        every { dao.observeAll() } returns visits
         val db = mockk<AppDatabase>()
         every { db.myVisitDao() } returns dao
         val auth = mockk<AuthRepository>()
@@ -153,5 +156,16 @@ class ReviewsViewModelTest {
         assertEquals("맛있어요", vm.state.value.mine?.text)
         assertEquals(3, vm.state.value.summary?.count)
         assertEquals(4.0, vm.state.value.summary!!.average!!, 0.001)
+    }
+
+    @Test fun `인증 화면에서 돌아와 방문 기록이 생기면 리뷰 자격을 다시 계산한다`() {
+        val testStore = Store(id = "TEST-NOPO", name = "시험식당", isTest = true)
+        val flow = kotlinx.coroutines.flow.MutableStateFlow<List<MyVisitEntity>>(emptyList())
+        val vm = testStoreVm(visited = false, visits = flow)
+        assertEquals(ReviewEligibility.NOT_VISITED, vm.state.value.eligibility)
+        val visit = MyVisitEntity("TEST-NOPO", 46, "RECEIPT", 0L, 0L, 1, false)
+        coEvery { dao.byStore("TEST-NOPO") } returns visit
+        flow.value = listOf(visit)
+        assertEquals(ReviewEligibility.OK, vm.state.value.eligibility)
     }
 }

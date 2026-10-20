@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.R
+import com.nopo.cheonnyeon.core.designsystem.component.labelRes
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.designsystem.component.EmptyState
@@ -113,13 +114,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
     var shareFailed by rememberSaveable { mutableStateOf(false) }
     val myReviews by vm.reviews.collectAsStateWithLifecycle()
     val title = TitlePolicy.titleFor(state.totalYears)
-    val titleName = stringResource(when (title) {
-        com.nopo.cheonnyeon.domain.model.Title.SPROUT -> R.string.title_sprout
-        com.nopo.cheonnyeon.domain.model.Title.REGULAR -> R.string.title_regular
-        com.nopo.cheonnyeon.domain.model.Title.ELDER -> R.string.title_elder
-        com.nopo.cheonnyeon.domain.model.Title.ARTISAN -> R.string.title_artisan
-        com.nopo.cheonnyeon.domain.model.Title.MASTER -> R.string.title_master
-    })
+    val titleName = stringResource(title.labelRes())
 
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
@@ -181,9 +176,9 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
                         ) {
                             Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
-                            if (r.demo) Text(stringResource(R.string.reviews_demo_badge), color = c.brass, style = NopoTheme.typography.bodySmall)
                             com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
                             if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
+                            r.photo?.let { com.nopo.cheonnyeon.feature.store.ReviewPhotoThumb(it, Modifier.fillMaxWidth().height(160.dp)) }
                             if (!r.demo) TextButton({ onOpenStore(r.storeId) }) { Text(stringResource(R.string.my_review_edit)) }
                         }
                     }

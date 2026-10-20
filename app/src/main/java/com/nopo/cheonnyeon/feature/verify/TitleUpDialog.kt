@@ -25,6 +25,7 @@ import com.nopo.cheonnyeon.core.designsystem.component.TitleBadge
 import com.nopo.cheonnyeon.core.designsystem.component.YearsGauge
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.Title
+import com.nopo.cheonnyeon.core.designsystem.component.labelRes
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 
 /** 칭호 승급 연출 (FR-STP-06, S-705): 배지가 커졌다 자리 잡는다. 애니메이션을 끈 기기에서는 바로 보여 준다. */
@@ -54,13 +55,7 @@ fun TitleUpDialog(title: Title, totalYears: Int, onDismiss: () -> Unit) {
     }
 }
 
-private fun titleName(t: Title): Int = when (t) {
-    Title.SPROUT -> R.string.title_sprout
-    Title.REGULAR -> R.string.title_regular
-    Title.ELDER -> R.string.title_elder
-    Title.ARTISAN -> R.string.title_artisan
-    Title.MASTER -> R.string.title_master
-}
+private fun titleName(t: Title): Int = t.labelRes()
 
 @com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
 @Composable

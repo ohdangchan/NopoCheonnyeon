@@ -2,10 +2,16 @@
     <string name="app_name">노포천년</string>
 
     <!-- 칭호 -->
-    <string name="title_sprout">새싹 식객</string>
-    <string name="title_regular">단골 식객</string>
-    <string name="title_elder">동네 어른</string>
-    <string name="title_artisan">장인 식객</string>
+    <string name="title_sprout">첫술 식객</string>
+    <string name="title_regular">골목 단골</string>
+    <string name="title_wanderer">국밥 순례자</string>
+    <string name="title_elder">시장통 어르신</string>
+    <string name="title_connoisseur">가마솥 감별사</string>
+    <string name="title_pioneer">노포 길잡이</string>
+    <string name="title_artisan">맛의 장인</string>
+    <string name="title_keeper">세월 지킴이</string>
+    <string name="title_sage">미식 도인</string>
+    <string name="title_legend">전설의 식객</string>
     <string name="title_master">천년 미식가</string>
     <string name="cd_title_badge">칭호 %1$s</string>
 
@@ -255,7 +261,7 @@
     <string name="detail_source">출처 %1$s</string>
     <string name="detail_reward_title">이 가게를 방문 인증하면 세월 +%1$d년!</string>
     <string name="detail_reward_test">시험용 가게예요. 인증해도 세월과 하루 한도에는 들어가지 않아요.</string>
-    <string name="reviews_test_store">시험용 가게예요. 내 리뷰는 이 기기에만 저장되고, 나머지 리뷰는 시연용 예시예요.</string>
+    <string name="reviews_test_store">시험용 가게예요. 내 리뷰는 이 기기에만 저장돼요.</string>
     <string name="photo_credit_google">사진: Google 지도</string>
     <string name="auth_consent">개인정보 처리방침에 동의해요 (필수)</string>
     <string name="auth_consent_view">처리방침 전체 보기</string>
@@ -360,7 +366,14 @@
     <string name="settings_licenses">오픈소스 라이선스</string>
     <string name="settings_licenses_hide">라이선스 접기</string>
     <string name="settings_licenses_body">AndroidX·Jetpack Compose·Kotlin·kotlinx(Apache-2.0), Firebase(Apache-2.0), ML Kit(Google ML Kit 약관), 네이버 지도 SDK(네이버 약관), Coil(Apache-2.0), OkHttp(Apache-2.0), Room·WorkManager(Apache-2.0), Black Han Sans·JetBrains Mono(SIL OFL 1.1).</string>
-    <string name="reviews_demo_badge">시연용 예시 리뷰 · 실제 이용자 글이 아닙니다</string>
+    <string name="reviews_photo_add">사진 찍어 올리기</string>
+    <string name="reviews_photo_retake">다시 찍기</string>
+    <string name="reviews_photo_remove">사진 빼기</string>
+    <string name="reviews_photo_title">리뷰 사진 찍기</string>
+    <string name="reviews_photo_hint">리뷰 사진은 앱 카메라로 지금 찍은 것만 올릴 수 있어요. 영수증·사람 얼굴은 담지 마세요.</string>
+    <string name="reviews_photo_shoot">촬영</string>
+    <string name="reviews_photo_failed">사진을 처리하지 못했어요. 다시 찍어 주세요.</string>
+    <string name="cd_review_photo">리뷰 사진</string>
     <string name="settings_demo_data">시연용 예시 리뷰 표시</string>
     <string name="settings_verify">방문 인증</string>
     <string name="settings_location_only">글자 확인이 3번 실패하면 위치 확인 도장 허용</string>
@@ -370,6 +383,9 @@
     <string name="share_card_years">%1$d년</string>
     <string name="share_card_count">도장 %1$d개</string>
     <string name="share_card_recent">최근 도장</string>
+    <string name="share_card_qr_line1">QR을 찍으면</string>
+    <string name="share_card_qr_line2">앱을 내려받을 수 있어요</string>
+    <string name="share_card_message">노포 천년 미식가에서 쌓은 내 세월이에요. 앱 받기: %1$s</string>
     <string name="share_card_chooser">패스포트 카드 공유</string>
     <string name="share_card_button">패스포트 카드 공유</string>
     <string name="share_card_failed">카드를 만들지 못했어요. 잠시 뒤 다시 해 주세요.</string>
@@ -390,7 +406,7 @@
     <string name="hall_years">%1$d년</string>
     <string name="hall_reviews_count">리뷰 %1$d개</string>
     <string name="hall_stores_count">%1$d곳 탐방</string>
-    <string name="hall_titles_note">칭호 승급 기준: 단골 식객 100년 → 동네 어른 300년 → 장인 식객 600년 → 천년 미식가 1,000년</string>
+    <string name="hall_titles_note">칭호는 세월 100년마다 올라요: 첫술 식객 → 골목 단골 → 국밥 순례자 → 시장통 어르신 → 가마솥 감별사 → 노포 길잡이 → 맛의 장인 → 세월 지킴이 → 미식 도인 → 전설의 식객 → 천년 미식가(1,000년)</string>
     <string name="method_demo">시연용 예시</string>
     <string name="settings_demo_passport_fill">시연용 패스포트 채우기(637년)</string>
     <string name="settings_demo_passport_clear">시연용 패스포트 지우기</string>

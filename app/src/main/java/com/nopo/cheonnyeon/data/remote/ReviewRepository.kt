@@ -33,6 +33,8 @@ data class ReviewItem(
     val updatedAtMillis: Long,
     /** 시연용 예시 리뷰(서버에 없음) */
     val demo: Boolean = false,
+    /** 리뷰 사진: 실제 리뷰는 base64 WebP(앱 카메라로 찍은 것), 시연용은 "asset:" 경로. 없으면 null */
+    val photo: String? = null,
 )
 
 data class ReviewSummary(val count: Int, val average: Double?)
@@ -75,7 +77,7 @@ class ReviewRepository(
         if (doc.exists()) toItem(doc) else null
     }
 
-    suspend fun save(storeId: String, storeName: String, rating: Int, text: String, visitCount: Int, titleId: String, existing: Boolean): AppResult<Unit> {
+    suspend fun save(storeId: String, storeName: String, rating: Int, text: String, visitCount: Int, titleId: String, existing: Boolean, photo: String? = null): AppResult<Unit> {
         val check = ReviewRules.validate(rating, text)
         if (check !is ReviewCheck.Valid) return AppError.E_NETWORK.asFailure() // 화면이 먼저 걸러서 여기엔 오지 않는다
         return call {
@@ -87,7 +89,7 @@ class ReviewRepository(
             firestore.runTransaction { tx ->
                 val nickname = tx.get(userRef).getString("nickname") ?: throw NotSignedIn()
                 if (existing) {
-                    tx.update(ref, mapOf("rating" to check.rating, "text" to check.text, "nickname" to nickname, "titleId" to titleId, "visitCount" to visitCount, "updatedAt" to FieldValue.serverTimestamp()))
+                    tx.update(ref, mapOf("rating" to check.rating, "text" to check.text, "nickname" to nickname, "titleId" to titleId, "visitCount" to visitCount, "photo" to (photo ?: FieldValue.delete()), "updatedAt" to FieldValue.serverTimestamp()))
                 } else {
                     tx.set(
                         ref,
@@ -95,7 +97,7 @@ class ReviewRepository(
                             "storeId" to storeId, "storeName" to storeName, "uid" to me, "nickname" to nickname, "titleId" to titleId,
                             "rating" to check.rating, "text" to check.text, "visitCount" to visitCount,
                             "createdAt" to FieldValue.serverTimestamp(), "updatedAt" to FieldValue.serverTimestamp(),
-                        ),
+                        ) + (if (photo != null) mapOf("photo" to photo) else emptyMap()),
                     )
                     tx.update(userRef, mapOf("reviewCount" to FieldValue.increment(1), "updatedAt" to FieldValue.serverTimestamp()))
                 }
@@ -148,6 +150,7 @@ class ReviewRepository(
         text = d.getString("text").orEmpty(),
         visitCount = (d.getLong("visitCount") ?: 1L).toInt(),
         updatedAtMillis = (d.getTimestamp("updatedAt") ?: Timestamp.now()).toDate().time,
+        photo = d.getString("photo")?.takeIf { it.isNotBlank() },
     )
 
     private class NotSignedIn : Exception()

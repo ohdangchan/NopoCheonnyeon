@@ -2,7 +2,7 @@ package com.nopo.cheonnyeon.domain.rule
 
 import com.nopo.cheonnyeon.domain.model.Title
 
-/** 칭호 (FR-STP-04): 0 새싹, 100 단골, 300 동네 어른, 600 장인, 1,000 천년 미식가 */
+/** 칭호 (FR-STP-04): 세월 100년마다 한 단계, 0 첫술 식객 ~ 1,000 천년 미식가(모두 11단계) */
 object TitlePolicy {
     fun titleFor(totalYears: Int): Title = Title.entries.last { totalYears >= it.requiredYears }
 

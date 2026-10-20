@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -19,8 +20,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -45,7 +48,10 @@ import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -76,7 +82,17 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
 
     val myUid: String? get() = container.auth.currentUid
 
-    init { refresh() }
+    init {
+        refresh()
+        // 인증을 마치고 돌아오면 이 ViewModel은 그대로라 자격이 예전 값으로 남는다. 방문 기록이 생기거나 확인됨으로 바뀌면 다시 불러온다.
+        viewModelScope.launch {
+            container.database.myVisitDao().observeAll()
+                .map { list -> list.firstOrNull { it.storeId == store.id }?.let { it.synced to it.visitCount } }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { refresh() }
+        }
+    }
 
     fun refresh() {
         _state.update { it.copy(loading = true, error = null) }
@@ -138,6 +154,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         return ReviewItem(
             id = "local_" + store.id, storeId = store.id, storeName = store.name, uid = container.auth.currentUid.orEmpty(),
             nickname = container.auth.currentNickname().orEmpty(), titleId = "", rating = rating, text = text, visitCount = visits, updatedAtMillis = at,
+            photo = container.settings.testReviewPhoto(store.id),
         )
     }
 
@@ -159,13 +176,13 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         }
     }
 
-    fun save(rating: Int, text: String, onDone: () -> Unit) {
+    fun save(rating: Int, text: String, photo: String?, onDone: () -> Unit) {
         if (_state.value.saving) return
         if (store.isTest) {
             viewModelScope.launch {
                 val check = com.nopo.cheonnyeon.domain.rule.ReviewRules.validate(rating, text)
                 if (check is ReviewCheck.Valid) {
-                    container.settings.setTestReview(store.id, check.rating, check.text, container.clock.now().toEpochMilli())
+                    container.settings.setTestReview(store.id, check.rating, check.text, container.clock.now().toEpochMilli(), photo)
                     com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(check.text.isNotBlank())
                     onDone(); refresh()
                 }
@@ -177,7 +194,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val visit = container.database.myVisitDao().byStore(store.id)
             val total = container.database.myVisitDao().observeTotalYears().first()
             val result = container.reviews.save(
-                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, existing = _state.value.mine != null,
+                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, existing = _state.value.mine != null, photo = photo,
             )
             _state.update { it.copy(saving = false, error = result.errorOrNull) }
             if (result is AppResult.Success) { com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(text.isNotBlank()); onDone(); refresh() }
@@ -281,7 +298,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
             initial = state.mine,
             saving = state.saving,
             error = state.error,
-            onSave = { rating, text -> vm.save(rating, text) { editing = false } },
+            onSave = { rating, text, photo -> vm.save(rating, text, photo) { editing = false } },
             onDelete = if (state.mine != null) ({ vm.delete { editing = false } }) else null,
             onDismiss = { editing = false },
         )
@@ -304,8 +321,8 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
             )
         }
         StarRating(r.rating.toFloat())
-        if (r.demo) Text(stringResource(R.string.reviews_demo_badge), style = NopoTheme.typography.bodySmall, color = c.brass)
         if (r.text.isNotBlank()) Text(r.text, style = NopoTheme.typography.bodyMedium, color = c.ink)
+        r.photo?.let { ReviewPhotoThumb(it, Modifier.fillMaxWidth().height(180.dp)) }
         if (onReport != null) TextButton(onClick = onReport) { Text(stringResource(R.string.reviews_report)) }
     }
 }
@@ -316,12 +333,14 @@ private fun ReviewEditor(
     initial: ReviewItem?,
     saving: Boolean,
     error: AppError?,
-    onSave: (Int, String) -> Unit,
+    onSave: (Int, String, String?) -> Unit,
     onDelete: (() -> Unit)?,
     onDismiss: () -> Unit,
 ) {
     var rating by rememberSaveable { mutableIntStateOf(initial?.rating ?: 0) }
     var text by rememberSaveable { mutableStateOf(initial?.text.orEmpty()) }
+    var photo by rememberSaveable { mutableStateOf(initial?.photo) }
+    var capturing by rememberSaveable { mutableStateOf(false) }
     val check = ReviewRules.validate(rating.coerceAtLeast(0), text)
     val invalid = (check as? ReviewCheck.Invalid)?.reason
     val problem = when (invalid) {
@@ -345,11 +364,16 @@ private fun ReviewEditor(
                     enabled = !saving,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                photo?.let { ReviewPhotoImage(it, Modifier.fillMaxWidth().height(160.dp).clip(NopoTheme.shapes.md)) }
+                Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                    NopoButton(stringResource(if (photo == null) R.string.reviews_photo_add else R.string.reviews_photo_retake), { capturing = true }, style = NopoButtonStyle.Outline, enabled = !saving)
+                    if (photo != null) TextButton(onClick = { photo = null }, enabled = !saving) { Text(stringResource(R.string.reviews_photo_remove)) }
+                }
                 error?.let { Text(it.message(LocalContext.current), color = NopoTheme.colors.stamp) }
             }
         },
         confirmButton = {
-            TextButton(onClick = { onSave(rating, text) }, enabled = !saving && check is ReviewCheck.Valid) {
+            TextButton(onClick = { onSave(rating, text, photo) }, enabled = !saving && check is ReviewCheck.Valid) {
                 Text(stringResource(if (saving) R.string.auth_working else R.string.reviews_save))
             }
         },
@@ -360,6 +384,7 @@ private fun ReviewEditor(
             }
         },
     )
+    if (capturing) ReviewPhotoCapture(onCaptured = { photo = it; capturing = false }, onDismiss = { capturing = false })
 }
 
 @com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews

@@ -123,6 +123,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.play.services.location)
     implementation(libs.mlkit.text.korean)
+    implementation(libs.zxing.core)   // 패스포트 공유 카드의 QR 코드 만들기(읽기 아님)
     implementation(libs.naver.map)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)

@@ -25,7 +25,8 @@ FONT_LIGHT = r"C:\Windows\Fonts\NanumGothic.ttf"
 ADJ = ["새벽", "골목", "든든한", "느긋한", "푸근한", "정직한", "옛날", "단골", "시장통", "숨은", "한입", "배부른", "퇴근길", "주말", "혼밥", "국물", "고소한", "얼큰한", "담백한", "넉넉한"]
 NOUN = ["식객", "탐험가", "순례자", "미식가", "수집가", "대장", "장인", "손님", "여행자", "도깨비", "고수", "박사"]
 MY_REVIEW_DAYS = (3, 9, 16, 24, 33, 41, 55, 70)
-TITLE_STEPS = [(1000, "MASTER"), (600, "ARTISAN"), (300, "ELDER"), (100, "REGULAR"), (0, "SPROUT")]
+TITLE_STEPS = [(1000, "MASTER"), (900, "LEGEND"), (800, "SAGE"), (700, "KEEPER"), (600, "ARTISAN"), (500, "PIONEER"), (400, "CONNOISSEUR"),
+               (300, "ELDER"), (200, "WANDERER"), (100, "REGULAR"), (0, "SPROUT")]
 ME_TOTAL_YEARS = 637
 USER_COUNT = 120
 
@@ -210,6 +211,38 @@ def photo_menu(store, years, seed):
     return img
 
 
+PLATE_BG = [(214, 196, 168), (60, 74, 70), (196, 170, 140), (88, 66, 52), (170, 188, 180)]
+
+
+def photo_dish(store, menu, seed):
+    """리뷰 사진 예시: 그릇과 김이 오르는 음식 그림 (실제 음식 사진이 아니다)"""
+    r = random.Random(seed)
+    w, h = 800, 600
+    img = Image.new("RGB", (w, h), PLATE_BG[r.randrange(len(PLATE_BG))])
+    d = ImageDraw.Draw(img)
+    # 상 위의 나뭇결
+    for y in range(0, h, 38):
+        d.line((0, y, w, y + r.randint(-6, 6)), fill=tuple(max(0, c - 14) for c in img.getpixel((5, 5))), width=2)
+    cx, cy = w // 2 + r.randint(-40, 40), h // 2 + 30
+    d.ellipse((cx - 250, cy + 150, cx + 250, cy + 215), fill=(0, 0, 0))                        # 그림자
+    d.ellipse((cx - 240, cy - 60, cx + 240, cy + 190), fill=(236, 230, 218), outline=(120, 108, 92), width=6)   # 그릇 바깥
+    d.ellipse((cx - 205, cy - 50, cx + 205, cy + 60), fill=(r.choice([(200, 150, 90), (184, 120, 70), (222, 196, 140), (160, 70, 50)])))  # 국물·음식
+    for _ in range(14):                                                                          # 고명
+        x, y = cx + r.randint(-150, 150), cy + r.randint(-30, 30)
+        d.ellipse((x - 14, y - 9, x + 14, y + 9), fill=r.choice([(86, 130, 70), (240, 232, 205), (150, 60, 40), (60, 50, 40)]))
+    for k in (-1, 0, 1):                                                                         # 김
+        x0 = cx + k * 70
+        pts = [(x0 + 18 * (1 if i % 2 else -1), cy - 70 - i * 26) for i in range(6)]
+        d.line(pts, fill=(250, 250, 246), width=7, joint="curve")
+    d.ellipse((cx + 270, cy + 90, cx + 350, cy + 130), fill=(120, 90, 60))                      # 수저
+    d.rounded_rectangle((cx + 310, cy + 105, cx + 430, cy + 118), 6, fill=(150, 150, 150))
+    f = fit_font(FONT_BODY, menu, 520, 54, 28)
+    d.rounded_rectangle((24, 24, 24 + int(d.textlength(menu, font=f)) + 40, 24 + 78), 20, fill=(24, 48, 44))
+    d.text((44, 38), menu, font=f, fill=(250, 244, 230))
+    d.text((24, h - 44), "시연용 예시 이미지 · 실제 음식 사진이 아닙니다", font=font(FONT_LIGHT, 22), fill=(40, 40, 40))
+    return img
+
+
 def photo_story(store, years, seed):
     """③ 이야기: 인주 도장과 가게 소개 첫 문장"""
     r = random.Random(seed)
@@ -275,6 +308,17 @@ def build_me(seoul):
     return {"totalYears": ME_TOTAL_YEARS, "visits": visits, "reviews": mine}
 
 
+def add_review_photos(store, batch, count=5):
+    """송파구 가게(와 시험용 가게): 리뷰 앞쪽 [count]개에 음식 그림 사진을 붙인다 (리뷰 필드 "p" = 자산 경로)"""
+    menus = store.get("menuItems") or ["대표 메뉴"]
+    for k, rv in enumerate(batch[:count]):
+        menu = menus[k % len(menus)]
+        name = f"R_{store['id']}_{k + 1}.jpg"
+        photo_dish(store, menu, int(hashlib.sha1((store['id'] + str(k)).encode()).hexdigest()[:8], 16)).save(
+            os.path.join(OUT_IMG, name), quality=72, optimize=True)
+        rv["p"] = "demo/" + name
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     stores = json.load(open(STORES, encoding="utf-8"))["stores"]
@@ -284,8 +328,10 @@ def main():
     os.makedirs(OUT_IMG, exist_ok=True)
     for s in seoul:
         songpa = (s.get("sigungu") or "").startswith("송파")
-        reviews += build_reviews(s, 15 if songpa else 8, users)
+        batch = build_reviews(s, 15 if songpa else 8, users)
+        reviews += batch
         if songpa:
+            add_review_photos(s, batch)
             years = years_of(s)
             urls = []
             for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
@@ -297,7 +343,9 @@ def main():
     test_store = {"id": "TEST-NOPO", "name": "노포천년테스트식당", "foundedYear": 1980, "sido": "서울", "sigungu": "우리 동네", "address": "내 현재 위치",
                   "categoryGroup": "음식점", "menuItems": ["설렁탕", "수육", "공기밥"],
                   "summary": "1980년 문을 연 뒤 한 솥 국물로 사십 년 넘게 손님을 맞아 온 시연용 노포예요."}
-    reviews += build_reviews(test_store, 12, users)
+    batch = build_reviews(test_store, 12, users)
+    reviews += batch
+    add_review_photos(test_store, batch)
     for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
         fn(test_store, 46, n).save(os.path.join(OUT_IMG, f"TEST-NOPO_{n}.jpg"), quality=82, optimize=True)
     me = build_me(seoul)

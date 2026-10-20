@@ -39,12 +39,21 @@ class SettingsStore(private val context: Context) {
         return Triple(parts[0].toIntOrNull() ?: return null, parts[1].toLongOrNull() ?: return null, parts[2])
     }
 
-    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long) {
-        context.dataStore.edit { it[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] = "$rating|$atMillis|$text" }
+    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long, photo: String? = null) {
+        context.dataStore.edit {
+            it[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] = "$rating|$atMillis|$text"
+            if (photo != null) it[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)] = photo else it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
+        }
     }
 
+    /** 시험용 가게 내 리뷰의 사진(base64 WebP). 없으면 null */
+    suspend fun testReviewPhoto(storeId: String): String? = context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]
+
     suspend fun deleteTestReview(storeId: String) {
-        context.dataStore.edit { it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)) }
+        context.dataStore.edit {
+            it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId))
+            it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
+        }
     }
 
     suspend fun clearTestReviews() {
@@ -60,5 +69,6 @@ class SettingsStore(private val context: Context) {
 
     private companion object {
         const val TEST_REVIEW_PREFIX = "test_review_"
+        const val TEST_REVIEW_PHOTO_PREFIX = "test_review_photo_"
     }
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nopo.cheonnyeon.R
+import com.nopo.cheonnyeon.core.designsystem.component.labelRes
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.message
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
@@ -217,21 +218,11 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
     val c = NopoTheme.colors
     val award = state.award ?: return
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
-        // 도장 연출 (FR-STP-02): 380ms 안에 찍히고 숫자는 600ms 동안 올라가며 진동은 한 번. 애니메이션을 끄면 바로 정적으로 보인다.
+        // 도장 연출 (FR-STP-02): 내려와 쿵 찍히고, 충격 고리·인주 튀김·화면 흔들림·진동이 이어진다. 애니메이션을 끄면 바로 정적으로 보인다.
         val context = LocalContext.current
         val animate = remember { animationsEnabled(context) }
-        var started by remember { mutableStateOf(!animate) }
-        LaunchedEffect(Unit) {
-            if (animate) {
-                started = true
-                vibrateOnce(context)
-            }
-        }
-        val scale by animateFloatAsState(if (started) 1f else 2.2f, tween(if (animate) 380 else 0), label = "stampScale")
-        val shownYears by animateIntAsState(if (started) award.years else 0, tween(if (animate) 600 else 0), label = "stampYears")
-        StampView(
-            years = shownYears, grade = award.grade, size = com.nopo.cheonnyeon.core.designsystem.component.StampSize.Ceremony,
-            modifier = Modifier.graphicsLayer { scaleX = scale; scaleY = scale; alpha = if (started) 1f else 0.2f },
+        com.nopo.cheonnyeon.core.designsystem.component.StampCeremony(
+            years = award.years, grade = award.grade, animate = animate, onImpact = { vibrateOnce(context) },
         )
         Text(stringResource(R.string.verify_done_title), style = NopoTheme.typography.headlineMedium, color = c.ink)
         Text(
@@ -260,13 +251,7 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
     }
 }
 
-private fun titleLabel(t: com.nopo.cheonnyeon.domain.model.Title): Int = when (t) {
-    com.nopo.cheonnyeon.domain.model.Title.SPROUT -> R.string.title_sprout
-    com.nopo.cheonnyeon.domain.model.Title.REGULAR -> R.string.title_regular
-    com.nopo.cheonnyeon.domain.model.Title.ELDER -> R.string.title_elder
-    com.nopo.cheonnyeon.domain.model.Title.ARTISAN -> R.string.title_artisan
-    com.nopo.cheonnyeon.domain.model.Title.MASTER -> R.string.title_master
-}
+private fun titleLabel(t: com.nopo.cheonnyeon.domain.model.Title): Int = t.labelRes()
 
 private fun animationsEnabled(context: android.content.Context): Boolean =
     android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
