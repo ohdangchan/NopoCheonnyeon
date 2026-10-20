@@ -46,7 +46,11 @@ fun StoreSheet(
         modifier.fillMaxWidth().background(c.surface, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)).padding(NopoTheme.spacing.lg),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onOpen),
+            horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             StorePhoto(store, Modifier.size(72.dp).clip(NopoTheme.shapes.md))
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
                 ProgramBadges(store)
