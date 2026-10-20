@@ -64,6 +64,9 @@ private data class PendingVisit(
     val titleId: String,
 )
 
+@Serializable
+private data class PendingStats(val storeId: String, val visitors: Int, val revisitors: Int)
+
 /**
  * 방문 기록 (S-302·S-306, ADR-09): 기기에 먼저 기록하고 대기열에 넣은 뒤 서버로 묶음 쓰기.
  * 위치 좌표·영수증 내용은 저장하지 않는다 (가게 id·이름·세월·방법만).
@@ -137,11 +140,16 @@ class VisitRepository(
     suspend fun sync(): Int = syncLock.withLock {
         val user = uid() ?: return@withLock pendingDao.all().size
         for (op in pendingDao.all()) {
+            if (op.type == TYPE_STATS) { retryStatsOp(op); continue }
             val visit = try { json.decodeFromString<PendingVisit>(op.payload) } catch (_: Exception) { pendingDao.remove(op.id); continue }
             try {
                 withTimeout(SYNC_TIMEOUT_MS) { commit(user, visit) }
                 pendingDao.remove(op.id)
                 visitDao.markSynced(visit.storeId)
+                // 집계는 따로 보내고, 실패하면 대기열에 남겨 다시 보낸다 (방문 기록에는 영향 없음)
+                statsDelta(visit)?.let { d ->
+                    if (!writeStats(d)) pendingDao.add(PendingOpEntity(type = TYPE_STATS, payload = json.encodeToString(d), createdAt = clock.now().toEpochMilli()))
+                }
             } catch (e: CancellationException) {
                 if (e is TimeoutCancellationException) { pendingDao.bumpAttempts(op.id); break } else throw e
             } catch (e: FirebaseFirestoreException) {
@@ -245,30 +253,44 @@ class VisitRepository(
             ),
         )
         batch.commit().await()
-        updateStoreStats(firestore, v)
     }
 
     /**
-     * 가게별 방문자·재방문자 집계 (FR-STORE-07): 첫 방문이면 방문자 +1, 두 번째 인증이면 재방문자 +1.
-     * 방문 기록 전송과 따로 보내고, 실패해도 방문 기록에는 영향이 없다 (집계는 참고용).
+     * 가게별 방문자·재방문자 집계 증가분 (FR-STORE-07): 첫 방문이면 방문자 +1, 두 번째 인증이면 재방문자 +1, 그 밖은 없음.
      */
-    private suspend fun updateStoreStats(firestore: FirebaseFirestore, v: PendingVisit) {
-        val ref = firestore.collection("storeStats").document(v.storeId)
-        val data = when {
-            v.firstVisit -> mapOf("visitors" to FieldValue.increment(1), "revisitors" to FieldValue.increment(0))
-            v.visitCount == 2 -> mapOf("visitors" to FieldValue.increment(0), "revisitors" to FieldValue.increment(1))
-            else -> return
+    private fun statsDelta(v: PendingVisit): PendingStats? = when {
+        v.firstVisit -> PendingStats(v.storeId, visitors = 1, revisitors = 0)
+        v.visitCount == 2 -> PendingStats(v.storeId, visitors = 0, revisitors = 1)
+        else -> null
+    }
+
+    /** 집계를 서버에 보낸다. 방문 기록 전송과 따로 보내며, 성공하면 true */
+    private suspend fun writeStats(d: PendingStats): Boolean = try {
+        withTimeout(SYNC_TIMEOUT_MS) {
+            db().collection("storeStats").document(d.storeId)
+                .set(mapOf("visitors" to FieldValue.increment(d.visitors.toLong()), "revisitors" to FieldValue.increment(d.revisitors.toLong())), com.google.firebase.firestore.SetOptions.merge())
+                .await()
         }
-        try {
-            withTimeout(SYNC_TIMEOUT_MS) { ref.set(data, com.google.firebase.firestore.SetOptions.merge()).await() }
-        } catch (e: CancellationException) {
-            if (e !is TimeoutCancellationException) throw e
-        } catch (_: Exception) {
+        true
+    } catch (e: CancellationException) {
+        if (e is TimeoutCancellationException) false else throw e
+    } catch (_: Exception) {
+        false
+    }
+
+    /** 방문 기록은 올라갔는데 집계를 못 보냈을 때 남겨 둔 작업을 다시 보낸다 (Q-04). 거듭 실패하면 버린다(집계는 참고용) */
+    private suspend fun retryStatsOp(op: PendingOpEntity) {
+        val d = try { json.decodeFromString<PendingStats>(op.payload) } catch (_: Exception) { pendingDao.remove(op.id); return }
+        when {
+            writeStats(d) -> pendingDao.remove(op.id)
+            op.attempts >= MAX_DENIED_ATTEMPTS -> pendingDao.remove(op.id)
+            else -> pendingDao.bumpAttempts(op.id)
         }
     }
 
     private companion object {
         const val TYPE_VISIT = "VISIT"
+        const val TYPE_STATS = "STATS"
         const val SYNC_TIMEOUT_MS = 15_000L
         const val MAX_DENIED_ATTEMPTS = 10
     }
