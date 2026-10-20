@@ -17,6 +17,7 @@
 | `nopo-09-real-device-qa.md` | **실기기 QA 전체 목록**(앞으로의 QA 기준, 상태 포함) | **신규** |
 | `nopo-10-stitch-implementation-map.md` | Stitch 51화면 ↔ 구현 현황·차이 | **신규** |
 | `nopo-11-backlog.md` | 결함·누락·데이터·문서 정리 백로그(우선순위·AC) | **신규** |
+| `nopo-12-unimplemented.md` | **기획서 대비 미개발·미완 목록**(PRD·스토리·확장·시안) | **신규** |
 | `qa-report.md` | 2026-10-20 QA 결과 보고(단위 145개·릴리스·실기기 일부) | 최신(결과 기록) |
 | `demo-guide.md` | 해커톤 시연 절차·발표 수치 | 최신 |
 | `apk-install-guide.md` | APK 설치 안내(S-1006) | **신규** |
