@@ -308,10 +308,30 @@ def build_me(seoul):
     return {"totalYears": ME_TOTAL_YEARS, "visits": visits, "reviews": mine}
 
 
+def flat_photos(store_id):
+    """받아 둔 사진 파일(자산 상대 경로)을 리뷰 순서대로 중복 없이 펼친다"""
+    path = os.path.join(ROOT, "data", "demo_review_photos.json")
+    rows = json.load(open(path, encoding="utf-8")).get(store_id, []) if os.path.exists(path) else []
+    out = []
+    for r in rows:
+        for f in r:
+            if f not in out:
+                out.append(f)
+    return out
+
+
 def add_review_photos(store, batch, count=5):
-    """송파구 가게(와 시험용 가게): 리뷰 앞쪽 [count]개에 음식 그림 사진을 붙인다 (리뷰 필드 "p" = 자산 경로)"""
+    """송파구 가게(와 시험용 가게): 리뷰 앞쪽 [count]개에 사진을 붙인다 (리뷰 필드 "p","p2","p3" = 자산 경로, 1~3장).
+    사진은 tools/fetch_demo_food_photos.py 가 받아 둔 무료 이용 음식 사진(data/demo_review_photos.json). 없으면 그림으로 대신한다."""
+    manifest_path = os.path.join(ROOT, "data", "demo_review_photos.json")
+    manifest = json.load(open(manifest_path, encoding="utf-8")) if os.path.exists(manifest_path) else {}
+    rows = manifest.get(store["id"])
     menus = store.get("menuItems") or ["대표 메뉴"]
     for k, rv in enumerate(batch[:count]):
+        if rows and k < len(rows):
+            for key, path in zip(("p", "p2", "p3"), rows[k]):
+                rv[key] = path
+            continue
         menu = menus[k % len(menus)]
         name = f"R_{store['id']}_{k + 1}.jpg"
         photo_dish(store, menu, int(hashlib.sha1((store['id'] + str(k)).encode()).hexdigest()[:8], 16)).save(
@@ -334,11 +354,15 @@ def main():
             add_review_photos(s, batch)
             years = years_of(s)
             urls = []
-            for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
-                img = fn(s, years, int(hashlib.sha1(s["id"].encode()).hexdigest()[:8], 16) + n)
-                name = f"{s['id']}_{n}.jpg"
-                img.save(os.path.join(OUT_IMG, name), quality=82, optimize=True)
-                urls.append("file:///android_asset/demo/" + name)
+            food = flat_photos(s["id"])
+            if food:      # 받아 둔 무료 음식 사진을 대표 사진으로도 쓴다
+                urls = ["file:///android_asset/" + f for f in food[:3]]
+            else:
+                for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
+                    img = fn(s, years, int(hashlib.sha1(s["id"].encode()).hexdigest()[:8], 16) + n)
+                    name = f"{s['id']}_{n}.jpg"
+                    img.save(os.path.join(OUT_IMG, name), quality=82, optimize=True)
+                    urls.append("file:///android_asset/demo/" + name)
             photos[s["id"]] = urls
     test_store = {"id": "TEST-NOPO", "name": "노포천년테스트식당", "foundedYear": 1980, "sido": "서울", "sigungu": "우리 동네", "address": "내 현재 위치",
                   "categoryGroup": "음식점", "menuItems": ["설렁탕", "수육", "공기밥"],
@@ -346,8 +370,12 @@ def main():
     batch = build_reviews(test_store, 12, users)
     reviews += batch
     add_review_photos(test_store, batch)
+    food = flat_photos("TEST-NOPO")
     for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
-        fn(test_store, 46, n).save(os.path.join(OUT_IMG, f"TEST-NOPO_{n}.jpg"), quality=82, optimize=True)
+        if len(food) >= n:
+            Image.open(os.path.join(ROOT, "app", "src", "main", "assets", food[n - 1])).convert("RGB").save(os.path.join(OUT_IMG, f"TEST-NOPO_{n}.jpg"), quality=80, optimize=True)
+        else:
+            fn(test_store, 46, n).save(os.path.join(OUT_IMG, f"TEST-NOPO_{n}.jpg"), quality=82, optimize=True)
     me = build_me(seoul)
     # 명예의 전당의 탐방 수·리뷰 수는 실제 생성된 리뷰 수와 맞춘다
     counts = {}

@@ -11,7 +11,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
+import com.nopo.cheonnyeon.domain.rule.ReviewRules
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -118,5 +134,66 @@ fun ReviewPhotoCapture(onCaptured: (String) -> Unit, onDismiss: () -> Unit) {
             }
             NopoButton(stringResource(R.string.detail_back), onDismiss, style = NopoButtonStyle.Outline, enabled = !busy, modifier = Modifier.fillMaxWidth())
         }
+    }
+}
+
+/** 리뷰 카드의 사진 줄: 최대 3장을 나란히, 누르면 크게 본다 */
+@Composable
+fun ReviewPhotoRow(photos: List<String>, modifier: Modifier = Modifier) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+        photos.take(ReviewRules.MAX_PHOTOS).forEach { ReviewPhotoThumb(it, Modifier.weight(1f).height(120.dp)) }
+        repeat(ReviewRules.MAX_PHOTOS - photos.size.coerceAtMost(ReviewRules.MAX_PHOTOS)) { Box(Modifier.weight(1f)) }
+    }
+}
+
+/**
+ * 리뷰 편집기의 사진 칸: 최대 3장, 카메라로 찍거나 앨범(시스템 사진 선택기, 별도 저장소 권한 없음)에서 고른다.
+ * 고른 사진은 줄여서 문자열로만 들고 있고 파일로 남기지 않는다.
+ */
+@Composable
+fun ReviewPhotoPicker(photos: List<String>, onChange: (List<String>) -> Unit, onCamera: () -> Unit, enabled: Boolean) {
+    val c = NopoTheme.colors
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val latest by rememberUpdatedState(photos)
+    var failed by remember { mutableStateOf(false) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(ReviewRules.MAX_PHOTOS)) { uris ->
+        val room = ReviewRules.MAX_PHOTOS - latest.size
+        val chosen = uris.take(room)
+        if (chosen.isEmpty()) return@rememberLauncherForActivityResult
+        scope.launch {
+            val added = withContext(Dispatchers.Default) { chosen.mapNotNull { ReviewPhotoCodec.fromUri(context, it) } }
+            failed = added.size < chosen.size
+            onChange((latest + added).take(ReviewRules.MAX_PHOTOS))
+        }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+        if (photos.isNotEmpty()) {
+            Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                photos.forEachIndexed { i, p ->
+                    val removeLabel = stringResource(R.string.reviews_photo_remove)
+                    Box(Modifier.size(84.dp)) {
+                        ReviewPhotoImage(p, Modifier.fillMaxSize().clip(NopoTheme.shapes.sm))
+                        Box(
+                            Modifier.align(Alignment.TopEnd).padding(2.dp).size(26.dp).background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                                .clickable(enabled = enabled, role = Role.Button) { onChange(photos.filterIndexed { k, _ -> k != i }) }
+                                .semantics { contentDescription = removeLabel },
+                            contentAlignment = Alignment.Center,
+                        ) { Text("✕", color = Color.White, style = NopoTheme.typography.labelSmall) }
+                    }
+                }
+            }
+        }
+        Text(stringResource(R.string.reviews_photo_count, photos.size, ReviewRules.MAX_PHOTOS), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        val full = photos.size >= ReviewRules.MAX_PHOTOS
+        Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+            NopoButton(stringResource(R.string.reviews_photo_camera), onCamera, style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f))
+            NopoButton(
+                stringResource(R.string.reviews_photo_gallery),
+                { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f),
+            )
+        }
+        if (failed) Text(stringResource(R.string.reviews_photo_failed), style = NopoTheme.typography.bodySmall, color = c.stamp)
     }
 }

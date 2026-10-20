@@ -304,6 +304,7 @@
     <string name="verify_done_location_only">위치로 확인한 도장이에요.</string>
     <string name="verify_done_pending">기록은 연결되면 서버에 자동으로 올라가요.</string>
     <string name="verify_done_close">확인</string>
+    <string name="verify_done_review">평점·리뷰 남기기</string>
 
     <!-- 테스트 가게 (FR-TST, 디버그 전용) -->
     <string name="test_store_create">테스트 가게 만들기 (현재 위치)</string>
@@ -366,11 +367,12 @@
     <string name="settings_licenses">오픈소스 라이선스</string>
     <string name="settings_licenses_hide">라이선스 접기</string>
     <string name="settings_licenses_body">AndroidX·Jetpack Compose·Kotlin·kotlinx(Apache-2.0), Firebase(Apache-2.0), ML Kit(Google ML Kit 약관), 네이버 지도 SDK(네이버 약관), Coil(Apache-2.0), OkHttp(Apache-2.0), Room·WorkManager(Apache-2.0), Black Han Sans·JetBrains Mono(SIL OFL 1.1).</string>
-    <string name="reviews_photo_add">사진 찍어 올리기</string>
-    <string name="reviews_photo_retake">다시 찍기</string>
+    <string name="reviews_photo_camera">카메라로 찍기</string>
+    <string name="reviews_photo_gallery">앨범에서 고르기</string>
+    <string name="reviews_photo_count">사진 %1$d / %2$d</string>
     <string name="reviews_photo_remove">사진 빼기</string>
     <string name="reviews_photo_title">리뷰 사진 찍기</string>
-    <string name="reviews_photo_hint">리뷰 사진은 앱 카메라로 지금 찍은 것만 올릴 수 있어요. 영수증·사람 얼굴은 담지 마세요.</string>
+    <string name="reviews_photo_hint">음식이 잘 보이게 찍어 주세요. 영수증·사람 얼굴은 담지 마세요.</string>
     <string name="reviews_photo_shoot">촬영</string>
     <string name="reviews_photo_failed">사진을 처리하지 못했어요. 다시 찍어 주세요.</string>
     <string name="cd_review_photo">리뷰 사진</string>
@@ -482,6 +484,15 @@
     <!-- 칭호 승급 (FR-STP-06, B-11) -->
     <string name="title_up_headline">새로운 칭호를 얻었어요!</string>
     <string name="title_up_confirm">칭호 확인</string>
+    <string name="title_up_from_to">%1$s → %2$s</string>
+    <string name="title_up_preview">미리보기예요. 실제로 얻은 칭호는 아니에요.</string>
+    <string name="title_dex_title">칭호 도감</string>
+    <string name="title_dex_hint">세월 100년마다 칭호가 올라요. 칭호를 누르면 승급 연출을 미리 볼 수 있어요.</string>
+    <string name="title_dex_years">세월 %1$d년 이상</string>
+    <string name="title_dex_current">지금 내 칭호</string>
+    <string name="title_dex_done">얻음</string>
+    <string name="title_dex_locked">%1$d년 더 쌓으면 얻어요</string>
+    <string name="cd_open_title_dex">칭호 도감 열기</string>
     <!-- 가게 정보 오류 제보 (FR-STORE-06, B-10) -->
     <string name="store_report_link">정보가 달라요? 제보하기</string>
     <string name="store_report_title">어떤 정보가 달라요?</string>
@@ -509,6 +520,8 @@
         <item>Google Play 서비스 위치|Google Play 서비스 약관|내 위치와 가게 근처 확인</item>
         <item>Coil · OkHttp|Apache 2.0|공식 가게 사진 불러오기</item>
         <item>Black Han Sans · JetBrains Mono|SIL Open Font License 1.1|숫자·제목 글꼴, 수치 글꼴</item>
+        <item>시연용 예시 음식 사진(Wikimedia Commons 이용자)|CC0 · CC BY · CC BY-SA|시연용 리뷰·대표 사진. 작가·원본 주소는 저장소 data/demo_photo_credits.json, 해당 가게의 실제 사진이 아님</item>
+        <item>ZXing core|Apache-2.0|공유 카드 QR 코드 만들기</item>
     </string-array>
     <string name="map_failed_fallback">지도를 불러오지 못해 목록으로 보여 드려요.</string>
     <string name="verify_clock_skew">기기 시계가 실제 시각과 %1$d분 어긋나 있어요. 영수증 시간 확인이 틀릴 수 있으니 설정에서 날짜·시간을 자동으로 맞춰 주세요.</string>

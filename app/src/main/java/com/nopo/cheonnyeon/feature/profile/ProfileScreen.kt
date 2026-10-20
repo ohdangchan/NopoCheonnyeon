@@ -193,7 +193,7 @@ private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
             Text(dateOf(r.updatedAtMillis), color = c.ink2, style = NopoTheme.typography.bodySmall)
         }
         if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
-        r.photo?.let { com.nopo.cheonnyeon.feature.store.ReviewPhotoThumb(it, Modifier.fillMaxWidth().height(160.dp)) }
+        if (r.photos.isNotEmpty()) com.nopo.cheonnyeon.feature.store.ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
     }
 }
 

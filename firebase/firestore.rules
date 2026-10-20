@@ -71,7 +71,8 @@ service cloud.firestore {
           && reviewId == d.storeId + '_' + request.auth.uid
           && d.rating is int && d.rating >= 1 && d.rating <= 5
           && d.text is string && d.text.size() <= 500
-          && (!('photo' in d) || (d.photo is string && d.photo.size() <= 170000))   // 앱 카메라로 찍은 줄인 사진(base64)
+          && (!('photo' in d) || (d.photo is string && d.photo.size() <= 170000))   // 예전 한 장짜리 필드
+          && (!('photos' in d) || (d.photos is list && d.photos.size() <= 3))        // 줄인 사진(base64) 최대 3장, 문서 1MB 한도가 총량을 막는다
           && exists(/databases/$(database)/documents/users/$(request.auth.uid)/visits/$(d.storeId));
       }
       allow read: if signedIn();

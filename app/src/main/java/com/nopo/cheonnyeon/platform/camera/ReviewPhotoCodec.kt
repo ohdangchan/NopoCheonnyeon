@@ -38,6 +38,21 @@ object ReviewPhotoCodec {
         return null
     }
 
+    /** 앨범(포토 피커)에서 고른 사진을 같은 방식으로 줄인다. 실패하면 null */
+    fun fromUri(context: android.content.Context, uri: android.net.Uri): String? = runCatching {
+        val bmp = if (Build.VERSION.SDK_INT >= 28) {
+            // ImageDecoder는 회전(EXIF)을 알아서 반영한다
+            android.graphics.ImageDecoder.decodeBitmap(android.graphics.ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
+                val big = max(info.size.width, info.size.height)
+                if (big > MAX_SIDE * 2) decoder.setTargetSampleSize(big / MAX_SIDE)
+                decoder.allocator = android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE
+            }
+        } else {
+            context.contentResolver.openInputStream(uri)?.use { android.graphics.BitmapFactory.decodeStream(it) }
+        }
+        bmp?.let { encode(it, 0) }
+    }.getOrNull()
+
     fun decode(photo: String): ByteArray? = runCatching { Base64.decode(photo, Base64.DEFAULT) }.getOrNull()
 
     @Suppress("DEPRECATION")

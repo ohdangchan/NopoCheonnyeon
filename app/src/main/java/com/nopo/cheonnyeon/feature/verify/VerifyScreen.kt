@@ -68,7 +68,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
         state.clockSkewMinutes?.let { Text(stringResource(R.string.verify_clock_skew, it), style = NopoTheme.typography.bodySmall, color = c.stamp) }
 
         if (state.step == VerifyStep.DONE && state.award != null) {
-            ResultSection(state, onClose)
+            ResultSection(state, onClose, onWriteReview = { vm.requestReview(); onClose() })
             return@Column
         }
         if (state.blocked) {
@@ -214,7 +214,7 @@ private fun ErrorText(error: AppError?, meters: Int) {
 }
 
 @Composable
-private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
+private fun ResultSection(state: VerifyUiState, onClose: () -> Unit, onWriteReview: () -> Unit) {
     val c = NopoTheme.colors
     val award = state.award ?: return
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
@@ -247,7 +247,8 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit) {
             Text(stringResource(R.string.verify_done_location_only), style = NopoTheme.typography.bodySmall, color = c.ink2)
         }
         Text(stringResource(R.string.verify_done_pending), style = NopoTheme.typography.bodySmall, color = c.ink2)
-        NopoButton(stringResource(R.string.verify_done_close), onClose, modifier = Modifier.fillMaxWidth())
+        NopoButton(stringResource(R.string.verify_done_review), onWriteReview, modifier = Modifier.fillMaxWidth())
+        NopoButton(stringResource(R.string.verify_done_close), onClose, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }
 }
 

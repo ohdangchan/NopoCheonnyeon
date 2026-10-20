@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -25,6 +27,10 @@ data class StoreDetailUiState(
 class StoreDetailViewModel(private val container: AppContainer, private val storeId: String) : ViewModel() {
     /** 가게 정보 오류 제보 (FR-STORE-06) */
     suspend fun reportInfo(reason: String) = container.reviews.reportStoreInfo(storeId, reason)
+
+    /** 인증 직후 "리뷰 남기기"로 들어왔는지 */
+    val reviewRequested: StateFlow<Boolean> = container.pendingReviewStoreId.map { it == storeId }
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, false)
 
     private val _state = MutableStateFlow(StoreDetailUiState())
     val state: StateFlow<StoreDetailUiState> = _state.asStateFlow()

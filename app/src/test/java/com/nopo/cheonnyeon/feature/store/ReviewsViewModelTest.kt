@@ -122,7 +122,7 @@ class ReviewsViewModelTest {
         val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
         every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(true)
         coEvery { settings.testReview("TEST-NOPO") } returns local
-        coEvery { settings.testReviewPhoto(any()) } returns null
+        coEvery { settings.testReviewPhotos(any()) } returns emptyList()
         val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
         coEvery { demoRepo.forStore("TEST-NOPO") } returns listOf(demoItem(5), demoItem(3).copy(visitCount = 2))
         val visit = if (visited) MyVisitEntity("TEST-NOPO", 46, "RECEIPT", 0L, 0L, 1, false) else null

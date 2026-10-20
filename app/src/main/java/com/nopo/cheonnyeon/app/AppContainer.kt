@@ -46,6 +46,8 @@ class AppContainer(
     val syncScheduler = SyncScheduler(appContext)
     /** 로그인 직후 서버 기록을 내려받는 중 (시안 sync_restore) */
     val restoring = MutableStateFlow(false)
+    /** 방문 인증을 마치고 "리뷰 남기기"를 눌렀을 때 그 가게 ID. 가게 상세가 보고 리뷰 편집기를 열고 비운다 */
+    val pendingReviewStoreId = MutableStateFlow<String?>(null)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {

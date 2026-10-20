@@ -20,6 +20,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.launch
 import com.nopo.cheonnyeon.core.common.message
@@ -48,7 +49,12 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
     }
     val context = LocalContext.current
     Column(Modifier.fillMaxSize().background(c.paper)) {
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+        val scroll = rememberScrollState()
+        val requested by vm.reviewRequested.collectAsStateWithLifecycle()
+        LaunchedEffect(requested) {
+            if (requested) { kotlinx.coroutines.delay(300); scroll.animateScrollTo(scroll.maxValue) }
+        }
+        Column(Modifier.weight(1f).verticalScroll(scroll)) {
             Photos(store)
             Column(Modifier.padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = androidx.compose.ui.Alignment.Bottom) {

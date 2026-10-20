@@ -77,6 +77,9 @@ class VerifyViewModel(
     /** 사용자 설정(FR-VER-11). 읽지 못하면 기본값 */
     @Volatile private var allowLocationOnly = VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL
 
+    /** 인증 결과 화면의 "평점·리뷰 남기기": 가게 상세로 돌아가 리뷰 편집기를 열게 한다 */
+    fun requestReview() { container.pendingReviewStoreId.value = storeId }
+
     init {
         com.nopo.cheonnyeon.core.common.Analytics.verifyStart()
         viewModelScope.launch {

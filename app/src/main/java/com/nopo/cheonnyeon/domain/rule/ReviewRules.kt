@@ -16,6 +16,9 @@ object ReviewRules {
     const val MAX_LINES = 10
     const val PAGE_SIZE = 20
 
+    /** 리뷰 한 개에 붙일 수 있는 사진 수 */
+    const val MAX_PHOTOS = 3
+
     fun validate(rating: Int, text: String): ReviewCheck {
         if (rating !in RATING_MIN..RATING_MAX) return ReviewCheck.Invalid(ReviewInvalid.RATING_RANGE)
         val trimmed = text.trim()

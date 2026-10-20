@@ -171,7 +171,7 @@ private fun DrawScope.drawSparkles(center: Offset, color: Color, phase: Float) {
     }
 }
 
-private fun DrawScope.star(c: Offset, r: Float, color: Color) {
+internal fun DrawScope.star(c: Offset, r: Float, color: Color) {
     val inner = r * 0.28f
     val path = Path()
     for (k in 0 until 8) {

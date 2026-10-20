@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -119,7 +122,10 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
             Text(stringResource(R.string.passport_title), style = NopoTheme.typography.headlineMedium, color = c.primary)
-            TitleBadge(title)
+            var dex by rememberSaveable { mutableStateOf(false) }
+            val dexLabel = stringResource(R.string.cd_open_title_dex)
+            Box(Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { dex = true }.semantics { contentDescription = dexLabel }) { TitleBadge(title) }
+            if (dex) TitleDexDialog(state.totalYears) { dex = false }
         }
         YearsGauge(totalYears = state.totalYears, yearsToNextTitle = TitlePolicy.yearsToNext(state.totalYears))
         val stats = com.nopo.cheonnyeon.domain.rule.PassportStats.of(state.stamps.filter { !it.isTest }.map { (it.store?.sido ?: "") to it.visit.yearsAwarded })
@@ -178,7 +184,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                             Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
                             com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
                             if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
-                            r.photo?.let { com.nopo.cheonnyeon.feature.store.ReviewPhotoThumb(it, Modifier.fillMaxWidth().height(160.dp)) }
+                            if (r.photos.isNotEmpty()) com.nopo.cheonnyeon.feature.store.ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
                             if (!r.demo) TextButton({ onOpenStore(r.storeId) }) { Text(stringResource(R.string.my_review_edit)) }
                         }
                     }

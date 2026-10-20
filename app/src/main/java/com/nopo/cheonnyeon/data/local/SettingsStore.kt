@@ -39,15 +39,16 @@ class SettingsStore(private val context: Context) {
         return Triple(parts[0].toIntOrNull() ?: return null, parts[1].toLongOrNull() ?: return null, parts[2])
     }
 
-    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long, photo: String? = null) {
+    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long, photos: List<String> = emptyList()) {
         context.dataStore.edit {
             it[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] = "$rating|$atMillis|$text"
-            if (photo != null) it[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)] = photo else it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
+            if (photos.isNotEmpty()) it[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)] = photos.joinToString("\n") else it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
         }
     }
 
-    /** 시험용 가게 내 리뷰의 사진(base64 WebP). 없으면 null */
-    suspend fun testReviewPhoto(storeId: String): String? = context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]
+    /** 시험용 가게 내 리뷰의 사진들(base64 WebP). 없으면 빈 목록 */
+    suspend fun testReviewPhotos(storeId: String): List<String> =
+        context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]?.split("\n")?.filter { it.isNotBlank() }.orEmpty()
 
     suspend fun deleteTestReview(storeId: String) {
         context.dataStore.edit {
