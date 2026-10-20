@@ -37,7 +37,7 @@
 |---|---|---|---|---|
 | F-01 | P1 (**2026-10-20 구현, 규칙 배포·실기기 미확인**) | **가게별 재방문율**을 가게 상세·리뷰 목록·프로필에서 보기 | 정의: 재방문율 = 그 가게를 인증한 사용자 중 **2회 이상** 인증한 사용자 비율, "N명 중 K명(P%)"로 표시. 서버 함수 없이 Firestore **컬렉션 그룹 집계 쿼리**: `collectionGroup("visits").whereEqualTo("storeId", id)`의 count와 `…whereGreaterThanOrEqualTo("visitCount", 2)`의 count. 필요 변경: ① `firestore.rules`에 `match /{path=**}/visits/{storeId} { allow read: if signedIn(); }` ② 복합 색인 `visits`(COLLECTION_GROUP) `storeId ASC + visitCount ASC` 배포 ③ `ReviewRepository` 옆에 `VisitStatsRepository.revisitRate(storeId)` ④ 가게 상세 평점 영역에 "재방문 K/N명", 리뷰 항목에는 이미 있는 "단골 N회" 유지, 프로필의 "다녀온 노포"에 단골 횟수(B-08과 함께). 표본이 작으면(방문자 <5명) 비율 대신 "N명 중 K명"만 표시 | 상세에 재방문 수치 표시, 규칙·색인 배포 후 실기기 확인, 방문자 0명이면 줄 숨김, 사용자 개인 식별 없이 집계만 노출(PRD 8.2 날짜만 공개 원칙 유지). PRD에 FR-STORE-07 추가 |
 
-> **⚠ 배포 대기:** `firebase/firestore.rules`가 바뀌었다(storeStats 집계 문서 FR-STORE-07, 방문 기록 공개 범위 `visitsVisibility` FR-PRF-07). Firebase CLI 로그인이 만료돼 **아직 배포하지 못했다**. `firebase login --reauth` 후 `cd firebase && firebase deploy --only firestore:rules --project nopocheonnyeon`. 배포 전에도 앱은 동작하지만 재방문율은 0명으로 보이고 공개 범위 저장은 실패 문구가 나온다. F-01은 설계를 바꿔 컬렉션 그룹 쿼리 대신 `storeStats/{storeId}`(visitors, revisitors 증가 카운터)를 쓴다.
+> **✔ 배포 완료(2026-10-20):** `firebase/firestore.rules`(storeStats·visitsVisibility·Q-03 보강)와 색인을 `nopocheonnyeon`(asia-northeast3)에 배포했다. 재방문율·공개 범위의 실기기 확인(`nopo-09` N-01·N-03)은 아직이다. F-01은 컬렉션 그룹 쿼리 대신 `storeStats/{storeId}` 카운터를 쓴다.
 
 ## nopo-qa 점검(2026-10-20, 6f050bc..60755a5)에서 나온 항목
 | ID | 상태 | 내용 |

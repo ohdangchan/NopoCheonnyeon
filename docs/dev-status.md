@@ -187,3 +187,6 @@
 
 ### 10-3. nopo-qa 점검 반영
 `nopo-qa` 에이전트(정적 읽기·빌드)가 높음 3건을 지적해 수정했다(Q-01~Q-03, `nopo-11` 참고). 규칙 보강분도 **Firebase 로그인 재인증 후 배포**해야 적용된다. 한글 리터럴은 디버그 전용 버튼·진단 샘플·@Preview에만 남아 있다(허용). 에이전트가 제안한 폰 확인 목록은 `nopo-09`의 O-01·R-09·V-06·V-10 등과 겹친다.
+
+### 10-4. Firebase 규칙 배포 완료
+`firebase login`(songpa24@iceu.kr) 재인증 후 `firebase deploy --only firestore:rules,firestore:indexes --project nopocheonnyeon`이 성공했다(DB 위치 asia-northeast3 확인). 이제 `nopo-09` 13장의 ★ 항목(N-01 재방문율, N-03 공개 범위)을 실기기로 시험할 수 있다. 앞의 "막힌 것 ①"은 해소됨. 인증 코드는 채팅에 노출됐으나 1회용이라 이미 사용돼 무효다.
