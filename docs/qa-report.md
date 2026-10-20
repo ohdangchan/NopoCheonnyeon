@@ -1,5 +1,7 @@
 # QA 결과 보고서 (2026-10-20)
 
+> **실기기 시험 전체 목록·상태는 `docs/nopo-09-real-device-qa.md`가 기준**이다(이 보고서의 5장을 확장). 코드 재독으로 새로 확인된 결함은 `docs/nopo-11-backlog.md`.
+
 대상: 디버그 빌드 0.1.0 (실기기 Galaxy Z Fold, SM-F971N, Android 17 API 37) · 릴리스 APK 서명·빌드 확인.
 기준 문서: `nopo-04-dev-qa-checklist.md`. 표기: **PASS** 확인함 / **수동** 사용자가 직접 해야 하는 시험(최종 시연 전 수행) / **보류** 이유 있음.
 

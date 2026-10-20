@@ -62,4 +62,6 @@ Google Play 등록은 다음 버전입니다.
 | 백년가게 창업일 확보 | 1,139 (업력 30년 미만으로 나오는 207곳은 앱에서 30년) |
 | 서울 오래가게 (선정 발표 기준 수집 / 앱 포함) | 173 / 151 |
 | 앱 카탈로그 | 1,277 |
-| 좌표 | 0 → 컴퓨터에서 `python tools/geocode.py --provider naver` (주소 없는 오래가게는 `--provider kakao`) 후 `python tools/build_catalog.py` |
+| 좌표 | **1,181 / 1,277곳(92.5%)** 보강 완료(2026-10-19, 네이버). 남은 96곳은 `python tools/geocode.py --provider kakao` 후 `python tools/build_catalog.py` |
+
+> 최신 진행·인수인계는 `docs/dev-status.md`, 문서 색인은 `docs/README.md`. 위 표의 수치는 2026-10-18 수집 시점 기준이며 현재 앱 카탈로그는 1,277곳(v26101921).

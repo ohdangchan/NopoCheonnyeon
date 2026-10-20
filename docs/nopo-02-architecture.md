@@ -2,6 +2,8 @@
 
 관련 문서: `nopo-01-PRD.md`(요구사항), `nopo-03-stories.md`(구현 단위), `nopo-06-spike-plan.md`(1일차 기능 검증), `nopo-07-firebase-setup.md`(서버 설정)
 
+> **⚠ 2026-10-20 현황 주의**: 이 문서는 설계 기준이며 구현과 다른 곳이 있다 — Room은 `fallbackToDestructiveMigration` 사용 중(6.1), 실제 보안 규칙(`firebase/firestore.rules`)은 닉네임 변경 허용(6.3), 릴리스 abi는 `arm64-v8a`만(7.3), R8은 `-dontoptimize`(7.4), 패키지 `feature/stamp`·`feature/review`·`platform/haptics`·`data/sync`·`domain/repository`는 만들어지지 않았다. 자세한 목록은 `docs/nopo-11-backlog.md` C-01.
+
 > 설계 원칙은 하나입니다. **실제 폰에서 버그 없이 도는 것.** 그래서 v0.3보다 라이브러리를 줄이고(Hilt·비공식 지도 래퍼 제거), 공식 SDK를 직접 쓰며, 모든 기기 기능 호출에 제한 시간과 실패 처리를 둡니다.
 
 > 라이브러리 버전: 확인된 값은 네이버 지도 SDK `3.24.0`, ML Kit 한국어 `16.0.1`뿐입니다. 나머지는 Android Studio 최신 안정판의 새 프로젝트 템플릿이 만든 버전과, Android Studio가 제안하는 최신 안정 버전을 쓰고 `libs.versions.toml`에 고정합니다.
