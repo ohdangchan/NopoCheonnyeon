@@ -2,6 +2,7 @@ package com.nopo.cheonnyeon.app
 
 import android.content.Context
 import android.util.Log
+import androidx.room.withTransaction
 import com.nopo.cheonnyeon.core.common.Clock
 import com.nopo.cheonnyeon.core.common.DefaultDispatchers
 import com.nopo.cheonnyeon.core.common.DispatcherProvider
@@ -36,7 +37,7 @@ class AppContainer(
     val settings = SettingsStore(appContext)
     val catalog = CatalogRepository(database.storeDao(), dispatchers)
     val auth = AuthRepository()
-    val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers)
+    val visits = VisitRepository(database.myVisitDao(), database.pendingOpDao(), { FirebaseFirestore.getInstance() }, { auth.currentUid }, clock, dispatchers) { block -> database.withTransaction { block() } }
     val reviews = com.nopo.cheonnyeon.data.remote.ReviewRepository({ FirebaseFirestore.getInstance() }, { auth.currentUid })
     val profiles = com.nopo.cheonnyeon.data.remote.ProfileRepository({ FirebaseFirestore.getInstance() }, reviews)
     val storeStats = com.nopo.cheonnyeon.data.remote.StoreStatsRepository { FirebaseFirestore.getInstance() }

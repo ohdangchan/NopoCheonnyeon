@@ -201,6 +201,8 @@ class VerifyViewModel(
     }
 
     private suspend fun finish(store: Store, method: VerifyMethod, photoVerified: Boolean, hash: String?) {
+        // 로그인 직후 서버 기록을 내려받는 중이면 끝난 뒤에 기록한다 (서버에 있는 가게를 첫 방문으로 세지 않게)
+        kotlinx.coroutines.withTimeoutOrNull(RESTORE_WAIT_MS) { container.restoring.first { !it } }
         val award = container.visits.record(store, method, photoVerified, hash)
         container.syncScheduler.enqueue()
         saved[KEY_STEP] = VerifyStep.DONE.name
@@ -236,5 +238,6 @@ class VerifyViewModel(
         const val KEY_IN_RANGE = "in_range"
         const val OCR_TIMEOUT_MS = 10_000L
         const val OCR_MAX_SIDE = 1_600
+        const val RESTORE_WAIT_MS = 10_000L
     }
 }

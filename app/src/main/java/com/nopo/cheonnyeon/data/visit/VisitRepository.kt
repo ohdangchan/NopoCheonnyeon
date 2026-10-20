@@ -75,6 +75,8 @@ class VisitRepository(
     private val uid: () -> String?,
     private val clock: Clock,
     private val dispatchers: DispatcherProvider,
+    /** 기기 기록과 대기열 추가를 한 트랜잭션으로 묶는다 (앱이 그 사이에 종료돼도 둘이 어긋나지 않게). 기본은 그냥 실행 */
+    private val inTransaction: suspend (suspend () -> Unit) -> Unit = { it() },
 ) {
     private val json = Json { ignoreUnknownKeys = true }
     private val syncLock = Mutex()
@@ -110,21 +112,25 @@ class VisitRepository(
             val totalBefore = before.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded }
             val firstVisit = before.none { it.storeId == store.id }
             val years = YearsCalculator.yearsAtVisit(store.foundedYear, year)
-            visitDao.record(store.id, years, method.name, now.toEpochMilli())
-            val saved = visitDao.byStore(store.id)!!
             val awarded = if (firstVisit && !store.isTest) years else 0
             val totalAfter = totalBefore + awarded
             val titleUp = TitlePolicy.titleUp(totalBefore, totalAfter)
-            val grade = StampGradePolicy.gradeFor(saved.yearsAwarded)
-            val op = PendingVisit(
-                storeId = store.id, storeName = store.name, sigungu = store.sigungu, years = saved.yearsAwarded,
-                grade = grade.name, method = method.name, photoVerified = photoVerified, atMillis = now.toEpochMilli(),
-                firstVisit = firstVisit, visitCount = saved.visitCount, receiptHash = receiptHash,
-                titleId = TitlePolicy.titleFor(totalAfter).name,
-            )
-            // 테스트 가게 기록은 기기에만 남기고 서버로 보내지 않는다 (FR-TST-02)
-            if (!store.isTest) pendingDao.add(PendingOpEntity(type = TYPE_VISIT, payload = json.encodeToString(op), createdAt = now.toEpochMilli()))
-            AwardResult(store.name, saved.yearsAwarded, grade, firstVisit, totalAfter, titleUp, method, pendingSync = true)
+            lateinit var result: AwardResult
+            inTransaction {
+                visitDao.record(store.id, years, method.name, now.toEpochMilli())
+                val saved = visitDao.byStore(store.id)!!
+                val grade = StampGradePolicy.gradeFor(saved.yearsAwarded)
+                val op = PendingVisit(
+                    storeId = store.id, storeName = store.name, sigungu = store.sigungu, years = saved.yearsAwarded,
+                    grade = grade.name, method = method.name, photoVerified = photoVerified, atMillis = now.toEpochMilli(),
+                    firstVisit = firstVisit, visitCount = saved.visitCount, receiptHash = receiptHash,
+                    titleId = TitlePolicy.titleFor(totalAfter).name,
+                )
+                // 테스트 가게 기록은 기기에만 남기고 서버로 보내지 않는다 (FR-TST-02)
+                if (!store.isTest) pendingDao.add(PendingOpEntity(type = TYPE_VISIT, payload = json.encodeToString(op), createdAt = now.toEpochMilli()))
+                result = AwardResult(store.name, saved.yearsAwarded, grade, firstVisit, totalAfter, titleUp, method, pendingSync = true)
+            }
+            result
         }
 
     /** 대기열을 순서대로 서버에 보낸다. 연결이 없으면 남겨 두고 다음 기회에 다시 보낸다. @return 남은 개수 */
