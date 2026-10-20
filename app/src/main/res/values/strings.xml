@@ -368,6 +368,26 @@
     <string name="passport_tab_regions">지역</string>
     <string name="regions_title">지역별 진행도</string>
     <string name="regions_row">%1$d / %2$d곳 · %3$d%%</string>
+    <string name="hall_title">식객 명예의 전당</string>
+    <string name="hall_button">식객 명예의 전당 보기</string>
+    <string name="hall_demo_note">시연용 예시 순위예요. 실제 이용자 순위가 아니에요.</string>
+    <string name="hall_empty">아직 집계된 순위가 없어요.</string>
+    <string name="hall_my_line">누적 세월 %1$d년 · 전체 %2$d위 · 상위 %3$d%%</string>
+    <string name="hall_my_progress">천년 미식가 도달률 %1$d%%</string>
+    <string name="hall_tab_years">누적 세월 순</string>
+    <string name="hall_tab_reviews">리뷰왕</string>
+    <string name="hall_tab_stores">인기 노포</string>
+    <string name="hall_top3">삼대 명예 식객</string>
+    <string name="hall_rank">%1$d위</string>
+    <string name="hall_years">%1$d년</string>
+    <string name="hall_reviews_count">리뷰 %1$d개</string>
+    <string name="hall_stores_count">%1$d곳 탐방</string>
+    <string name="hall_titles_note">칭호 승급 기준: 단골 식객 100년 → 동네 어른 300년 → 장인 식객 600년 → 천년 미식가 1,000년</string>
+    <string name="method_demo">시연용 예시</string>
+    <string name="settings_demo_passport_fill">시연용 패스포트 채우기(637년)</string>
+    <string name="settings_demo_passport_clear">시연용 패스포트 지우기</string>
+    <string name="settings_demo_passport_done">시연용 도장 %1$d개를 넣었어요</string>
+    <string name="settings_demo_passport_cleared">시연용 도장을 지웠어요</string>
     <string name="settings_dev">개발자 도구</string>
 
     <!-- 프로필·내 리뷰 (S-704·S-804) -->

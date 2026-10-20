@@ -48,6 +48,7 @@ import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
@@ -71,7 +72,14 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
 
     fun loadReviews() {
         val uid = container.auth.currentUid ?: return
-        viewModelScope.launch { _reviews.value = container.reviews.byUser(uid).valueOrNull.orEmpty() }
+        viewModelScope.launch {
+            val server = container.reviews.byUser(uid).valueOrNull.orEmpty()
+            // 시연용 패스포트를 채운 경우 그 도장에 달린 예시 리뷰도 함께 보여 준다
+            val demo = if (container.settings.demoData.first() && container.database.myVisitDao().demoVisitCount() > 0) {
+                container.demoReviews.myReviews(container.auth.currentNickname().orEmpty())
+            } else emptyList()
+            _reviews.value = demo + server
+        }
     }
 
     val myUid: String? get() = container.auth.currentUid
@@ -94,7 +102,7 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
 
 /** 내 패스포트 (S-702·S-703, FR-PAS-01~03): 세월 게이지, 칭호, 3열 도장 격자, 도장 상세 */
 @Composable
-fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit) {
+fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
@@ -125,6 +133,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
             androidx.compose.material3.FilterChip(reviewsTab, { reviewsTab = true; regionsTab = false; vm.loadReviews() }, label = { Text(stringResource(R.string.passport_tab_reviews)) })
             vm.myUid?.let { uid -> TextButton({ onOpenProfile(uid) }) { Text(stringResource(R.string.passport_my_profile)) } }
         }
+        TextButton({ onOpenHall() }) { Text(stringResource(R.string.hall_button)) }
         if (regionsTab) {
             androidx.compose.foundation.lazy.LazyColumn(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                 item { Text(stringResource(R.string.regions_title), style = NopoTheme.typography.titleLarge, color = c.ink) }
@@ -154,9 +163,10 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
                             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
                         ) {
                             Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
+                            if (r.demo) Text(stringResource(R.string.reviews_demo_badge), color = c.brass, style = NopoTheme.typography.bodySmall)
                             com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
                             if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
-                            TextButton({ onOpenStore(r.storeId) }) { Text(stringResource(R.string.my_review_edit)) }
+                            if (!r.demo) TextButton({ onOpenStore(r.storeId) }) { Text(stringResource(R.string.my_review_edit)) }
                         }
                     }
                 }
@@ -234,6 +244,7 @@ private fun StampDetail(stamp: PassportStamp, onDismiss: () -> Unit, onOpenStore
     val method = when (v.method) {
         "RECEIPT" -> R.string.method_receipt
         "PHOTO" -> R.string.method_photo
+        "DEMO" -> R.string.method_demo
         else -> R.string.method_location_only
     }
     AlertDialog(

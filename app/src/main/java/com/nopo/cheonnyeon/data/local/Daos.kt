@@ -50,6 +50,10 @@ interface MyVisitDao {
 
     @Query("DELETE FROM my_visits WHERE storeId LIKE 'TEST-%'") suspend fun deleteTestVisits()
 
+    @Query("DELETE FROM my_visits WHERE method = 'DEMO'") suspend fun deleteDemoVisits()
+
+    @Query("SELECT COUNT(*) FROM my_visits WHERE method = 'DEMO'") suspend fun demoVisitCount(): Int
+
     /** 처음이면 새로 넣고, 이미 있으면 세월은 그대로 두고 횟수·마지막 시각만 갱신한다. */
     @Transaction
     suspend fun record(storeId: String, years: Int, method: String, at: Long) {

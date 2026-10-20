@@ -22,11 +22,29 @@ FONT_TITLE = os.path.join(ROOT, "app", "src", "main", "res", "font", "black_han_
 FONT_BODY = r"C:\Windows\Fonts\NanumGothicBold.ttf"
 FONT_LIGHT = r"C:\Windows\Fonts\NanumGothic.ttf"
 
-NICKS = ["국밥장인", "골목탐험가", "을지로식객", "맛집수집가", "노포순례자", "동네어른", "미식가김씨", "새벽식객", "면치기왕", "밥심최고",
-         "백년지기", "맛골목", "단골손님", "먹보하루", "별미사냥꾼", "가성비왕", "혼밥러", "퇴근식객", "주말탐방", "서울촌놈",
-         "한상차림", "푸근한밥상", "찐맛집", "골목대장", "노포덕후", "숨은맛", "옛맛그대로", "시장통식객", "정직한맛", "할매손맛",
-         "송파토박이", "잠실식객", "맛있는하루", "고수식객", "느긋한식사", "배부른곰", "한입만", "속풀이", "든든한점심", "저녁의낭만"]
-TITLES = ["SPROUT", "SPROUT", "REGULAR", "REGULAR", "REGULAR", "ELDER", "ELDER", "ARTISAN", "MASTER"]
+ADJ = ["새벽", "골목", "든든한", "느긋한", "푸근한", "정직한", "옛날", "단골", "시장통", "숨은", "한입", "배부른", "퇴근길", "주말", "혼밥", "국물", "고소한", "얼큰한", "담백한", "넉넉한"]
+NOUN = ["식객", "탐험가", "순례자", "미식가", "수집가", "대장", "장인", "손님", "여행자", "도깨비", "고수", "박사"]
+MY_REVIEW_DAYS = (3, 9, 16, 24, 33, 41, 55, 70)
+TITLE_STEPS = [(1000, "MASTER"), (600, "ARTISAN"), (300, "ELDER"), (100, "REGULAR"), (0, "SPROUT")]
+ME_TOTAL_YEARS = 637
+USER_COUNT = 120
+
+
+def title_for(years):
+    return next(t for need, t in TITLE_STEPS if years >= need)
+
+
+def make_users():
+    r = random.Random(20261020)
+    names = [a + n for a in ADJ for n in NOUN]
+    r.shuffle(names)
+    users = []
+    for i in range(USER_COUNT):
+        years = max(35, int(1480 * (0.955 ** i)) + r.randint(-9, 9))
+        users.append({"n": names[i], "y": years, "c": max(1, round(years / r.uniform(38, 58)))})
+    users.sort(key=lambda u: -u["y"])
+    return users
+
 
 FOOD_POS = [
     "{menu_ga} 정말 맛있어요. {years}년을 이어 온 맛이 느껴져요.",
@@ -86,7 +104,7 @@ def pick_rating(r):
     return 5 if x < 0.48 else 4 if x < 0.82 else 3 if x < 0.95 else 2
 
 
-def build_reviews(store, count):
+def build_reviews(store, count, users):
     r = rng_for(store["id"], "rev")
     years = max(30, 2026 - store["foundedYear"]) if store.get("foundedYear") else 30
     menus = store.get("menuItems") or []
@@ -95,7 +113,7 @@ def build_reviews(store, count):
         name = name.replace(w, "")
     region = store.get("sigungu") or store.get("sido") or "서울"
     food = store.get("categoryGroup") == "음식점"
-    nicks = r.sample(NICKS, min(count, len(NICKS)))
+    picked = r.sample(users, count)
     out = []
     used = set()
     for i in range(count):
@@ -116,7 +134,7 @@ def build_reviews(store, count):
             if not text:
                 text = r.choice(SHORT_POS)
         out.append({
-            "s": store["id"], "n": nicks[i % len(nicks)], "t": r.choice(TITLES), "r": rating, "x": text,
+            "s": store["id"], "n": picked[i]["n"], "t": title_for(picked[i]["y"]), "r": rating, "x": text,
             "v": 1 if r.random() < 0.7 else r.randint(2, 4), "d": r.randint(1, 120),
         })
     out.sort(key=lambda x: x["d"])
@@ -215,17 +233,60 @@ def photo_story(store, years, seed):
     return img
 
 
+MY_TEXTS = [
+    "{menu} 한 그릇에 {years}년의 세월이 담겨 있더라고요. 도장 받고 나오는 길이 뿌듯했어요.",
+    "{name}에서 먹은 {menu}, 노포의 맛이 뭔지 알겠어요. 다음에 또 올게요.",
+    "{region}에 오면 꼭 들르는 곳이에요. {menu} 추천합니다.",
+    "{menu}은 변함없이 맛있었어요. 사장님 인심도 넉넉했어요.",
+    "처음 와 봤는데 {menu} 덕분에 하루가 든든했어요.",
+    "오래된 가게 특유의 분위기가 좋아요. {menu} 잘 먹었습니다.",
+    "역시 {years}년 가게예요. {menu}에서 깊은 맛이 났어요.",
+    "단골 하고 싶은 집이에요. {menu} 꼭 드셔 보세요.",
+]
+
+
+def years_of(store):
+    return max(30, 2026 - store["foundedYear"]) if store.get("foundedYear") else 30
+
+
+def build_me(seoul):
+    """내 패스포트 시연용: 서울 가게 중 세월 합이 정확히 637년이 되는 조합과 내 리뷰."""
+    r = random.Random(637)
+    pool = [s for s in seoul if s.get("foundedYear") and s.get("lat") is not None and s.get("categoryGroup") == "음식점"]
+    songpa = [s for s in pool if (s.get("sigungu") or "").startswith("송파")]
+    other = [s for s in pool if s not in songpa]
+    for _ in range(200000):
+        pick = r.sample(songpa, 3) + r.sample(other, r.randint(6, 9))
+        if sum(years_of(s) for s in pick) == ME_TOTAL_YEARS:
+            break
+    else:
+        raise SystemExit("637년 조합을 못 찾음")
+    visits, mine = [], []
+    days = sorted(r.sample(range(2, 400), len(pick)))
+    for i, s in enumerate(pick):
+        visits.append({"s": s["id"], "y": years_of(s), "d": days[i], "c": 1 if i % 3 else 2})
+    for i, s in enumerate(pick[:8]):
+        name = s["name"].replace("주식회사 ", "")
+        menu = (s.get("menuItems") or ["대표 메뉴"])[0]
+        mine.append({
+            "s": s["id"], "n": name, "r": 5 if i % 3 else 4, "d": MY_REVIEW_DAYS[i],
+            "x": MY_TEXTS[i].format(menu=menu, years=years_of(s), name=name, region=s.get("sigungu") or "서울"),
+        })
+    return {"totalYears": ME_TOTAL_YEARS, "visits": visits, "reviews": mine}
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     stores = json.load(open(STORES, encoding="utf-8"))["stores"]
     seoul = [s for s in stores if s.get("sido") == "서울"]
+    users = make_users()
     reviews, photos = [], {}
     os.makedirs(OUT_IMG, exist_ok=True)
     for s in seoul:
         songpa = (s.get("sigungu") or "").startswith("송파")
-        reviews += build_reviews(s, 10 if songpa else 3)
+        reviews += build_reviews(s, 15 if songpa else 8, users)
         if songpa:
-            years = max(30, 2026 - s["foundedYear"]) if s.get("foundedYear") else 30
+            years = years_of(s)
             urls = []
             for n, fn in enumerate((photo_sign, photo_menu, photo_story), 1):
                 img = fn(s, years, int(hashlib.sha1(s["id"].encode()).hexdigest()[:8], 16) + n)
@@ -233,12 +294,19 @@ def main():
                 img.save(os.path.join(OUT_IMG, name), quality=82, optimize=True)
                 urls.append("file:///android_asset/demo/" + name)
             photos[s["id"]] = urls
+    me = build_me(seoul)
+    # 명예의 전당의 탐방 수·리뷰 수는 실제 생성된 리뷰 수와 맞춘다
+    counts = {}
+    for rv in reviews:
+        counts[rv["n"]] = counts.get(rv["n"], 0) + 1
+    for u in users:
+        u["rc"] = counts.get(u["n"], 0)
     with open(OUT_REVIEWS, "w", encoding="utf-8") as f:
-        json.dump({"version": 1, "note": "시연용 예시 데이터(실제 사용자 리뷰 아님)", "reviews": reviews}, f, ensure_ascii=False, separators=(",", ":"))
+        json.dump({"version": 2, "note": "시연용 예시 데이터(실제 사용자 리뷰 아님)", "users": users, "reviews": reviews, "me": me}, f, ensure_ascii=False, separators=(",", ":"))
     with open(OUT_PHOTOS, "w", encoding="utf-8") as f:
         json.dump(photos, f, ensure_ascii=False, indent=1)
     size = sum(os.path.getsize(os.path.join(OUT_IMG, x)) for x in os.listdir(OUT_IMG))
-    print(f"서울 가게 {len(seoul)}곳, 리뷰 {len(reviews)}개, 송파구 {len(photos)}곳 사진 {len(photos) * 3}장({size // 1024}KB) -> {OUT_REVIEWS}")
+    print(f"서울 가게 {len(seoul)}곳, 리뷰 {len(reviews)}개, 사용자 {len(users)}명, 내 도장 {len(me['visits'])}개(세월 {sum(v['y'] for v in me['visits'])}년), 내 리뷰 {len(me['reviews'])}개, 송파구 {len(photos)}곳 사진 {len(photos) * 3}장({size // 1024}KB)")
 
 
 if __name__ == "__main__":

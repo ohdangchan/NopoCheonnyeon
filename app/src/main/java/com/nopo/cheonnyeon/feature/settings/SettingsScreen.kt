@@ -124,6 +124,16 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
                     Text(stringResource(R.string.settings_demo_data), Modifier.weight(1f), color = c.ink)
                     androidx.compose.material3.Switch(demoOn, { v -> demoScope.launch { container.settings.setDemoData(v) } })
                 }
+                val demoAdded = androidx.compose.runtime.remember { mutableStateOf<Int?>(null) }
+                NopoButton(stringResource(R.string.settings_demo_passport_fill), {
+                    demoScope.launch { demoAdded.value = container.visits.seedDemoVisits(container.demoReviews.load().myVisits) }
+                }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                NopoButton(stringResource(R.string.settings_demo_passport_clear), {
+                    demoScope.launch { container.visits.clearDemoVisits(); demoAdded.value = -1 }
+                }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                demoAdded.value?.let { n ->
+                    Text(if (n < 0) stringResource(R.string.settings_demo_passport_cleared) else stringResource(R.string.settings_demo_passport_done, n), color = c.primary, style = NopoTheme.typography.bodySmall)
+                }
                 devTools()
             }
         }

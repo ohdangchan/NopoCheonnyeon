@@ -43,6 +43,7 @@ class ReviewsViewModelTest {
         demo: List<ReviewItem>? = null,
     ): ReviewsViewModel {
         coEvery { dao.byStore("BN-1") } returns visit
+        coEvery { dao.demoVisitCount() } returns 0
         coEvery { reviews.summary("BN-1") } returns summary
         coEvery { reviews.page("BN-1", any()) } returns AppResult.Success(ReviewPage(emptyList(), null, false))
         coEvery { reviews.mine("BN-1") } returns AppResult.Success(myReview())

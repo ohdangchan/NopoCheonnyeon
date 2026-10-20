@@ -113,13 +113,15 @@ class VisitRepository(
             val year = now.atZone(SeoulZone).year
             val before = visitDao.observeAll().first()
             val totalBefore = before.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded }
-            val firstVisit = before.none { it.storeId == store.id }
+            // 시연용 패스포트 도장(DEMO)이 있는 가게를 실제로 인증하면 그 도장은 실제 첫 방문으로 바꾼다
+            val firstVisit = before.none { it.storeId == store.id && it.method != DEMO_METHOD }
             val years = YearsCalculator.yearsAtVisit(store.foundedYear, year)
             val awarded = if (firstVisit && !store.isTest) years else 0
             val totalAfter = totalBefore + awarded
             val titleUp = TitlePolicy.titleUp(totalBefore, totalAfter)
             lateinit var result: AwardResult
             inTransaction {
+                if (before.any { it.storeId == store.id && it.method == DEMO_METHOD }) visitDao.delete(store.id)
                 visitDao.record(store.id, years, method.name, now.toEpochMilli())
                 val saved = visitDao.byStore(store.id)!!
                 val grade = StampGradePolicy.gradeFor(saved.yearsAwarded)
@@ -214,6 +216,25 @@ class VisitRepository(
         }
     }
 
+    /** 시연용 패스포트: 서버에 올리지 않는 도장(synced=true, 방법 DEMO)을 넣는다. 이미 실제 기록이 있는 가게는 건드리지 않는다. */
+    suspend fun seedDemoVisits(visits: List<com.nopo.cheonnyeon.data.remote.DemoVisit>): Int = withContext(dispatchers.io) {
+        val now = clock.now().toEpochMilli()
+        var added = 0
+        inTransaction {
+            for (v in visits) {
+                if (visitDao.byStore(v.storeId) != null) continue
+                val first = now - v.daysAgo * DAY_MS
+                visitDao.put(com.nopo.cheonnyeon.data.local.MyVisitEntity(v.storeId, v.years, DEMO_METHOD, first, first + (v.visitCount - 1) * 3 * DAY_MS, v.visitCount, synced = true))
+                added++
+            }
+        }
+        added
+    }
+
+    suspend fun clearDemoVisits() = withContext(dispatchers.io) { visitDao.deleteDemoVisits() }
+
+    suspend fun demoVisitCount(): Int = withContext(dispatchers.io) { visitDao.demoVisitCount() }
+
     /** 테스트 가게의 방문 기록을 지운다. 서버에는 올라간 적이 없다 (FR-TST-03) */
     suspend fun clearTestData() = withContext(dispatchers.io) { visitDao.deleteTestVisits() }
 
@@ -290,6 +311,8 @@ class VisitRepository(
 
     private companion object {
         const val TYPE_VISIT = "VISIT"
+        const val DEMO_METHOD = com.nopo.cheonnyeon.data.remote.DemoReviews.METHOD_DEMO
+        const val DAY_MS = 86_400_000L
         const val TYPE_STATS = "STATS"
         const val SYNC_TIMEOUT_MS = 15_000L
         const val MAX_DENIED_ATTEMPTS = 10

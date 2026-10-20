@@ -16,6 +16,7 @@ object Routes {
     const val PROFILE = "profile/{uid}"
     fun profile(uid: String) = "profile/$uid"
     const val DIAGNOSTICS = "diagnostics"
+    const val HALL = "hall"
 
     /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
     val signedOutRoutes = setOf(LOGIN, SIGN_UP, RESET)

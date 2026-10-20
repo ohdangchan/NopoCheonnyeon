@@ -90,7 +90,12 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val stats = container.storeStats.get(store.id).valueOrNull
             val mine = if (eligibility == ReviewEligibility.OK) container.reviews.mine(store.id).valueOrNull else null
             lastPage = page.valueOrNull
-            val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
+            val demoOn = container.settings.demoData.first()
+            val demo = if (demoOn) {
+                // 시연용 패스포트로 이 가게에 남긴 내 리뷰가 있으면 맨 앞에 둔다
+                val mineDemo = if (container.database.myVisitDao().demoVisitCount() > 0) container.demoReviews.myReviews(container.auth.currentNickname().orEmpty(), store.id) else emptyList()
+                mineDemo + container.demoReviews.forStore(store.id)
+            } else emptyList()
             _state.update {
                 it.copy(
                     loading = false,

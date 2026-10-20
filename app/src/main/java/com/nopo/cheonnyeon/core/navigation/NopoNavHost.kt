@@ -74,7 +74,7 @@ fun NopoNavHost(container: AppContainer) {
                 else -> Routes.LOGIN
             }
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current == Routes.HALL || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }
@@ -96,7 +96,7 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.signOut() }) }
         composable(Routes.HOME) {
-            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) })
+            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) }, onOpenHall = { nav.navigate(Routes.HALL) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
@@ -119,6 +119,10 @@ fun NopoNavHost(container: AppContainer) {
             val uid = entry.arguments?.getString("uid").orEmpty()
             val vm: ProfileViewModel = viewModel(key = "profile_$uid", factory = factoryOf { ProfileViewModel(container, uid) })
             ProfileScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+        }
+        composable(Routes.HALL) {
+            val vm: com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel(container) })
+            com.nopo.cheonnyeon.feature.passport.HallOfFameScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen() }
     }
