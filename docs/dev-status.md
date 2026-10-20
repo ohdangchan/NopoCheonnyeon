@@ -1,8 +1,39 @@
 # 개발 현황·인수인계 (이어서 개발하는 에이전트용)
 
-> 최종 갱신: 2026-10-20 (전체 문서·코드 재독 후 작성). **이 문서를 먼저 읽고**, 그다음 `CLAUDE.md` → `docs/nopo-01-PRD.md` 순서로 읽는다.
+> 최종 갱신: 2026-10-21 (맨 위 "★ 최신 인수인계" 참고; 아래 본문 일부는 2026-10-20 기준이라 낡았을 수 있음). **이 문서를 먼저 읽고**, 그다음 `CLAUDE.md` → `docs/nopo-01-PRD.md` 순서로 읽는다.
 > 목표: **오늘 오후 해커톤에서 공기계에 설치해 심사위원에게 시연**. 기획된 기능 전부 구현 + QA 체크리스트 통과 문서(`docs/qa-report.md`).
 > 이 문서 6장 "코드 점검에서 찾은 차이·미구현"은 이번 재독에서 새로 확인한 것이다. 문서와 코드가 다르면 **코드가 현재 사실**이고, 기준 우선순위는 `CLAUDE.md`의 PRD → 아키텍처 → 스토리 순이다.
+
+## ★ 최신 인수인계 (2026-10-21) — 가장 먼저 읽을 것
+
+**상태:** P0·P1 요구사항과 이번 APK 범위의 기능은 모두 구현·푸시됨(최신 커밋은 `git log` 참고). 단위 테스트 약 275개·lint 오류 0. 남은 것은 대부분 **사용자만 할 수 있는 실기기 확인**과 공개 배포 전 정리다. 상세 변경 이력은 아래 10장 10-6~10-18.
+
+**한 줄 요약(최근 세션):** 시연용 리뷰·사진·패스포트, 명예의 전당, 위치 시연 가게(시험용 가게), 공유 카드+QR, 칭호 11단계(100년 단위)+도감, 도장·승급 연출, 리뷰 사진 3장(카메라+앨범)·가게당 5개 리뷰, Gemini AI(메뉴 룰렛·리뷰 분석), Google Places 대표 사진.
+
+### 기기·계정
+- 폰 ① Galaxy Z Fold SM-F971N(Android 17, adb `R5KL806MA4W`, 사용자 본인 폰 — 조작 중 알림이 뜨면 자동 조작 중단) ② **Galaxy S9+ SM-G965N(Android 10, adb `212340b20e017ece`, 1080×2220) — 시험 전용 새 폰.** 둘 다 디버그/릴리스 APK가 같은 릴리스 키로 서명돼 덮어 설치(`adb install -r`)된다.
+- S9+에는 시험 계정(닉네임 `s9t5017`)이 로그인돼 있다. 자격 증명은 이 PC의 에이전트 작업 폴더에만 있고 저장소·문서에 없다. 사용자 본인 계정(`nptNew1`)으로 바꾸려면 설정에서 로그아웃 후 로그인.
+- 폰 자동 조작은 `uiautomator dump`(텍스트)만 쓴다(스크린샷은 위치 노출 위험 — 연출 화면 등 안전한 화면에서만 예외). 스크립트는 임시 폴더라 저장소에 없음: 텍스트 탭/스크롤은 `adb shell uiautomator dump` + `input tap` 조합으로 쉽게 다시 만든다(한글 입력은 adb로 불가 → 영문·숫자만).
+
+### 빌드·키 (중요)
+- Gemini 키는 사용자 환경변수 `GEMINI_API_KEY`. gradle은 `providers.environmentVariable`로 읽어 `BuildConfig.GEMINI_API_KEY`에 넣는다(없으면 AI 기능이 꺼지고 안내만). 셸에 변수가 안 보이면: `export GEMINI_API_KEY="$(powershell -NoProfile -Command "[Environment]::GetEnvironmentVariable('GEMINI_API_KEY','User')" | tr -d '\r\n')"` 후 `./gradlew.bat ...`. Google Places 키는 `GOOGLE_PLACES_KEY`(`tools/fetch_google_places.py`, 사진은 `.gitignore`라 새로 받아야 함). **키를 코드·문서·로그·채팅에 쓰지 말 것.**
+- 릴리스 빌드(`assembleRelease`, lint 포함 5~12분)는 메모리를 많이 써서 PC가 불안정할 때 주의(백그라운드 실행 후 완료 알림 대기). APK 약 85MB(arm64).
+- Firestore 규칙은 `firebase/firestore.rules` → `cd firebase && firebase deploy --only firestore:rules --project nopocheonnyeon`(배포됨, 사용자 승인 하에 진행). 규칙 시험 `tools/rules-test/`는 에뮬레이터 jar를 내려받지 못해 **아직 한 번도 실행하지 못함** — 다운로드가 되는 PC에서 `cd firebase && firebase emulators:exec --only firestore "node ../tools/rules-test/rules.test.js"` (18개 시나리오, 실패하면 규칙 또는 시험을 고칠 것).
+
+### 사용자가 직접 해야 하는 일 (막힘)
+1. 영수증 실촬영·인증 성공/실패/24시간 경과/타인 영수증, 인증 직후 "평점·리뷰 남기기" 자동 열림, 리뷰 사진 카메라·앨범 3장, 한 가게 리뷰 여러 개(5개 한도), 새 서버 규칙으로 **실제 가게 리뷰 저장이 되는지**(규칙을 강화해 두고 아직 실기기 저장을 못 봄 → 거부되면 `firestore.rules`의 `validReview()`부터 의심).
+2. 공개 배포 전: **Gemini 키 제한**(앱이 키를 품고 있음 — Generative Language API로 제한·예산 알림, 가능하면 Firebase AI Logic/서버 경유), Google Places 사진 약관(저장·재배포 제한), 공유 카드 QR 주소(`platform/share/ShareConfig.DOWNLOAD_URL`, 지금은 비공개 저장소 릴리스 페이지라 남들은 못 엶), 서명 키 백업 2곳, 노출된 Stitch/네이버 키 폐기, 시연 후 예시 데이터 끄기(설정 앱 정보 5탭 > 개발자 도구).
+3. 구형 기기(S9+)에서 큰 글씨·다크 모드·Monkey(개인 폰이 아니면 `adb shell monkey -p com.nopo.cheonnyeon --throttle 100 -v 5000`).
+
+### 알려진 한계·다음 후보 (우선순위 순)
+1. QA 에이전트 지적 중 미해결: 화면 회전 시 선택한 리뷰 사진 유실(용량 때문에 Bundle 미사용 → ViewModel로 옮기기), 리뷰 목록이 사진 base64 전체를 읽음(썸네일 필드 도입), `reviewCount`·`totalYears` 위조 가능(Cloud Functions 필요).
+2. 룰렛·분석은 키가 있는 빌드에서만 동작. 모델은 `GeminiClient.DEFAULT_MODEL`(`gemini-3.1-flash-lite`) 한 곳. 응답 지연·한도 초과 시 `E_AI_FAILED`.
+3. Stitch 시안 보강(지도 레이어·북마크, 패스포트 타임라인, 화면별 @Preview 확대), 화면별 상태 분리, 큰 글씨·TalkBack 점검, 성능 측정(콜드 스타트 2.5초 등).
+4. 범위 밖(PRD P2): QR 인증, 서버 판정, 사장님 상생, 추모관 등(`nopo-12-unimplemented.md`).
+
+### 작업 규칙 (사용자 지시 요약)
+- 모든 응답·진행 안내는 **한국어**. 사용자에게 묻지 말고 개발을 이어가되, 키·비밀번호는 노출하지 않는다. 컴퓨터가 꺼질 수 있어 **큰 단계마다 커밋·푸시**(커밋 끝에 `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`). 스토리 끝나면 `nopo-qa` 서브에이전트로 검증. 한도(주간 99%/세션 95%)에 닿으면 푸시·이 문서 갱신 후 대기.
+- 도구 함정: Git-Bash heredoc에 한글/따옴표가 섞이면 깨진다 → 스크립트는 파일로 만들어 실행. `adb` 경로 인자에 `MSYS_NO_PATHCONV=1`. 다중 디스플레이(폴드)에서 `screencap`은 PNG 앞에 경고 텍스트가 붙으니 `\x89PNG` 위치부터 잘라 저장.
 
 ## 0. 사용자 지시 모음 (시간순, 그대로 따를 것)
 **2026-10-20 이전 세션에서 받은 지시 (이 문서 이전 판에서 옮김)**
@@ -64,6 +95,7 @@
 ## 3. 비밀 파일 (저장소에 없음, 이 PC에만 있음)
 | 파일 | 용도 | 없으면 |
 |---|---|---|
+| 환경변수 `GEMINI_API_KEY` / `GOOGLE_PLACES_KEY` | AI 기능(BuildConfig 주입) / 대표 사진 받기 | AI 기능 꺼짐 / 사진 못 받음 |
 | `local.properties` | `NAVER_MAP_KEY_ID`, `NAVER_MAP_CLIENT_SECRET` (`local.properties.sample` 참고) | 지도 인증 실패 |
 | `app/google-services.json` | Firebase 설정 (`firebase apps:sdkconfig ANDROID 1:401283218421:android:1cf2a80d59a68bf853bebc -o app/google-services.json`) | 빌드 실패 |
 | `keystore.properties` + `C:/Users/HB_OPERATION_NICK/AndroidStudioProjects/jks/nopo_release_key` | 릴리스 서명 (샘플: `app/keystore.properties.sample`) | 릴리스가 디버그 키로 서명됨 |
