@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <string name="app_name">노포천년</string>
 
     <!-- 칭호 -->
@@ -169,8 +169,6 @@
 
     <!-- 임시 화면 (E4~E5에서 교체) -->
     <string name="placeholder_splash">노포천년</string>
-    <string name="placeholder_login">로그인 화면 (준비 중)</string>
-    <string name="placeholder_home">홈 화면 (준비 중)</string>
 
     <!-- 진단 사진 탭 (공식 사진 시험) -->
     <string name="diag_tab_photo">사진</string>
@@ -225,8 +223,6 @@
     <string name="tab_map">지도 탐색</string>
     <string name="tab_passport">내 패스포트</string>
     <string name="tab_settings">설정</string>
-    <string name="tab_passport_placeholder">패스포트 (준비 중)</string>
-    <string name="tab_settings_placeholder">설정 (준비 중)</string>
     <string name="map_search_hint">가게 이름, 지역, 메뉴로 찾기</string>
     <string name="map_chip_food">음식점만</string>
     <string name="map_chip_baeknyeon">백년가게</string>
@@ -237,7 +233,6 @@
     <string name="map_my_location">내 위치</string>
     <string name="map_locating">찾는 중…</string>
     <string name="map_my_years">내 세월 %1$d년</string>
-    <string name="map_zoom_in_hint">지도를 확대하면 노포가 보여요</string>
     <string name="map_marker_caption">%1$d년 %2$s</string>
     <string name="badge_baeknyeon">백년가게</string>
     <string name="badge_orae">오래가게</string>
@@ -363,9 +358,7 @@
     <string name="profile_not_found">찾을 수 없는 사용자예요</string>
     <string name="profile_retry">다시 불러오기</string>
     <string name="profile_stats">세월 %1$d년 · 방문 %2$d회 · 리뷰 %3$d개</string>
-    <string name="profile_visits">다녀온 노포</string>
     <string name="profile_no_visits">아직 다녀온 노포가 없어요</string>
-    <string name="profile_reviews">남긴 평점</string>
     <string name="profile_no_reviews">아직 남긴 평점이 없어요</string>
     <string name="passport_tab_stamps">도장</string>
     <string name="passport_tab_reviews">내 리뷰</string>

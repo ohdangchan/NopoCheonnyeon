@@ -91,6 +91,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
 private fun InfoReport(vm: StoreDetailViewModel) {
     val c = NopoTheme.colors
     val context = LocalContext.current
+    val sentText = stringResource(R.string.store_report_sent)
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     var open by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf(false) }
     var message by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
@@ -109,7 +110,7 @@ private fun InfoReport(vm: StoreDetailViewModel) {
                             open = false
                             scope.launch {
                                 val r = vm.reportInfo(label)
-                                message = if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) context.getString(R.string.store_report_sent)
+                                message = if (r is com.nopo.cheonnyeon.core.common.AppResult.Success) sentText
                                 else r.errorOrNull?.message(context)
                             }
                         }) { Text(label) }

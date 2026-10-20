@@ -117,6 +117,7 @@ private fun DeviceInfo() {
     val color = NopoTheme.colors.onSign
     val context = androidx.compose.ui.platform.LocalContext.current
     val lines = remember { deviceInfoLines(context) }
+    val copiedText = stringResource(R.string.diag_copied)
     lines.forEach { Text(it, style = style, color = color) }
     Text(
         stringResource(R.string.diag_copy),
@@ -128,7 +129,7 @@ private fun DeviceInfo() {
                 val text = (lines + lastMeasurementLines(context)).joinToString("\n")
                 val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                 cm.setPrimaryClip(android.content.ClipData.newPlainText("nopo-diagnostics", text))
-                android.widget.Toast.makeText(context, context.getString(R.string.diag_copied), android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, copiedText, android.widget.Toast.LENGTH_SHORT).show()
             }
             .padding(vertical = NopoTheme.spacing.sm),
     )
