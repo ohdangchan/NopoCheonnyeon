@@ -64,7 +64,7 @@ data class MapUiState(
 class MapViewModel(private val container: AppContainer) : ViewModel() {
     private val local = MutableStateFlow(MapUiState())
     private val allStores = MutableStateFlow<List<Store>>(emptyList())
-    private val location = FusedLocationAdapter(container.appContext)
+    private val location by lazy { FusedLocationAdapter(container.appContext) }
 
     val state: StateFlow<MapUiState> = combine(
         local,

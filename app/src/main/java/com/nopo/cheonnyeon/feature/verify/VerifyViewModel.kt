@@ -58,9 +58,13 @@ class VerifyViewModel(
     private val container: AppContainer,
     private val storeId: String,
     private val saved: SavedStateHandle,
+    /** 기기 시계 오차(ms)를 재는 함수. 시험에서는 바꿔 끼운다 */
+    private val measureClockSkew: suspend () -> Long? = { com.nopo.cheonnyeon.platform.network.ClockSkewChecker().measureMillis() },
 ) : ViewModel() {
-    private val recognizer = MlKitKoreanRecognizer()
-    private val location = FusedLocationAdapter(container.appContext)
+    // 글자 인식기·위치는 쓸 때 만든다 (ViewModel을 단위 시험에서 만들 수 있게)
+    private val recognizerLazy = lazy { MlKitKoreanRecognizer() }
+    private val recognizer get() = recognizerLazy.value
+    private val location by lazy { FusedLocationAdapter(container.appContext) }
     private val _state = MutableStateFlow(
         VerifyUiState(
             step = saved.get<String>(KEY_STEP)?.let(VerifyStep::valueOf) ?: VerifyStep.RECEIPT,
@@ -72,7 +76,7 @@ class VerifyViewModel(
 
     init {
         viewModelScope.launch {
-            val skew = com.nopo.cheonnyeon.platform.network.ClockSkewChecker().measureMillis()
+            val skew = measureClockSkew()
             if (skew != null && com.nopo.cheonnyeon.core.util.ClockSkew.exceedsWarning(skew)) {
                 _state.update { it.copy(clockSkewMinutes = kotlin.math.abs(skew) / 60_000L) }
             }
@@ -238,7 +242,9 @@ class VerifyViewModel(
         null
     }
 
-    override fun onCleared() = recognizer.close()
+    override fun onCleared() {
+        if (recognizerLazy.isInitialized()) recognizer.close()
+    }
 
     private companion object {
         const val KEY_STEP = "step"
