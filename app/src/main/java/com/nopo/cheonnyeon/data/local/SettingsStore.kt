@@ -31,27 +31,33 @@ class SettingsStore(private val context: Context) {
     /** 글자 확인이 3번 실패해도 30m 안이면 위치 확인 도장을 허용 (FR-VER-11) */
     val allowLocationOnly: Flow<Boolean> = context.dataStore.data.map { it[locationOnlyKey] ?: com.nopo.cheonnyeon.domain.rule.VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL }
 
-    /** 시험용 가게에 남긴 내 리뷰(별점|시각|글). 시험용 가게는 서버에 없어서 이 기기에만 저장한다 */
-    suspend fun testReview(storeId: String): Triple<Int, Long, String>? {
-        val raw = context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] ?: return null
-        val parts = raw.split("|", limit = 3)
-        if (parts.size < 3) return null
-        return Triple(parts[0].toIntOrNull() ?: return null, parts[1].toLongOrNull() ?: return null, parts[2])
+    /** 시험용 가게에 남긴 내 리뷰들(최신순). 시험용 가게는 서버에 없어서 이 기기에만 저장한다. 예전 한 개짜리 기록은 읽을 때 옮겨 담는다 */
+    suspend fun testReviews(storeId: String): List<TestReview> {
+        val prefs = context.dataStore.data.first()
+        val list = prefs[stringPreferencesKey(TEST_REVIEW_LIST_PREFIX + storeId)]?.let { raw ->
+            runCatching { testJson.decodeFromString<List<TestReview>>(raw) }.getOrNull()
+        }
+        if (list != null) return list.sortedByDescending { it.at }
+        val legacy = prefs[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)]?.split("|", limit = 3)
+        if (legacy == null || legacy.size < 3) return emptyList()
+        val photos = prefs[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]?.split("\n")?.filter { it.isNotBlank() }.orEmpty()
+        return listOf(TestReview("local_legacy", legacy[0].toIntOrNull() ?: return emptyList(), legacy[1].toLongOrNull() ?: return emptyList(), legacy[2], photos))
     }
 
-    suspend fun setTestReview(storeId: String, rating: Int, text: String, atMillis: Long, photos: List<String> = emptyList()) {
+    /** 같은 id가 있으면 고치고, 없으면 새로 쌓는다 */
+    suspend fun saveTestReview(storeId: String, review: TestReview) {
+        val current = testReviews(storeId).filter { it.id != review.id } + review
         context.dataStore.edit {
-            it[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)] = "$rating|$atMillis|$text"
-            if (photos.isNotEmpty()) it[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)] = photos.joinToString("\n") else it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
+            it[stringPreferencesKey(TEST_REVIEW_LIST_PREFIX + storeId)] = testJson.encodeToString(current)
+            it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId))
+            it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
         }
     }
 
-    /** 시험용 가게 내 리뷰의 사진들(base64 WebP). 없으면 빈 목록 */
-    suspend fun testReviewPhotos(storeId: String): List<String> =
-        context.dataStore.data.first()[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]?.split("\n")?.filter { it.isNotBlank() }.orEmpty()
-
-    suspend fun deleteTestReview(storeId: String) {
+    suspend fun deleteTestReview(storeId: String, reviewId: String) {
+        val rest = testReviews(storeId).filter { it.id != reviewId }
         context.dataStore.edit {
+            it[stringPreferencesKey(TEST_REVIEW_LIST_PREFIX + storeId)] = testJson.encodeToString(rest)
             it.remove(stringPreferencesKey(TEST_REVIEW_PREFIX + storeId))
             it.remove(stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId))
         }
@@ -71,5 +77,11 @@ class SettingsStore(private val context: Context) {
     private companion object {
         const val TEST_REVIEW_PREFIX = "test_review_"
         const val TEST_REVIEW_PHOTO_PREFIX = "test_review_photo_"
+        const val TEST_REVIEW_LIST_PREFIX = "test_review_list_"
+        private val testJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
     }
 }
+
+/** 시험용 가게에 이 기기에서 남긴 리뷰 한 개 */
+@kotlinx.serialization.Serializable
+data class TestReview(val id: String, val rating: Int, val at: Long, val text: String, val photos: List<String> = emptyList())

@@ -68,7 +68,8 @@ service cloud.firestore {
       function validReview() {
         let d = request.resource.data;
         return d.uid == request.auth.uid
-          && reviewId == d.storeId + '_' + request.auth.uid
+          && (reviewId == d.storeId + '_' + request.auth.uid                               // 예전 형식(가게당 1개)
+              || reviewId.matches(d.storeId + '_' + request.auth.uid + '_[0-9]{10,16}'))  // 가게_uid_시각: 여러 번 쓸 수 있다
           && d.rating is int && d.rating >= 1 && d.rating <= 5
           && d.text is string && d.text.size() <= 500
           && (!('photo' in d) || (d.photo is string && d.photo.size() <= 170000))   // 예전 한 장짜리 필드

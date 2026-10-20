@@ -65,7 +65,8 @@ data class ReviewsUiState(
     val summary: ReviewSummary? = null,
     val items: List<ReviewItem> = emptyList(),
     val hasMore: Boolean = false,
-    val mine: ReviewItem? = null,
+    /** 이 가게에 내가 남긴 리뷰들(최신순) */
+    val mine: List<ReviewItem> = emptyList(),
     val eligibility: ReviewEligibility = ReviewEligibility.NOT_VISITED,
     val error: AppError? = null,
     val saving: Boolean = false,
@@ -112,7 +113,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val summary = container.reviews.summary(store.id)
             val page = container.reviews.page(store.id)
             val stats = container.storeStats.get(store.id).valueOrNull
-            val mine = if (eligibility == ReviewEligibility.OK) container.reviews.mine(store.id).valueOrNull else null
+            val mine = if (eligibility == ReviewEligibility.OK) container.reviews.mine(store.id).valueOrNull.orEmpty() else emptyList()
             lastPage = page.valueOrNull
             val demoOn = container.settings.demoData.first()
             val demo = if (demoOn) {
@@ -140,27 +141,28 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     private suspend fun refreshTestStore() {
         val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
         val visited = container.database.myVisitDao().byStore(store.id) != null
-        val mine = if (visited) loadTestReview() else null
-        val own = listOfNotNull(mine)
+        val own = if (visited) loadTestReviews() else emptyList()
         val summary = if (own.isEmpty()) com.nopo.cheonnyeon.data.remote.DemoReviews.merge(null, demo)
         else com.nopo.cheonnyeon.data.remote.DemoReviews.merge(ReviewSummary(own.size, own.sumOf { it.rating }.toDouble() / own.size), demo)
         _state.update {
             it.copy(
-                loading = false, summary = summary, demoItems = demo, items = own, mine = mine, hasMore = false, localOnly = true,
+                loading = false, summary = summary, demoItems = demo, items = own, mine = own, hasMore = false, localOnly = true,
                 stats = mergeDemoStats(null, demo),
                 eligibility = if (visited) ReviewEligibility.OK else ReviewEligibility.NOT_VISITED, error = null,
             )
         }
     }
 
-    private suspend fun loadTestReview(): ReviewItem? {
-        val (rating, at, text) = container.settings.testReview(store.id) ?: return null
+    private suspend fun loadTestReviews(): List<ReviewItem> {
         val visits = container.database.myVisitDao().byStore(store.id)?.visitCount ?: 1
-        return ReviewItem(
-            id = "local_" + store.id, storeId = store.id, storeName = store.name, uid = container.auth.currentUid.orEmpty(),
-            nickname = container.auth.currentNickname().orEmpty(), titleId = "", rating = rating, text = text, visitCount = visits, updatedAtMillis = at,
-            photos = container.settings.testReviewPhotos(store.id),
-        )
+        val nickname = container.auth.currentNickname().orEmpty()
+        val uid = container.auth.currentUid.orEmpty()
+        return container.settings.testReviews(store.id).map { r ->
+            ReviewItem(
+                id = r.id, storeId = store.id, storeName = store.name, uid = uid, nickname = nickname, titleId = "",
+                rating = r.rating, text = r.text, visitCount = visits, updatedAtMillis = r.at, photos = r.photos,
+            )
+        }
     }
 
     fun loadMore() {
@@ -181,13 +183,15 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         }
     }
 
-    fun save(rating: Int, text: String, photos: List<String>, onDone: () -> Unit) {
+    /** [reviewId]가 null이면 새 리뷰로 쌓고, 있으면 그 리뷰를 고친다 */
+    fun save(reviewId: String?, rating: Int, text: String, photos: List<String>, onDone: () -> Unit) {
         if (_state.value.saving) return
         if (store.isTest) {
             viewModelScope.launch {
                 val check = com.nopo.cheonnyeon.domain.rule.ReviewRules.validate(rating, text)
                 if (check is ReviewCheck.Valid) {
-                    container.settings.setTestReview(store.id, check.rating, check.text, container.clock.now().toEpochMilli(), photos)
+                    val now = container.clock.now().toEpochMilli()
+                    container.settings.saveTestReview(store.id, com.nopo.cheonnyeon.data.local.TestReview(reviewId ?: "local_$now", check.rating, now, check.text, photos))
                     com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(check.text.isNotBlank())
                     onDone(); refresh()
                 }
@@ -199,22 +203,22 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val visit = container.database.myVisitDao().byStore(store.id)
             val total = container.database.myVisitDao().observeTotalYears().first()
             val result = container.reviews.save(
-                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, existing = _state.value.mine != null, photos = photos,
+                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, reviewId = reviewId, photos = photos,
             )
             _state.update { it.copy(saving = false, error = result.errorOrNull) }
             if (result is AppResult.Success) { com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(text.isNotBlank()); onDone(); refresh() }
         }
     }
 
-    fun delete(onDone: () -> Unit) {
+    fun delete(reviewId: String, onDone: () -> Unit) {
         if (_state.value.saving) return
         if (store.isTest) {
-            viewModelScope.launch { container.settings.deleteTestReview(store.id); onDone(); refresh() }
+            viewModelScope.launch { container.settings.deleteTestReview(store.id, reviewId); onDone(); refresh() }
             return
         }
         _state.update { it.copy(saving = true, error = null) }
         viewModelScope.launch {
-            val result = container.reviews.delete(store.id)
+            val result = container.reviews.delete(reviewId)
             _state.update { it.copy(saving = false, error = result.errorOrNull) }
             if (result is AppResult.Success) { onDone(); refresh() }
         }
@@ -238,11 +242,14 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var editing by rememberSaveable { mutableStateOf(false) }
+    /** 고치는 중인 내 리뷰 ID. null이면 새 리뷰를 쓰는 중 */
+    var editId by rememberSaveable { mutableStateOf<String?>(null) }
     var reportTarget by rememberSaveable { mutableStateOf<String?>(null) }
     val myUid = vm.myUid
     val pending by vm.pendingReview.collectAsStateWithLifecycle()
     LaunchedEffect(pending, state.loading, state.eligibility) {
         if (pending == vm.storeId && !state.loading && state.eligibility == ReviewEligibility.OK) {
+            editId = null
             editing = true
             vm.clearPendingReview()
         }
@@ -273,16 +280,19 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
             ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.SYNCING -> Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
             ReviewEligibility.OK -> NopoButton(
-                stringResource(if (state.mine != null) R.string.reviews_edit else R.string.reviews_write),
-                { editing = true },
+                stringResource(R.string.reviews_write),
+                { editId = null; editing = true },
                 style = NopoButtonStyle.Outline,
                 modifier = Modifier.fillMaxWidth(),
             )
         }
 
         if (state.localOnly) Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
-        state.items.forEach { r -> ReviewCard(r, onOpenProfile, onReport = if (r.uid != myUid) ({ reportTarget = r.id }) else null) }
-        state.demoItems.forEach { r -> ReviewCard(r, onOpenProfile, onReport = null) }
+        state.items.forEach { r ->
+            val own = r.uid == myUid
+            ReviewCard(r, onOpenProfile, onReport = if (!own) ({ reportTarget = r.id }) else null, onEdit = if (own) ({ editId = r.id; editing = true }) else null)
+        }
+        state.demoItems.forEach { r -> ReviewCard(r, onOpenProfile, onReport = null, onEdit = null) }
         if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)
         if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }
@@ -307,18 +317,18 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
 
     if (editing) {
         ReviewEditor(
-            initial = state.mine,
+            initial = state.mine.firstOrNull { it.id == editId },
             saving = state.saving,
             error = state.error,
-            onSave = { rating, text, photos -> vm.save(rating, text, photos) { editing = false } },
-            onDelete = if (state.mine != null) ({ vm.delete { editing = false } }) else null,
+            onSave = { rating, text, photos -> vm.save(editId, rating, text, photos) { editing = false } },
+            onDelete = editId?.let { id -> { vm.delete(id) { editing = false } } },
             onDismiss = { editing = false },
         )
     }
 }
 
 @Composable
-private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport: (() -> Unit)?) {
+private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport: (() -> Unit)?, onEdit: (() -> Unit)? = null) {
     val c = NopoTheme.colors
     Column(
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
@@ -336,6 +346,7 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
         if (r.text.isNotBlank()) Text(r.text, style = NopoTheme.typography.bodyMedium, color = c.ink)
         if (r.photos.isNotEmpty()) ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
         if (onReport != null) TextButton(onClick = onReport) { Text(stringResource(R.string.reviews_report)) }
+        if (onEdit != null) TextButton(onClick = onEdit) { Text(stringResource(R.string.reviews_edit)) }
     }
 }
 

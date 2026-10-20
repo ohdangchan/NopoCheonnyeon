@@ -32,6 +32,7 @@ class ReviewsViewModelTest {
     private val reviews = mockk<ReviewRepository>()
     private val storeStats = mockk<StoreStatsRepository>()
     private val dao = mockk<MyVisitDao>()
+    private lateinit var settingsRef: com.nopo.cheonnyeon.data.local.SettingsStore
 
     private fun myReview() = ReviewItem("BN-1_me", "BN-1", "백년식당", "me", "나", "SPROUT", 5, "", 1, 0L)
 
@@ -47,7 +48,7 @@ class ReviewsViewModelTest {
         every { dao.observeAll() } returns kotlinx.coroutines.flow.flowOf(emptyList())
         coEvery { reviews.summary("BN-1") } returns summary
         coEvery { reviews.page("BN-1", any()) } returns AppResult.Success(ReviewPage(emptyList(), null, false))
-        coEvery { reviews.mine("BN-1") } returns AppResult.Success(myReview())
+        coEvery { reviews.mine("BN-1") } returns AppResult.Success(listOf(myReview()))
         coEvery { storeStats.get("BN-1") } returns AppResult.Success(StoreStats(visitors = 8, revisitors = 3))
         val db = mockk<AppDatabase>()
         every { db.myVisitDao() } returns dao
@@ -70,7 +71,7 @@ class ReviewsViewModelTest {
     @Test fun `인증하지 않은 가게는 평점을 쓸 수 없고 내 리뷰를 읽지도 않는다`() {
         val vm = newVm(visit = null)
         assertEquals(ReviewEligibility.NOT_VISITED, vm.state.value.eligibility)
-        assertNull(vm.state.value.mine)
+        assertEquals(emptyList<ReviewItem>(), vm.state.value.mine)
         coVerify(exactly = 0) { reviews.mine(any()) }
     }
 
@@ -83,7 +84,7 @@ class ReviewsViewModelTest {
     @Test fun `서버에 올라간 방문이면 평점을 쓸 수 있고 내 리뷰를 불러온다`() {
         val vm = newVm(visit = MyVisitEntity("BN-1", 76, "RECEIPT", 1, 1, synced = true))
         assertEquals(ReviewEligibility.OK, vm.state.value.eligibility)
-        assertEquals(5, vm.state.value.mine?.rating)
+        assertEquals(5, vm.state.value.mine.single().rating)
     }
 
     @Test fun `F-01 재방문 통계를 상태에 담는다`() {
@@ -117,12 +118,14 @@ class ReviewsViewModelTest {
         assertEquals(0, vm.state.value.demoItems.size)
     }
 
-    private fun testStoreVm(visited: Boolean, local: Triple<Int, Long, String>? = null, visits: kotlinx.coroutines.flow.Flow<List<MyVisitEntity>> = kotlinx.coroutines.flow.flowOf(emptyList())): ReviewsViewModel {
+    private fun testStoreVm(visited: Boolean, local: List<com.nopo.cheonnyeon.data.local.TestReview> = emptyList(), visits: kotlinx.coroutines.flow.Flow<List<MyVisitEntity>> = kotlinx.coroutines.flow.flowOf(emptyList())): ReviewsViewModel {
         val testStore = Store(id = "TEST-NOPO", name = "시험식당", isTest = true)
         val settings = mockk<com.nopo.cheonnyeon.data.local.SettingsStore>()
+        settingsRef = settings
         every { settings.demoData } returns kotlinx.coroutines.flow.flowOf(true)
-        coEvery { settings.testReview("TEST-NOPO") } returns local
-        coEvery { settings.testReviewPhotos(any()) } returns emptyList()
+        coEvery { settings.testReviews("TEST-NOPO") } returns local
+        coEvery { settings.saveTestReview(any(), any()) } returns Unit
+        coEvery { settings.deleteTestReview(any(), any()) } returns Unit
         val demoRepo = mockk<com.nopo.cheonnyeon.data.remote.DemoReviews>()
         coEvery { demoRepo.forStore("TEST-NOPO") } returns listOf(demoItem(5), demoItem(3).copy(visitCount = 2))
         val visit = if (visited) MyVisitEntity("TEST-NOPO", 46, "RECEIPT", 0L, 0L, 1, false) else null
@@ -138,6 +141,7 @@ class ReviewsViewModelTest {
         every { container.demoReviews } returns demoRepo
         every { container.database } returns db
         every { container.auth } returns auth
+        every { container.clock } returns com.nopo.cheonnyeon.testutil.FixedClock()
         return ReviewsViewModel(container, testStore)
     }
 
@@ -147,13 +151,13 @@ class ReviewsViewModelTest {
         assertEquals(true, vm.state.value.localOnly)
         assertEquals(2, vm.state.value.summary?.count)
         assertEquals(StoreStats(2, 1), vm.state.value.stats)
-        assertNull(vm.state.value.mine)
+        assertEquals(emptyList<ReviewItem>(), vm.state.value.mine)
     }
 
     @Test fun `시험용 가게는 인증 뒤 이 기기에 저장한 내 리뷰가 평점에 합쳐진다`() {
-        val vm = testStoreVm(visited = true, local = Triple(4, 1000L, "맛있어요"))
+        val vm = testStoreVm(visited = true, local = listOf(com.nopo.cheonnyeon.data.local.TestReview("local_1", 4, 1000L, "맛있어요")))
         assertEquals(ReviewEligibility.OK, vm.state.value.eligibility)
-        assertEquals("맛있어요", vm.state.value.mine?.text)
+        assertEquals("맛있어요", vm.state.value.mine.single().text)
         assertEquals(3, vm.state.value.summary?.count)
         assertEquals(4.0, vm.state.value.summary!!.average!!, 0.001)
     }
@@ -167,5 +171,20 @@ class ReviewsViewModelTest {
         coEvery { dao.byStore("TEST-NOPO") } returns visit
         flow.value = listOf(visit)
         assertEquals(ReviewEligibility.OK, vm.state.value.eligibility)
+    }
+
+    @Test fun `시험용 가게에 리뷰를 또 쓰면 이전 리뷰는 그대로 두고 새로 쌓는다`() {
+        val old = com.nopo.cheonnyeon.data.local.TestReview("local_1", 4, 1000L, "첫 리뷰")
+        val vm = testStoreVm(visited = true, local = listOf(old))
+        vm.save(reviewId = null, rating = 5, text = "두 번째", photos = emptyList()) {}
+        coVerify(exactly = 1) { settingsRef.saveTestReview("TEST-NOPO", match { it.id != "local_1" && it.text == "두 번째" }) }
+        coVerify(exactly = 0) { settingsRef.deleteTestReview(any(), any()) }
+    }
+
+    @Test fun `리뷰를 고칠 때는 같은 ID로 저장한다`() {
+        val old = com.nopo.cheonnyeon.data.local.TestReview("local_1", 4, 1000L, "첫 리뷰")
+        val vm = testStoreVm(visited = true, local = listOf(old))
+        vm.save(reviewId = "local_1", rating = 3, text = "고침", photos = emptyList()) {}
+        coVerify { settingsRef.saveTestReview("TEST-NOPO", match { it.id == "local_1" && it.text == "고침" }) }
     }
 }

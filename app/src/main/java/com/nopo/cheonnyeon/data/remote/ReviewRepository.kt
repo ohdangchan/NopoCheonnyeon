@@ -71,24 +71,28 @@ class ReviewRepository(
         reviews().whereEqualTo("uid", uid).orderBy("updatedAt", Query.Direction.DESCENDING).limit(limit).get().await().documents.map(::toItem)
     }
 
-    suspend fun mine(storeId: String): AppResult<ReviewItem?> = call {
+    /** 이 가게에 내가 남긴 리뷰 전부(최신순). 한 가게에 여러 번 쓸 수 있다 */
+    suspend fun mine(storeId: String): AppResult<List<ReviewItem>> = call {
         val me = uid() ?: throw NotSignedIn()
-        val doc = reviews().document("${storeId}_$me").get().await()
-        if (doc.exists()) toItem(doc) else null
+        reviews().whereEqualTo("storeId", storeId).whereEqualTo("uid", me).get().await().documents.map(::toItem).sortedByDescending { it.updatedAtMillis }
     }
 
-    suspend fun save(storeId: String, storeName: String, rating: Int, text: String, visitCount: Int, titleId: String, existing: Boolean, photos: List<String> = emptyList()): AppResult<Unit> {
+    /**
+     * [reviewId]가 null이면 새 리뷰를 쌓고(문서 ID `가게_내uid_시각`), 있으면 그 리뷰를 고친다.
+     * 예전 형식(`가게_내uid`) 리뷰도 그 ID로 고칠 수 있다.
+     */
+    suspend fun save(storeId: String, storeName: String, rating: Int, text: String, visitCount: Int, titleId: String, reviewId: String? = null, photos: List<String> = emptyList()): AppResult<Unit> {
         val check = ReviewRules.validate(rating, text)
         if (check !is ReviewCheck.Valid) return AppError.E_NETWORK.asFailure() // 화면이 먼저 걸러서 여기엔 오지 않는다
         return call {
             val me = uid() ?: throw NotSignedIn()
             val firestore = db()
             val userRef = firestore.collection("users").document(me)
-            val ref = reviews().document("${storeId}_$me")
+            val ref = reviews().document(reviewId ?: "${storeId}_${me}_${System.currentTimeMillis()}")
             // 트랜잭션은 오프라인에서 바로 실패한다. 배치는 나중에 서버에서 거부돼 리뷰가 사라질 수 있어 쓰지 않는다 (D-12)
             firestore.runTransaction { tx ->
                 val nickname = tx.get(userRef).getString("nickname") ?: throw NotSignedIn()
-                if (existing) {
+                if (reviewId != null) {
                     tx.update(ref, mapOf("rating" to check.rating, "text" to check.text, "nickname" to nickname, "titleId" to titleId, "visitCount" to visitCount, "photos" to (photos.takeIf { it.isNotEmpty() } ?: FieldValue.delete()), "photo" to FieldValue.delete(), "updatedAt" to FieldValue.serverTimestamp()))
                 } else {
                     tx.set(
@@ -123,10 +127,11 @@ class ReviewRepository(
         Unit
     }
 
-    suspend fun delete(storeId: String): AppResult<Unit> = call {
+    /** 내 리뷰 하나 지우기. 내 리뷰가 있을 때만 지우고 개수를 줄인다 */
+    suspend fun delete(reviewId: String): AppResult<Unit> = call {
         val me = uid() ?: throw NotSignedIn()
         val firestore = db()
-        val ref = reviews().document("${storeId}_$me")
+        val ref = reviews().document(reviewId)
         val userRef = firestore.collection("users").document(me)
         firestore.runTransaction { tx ->
             // 내 리뷰가 있을 때만 지우고 개수를 줄인다 (개수가 음수로 내려가지 않게)

@@ -38,39 +38,51 @@ class ReviewRepositoryTest {
         assertEquals(AppError.E_AUTH_REQUIRED, repo(uid = null).mine("S1").errorOrNull)
     }
 
-    @Test fun `내 리뷰가 없으면 null 성공`() = runBlocking {
-        val doc = mockk<DocumentReference>()
-        val snap = mockk<DocumentSnapshot>()
+    private fun myQuery(result: com.google.android.gms.tasks.Task<com.google.firebase.firestore.QuerySnapshot>) {
+        val q1 = mockk<com.google.firebase.firestore.Query>()
+        val q2 = mockk<com.google.firebase.firestore.Query>()
         every { db.collection("reviews") } returns reviews
-        every { reviews.document("S1_me") } returns doc
-        every { doc.get() } returns Tasks.forResult(snap)
-        every { snap.exists() } returns false
+        every { reviews.whereEqualTo("storeId", "S1") } returns q1
+        every { q1.whereEqualTo("uid", "me") } returns q2
+        every { q2.get() } returns result
+    }
+
+    private fun docWith(id: String, millis: Long): DocumentSnapshot {
+        val d = mockk<DocumentSnapshot>(relaxed = true)
+        every { d.id } returns id
+        every { d.getTimestamp("updatedAt") } returns com.google.firebase.Timestamp(java.util.Date(millis))
+        every { d.getString("uid") } returns "me"
+        return d
+    }
+
+    @Test fun `내 리뷰가 없으면 빈 목록 성공`() = runBlocking {
+        val snap = mockk<com.google.firebase.firestore.QuerySnapshot>()
+        every { snap.documents } returns emptyList()
+        myQuery(Tasks.forResult(snap))
         val r = repo().mine("S1")
         assertTrue(r is AppResult.Success)
-        assertNull(r.valueOrNull)
+        assertEquals(emptyList<ReviewItem>(), r.valueOrNull)
+    }
+
+    @Test fun `한 가게에 쓴 내 리뷰는 여러 개 모두 최신순으로 나온다`() = runBlocking {
+        val snap = mockk<com.google.firebase.firestore.QuerySnapshot>()
+        every { snap.documents } returns listOf(docWith("S1_me_1", 1_000L), docWith("S1_me_3", 3_000L), docWith("S1_me_2", 2_000L))
+        myQuery(Tasks.forResult(snap))
+        assertEquals(listOf("S1_me_3", "S1_me_2", "S1_me_1"), repo().mine("S1").valueOrNull!!.map { it.id })
     }
 
     @Test fun `서버에 닿지 못하면 오프라인 오류`() = runBlocking {
-        val doc = mockk<DocumentReference>()
-        every { db.collection("reviews") } returns reviews
-        every { reviews.document("S1_me") } returns doc
-        every { doc.get() } returns fail(Code.UNAVAILABLE)
+        myQuery(fail(Code.UNAVAILABLE))
         assertEquals(AppError.E_REVIEW_OFFLINE, repo().mine("S1").errorOrNull)
     }
 
     @Test fun `규칙이 거부하면 확인 중 오류`() = runBlocking {
-        val doc = mockk<DocumentReference>()
-        every { db.collection("reviews") } returns reviews
-        every { reviews.document("S1_me") } returns doc
-        every { doc.get() } returns fail(Code.PERMISSION_DENIED)
+        myQuery(fail(Code.PERMISSION_DENIED))
         assertEquals(AppError.E_VISIT_SYNCING, repo().mine("S1").errorOrNull)
     }
 
     @Test fun `그 밖의 서버 오류는 네트워크 오류`() = runBlocking {
-        val doc = mockk<DocumentReference>()
-        every { db.collection("reviews") } returns reviews
-        every { reviews.document("S1_me") } returns doc
-        every { doc.get() } returns fail(Code.INTERNAL)
+        myQuery(fail(Code.INTERNAL))
         assertEquals(AppError.E_NETWORK, repo().mine("S1").errorOrNull)
     }
 
@@ -100,7 +112,7 @@ class ReviewRepositoryTest {
     }
 
     @Test fun `별점이 범위 밖이면 서버를 부르지 않는다`() = runBlocking {
-        val r = repo().save("S1", "가게", rating = 0, text = "맛있어요", visitCount = 1, titleId = "t", existing = false)
+        val r = repo().save("S1", "가게", rating = 0, text = "맛있어요", visitCount = 1, titleId = "t")
         assertTrue(r is AppResult.Failure)
         verify(exactly = 0) { db.collection(any()) }
     }

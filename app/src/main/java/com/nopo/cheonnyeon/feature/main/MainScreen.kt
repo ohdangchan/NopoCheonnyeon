@@ -78,6 +78,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                         TestStoreButton(container)
                         TestDataDeleteButton(container)
                         if (BuildConfig.DEBUG) DebugVisitButton(container)
+                        StampPreviewButtons()
                     },
                     onDiagnostics = onDiagnostics,
                 )
@@ -214,4 +215,18 @@ private fun DebugVisitButton(container: AppContainer) {
         }
     })
     message?.let { Text(it, color = NopoTheme.colors.ink2) }
+}
+
+/** 개발자 도구: 인증 없이 도장 찍기·폭죽·칭호 승급 연출을 미리 본다 */
+@Composable
+private fun StampPreviewButtons() {
+    var preview by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Int?>(null) }
+    NopoButton(stringResource(R.string.dev_stamp_normal), { preview = 0 })
+    NopoButton(stringResource(R.string.dev_stamp_red), { preview = 1 })
+    NopoButton(stringResource(R.string.dev_stamp_gold), { preview = 2 })
+    when (preview) {
+        0 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.NORMAL, 38, null) { preview = null }
+        1 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.RED, 72, null) { preview = null }
+        2 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.GOLD, 126, com.nopo.cheonnyeon.domain.model.Title.ELDER) { preview = null }
+    }
 }

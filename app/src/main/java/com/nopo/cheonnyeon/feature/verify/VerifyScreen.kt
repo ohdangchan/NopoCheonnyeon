@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -217,12 +218,19 @@ private fun ErrorText(error: AppError?, meters: Int) {
 private fun ResultSection(state: VerifyUiState, onClose: () -> Unit, onWriteReview: () -> Unit) {
     val c = NopoTheme.colors
     val award = state.award ?: return
+    val context = LocalContext.current
+    val animate = remember { animationsEnabled(context) }
+    // 도장이 닿은 순간 true → 축하 효과(폭죽·색종이)가 터지고, 잠시 뒤 칭호가 올랐다면 승급 연출이 뜬다
+    var impacted by remember { mutableStateOf(!animate) }
+    Box(Modifier.fillMaxSize()) {
+    com.nopo.cheonnyeon.core.designsystem.component.CelebrationOverlay(
+        fire = impacted && animate, animate = animate,
+        tier = com.nopo.cheonnyeon.domain.rule.TitlePolicy.titleFor(award.totalYearsAfter).ordinal,
+    )
     Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         // 도장 연출 (FR-STP-02): 내려와 쿵 찍히고, 충격 고리·인주 튀김·화면 흔들림·진동이 이어진다. 애니메이션을 끄면 바로 정적으로 보인다.
-        val context = LocalContext.current
-        val animate = remember { animationsEnabled(context) }
         com.nopo.cheonnyeon.core.designsystem.component.StampCeremony(
-            years = award.years, grade = award.grade, animate = animate, onImpact = { vibrateOnce(context) },
+            years = award.years, grade = award.grade, animate = animate, onImpact = { vibrateOnce(context); impacted = true },
         )
         Text(stringResource(R.string.verify_done_title), style = NopoTheme.typography.headlineMedium, color = c.ink)
         Text(
@@ -241,7 +249,13 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit, onWriteRevi
         )
         com.nopo.cheonnyeon.core.designsystem.component.TitleBadge(com.nopo.cheonnyeon.domain.rule.TitlePolicy.titleFor(award.totalYearsAfter))
         award.titleUp?.let { Text(stringResource(R.string.verify_title_up, stringResource(titleLabel(it))), style = NopoTheme.typography.titleMedium, color = c.stamp) }
-        var showTitleUp by remember { mutableStateOf(award.titleUp != null) }
+        var showTitleUp by remember { mutableStateOf(false) }
+        LaunchedEffect(impacted) {
+            if (impacted && award.titleUp != null) {
+                kotlinx.coroutines.delay(if (animate) 2800 else 0)   // 도장 연출과 폭죽이 끝난 뒤에 승급 연출
+                showTitleUp = true
+            }
+        }
         award.titleUp?.let { t -> if (showTitleUp) TitleUpDialog(t, award.totalYearsAfter) { showTitleUp = false } }
         if (award.method == com.nopo.cheonnyeon.domain.model.VerifyMethod.LOCATION_ONLY) {
             Text(stringResource(R.string.verify_done_location_only), style = NopoTheme.typography.bodySmall, color = c.ink2)
@@ -249,6 +263,7 @@ private fun ResultSection(state: VerifyUiState, onClose: () -> Unit, onWriteRevi
         Text(stringResource(R.string.verify_done_pending), style = NopoTheme.typography.bodySmall, color = c.ink2)
         NopoButton(stringResource(R.string.verify_done_review), onWriteReview, modifier = Modifier.fillMaxWidth())
         NopoButton(stringResource(R.string.verify_done_close), onClose, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+    }
     }
 }
 

@@ -333,8 +333,8 @@
     <string name="reviews_none">아직 평점이 없어요</string>
     <string name="reviews_summary">%1$.1f · 평점 %2$d개</string>
     <string name="reviews_need_visit">이 가게를 방문 인증한 사람만 평점을 남길 수 있어요.</string>
-    <string name="reviews_write">평점 남기기</string>
-    <string name="reviews_edit">내 평점 수정</string>
+    <string name="reviews_write">리뷰 남기기</string>
+    <string name="reviews_edit">내 리뷰 수정</string>
     <string name="reviews_more">리뷰 더보기</string>
     <string name="reviews_visit_count">단골 %1$d회</string>
     <string name="reviews_editor_title">평점 남기기</string>
@@ -486,6 +486,9 @@
     <string name="title_up_confirm">칭호 확인</string>
     <string name="title_up_from_to">%1$s → %2$s</string>
     <string name="title_up_preview">미리보기예요. 실제로 얻은 칭호는 아니에요.</string>
+    <string name="dev_stamp_normal">연출 미리보기: 일반 도장</string>
+    <string name="dev_stamp_red">연출 미리보기: 붉은 도장</string>
+    <string name="dev_stamp_gold">연출 미리보기: 금빛 도장 + 칭호 승급</string>
     <string name="title_dex_title">칭호 도감</string>
     <string name="title_dex_hint">세월 100년마다 칭호가 올라요. 칭호를 누르면 승급 연출을 미리 볼 수 있어요.</string>
     <string name="title_dex_years">세월 %1$d년 이상</string>
