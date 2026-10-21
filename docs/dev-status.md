@@ -329,3 +329,8 @@
 
 ## 2026-10-21 앱 아이콘
 - 청록 간판 바탕 + 붉은 도장("노포") 적응형 아이콘. 생성: `python tools/gen_app_icon.py`(나눔명조 ExtraBold 필요) → `mipmap-*/ic_launcher*.webp`, `mipmap-anydpi/ic_launcher*.xml`(바탕·전경·모노크롬). 미리보기 `docs/media/app_icon_preview.png`. 폰 홈 화면 확인, 공개 릴리스 APK도 교체함.
+
+## 2026-10-21 중간 평가 기획안 문서 5종
+- 폴더 `중간 평가 기획안/`: ① `노포천년 서비스 기획서.pdf`(주도 앱 서비스 기획서 양식, 16쪽) ② `발표자료_노포천년.html`(페이지 넘김 슬라이드 23장) ③ `노포 천년 미식가는 이렇게 만들어졌습니다.html`(제작기, 암묵지 책갈피) ④ `노포 천년 미식가 만들기.docx`(전체 개발 기록) ⑤ `노포 천년 미식가 개발 기록 (Google 문서용).docx`(장·표로 간추림).
+- 양식 참고 원본은 `ex_copy/`(저장소에 올리지 않음, .gitignore). 생성 스크립트: `tools/mid_eval/build_pdf.py · build_slides.py · build_blog.py · build_docx.py`(공통 `assets.py`, 확인용 `shot_slides.py`). 필요 패키지: `pip install pymupdf python-docx playwright pillow`.
+- 숫자(1,277곳, 834, 1,181, 1,138, 평균 업력 40.0년)는 `stores.json`에서 읽는다. 폰 화면은 `%TEMP%/shots/*.png`(Galaxy S9+ 캡처)라서 다시 만들려면 캡처가 필요하다.
