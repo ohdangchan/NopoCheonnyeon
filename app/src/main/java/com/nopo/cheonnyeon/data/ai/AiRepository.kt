@@ -229,13 +229,13 @@ class AiRepository(private val client: GeminiClient) {
      * 영수증 인식에 실패했을 때 원인과 다시 찍는 방법을 한두 문장으로 알려 준다(예: "가게 이름이 잘렸어요. 위쪽까지 찍어 주세요").
      * [imageBase64]는 방금 찍은 영수증 사진(JPEG, 줄인 것)이며 이 호출에서만 쓰고 저장하지 않는다.
      */
-    suspend fun receiptHint(storeName: String, ocrLines: List<String>, reason: String, imageBase64: String?): AppResult<String> {
+    suspend fun receiptHint(storeName: String, ocrLines: List<String>, reason: String, imageBase64: String?, subject: String = "영수증"): AppResult<String> {
         val prompt = buildString {
-            append("너는 영수증 방문 인증 앱의 촬영 도우미야. 사용자가 '$storeName'에서 받은 영수증을 찍었는데 인식에 실패했어.\n")
+            append("너는 방문 인증 앱의 촬영 도우미야. 사용자가 '$storeName'의 $subject 사진을 찍었는데 인식에 실패했어.\n")
             append("실패 이유: $reason\n")
             append("글자 인식(OCR)이 읽은 줄(최대 25줄):\n")
             if (ocrLines.isEmpty()) append("(읽힌 글자 없음)\n") else ocrLines.take(25).forEachIndexed { i, l -> append("${i + 1}. ${l.take(60)}\n") }
-            if (imageBase64 != null) append("첨부 사진은 방금 찍은 영수증이야. 사진에서 가게 이름·날짜·시간이 보이는지, 잘렸는지, 흐리거나 어둡거나 빛이 반사되거나 기울었는지, 다른 가게 영수증은 아닌지 살펴봐.\n")
+            if (imageBase64 != null) append(if (subject == "영수증") "첨부 사진은 방금 찍은 영수증이야. 사진에서 가게 이름·날짜·시간이 보이는지, 잘렸는지, 흐리거나 어둡거나 빛이 반사되거나 기울었는지, 다른 가게 영수증은 아닌지 살펴봐.\n" else "첨부 사진은 방금 찍은 $subject 사진이야. 가게 이름·전화번호·메뉴 글자가 크고 선명하게 보이는지, 잘렸는지, 너무 멀거나 흐리거나 어둡거나 반사되는지, 다른 가게는 아닌지 살펴봐.\n")
             append("가장 큰 원인 하나를 골라, 사용자가 다시 찍을 때 할 행동을 존댓말 한두 문장으로 알려 줘. 예: \"가게 이름이 잘렸어요. 영수증 위쪽까지 화면에 담아 주세요.\"\n")
             append("추측이 어려우면 일반적인 촬영 요령(밝은 곳, 평평하게, 전체가 틀 안에)을 알려 줘. 한국어 JSON으로만 답해.")
         }

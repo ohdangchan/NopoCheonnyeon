@@ -126,7 +126,15 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
             VerifyStep.PHOTO -> {
                 Text(stringResource(R.string.verify_photo_title), style = NopoTheme.typography.titleMedium, color = c.ink)
                 Text(stringResource(R.string.verify_photo_guide), style = NopoTheme.typography.bodyMedium, color = c.ink2)
-                CameraArea(camera, cameraPermission, Modifier.weight(1f))
+                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth()) {
+                    val photoFrame = state.scanFrame
+                    if (photoFrame != null) {
+                        // 간판·메뉴판도 영수증과 같은 레이저 → 형광펜 연출
+                        ReceiptScanView(photoFrame, state.scanBoxes, state.scanPhase, Modifier.fillMaxSize())
+                    } else {
+                        CameraArea(camera, cameraPermission, Modifier.fillMaxSize())
+                    }
+                }
                 ErrorText(state.error, state.errorMeters)
                 if (state.failedPhotoAttempts > 0) {
                     Text(

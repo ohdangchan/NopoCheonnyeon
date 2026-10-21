@@ -65,7 +65,7 @@ data class VerifyUiState(
 enum class ScanPhase { NONE, LASER, HIGHLIGHT }
 
 /** AI 촬영 도우미에 보낼 요청(동의를 기다리는 동안 들고 있는다) */
-private class HintRequest(val storeName: String, val lines: List<String>, val reason: String, val imageBase64: String?)
+private class HintRequest(val storeName: String, val lines: List<String>, val reason: String, val imageBase64: String?, val subject: String = "영수증")
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
 class VerifyViewModel(
@@ -122,6 +122,7 @@ class VerifyViewModel(
     }
 
     private fun setStep(step: VerifyStep) {
+        clearScan()
         saved[KEY_STEP] = step.name
         _state.update { it.copy(step = step, error = null) }
     }
@@ -170,13 +171,18 @@ class VerifyViewModel(
     }
 
     /** 촬영해서 글자와 위치를 읽는다. 화면에 보일 줄인 장면은 상태에 둔다. 실패하면 null */
-    private suspend fun scanReceipt(camera: CameraController): com.nopo.cheonnyeon.platform.ocr.OcrScan? = try {
+    private suspend fun scanReceipt(camera: CameraController, proofFile: java.io.File? = null): com.nopo.cheonnyeon.platform.ocr.OcrScan? = try {
         val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
         withContext(Dispatchers.Default) {
             try {
                 val scale = FRAME_SIDE.toFloat() / maxOf(bitmap.width, bitmap.height)
                 val frame = if (scale < 1f) android.graphics.Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
                 _state.update { it.copy(scanFrame = frame) }
+                // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
+                proofFile?.let { f ->
+                    f.parentFile?.mkdirs()
+                    f.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }
+                }
                 withTimeout(OCR_TIMEOUT_MS) { recognizer.readScan(bitmap) }
             } finally {
                 bitmap.recycle()
@@ -197,9 +203,9 @@ class VerifyViewModel(
     private var pendingHint: HintRequest? = null
 
     /** 인식에 실패했을 때 Gemini가 원인과 다시 찍는 방법을 알려 준다. 키가 없거나 동의 전이면 건너뛴다 */
-    private fun requestHint(storeName: String, lines: List<String>, error: AppError, imageBase64: String?) {
+    private fun requestHint(storeName: String, lines: List<String>, error: AppError, imageBase64: String?, subject: String = "영수증") {
         if (!container.ai.available) return
-        val req = HintRequest(storeName, lines, hintReason(error), imageBase64)
+        val req = HintRequest(storeName, lines, hintReason(error), imageBase64, subject)
         viewModelScope.launch {
             if (container.settings.aiConsent.first()) runHint(req) else { pendingHint = req; _state.update { it.copy(askAiConsent = true) } }
         }
@@ -214,13 +220,14 @@ class VerifyViewModel(
     }
 
     private suspend fun runHint(req: HintRequest) {
-        val r = container.ai.receiptHint(req.storeName, req.lines, req.reason, req.imageBase64)
+        val r = container.ai.receiptHint(req.storeName, req.lines, req.reason, req.imageBase64, req.subject)
         if (r is AppResult.Success) _state.update { it.copy(aiHint = r.value) }
     }
 
     private fun hintReason(error: AppError) = when (error) {
         AppError.E_RECEIPT_MISMATCH -> "영수증의 가게 이름이 이 가게와 맞지 않아 보임(이름이 잘렸거나 다른 가게 영수증일 수 있음)"
         AppError.E_RECEIPT_NO_DATE -> "영수증에서 날짜·시간을 찾지 못함(잘렸거나 흐릴 수 있음)"
+        AppError.E_PHOTO_NO_MATCH -> "간판·메뉴판 글자에서 가게 이름이나 전화번호를 찾지 못함(글자가 잘렸거나 흐림, 너무 멀리 찍음, 다른 곳을 찍었을 수 있음)"
         else -> "영수증 글자를 거의 읽지 못함(흐림·어두움·기울어짐·너무 멀거나 가까움 등)"
     }
 
@@ -275,14 +282,25 @@ class VerifyViewModel(
         }
     }
 
-    /** 간판·메뉴판 촬영 → 글자 인식 → 가게 이름 또는 전화번호 확인. 3번 실패하면 위치 확인 도장을 고를 수 있다. */
+    /** 간판·메뉴판 촬영 → (레이저 연출) 글자 인식 → (형광펜 연출) 가게 이름 또는 전화번호 확인. 3번 실패하면 위치 확인 도장을 고를 수 있다. */
     fun capturePhoto(camera: CameraController) {
         val store = _state.value.store ?: return
         if (_state.value.busy) return
-        _state.update { it.copy(busy = true, error = null) }
+        clearScan()
+        _state.update { it.copy(busy = true, error = null, scanPhase = ScanPhase.LASER, aiHint = null) }
         viewModelScope.launch {
+            val t0 = android.os.SystemClock.elapsedRealtime()
             val proof = java.io.File(container.appContext.filesDir, "proofs/" + store.id + ".jpg")
-            val lines = readText(camera, proof) ?: emptyList()
+            val scan = scanReceipt(camera, proof)
+            val wait = LASER_MIN_MS - (android.os.SystemClock.elapsedRealtime() - t0)
+            if (wait > 0) kotlinx.coroutines.delay(wait)
+            val lines = scan?.lines ?: emptyList()
+            if (scan != null) {
+                _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
+                kotlinx.coroutines.delay(HIGHLIGHT_MS)
+            } else {
+                _state.update { it.copy(scanPhase = ScanPhase.NONE) }
+            }
             val visits = container.visits.visitRefs()
             val limit = DailyLimitPolicy.check(visits, store.id, store.isTest, container.clock.now())
             if (limit != null) {
@@ -290,12 +308,16 @@ class VerifyViewModel(
                 return@launch
             }
             when (PhotoMatcher.matchText(lines, store)) {
-                is AppResult.Success -> finish(store, VerifyMethod.PHOTO, photoVerified = true, hash = null)
+                is AppResult.Success -> {
+                    finish(store, VerifyMethod.PHOTO, photoVerified = true, hash = null)
+                    clearScan()
+                }
                 is AppResult.Failure -> {
                     proof.delete()
                     val attempts = _state.value.failedPhotoAttempts + 1
                     saved[KEY_ATTEMPTS] = attempts
                     _state.update { it.copy(busy = false, error = AppError.E_PHOTO_NO_MATCH, failedPhotoAttempts = attempts) }
+                    requestHint(store.name, lines, AppError.E_PHOTO_NO_MATCH, _state.value.scanFrame?.let(::jpegBase64), "간판·메뉴판")
                 }
             }
         }
@@ -364,7 +386,7 @@ class VerifyViewModel(
         const val LASER_MIN_MS = 1_700L
         const val HIGHLIGHT_MS = 1_800L
         const val FRAME_SIDE = 900
-        val HINT_ERRORS = setOf(AppError.E_RECEIPT_UNREADABLE, AppError.E_RECEIPT_MISMATCH, AppError.E_RECEIPT_NO_DATE)
+        val HINT_ERRORS = setOf(AppError.E_RECEIPT_UNREADABLE, AppError.E_RECEIPT_MISMATCH, AppError.E_RECEIPT_NO_DATE, AppError.E_PHOTO_NO_MATCH)
         const val OCR_MAX_SIDE = 1_600
         const val RESTORE_WAIT_MS = 10_000L
     }
