@@ -323,4 +323,6 @@
 - Cloud Functions 프록시안은 Blaze 요금제가 필요해 **버리고**, Firebase AI Logic(Gemini Developer API, Spark 무료)으로 교체했다. 앱에는 키가 없다.
 - `GeminiClient`가 `firebase-ai` SDK로 호출하고, 응답 스키마는 프롬프트 끝에 붙인다(JSON 모드). 모델은 `GeminiClient.DEFAULT_MODEL`.
 - 콘솔 쪽: Firebase 콘솔 > AI Logic 시작(완료). **App Check 적용(Enforce)이 켜져 있으면 "App Check token is invalid"로 실패**한다 → App Check > API에서 Firebase AI Logic(Generative Language)을 "적용 안 함"으로 두거나, App Check(Play Integrity/디버그 제공자)를 앱에 붙여야 한다. 사이드로드 APK는 Play Integrity를 통과하지 못한다.
-- 배포 후: 새 릴리스 APK로 교체, 기존 릴리스(v0.1.0-demo)와 기존 Gemini 키 폐기.
+- 2026-10-21 확인: App Check를 "적용 안 함"으로 바꾼 뒤(반영에 약 10분) 디버그·릴리스 모두 폰에서 AI 응답 확인. 기본 모델이 붐비면(503 high demand) 25초 제한 후 예비 모델 `gemini-2.5-flash-lite`로 한 번 더 시도한다. APK 안에 Gemini 키 없음(내 키 문자열·AIza 형태 0건 확인). 릴리스 `v0.1.0-demo`의 APK를 키 없는 빌드로 교체함.
+- 남은 일: 기존 Gemini 키 폐기(콘솔), **2026-11-02부터 AI Logic App Check 적용이 의무**라 그 뒤에는 이 방식이 막힌다 → 그때는 App Check 제공자 또는 서버 프록시(Blaze) 필요, 시연 뒤 App Check 다시 켜기.
+- (이전 메모) 배포 후: 새 릴리스 APK로 교체, 기존 릴리스(v0.1.0-demo)와 기존 Gemini 키 폐기.
