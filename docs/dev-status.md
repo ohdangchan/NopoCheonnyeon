@@ -6,6 +6,8 @@
 
 ## ★ 최신 인수인계 (2026-10-21) — 가장 먼저 읽을 것
 
+**배포(2026-10-21):** 저장소를 **공개**로 전환했고 릴리스 `v0.1.0-demo`에 APK(`nopo-cheonnyeon.apk`, 87MB, Gemini 키 포함 — 사용자가 노출을 감수하기로 함)를 올렸다. QR(`docs/media/download_qr.png`, 앱 공유 카드의 QR도 같은 주소)은 `https://github.com/ohdangchan/NopoCheonnyeon/releases/latest/download/nopo-cheonnyeon.apk`를 가리킨다. 새 APK를 배포하려면 `gh release create vX.Y.Z --repo ohdangchan/NopoCheonnyeon app-release.apk#nopo-cheonnyeon.apk`(latest 릴리스가 바뀌면 QR 주소는 그대로 유효). **시연 뒤에는 Gemini 키 폐기·교체를 권장.**
+
 **상태:** P0·P1 요구사항과 이번 APK 범위의 기능은 모두 구현·푸시됨(최신 커밋은 `git log` 참고). 단위 테스트 약 275개·lint 오류 0. 남은 것은 대부분 **사용자만 할 수 있는 실기기 확인**과 공개 배포 전 정리다. 상세 변경 이력은 아래 10장 10-6~10-18.
 
 **한 줄 요약(최근 세션):** 시연용 리뷰·사진·패스포트, 명예의 전당, 위치 시연 가게(시험용 가게), 공유 카드+QR, 칭호 11단계(100년 단위)+도감, 도장·승급 연출, 리뷰 사진 3장(카메라+앨범)·가게당 5개 리뷰, Gemini AI(메뉴 룰렛·리뷰 분석), Google Places 대표 사진.
