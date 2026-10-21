@@ -181,17 +181,4 @@ class VerifyViewModelTest {
         vm.clearError()
         assertNull(vm.state.value.error)
     }
-
-    @Test fun `리뷰 남기기로 넘어온 인증에 성공하면 리뷰 편집기를 열도록 표시한다`() {
-        val intent = MutableStateFlow<String?>("BN-1")
-        val pending = MutableStateFlow<String?>(null)
-        val c = container()
-        every { c.reviewIntentStoreId } returns intent
-        every { c.pendingReviewStoreId } returns pending
-        // 위치 확인 도장 경로로 인증을 끝낸다(기존 시험과 같은 준비)
-        // 준비 코드가 복잡하므로 여기서는 표시 규칙만 확인: intent가 같은 가게면 pending으로 옮겨진다
-        if (intent.value == "BN-1") { pending.value = "BN-1"; intent.value = null }
-        org.junit.Assert.assertEquals("BN-1", pending.value)
-        org.junit.Assert.assertNull(intent.value)
-    }
 }
