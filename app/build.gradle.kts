@@ -38,8 +38,8 @@ android {
         manifestPlaceholders["NAVER_MAP_KEY_ID"] = localProps.getProperty("NAVER_MAP_KEY_ID", "")
         buildConfigField("String", "NAVER_MAP_KEY_ID", "\"${localProps.getProperty("NAVER_MAP_KEY_ID", "")}\"")
 
-        // Gemini 키: 빌드하는 PC의 환경변수 GEMINI_API_KEY (저장소·로그에 남지 않는다). 비어 있으면 AI 기능이 꺼진다
-        buildConfigField("String", "GEMINI_API_KEY", "\"${providers.environmentVariable("GEMINI_API_KEY").orElse("").get()}\"")
+        // Gemini는 앱이 직접 부르지 않고 우리 서버(Cloud Functions 프록시)를 거친다. 앱에는 키가 없다
+        buildConfigField("String", "AI_ENDPOINT", "\"https://asia-northeast3-nopocheonnyeon.cloudfunctions.net/gemini\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

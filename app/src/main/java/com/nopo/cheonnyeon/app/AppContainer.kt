@@ -42,7 +42,7 @@ class AppContainer(
     val demoReviews = com.nopo.cheonnyeon.data.remote.DemoReviews(appContext, dispatchers.io) { clock.now().toEpochMilli() }
     val profiles = com.nopo.cheonnyeon.data.remote.ProfileRepository({ FirebaseFirestore.getInstance() }, reviews)
     /** AI 기능(Gemini): 메뉴 추천 룰렛, 가게 리뷰 분석. 키가 없으면 available=false */
-    val ai = com.nopo.cheonnyeon.data.ai.AiRepository(com.nopo.cheonnyeon.data.ai.GeminiClient(com.nopo.cheonnyeon.BuildConfig.GEMINI_API_KEY))
+    val ai = com.nopo.cheonnyeon.data.ai.AiRepository(com.nopo.cheonnyeon.data.ai.GeminiClient(com.nopo.cheonnyeon.BuildConfig.AI_ENDPOINT, { auth.idToken() }))
     /** 가게 소개글·리뷰 AI 번역 */
     val translator = com.nopo.cheonnyeon.data.ai.StoreTranslator(ai)
     /** 챗봇 대화 기록(이 기기 저장 공간) */

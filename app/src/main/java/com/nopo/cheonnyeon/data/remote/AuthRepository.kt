@@ -63,6 +63,15 @@ class AuthRepository(
 
     val currentUid: String? get() = auth.currentUser?.uid
 
+    /** 로그인한 사용자의 ID 토큰(AI 프록시 호출용). 로그인 전이면 null */
+    suspend fun idToken(): String? = try {
+        auth.currentUser?.getIdToken(false)?.await()?.token
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (_: Exception) {
+        null
+    }
+
     /** true = 사용 가능. 네트워크 오류면 null (가입 시도 때 다시 확인된다) */
     suspend fun isNicknameAvailable(nick: String): Boolean? = try {
         withTimeout(TIMEOUT_MS) {
