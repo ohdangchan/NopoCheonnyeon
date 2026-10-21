@@ -19,8 +19,3 @@
 
 # R8 최적화(클래스 병합·접근 수정)가 Crashlytics와 충돌해 시작 시 IllegalAccessError가 나서 최적화는 끄고 축소·난독화만 쓴다 (2026-10-20 릴리스 실기기 확인)
 -dontoptimize
-
-# Firebase AI Logic(Gemini): 요청·응답을 kotlinx.serialization으로 바꾸므로 SDK 클래스를 줄이지 않는다 (릴리스에서 응답이 끝나지 않는 현상 대응)
--keep class com.google.firebase.ai.** { *; }
--keep class io.ktor.** { *; }
--dontwarn io.ktor.**

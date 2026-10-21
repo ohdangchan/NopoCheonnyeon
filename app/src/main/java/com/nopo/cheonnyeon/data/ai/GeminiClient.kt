@@ -3,6 +3,7 @@ package com.nopo.cheonnyeon.data.ai
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.RequestOptions
 import com.google.firebase.ai.type.content
 import com.google.firebase.ai.type.generationConfig
 import com.nopo.cheonnyeon.core.common.AppError
@@ -30,6 +31,8 @@ private object FirebaseTransport : GeminiTransport {
     override suspend fun generate(parts: List<GeminiPart>, temperature: Double, model: String): String? {
         val m = Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
             modelName = model,
+            // 모델이 붐비면 오래 붙잡지 않고 빨리 실패해 예비 모델로 넘어간다
+            requestOptions = RequestOptions(25_000L),
             generationConfig = generationConfig {
                 responseMimeType = "application/json"
                 this.temperature = temperature.toFloat()
@@ -70,7 +73,14 @@ class GeminiClient(
         if (!available) return AppError.E_AI_FAILED.asFailure()
         val withSchema = parts + GeminiPart.Text("반드시 아래 JSON 스키마(OpenAPI 형식)를 그대로 지키는 JSON 하나만 답해. 설명·코드블록 금지.\n$schema")
         return try {
-            val text = transport.generate(withSchema, temperature, model)?.trim().orEmpty()
+            val text = try {
+                transport.generate(withSchema, temperature, model)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // 기본 모델이 붐비거나 느리면 예비 모델로 한 번 더
+                if (model == FALLBACK_MODEL) throw IllegalStateException("AI 호출 실패") else transport.generate(withSchema, temperature, FALLBACK_MODEL)
+            }?.trim().orEmpty()
             clean(text)?.asSuccess() ?: AppError.E_AI_FAILED.asFailure()
         } catch (e: CancellationException) {
             throw e
@@ -86,5 +96,8 @@ class GeminiClient(
     companion object {
         /** 빠르고 저렴한 모델. 바꾸려면 이 한 곳만 */
         const val DEFAULT_MODEL = "gemini-3.1-flash-lite"
+
+        /** 기본 모델이 실패했을 때 쓰는 예비 모델 */
+        const val FALLBACK_MODEL = "gemini-2.5-flash-lite"
     }
 }

@@ -58,6 +58,17 @@ class AiRepositoryTest {
         assertEquals(AppError.E_NETWORK, r.errorOrNull)
     }
 
+    @Test fun `기본 모델이 실패하면 예비 모델로 한 번 더 시도한다`() = runBlocking {
+        val used = mutableListOf<String>()
+        val repo = AiRepository(GeminiClient(transport = { _, _, model ->
+            used += model
+            if (model == GeminiClient.DEFAULT_MODEL) throw IllegalStateException("붐빔") else picks("곰탕", "냉면", "물회")
+        }))
+        val r = repo.recommendMenus(input, emptyList())
+        assertEquals(listOf("곰탕", "냉면", "물회"), r.valueOrNull!!.picks.map { it.menu })
+        assertEquals(listOf(GeminiClient.DEFAULT_MODEL, GeminiClient.FALLBACK_MODEL), used)
+    }
+
     @Test fun `키가 없으면 호출 없이 실패`() = runBlocking {
         val repo = AiRepository(GeminiClient(model = "", transport = { _, _, _ -> error("호출하면 안 된다") }))
         assertFalse(repo.available)
