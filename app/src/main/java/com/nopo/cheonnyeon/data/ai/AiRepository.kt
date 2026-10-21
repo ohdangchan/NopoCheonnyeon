@@ -6,6 +6,8 @@ import com.nopo.cheonnyeon.core.common.asFailure
 import com.nopo.cheonnyeon.core.common.asSuccess
 import com.nopo.cheonnyeon.domain.rule.MenuPick
 import com.nopo.cheonnyeon.domain.rule.MenuRoulette
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -188,6 +190,22 @@ class AiRepository(private val client: GeminiClient) {
     /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
     suspend fun translate(texts: List<String>, language: String): AppResult<List<String>> {
         if (texts.isEmpty()) return emptyList<String>().asSuccess()
+        // 글이 많으면 한 번에 보내지 않고 묶음으로 나눠 동시에 번역한다(한 번에 40개를 보내면 30초 넘게 걸림). 순서는 유지한다
+        val chunks = texts.chunked(TRANSLATE_CHUNK)
+        val results = kotlinx.coroutines.coroutineScope {
+            chunks.map { chunk -> async { translateChunk(chunk, language) } }.awaitAll()
+        }
+        val out = ArrayList<String>(texts.size)
+        for (r in results) {
+            when (r) {
+                is AppResult.Success -> out += r.value
+                is AppResult.Failure -> return r
+            }
+        }
+        return out.asSuccess()
+    }
+
+    private suspend fun translateChunk(texts: List<String>, language: String): AppResult<List<String>> {
         val prompt = buildString {
             append("다음 JSON 배열의 각 글을 '$language'(으)로 자연스럽게 번역해 줘. 한국 음식·가게 소개글과 이용자 리뷰야.\n")
             append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang (설렁탕)). 번역 결과만 JSON으로 답해.\n\n")
@@ -292,6 +310,8 @@ class AiRepository(private val client: GeminiClient) {
         const val MAX_TASTE_REVIEWS = 12
         const val MAX_TASTE_PHOTOS = 6
         const val MAX_INSIGHT_REVIEWS = 60
+        /** 번역을 한 번에 보내는 글 수(묶음별로 동시에 요청) */
+        const val TRANSLATE_CHUNK = 8
         const val MAX_CHAT_TURNS = 8
 
         private fun str(desc: String? = null) = buildJsonObject { put("type", "STRING"); if (desc != null) put("description", desc) }

@@ -132,6 +132,20 @@ class AiRepositoryTest {
         assertEquals(AppError.E_AI_FAILED, bad.errorOrNull)
     }
 
+    @Test fun `번역은 글이 많으면 묶음으로 나눠 보내고 순서를 지킨다`() = runBlocking {
+        val sizes = java.util.Collections.synchronizedList(mutableListOf<Int>())
+        val repo = AiRepository(GeminiClient(transport = { parts, _, _ ->
+            val prompt = (parts.first() as GeminiPart.Text).text
+            val arr = kotlinx.serialization.json.Json.parseToJsonElement(prompt.lines().first { it.startsWith("[") }) as kotlinx.serialization.json.JsonArray
+            sizes += arr.size
+            """{"items":[${arr.joinToString(",") { "\"T:" + (it as kotlinx.serialization.json.JsonPrimitive).content + "\"" }}]}"""
+        }))
+        val src = (1..20).map { "글$it" }
+        val r = repo.translate(src, "English")
+        assertEquals(src.map { "T:$it" }, r.valueOrNull)
+        assertEquals(listOf(4, 8, 8), sizes.sorted())
+    }
+
     @Test fun `영수증 도우미는 안내 한 문장을 돌려주고 사진을 함께 보낸다`() = runBlocking {
         val calls = mutableListOf<String>()
         val r = repo(200 to wrap("""{"tip":"가게 이름이 잘렸어요. 위쪽까지 찍어 주세요."}"""), calls = calls).receiptHint("진미옥", listOf("합계 5,000"), "이름 잘림", "QUJD")

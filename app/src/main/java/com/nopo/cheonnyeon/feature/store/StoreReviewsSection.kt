@@ -93,6 +93,9 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     val state: StateFlow<ReviewsUiState> = _state.asStateFlow()
     private var lastPage: ReviewPage? = null
 
+    /** 리뷰 편집 중 고른 사진. 화면을 돌려도 ViewModel이 살아 있어 유지된다(Bundle에는 용량이 커서 넣지 않음). 저장·닫기 때 비운다 */
+    var draftPhotos: List<String>? = null
+
     val myUid: String? get() = container.auth.currentUid
     val storeId: String get() = store.id
     val pendingReview get() = container.pendingReviewStoreId
@@ -393,11 +396,13 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit, o
     if (editing) {
         ReviewEditor(
             initial = state.mine.firstOrNull { it.id == editId },
+            draftPhotos = vm.draftPhotos,
+            onPhotosChanged = { vm.draftPhotos = it },
             saving = state.saving,
             error = state.error,
-            onSave = { rating, text, photos -> vm.save(editId, rating, text, photos) { editing = false } },
-            onDelete = editId?.let { id -> { vm.delete(id) { editing = false } } },
-            onDismiss = { editing = false },
+            onSave = { rating, text, photos -> vm.save(editId, rating, text, photos) { editing = false; vm.draftPhotos = null } },
+            onDelete = editId?.let { id -> { vm.delete(id) { editing = false; vm.draftPhotos = null } } },
+            onDismiss = { editing = false; vm.draftPhotos = null },
         )
     }
 }
@@ -429,6 +434,8 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
 @Composable
 private fun ReviewEditor(
     initial: ReviewItem?,
+    draftPhotos: List<String>?,
+    onPhotosChanged: (List<String>) -> Unit,
     saving: Boolean,
     error: AppError?,
     onSave: (Int, String, List<String>) -> Unit,
@@ -437,8 +444,8 @@ private fun ReviewEditor(
 ) {
     var rating by rememberSaveable { mutableIntStateOf(initial?.rating ?: 0) }
     var text by rememberSaveable { mutableStateOf(initial?.text.orEmpty()) }
-    // 사진은 용량이 커서 화면 상태 저장(Bundle)에 넣지 않는다. 화면을 돌리면 사진만 다시 고른다.
-    var photos by remember { mutableStateOf(initial?.photos.orEmpty()) }
+    // 사진은 용량이 커서 화면 상태 저장(Bundle)에 넣지 않고 ViewModel의 초안에 둔다(화면을 돌려도 유지, 앱이 완전히 종료되면 사라짐)
+    var photos by remember { mutableStateOf(draftPhotos ?: initial?.photos.orEmpty()) }
     var capturing by rememberSaveable { mutableStateOf(false) }
     val check = ReviewRules.validate(rating.coerceAtLeast(0), text)
     val invalid = (check as? ReviewCheck.Invalid)?.reason
@@ -463,7 +470,7 @@ private fun ReviewEditor(
                     enabled = !saving,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                ReviewPhotoPicker(photos, { photos = it }, onCamera = { capturing = true }, enabled = !saving)
+                ReviewPhotoPicker(photos, { photos = it; onPhotosChanged(it) }, onCamera = { capturing = true }, enabled = !saving)
                 error?.let { Text(it.message(LocalContext.current), color = NopoTheme.colors.stamp) }
             }
         },
@@ -479,7 +486,7 @@ private fun ReviewEditor(
             }
         },
     )
-    if (capturing) ReviewPhotoCapture(onCaptured = { photos = (photos + it).take(ReviewRules.MAX_PHOTOS); capturing = false }, onDismiss = { capturing = false })
+    if (capturing) ReviewPhotoCapture(onCaptured = { photos = (photos + it).take(ReviewRules.MAX_PHOTOS); onPhotosChanged(photos); capturing = false }, onDismiss = { capturing = false })
 }
 
 @com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
