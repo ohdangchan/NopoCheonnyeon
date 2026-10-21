@@ -4,6 +4,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.ai.type.RequestOptions
+import com.google.firebase.ai.type.ThinkingLevel
+import com.google.firebase.ai.type.thinkingConfig
 import com.google.firebase.ai.type.content
 import com.google.firebase.ai.type.generationConfig
 import com.nopo.cheonnyeon.core.common.AppError
@@ -36,6 +38,8 @@ private object FirebaseTransport : GeminiTransport {
             generationConfig = generationConfig {
                 responseMimeType = "application/json"
                 this.temperature = temperature.toFloat()
+                // JSON을 만드는 일에는 깊은 추론이 필요 없어 최소로 줄여 응답을 빠르게 한다(Gemini 3 계열)
+                if (model.startsWith("gemini-3")) thinkingConfig = thinkingConfig { thinkingLevel = ThinkingLevel.MINIMAL }
             },
         )
         val request = content {
@@ -98,6 +102,6 @@ class GeminiClient(
         const val DEFAULT_MODEL = "gemini-3.1-flash-lite"
 
         /** 기본 모델이 실패했을 때 쓰는 예비 모델 */
-        const val FALLBACK_MODEL = "gemini-2.5-flash-lite"
+        const val FALLBACK_MODEL = "gemini-3.5-flash-lite"
     }
 }
