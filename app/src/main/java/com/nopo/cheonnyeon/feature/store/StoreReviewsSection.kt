@@ -170,6 +170,9 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     }
 
     val aiAvailable: Boolean get() = container.ai.available
+    val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> = container.translator.state
+    /** 보이는 리뷰 글을 번역 대상으로 등록한다 */
+    fun registerForTranslation(texts: List<String>) = container.translator.addSources(store.id, texts)
     val aiConsent get() = container.settings.aiConsent
     fun agreeAi() { viewModelScope.launch { container.settings.setAiConsent(true) } }
 
@@ -311,11 +314,16 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
         }
 
         if (state.localOnly) Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
-        state.items.forEach { r ->
+        val translation by vm.translation.collectAsStateWithLifecycle()
+        androidx.compose.runtime.LaunchedEffect(state.items, state.demoItems) { vm.registerForTranslation((state.items + state.demoItems).map { it.text }) }
+        val tr = translation?.takeIf { it.storeId == vm.storeId }
+        fun ReviewItem.shown() = if (tr == null || text.isBlank()) this else copy(text = tr.pick(text.trim()))
+        state.items.forEach { r0 ->
+            val r = r0.shown()
             val own = r.uid == myUid
             ReviewCard(r, onOpenProfile, onReport = if (!own) ({ reportTarget = r.id }) else null, onEdit = if (own) ({ editId = r.id; editing = true }) else null)
         }
-        state.demoItems.forEach { r -> ReviewCard(r, onOpenProfile, onReport = null, onEdit = null) }
+        state.demoItems.forEach { r -> ReviewCard(r.shown(), onOpenProfile, onReport = null, onEdit = null) }
         if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)
         if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }

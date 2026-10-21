@@ -37,6 +37,7 @@ data class StoreInsight(
 
 @Serializable private data class PickDto(val menu: String = "", val reason: String = "", val ingredients: List<String> = emptyList())
 @Serializable private data class RecommendDto(val analysis: String = "", val picks: List<PickDto> = emptyList())
+@Serializable private data class TranslateDto(val items: List<String> = emptyList())
 @Serializable private data class HintDto(val tip: String = "")
 @Serializable private data class MenuDto(val menu: String = "", val reason: String = "")
 @Serializable private data class InsightDto(
@@ -80,6 +81,23 @@ class AiRepository(private val client: GeminiClient) {
 
     private fun finish(summary: String, picked: List<MenuPick>): AppResult<MenuAnalysis> =
         if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else MenuAnalysis(summary, picked.take(MenuRoulette.PER_ROUND)).asSuccess()
+
+    /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
+    suspend fun translate(texts: List<String>, language: String): AppResult<List<String>> {
+        if (texts.isEmpty()) return emptyList<String>().asSuccess()
+        val prompt = buildString {
+            append("다음 JSON 배열의 각 글을 '$language'(으)로 자연스럽게 번역해 줘. 한국 음식·가게 소개글과 이용자 리뷰야.\n")
+            append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang (설렁탕)). 번역 결과만 JSON으로 답해.\n\n")
+            append(kotlinx.serialization.json.JsonArray(texts.map { kotlinx.serialization.json.JsonPrimitive(it.take(2000)) }).toString())
+        }
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), TRANSLATE_SCHEMA, temperature = 0.2)
+        val text = when (result) {
+            is AppResult.Success -> result.value
+            is AppResult.Failure -> return result
+        }
+        val items = runCatching { json.decodeFromString<TranslateDto>(text).items }.getOrNull()
+        return if (items == null || items.size != texts.size) AppError.E_AI_FAILED.asFailure() else items.asSuccess()
+    }
 
     /** 가게의 다른 이용자 리뷰를 분석한다. 같은 가게·같은 리뷰 묶음은 이번 실행 동안 다시 묻지 않는다 */
     suspend fun analyzeStore(storeId: String, storeName: String, menus: List<String>, reviews: List<InsightReview>): AppResult<StoreInsight> {
@@ -186,6 +204,7 @@ class AiRepository(private val client: GeminiClient) {
                 "picks" to arr(obj(mapOf("menu" to str(), "reason" to str(), "ingredients" to arr(str())))),
             ),
         )
+        val TRANSLATE_SCHEMA: JsonElement = obj(mapOf("items" to arr(str())))
         val HINT_SCHEMA: JsonElement = obj(mapOf("tip" to str("사용자에게 보여 줄 한두 문장")))
         val INSIGHT_SCHEMA: JsonElement = obj(
             mapOf(

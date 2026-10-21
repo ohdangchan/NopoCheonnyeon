@@ -39,10 +39,11 @@ import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 
 /** 노포 상세 (S-505, FR-STORE-01·02·05): 큰 업력, 보상 미리보기, 영업·메뉴, 길찾기. 비어 있는 필드는 줄을 숨긴다. */
 @Composable
-fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: () -> Unit, reviews: @Composable (Store) -> Unit) {
+fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: () -> Unit, translateBar: @Composable (Store) -> Unit = {}, reviews: @Composable (Store) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val store = state.store
+    val translation by vm.translation.collectAsStateWithLifecycle()
     if (store == null) {
         EmptyState(stringResource(if (state.loading) R.string.list_loading else R.string.detail_not_found), actionLabel = stringResource(R.string.detail_back), onAction = onBack)
         return
@@ -63,7 +64,8 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 }
                 Text(store.name, style = NopoTheme.typography.headlineMedium, color = c.ink)
                 ProgramBadges(store)
-                store.summary?.let { Text(it, style = NopoTheme.typography.bodyMedium, color = c.ink2) }
+                translateBar(store)
+                store.summary?.let { Text(translation?.pick(it) ?: it, style = NopoTheme.typography.bodyMedium, color = c.ink2) }
                 Text(
                     listOfNotNull(
                         store.foundedYear?.let { stringResource(R.string.detail_founded, it) },
@@ -74,7 +76,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 )
                 RewardBox(state, store.isTest)
                 InfoSection(store)
-                store.story?.takeIf { it.isNotBlank() }?.let { StorySection(it, showSource = !store.isTest) }
+                store.story?.takeIf { it.isNotBlank() }?.let { StorySection(translation?.pick(it.trim()) ?: it, showSource = !store.isTest) }
                 if (!store.isTest) InfoReport(vm)
                 reviews(store)
                 store.sourceUrl?.let { Text(stringResource(R.string.detail_source, it), style = NopoTheme.typography.bodySmall, color = c.ink2) }

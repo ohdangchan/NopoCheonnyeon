@@ -28,6 +28,20 @@ class StoreDetailViewModel(private val container: AppContainer, private val stor
     /** 가게 정보 오류 제보 (FR-STORE-06) */
     suspend fun reportInfo(reason: String) = container.reviews.reportStoreInfo(storeId, reason)
 
+    /** AI 번역 상태(이 가게 것만) */
+    val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> = container.translator.state
+        .map { t -> t?.takeIf { it.storeId == storeId } }
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, null)
+
+    init {
+        // 번역할 글(소개글·한 줄 소개)을 모아 둔다. 리뷰는 리뷰 영역이 모은다
+        viewModelScope.launch {
+            container.catalog.byId(storeId)?.let { s -> container.translator.addSources(s.id, listOfNotNull(s.summary, s.story)) }
+        }
+        // 다른 가게로 옮겨 오면 이전 번역은 지운다
+        viewModelScope.launch { container.translator.state.value?.takeIf { it.storeId != storeId }?.let { container.translator.clear() } }
+    }
+
     /** 인증 직후 "리뷰 남기기"로 들어왔는지 */
     val reviewRequested: StateFlow<Boolean> = container.pendingReviewStoreId.map { it == storeId }
         .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, false)

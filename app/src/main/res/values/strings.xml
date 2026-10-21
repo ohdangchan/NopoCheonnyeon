@@ -511,6 +511,14 @@
     <string name="verify_ai_hint_title">AI 촬영 도우미</string>
     <string name="verify_ai_hint_retake">다시 찍기</string>
     <string name="verify_ai_hint_close">닫기</string>
+    <string name="translate_button">AI 번역</string>
+    <string name="translate_original">원문 보기</string>
+    <string name="translate_custom">직접 입력</string>
+    <string name="translate_custom_title">어떤 언어로 번역할까요?</string>
+    <string name="translate_custom_hint">예: 한국어를 몰라요 → Thai, Русский, العربية</string>
+    <string name="translate_do">번역</string>
+    <string name="translate_loading">%1$s(으)로 번역하는 중…</string>
+    <string name="translate_notice">AI가 %1$s(으)로 번역했어요. 실제와 조금 다를 수 있어요.</string>
     <string name="insight_button">AI로 리뷰 분석하기</string>
     <string name="insight_loading">AI가 리뷰를 읽는 중…</string>
     <string name="insight_need_reviews">리뷰가 3개 이상 쌓이면 AI가 분석해 줘요</string>

@@ -101,7 +101,7 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
-            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) }, reviews = { store ->
+            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) }, translateBar = { s -> com.nopo.cheonnyeon.feature.ai.TranslateBar(container, s) }, reviews = { store ->
                 val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
                 StoreReviewsSection(reviewsVm, onOpenProfile = { nav.navigate(Routes.profile(it)) })
             })

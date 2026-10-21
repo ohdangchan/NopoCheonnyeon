@@ -43,6 +43,8 @@ class AppContainer(
     val profiles = com.nopo.cheonnyeon.data.remote.ProfileRepository({ FirebaseFirestore.getInstance() }, reviews)
     /** AI 기능(Gemini): 메뉴 추천 룰렛, 가게 리뷰 분석. 키가 없으면 available=false */
     val ai = com.nopo.cheonnyeon.data.ai.AiRepository(com.nopo.cheonnyeon.data.ai.GeminiClient(com.nopo.cheonnyeon.BuildConfig.GEMINI_API_KEY))
+    /** 가게 소개글·리뷰 AI 번역 */
+    val translator = com.nopo.cheonnyeon.data.ai.StoreTranslator(ai)
     val storeStats = com.nopo.cheonnyeon.data.remote.StoreStatsRepository { FirebaseFirestore.getInstance() }
     val connectivity = com.nopo.cheonnyeon.platform.network.ConnectivityMonitor(appContext)
     val syncScheduler = SyncScheduler(appContext)
