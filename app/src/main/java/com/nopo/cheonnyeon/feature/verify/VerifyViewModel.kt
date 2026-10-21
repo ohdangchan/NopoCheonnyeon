@@ -318,6 +318,11 @@ class VerifyViewModel(
         // 로그인 직후 서버 기록을 내려받는 중이면 끝난 뒤에 기록한다 (서버에 있는 가게를 첫 방문으로 세지 않게)
         kotlinx.coroutines.withTimeoutOrNull(RESTORE_WAIT_MS) { container.restoring.first { !it } }
         val award = container.visits.record(store, method, photoVerified, hash)
+        // "리뷰 남기기"로 넘어온 인증이면 성공한 뒤 가게 상세에서 리뷰 편집기를 연다
+        if (container.reviewIntentStoreId.value == store.id) {
+            container.pendingReviewStoreId.value = store.id
+            container.reviewIntentStoreId.value = null
+        }
         container.syncScheduler.enqueue()
         saved[KEY_STEP] = VerifyStep.DONE.name
         com.nopo.cheonnyeon.core.common.Analytics.verifyResult(method.name, "success")

@@ -68,6 +68,8 @@ data class ReviewsUiState(
     /** 이 가게에 내가 남긴 리뷰들(최신순) */
     val mine: List<ReviewItem> = emptyList(),
     val eligibility: ReviewEligibility = ReviewEligibility.NOT_VISITED,
+    /** 오늘 이 가게를 실제로 인증했는지(시연용 도장은 제외). 아니면 리뷰 전에 방문 인증을 먼저 한다 */
+    val verifiedToday: Boolean = false,
     val error: AppError? = null,
     val saving: Boolean = false,
     val reported: Boolean = false,
@@ -139,6 +141,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                     mine = mine,
                     stats = mergeDemoStats(stats, demo),
                     eligibility = eligibility,
+                    verifiedToday = isVerifiedToday(visit),
                     error = summary.errorOrNull ?: page.errorOrNull,
                 )
             }
@@ -157,9 +160,18 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
                 loading = false, summary = summary, demoItems = demo, items = own, mine = own, hasMore = false, localOnly = true,
                 stats = mergeDemoStats(null, demo),
                 eligibility = if (visited) ReviewEligibility.OK else ReviewEligibility.NOT_VISITED, error = null,
+                verifiedToday = isVerifiedToday(container.database.myVisitDao().byStore(store.id)),
             )
         }
     }
+
+    /** 오늘(서울 날짜) 실제로 인증한 기록이 있는가. 시연용 도장(DEMO)은 인증으로 치지 않는다 */
+    private fun isVerifiedToday(visit: com.nopo.cheonnyeon.data.local.MyVisitEntity?): Boolean =
+        visit != null && visit.method != com.nopo.cheonnyeon.data.remote.DemoReviews.METHOD_DEMO &&
+            java.time.Instant.ofEpochMilli(visit.lastVisitedAt).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate() == java.time.LocalDate.now(com.nopo.cheonnyeon.core.common.SeoulZone)
+
+    /** "리뷰 남기기": 아직 오늘 인증하지 않았으면 인증 화면으로 보내고, 인증에 성공하면 편집기가 열리게 표시해 둔다 */
+    fun requestVerifyForReview() { container.reviewIntentStoreId.value = store.id }
 
     private suspend fun loadTestReviews(): List<ReviewItem> {
         val visits = container.database.myVisitDao().byStore(store.id)?.visitCount ?: 1
@@ -294,7 +306,7 @@ internal fun mergeDemoStats(server: com.nopo.cheonnyeon.data.remote.StoreStats?,
 
 /** 평점 요약 + 리뷰 목록 + 평점 남기기 (S-506, S-802, FR-STORE-03·04) */
 @Composable
-fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
+fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit, onVerify: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     var editing by rememberSaveable { mutableStateOf(false) }
@@ -334,16 +346,16 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
         AiInsightSection(vm, state)
         LoyaltySection(vm, state)
 
-        when (state.eligibility) {
-            ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
-            ReviewEligibility.SYNCING -> Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
-            ReviewEligibility.OK -> NopoButton(
-                stringResource(R.string.reviews_write),
-                { editId = null; editing = true },
-                style = NopoButtonStyle.Outline,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        // 리뷰는 방문 인증(영수증)을 한 뒤에만 쓴다: 오늘 인증했으면 바로 편집기, 아니면 인증 화면으로
+        val canWriteNow = state.eligibility == ReviewEligibility.OK && state.verifiedToday
+        NopoButton(
+            stringResource(R.string.reviews_write),
+            { if (canWriteNow) { editId = null; editing = true } else { vm.requestVerifyForReview(); onVerify() } },
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        if (!canWriteNow) Text(stringResource(R.string.reviews_verify_first), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        if (state.eligibility == ReviewEligibility.SYNCING) Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
 
         if (state.localOnly) Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
         val translation by vm.translation.collectAsStateWithLifecycle()

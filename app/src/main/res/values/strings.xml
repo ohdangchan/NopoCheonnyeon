@@ -336,6 +336,7 @@
     <string name="reviews_summary">%1$.1f · 평점 %2$d개</string>
     <string name="reviews_need_visit">이 가게를 방문 인증한 사람만 평점을 남길 수 있어요.</string>
     <string name="reviews_write">리뷰 남기기</string>
+    <string name="reviews_verify_first">리뷰는 방문 인증(영수증 촬영) 뒤에 남길 수 있어요. 버튼을 누르면 인증 화면으로 이동해요.</string>
     <string name="reviews_edit">내 리뷰 수정</string>
     <string name="reviews_more">리뷰 더보기</string>
     <string name="reviews_visit_count">단골 %1$d회</string>

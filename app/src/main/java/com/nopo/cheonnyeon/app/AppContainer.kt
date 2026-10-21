@@ -54,6 +54,8 @@ class AppContainer(
     val restoring = MutableStateFlow(false)
     /** 방문 인증을 마치고 "리뷰 남기기"를 눌렀을 때 그 가게 ID. 가게 상세가 보고 리뷰 편집기를 열고 비운다 */
     val pendingReviewStoreId = MutableStateFlow<String?>(null)
+    /** 가게 상세에서 "리뷰 남기기"를 눌러 방문 인증 화면으로 넘어간 가게 ID. 인증에 성공하면 리뷰 편집기가 열린다 */
+    val reviewIntentStoreId = MutableStateFlow<String?>(null)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {
