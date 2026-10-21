@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>노포 천년 미식가 시연 시나리오 (2026-10-20 17:43)</title>
+<title>노포 천년 미식가 시연 시나리오 (2026-10-21 09:56)</title>
 <style>
 body{margin:0;background:#1d2b28;color:#eef;font-family:'Noto Sans KR','Malgun Gothic',sans-serif}
 nav{position:sticky;top:0;background:#12201d;padding:10px 16px;display:flex;gap:8px;flex-wrap:wrap}
@@ -10,8 +10,8 @@ section.on{display:block}
 img{max-height:86vh;max-width:100%;border:6px solid #fff;border-radius:6px}
 h2{margin:6px 0} p{margin:0 0 10px;color:#bcd}
 </style></head><body>
-<nav><button onclick="show(0)">①</button><button onclick="show(1)">②</button><button onclick="show(2)">③</button><button onclick="show(3)">④</button><button onclick="show(4)">④</button></nav>
-<section><h2>① 영수증 잘 찍힘 → 바로 인증</h2><p>영수증 인증 → 도장 → 리뷰 작성</p><img src="test_receipt_today.png" alt="① 영수증 잘 찍힘 → 바로 인증"></section><section><h2>② 영수증 24시간 지남</h2><p>E_RECEIPT_EXPIRED 안내 → 가게 사진 인증으로 이어가기</p><img src="test_receipt_expired.png" alt="② 영수증 24시간 지남"></section><section><h2>③ 다른 가게 영수증</h2><p>E_RECEIPT_MISMATCH 안내</p><img src="test_receipt_other.png" alt="③ 다른 가게 영수증"></section><section><h2>④ 메뉴판(가게 사진 인증용)</h2><p>위치 확인 → 가게 사진 인증(간판·메뉴판)</p><img src="test_menuboard.png" alt="④ 메뉴판(가게 사진 인증용)"></section><section><h2>④ 간판(가게 사진 인증용)</h2><p>위치 확인 → 가게 사진 인증(간판·메뉴판)</p><img src="test_sign.png" alt="④ 간판(가게 사진 인증용)"></section>
+<nav><button onclick="show(0)">①</button><button onclick="show(1)">②</button><button onclick="show(2)">③</button><button onclick="show(3)">⑤</button><button onclick="show(4)">⑥</button><button onclick="show(5)">⑦</button><button onclick="show(6)">④</button><button onclick="show(7)">④</button></nav>
+<section><h2>① 영수증 잘 찍힘 → 바로 인증</h2><p>영수증 인증 → 도장 → 리뷰 작성</p><img src="test_receipt_today.png" alt="① 영수증 잘 찍힘 → 바로 인증"></section><section><h2>② 영수증 24시간 지남</h2><p>E_RECEIPT_EXPIRED 안내 → 가게 사진 인증으로 이어가기</p><img src="test_receipt_expired.png" alt="② 영수증 24시간 지남"></section><section><h2>③ 다른 가게 영수증</h2><p>E_RECEIPT_MISMATCH 안내</p><img src="test_receipt_other.png" alt="③ 다른 가게 영수증"></section><section><h2>⑤ 위쪽이 잘린 영수증 (AI 촬영 도우미)</h2><p>가게 이름이 잘려 인식 실패 → AI가 '위쪽까지 찍어 주세요' 안내</p><img src="test_receipt_cut_top.png" alt="⑤ 위쪽이 잘린 영수증 (AI 촬영 도우미)"></section><section><h2>⑥ 흐린 영수증 (AI 촬영 도우미)</h2><p>글자가 흐려 인식 실패 → AI가 초점·거리 안내</p><img src="test_receipt_blur.png" alt="⑥ 흐린 영수증 (AI 촬영 도우미)"></section><section><h2>⑦ 어두운 영수증 (AI 촬영 도우미)</h2><p>너무 어두워 인식 실패 → AI가 밝은 곳 안내</p><img src="test_receipt_dark.png" alt="⑦ 어두운 영수증 (AI 촬영 도우미)"></section><section><h2>④ 메뉴판(가게 사진 인증용)</h2><p>위치 확인 → 가게 사진 인증(간판·메뉴판)</p><img src="test_menuboard.png" alt="④ 메뉴판(가게 사진 인증용)"></section><section><h2>④ 간판(가게 사진 인증용)</h2><p>위치 확인 → 가게 사진 인증(간판·메뉴판)</p><img src="test_sign.png" alt="④ 간판(가게 사진 인증용)"></section>
 <script>
 const s=[...document.querySelectorAll('section')];
 function show(i){s.forEach((e,j)=>e.classList.toggle('on',i===j));}

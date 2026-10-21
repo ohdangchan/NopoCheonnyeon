@@ -99,6 +99,9 @@ def scenarios_html(path, stamp):
         ("① 영수증 잘 찍힘 → 바로 인증", "test_receipt_today.png", "영수증 인증 → 도장 → 리뷰 작성"),
         ("② 영수증 24시간 지남", "test_receipt_expired.png", "E_RECEIPT_EXPIRED 안내 → 가게 사진 인증으로 이어가기"),
         ("③ 다른 가게 영수증", "test_receipt_other.png", "E_RECEIPT_MISMATCH 안내"),
+        ("⑤ 위쪽이 잘린 영수증 (AI 촬영 도우미)", "test_receipt_cut_top.png", "가게 이름이 잘려 인식 실패 → AI가 '위쪽까지 찍어 주세요' 안내"),
+        ("⑥ 흐린 영수증 (AI 촬영 도우미)", "test_receipt_blur.png", "글자가 흐려 인식 실패 → AI가 초점·거리 안내"),
+        ("⑦ 어두운 영수증 (AI 촬영 도우미)", "test_receipt_dark.png", "너무 어두워 인식 실패 → AI가 밝은 곳 안내"),
         ("④ 메뉴판(가게 사진 인증용)", "test_menuboard.png", "위치 확인 → 가게 사진 인증(간판·메뉴판)"),
         ("④ 간판(가게 사진 인증용)", "test_sign.png", "위치 확인 → 가게 사진 인증(간판·메뉴판)"),
     ]
@@ -136,6 +139,13 @@ receipt(os.path.join(OUT, "test_receipt_expired.png"), "노포천년테스트식
         now - datetime.timedelta(hours=50), [("설렁탕 x1", 12000), ("도가니탕 x1", 15000)], seed + "b")
 receipt(os.path.join(OUT, "test_receipt_other.png"), "행복분식", "222-33-44556", "02-111-2222", "서울특별시 종로구 종로 1",
         now, [("김밥 x2", 7000), ("떡볶이 x1", 5000), ("어묵 x1", 3000)], seed + "c")
+# AI 촬영 도우미 시연용: 같은 영수증을 일부러 망가뜨린다(위쪽 잘림·흐림·어두움)
+from PIL import Image, ImageEnhance, ImageFilter
+base = Image.open(os.path.join(OUT, "test_receipt_today.png")).convert("RGB")
+w, h = base.size
+base.crop((0, int(h * 0.30), w, h)).save(os.path.join(OUT, "test_receipt_cut_top.png"))
+base.filter(ImageFilter.GaussianBlur(7)).save(os.path.join(OUT, "test_receipt_blur.png"))
+ImageEnhance.Brightness(base).enhance(0.18).save(os.path.join(OUT, "test_receipt_dark.png"))
 menuboard(os.path.join(OUT, "test_menuboard.png"))
 scenarios_html(os.path.join(OUT, "demo_scenarios.html"), now.strftime("%Y-%m-%d %H:%M"))
 print("생성:", now.strftime("%Y-%m-%d %H:%M"), "->", OUT)
