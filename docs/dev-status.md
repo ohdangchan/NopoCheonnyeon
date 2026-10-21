@@ -6,6 +6,8 @@
 
 ## ★ 최신 인수인계 (2026-10-21) — 가장 먼저 읽을 것
 
+**QA 검수 문서:** `docs/qa-final-2026-10-21.md`(기능별 검수표·보안 점검·결함·미확인 항목·시연 직전 체크리스트).
+
 **배포(2026-10-21):** 저장소를 **공개**로 전환했고 릴리스 `v0.1.0-demo`에 APK(`nopo-cheonnyeon.apk`, 87MB, Gemini 키 포함 — 사용자가 노출을 감수하기로 함)를 올렸다. QR(`docs/media/download_qr.png`, 앱 공유 카드의 QR도 같은 주소)은 `https://github.com/ohdangchan/NopoCheonnyeon/releases/latest/download/nopo-cheonnyeon.apk`를 가리킨다. 새 APK를 배포하려면 `gh release create vX.Y.Z --repo ohdangchan/NopoCheonnyeon app-release.apk#nopo-cheonnyeon.apk`(latest 릴리스가 바뀌면 QR 주소는 그대로 유효). **시연 뒤에는 Gemini 키 폐기·교체를 권장.**
 
 **상태:** P0·P1 요구사항과 이번 APK 범위의 기능은 모두 구현·푸시됨(최신 커밋은 `git log` 참고). 단위 테스트 약 275개·lint 오류 0. 남은 것은 대부분 **사용자만 할 수 있는 실기기 확인**과 공개 배포 전 정리다. 상세 변경 이력은 아래 10장 10-6~10-18.
