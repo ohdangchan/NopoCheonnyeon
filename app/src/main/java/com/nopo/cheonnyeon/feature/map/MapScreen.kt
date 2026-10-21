@@ -58,7 +58,7 @@ private const val MAX_MARKERS = 250
 
 /** 지도 탐색 탭 (S-502): 검색창 + 필터 칩 + 지도/목록 + 하단 시트 */
 @Composable
-fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit) {
+fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val permission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -73,6 +73,14 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit) {
             Modifier.fillMaxWidth().background(c.sign).statusBarsPadding().padding(NopoTheme.spacing.md),
             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
         ) {
+            // AI 노포 도우미: 말로 찾기·천년 경로·오늘의 코스
+            Row(
+                Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onOpenChat).padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.sm),
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
+            ) {
+                Text(stringResource(R.string.chat_entry), style = NopoTheme.typography.titleSmall, color = c.primary)
+                Text(stringResource(R.string.chat_entry_sub), style = NopoTheme.typography.bodySmall, color = c.ink2, modifier = Modifier.weight(1f))
+            }
             OutlinedTextField(
                 value = state.filter.query,
                 onValueChange = vm::setQuery,

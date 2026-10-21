@@ -45,6 +45,8 @@ class AppContainer(
     val ai = com.nopo.cheonnyeon.data.ai.AiRepository(com.nopo.cheonnyeon.data.ai.GeminiClient(com.nopo.cheonnyeon.BuildConfig.GEMINI_API_KEY))
     /** 가게 소개글·리뷰 AI 번역 */
     val translator = com.nopo.cheonnyeon.data.ai.StoreTranslator(ai)
+    /** 챗봇 대화 기록(이 기기 저장 공간) */
+    val chatStore = com.nopo.cheonnyeon.data.ai.ChatStore(appContext, dispatchers.io)
     val storeStats = com.nopo.cheonnyeon.data.remote.StoreStatsRepository { FirebaseFirestore.getInstance() }
     val connectivity = com.nopo.cheonnyeon.platform.network.ConnectivityMonitor(appContext)
     val syncScheduler = SyncScheduler(appContext)

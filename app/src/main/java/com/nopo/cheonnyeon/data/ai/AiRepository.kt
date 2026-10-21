@@ -13,6 +13,20 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
+/** 챗봇 대화 한 줄(이전 대화를 AI에게 다시 알려 줄 때) */
+data class ChatTurn(val isUser: Boolean, val text: String)
+
+/** 챗봇 답변에 쓰는 사용자 상황: 지금 시각·위치, 세월, 후보 가게 */
+data class ChatContextInfo(
+    val nowText: String,
+    val locationText: String,
+    val totalYears: Int,
+    val candidates: List<com.nopo.cheonnyeon.domain.rule.ChatCandidate>,
+)
+
+/** 챗봇 답변: 글과, 후보 가게 중에서 고른 가게(ID, 이유; 코스면 순서대로) */
+data class ChatReply(val text: String, val picks: List<Pair<String, String>>)
+
 /** 취향 분석에 쓰는 내 리뷰 한 개(가게 메뉴 포함) */
 data class TasteReview(val storeName: String, val storeMenus: List<String>, val rating: Int, val text: String)
 
@@ -38,6 +52,8 @@ data class StoreInsight(
 @Serializable private data class PickDto(val menu: String = "", val reason: String = "", val ingredients: List<String> = emptyList())
 @Serializable private data class RecommendDto(val analysis: String = "", val picks: List<PickDto> = emptyList())
 @Serializable private data class TranslateDto(val items: List<String> = emptyList())
+@Serializable private data class ChatPickDto(val id: String = "", val reason: String = "")
+@Serializable private data class ChatDto(val reply: String = "", val stores: List<ChatPickDto> = emptyList())
 @Serializable private data class HintDto(val tip: String = "")
 @Serializable private data class MenuDto(val menu: String = "", val reason: String = "")
 @Serializable private data class InsightDto(
@@ -81,6 +97,42 @@ class AiRepository(private val client: GeminiClient) {
 
     private fun finish(summary: String, picked: List<MenuPick>): AppResult<MenuAnalysis> =
         if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else MenuAnalysis(summary, picked.take(MenuRoulette.PER_ROUND)).asSuccess()
+
+    /**
+     * 노포 도우미 챗봇: 자연어 찾기("비 오는 날 종로에서 혼자 먹기 좋은 국밥집"), 천년 경로 설계("1,000년까지 남은 312년을 가장 빨리 채우는 코스"),
+     * 오늘의 노포 코스(지금 위치·영업시간 고려) 등. 가게는 [ChatContextInfo.candidates] 안에서만 고르며, 후보에 없는 ID는 버린다.
+     */
+    suspend fun chat(history: List<ChatTurn>, userText: String, info: ChatContextInfo): AppResult<ChatReply> {
+        val remaining = (com.nopo.cheonnyeon.domain.model.Title.MASTER.requiredYears - info.totalYears).coerceAtLeast(0)
+        val prompt = buildString {
+            append("너는 '노포 천년 미식가' 앱의 AI 노포 도우미야. 오래된 노포(30년 이상) 맛집을 찾고 코스를 짜 줘. 친근하지만 존댓말로, 한국어로 답해.\n")
+            append("앱 규칙: 노포를 방문 인증하면 그 가게의 업력(년)만큼 '세월'이 쌓이고, 세월 1,000년이 되면 '천년 미식가'야. 이미 가 본 곳(visited=Y)은 세월이 더 쌓이지 않아.\n")
+            append("지금 시각: ${info.nowText}\n내 위치: ${info.locationText}\n내 세월: ${info.totalYears}년 (1,000년까지 ${remaining}년 남음)\n\n")
+            append("[요청 유형 가이드]\n")
+            append("- 말로 찾기: 분위기·날씨·인원·메뉴 조건에 맞는 가게를 후보에서 골라 이유를 말해 줘(비 오는 날=국물·따뜻한 메뉴 등 상식으로 해석).\n")
+            append("- 천년 경로 설계: 안 가 본 곳(visited=N) 중 years가 큰 곳을 서로 가까운 순서로 묶어, 남은 ${remaining}년을 가장 빨리(가장 적은 곳 수로) 채우는 코스를 짜. 코스의 years 합계가 남은 세월에 닿는지 말해 줘(합계는 후보의 years 숫자만 더해서).\n")
+            append("- 오늘의 노포 코스: 지금 시각과 영업시간(hours), 거리(km)를 고려해 반나절 3~4곳을 방문 순서대로. 영업시간이 불확실하면 확인하라고 덧붙여.\n\n")
+            append("[후보 가게] (id | 이름 | 지역 | years | 메뉴 | 영업시간 | 거리 | visited)\n")
+            info.candidates.forEach { c ->
+                val s = c.store
+                append("${s.id} | ${s.name} | ${s.sigungu} | ${c.years} | ${s.menuItems.take(3).joinToString("/")} | ${(s.hours ?: "정보 없음").take(40)} | ${c.distanceKm?.let { "%.1fkm".format(it) } ?: "-"} | ${if (c.visited) "Y" else "N"}\n")
+            }
+            append("\n[이전 대화]\n")
+            history.takeLast(MAX_CHAT_TURNS).forEach { append(if (it.isUser) "사용자: " else "도우미: "); append(it.text.take(300)); append('\n') }
+            append("\n[지금 사용자 말]\n$userText\n\n")
+            append("답변 규칙: reply는 5문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 6개(코스면 방문 순서대로)와 한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
+        }
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), CHAT_SCHEMA, temperature = 0.7)
+        val text = when (result) {
+            is AppResult.Success -> result.value
+            is AppResult.Failure -> return result
+        }
+        val dto = runCatching { json.decodeFromString<ChatDto>(text) }.getOrNull() ?: return AppError.E_AI_FAILED.asFailure()
+        val valid = info.candidates.map { it.store.id }.toSet()
+        val picks = dto.stores.filter { it.id in valid }.distinctBy { it.id }.take(6).map { it.id to it.reason.trim() }
+        if (dto.reply.isBlank() && picks.isEmpty()) return AppError.E_AI_FAILED.asFailure()
+        return ChatReply(dto.reply.trim(), picks).asSuccess()
+    }
 
     /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
     suspend fun translate(texts: List<String>, language: String): AppResult<List<String>> {
@@ -189,6 +241,7 @@ class AiRepository(private val client: GeminiClient) {
         const val MAX_TASTE_REVIEWS = 12
         const val MAX_TASTE_PHOTOS = 6
         const val MAX_INSIGHT_REVIEWS = 60
+        const val MAX_CHAT_TURNS = 8
 
         private fun str(desc: String? = null) = buildJsonObject { put("type", "STRING"); if (desc != null) put("description", desc) }
         private fun arr(item: JsonElement) = buildJsonObject { put("type", "ARRAY"); put("items", item) }
@@ -204,6 +257,7 @@ class AiRepository(private val client: GeminiClient) {
                 "picks" to arr(obj(mapOf("menu" to str(), "reason" to str(), "ingredients" to arr(str())))),
             ),
         )
+        val CHAT_SCHEMA: JsonElement = obj(mapOf("reply" to str(), "stores" to arr(obj(mapOf("id" to str(), "reason" to str())))))
         val TRANSLATE_SCHEMA: JsonElement = obj(mapOf("items" to arr(str())))
         val HINT_SCHEMA: JsonElement = obj(mapOf("tip" to str("사용자에게 보여 줄 한두 문장")))
         val INSIGHT_SCHEMA: JsonElement = obj(
