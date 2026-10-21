@@ -326,3 +326,6 @@
 - 2026-10-21 확인: App Check를 "적용 안 함"으로 바꾼 뒤(반영에 약 10분) 디버그·릴리스 모두 폰에서 AI 응답 확인. 기본 모델이 붐비면(503 high demand) 25초 제한 후 예비 모델 `gemini-2.5-flash-lite`로 한 번 더 시도한다. APK 안에 Gemini 키 없음(내 키 문자열·AIza 형태 0건 확인). 릴리스 `v0.1.0-demo`의 APK를 키 없는 빌드로 교체함.
 - 남은 일: 기존 Gemini 키 폐기(콘솔), **2026-11-02부터 AI Logic App Check 적용이 의무**라 그 뒤에는 이 방식이 막힌다 → 그때는 App Check 제공자 또는 서버 프록시(Blaze) 필요, 시연 뒤 App Check 다시 켜기.
 - (이전 메모) 배포 후: 새 릴리스 APK로 교체, 기존 릴리스(v0.1.0-demo)와 기존 Gemini 키 폐기.
+
+## 2026-10-21 앱 아이콘
+- 청록 간판 바탕 + 붉은 도장("노포") 적응형 아이콘. 생성: `python tools/gen_app_icon.py`(나눔명조 ExtraBold 필요) → `mipmap-*/ic_launcher*.webp`, `mipmap-anydpi/ic_launcher*.xml`(바탕·전경·모노크롬). 미리보기 `docs/media/app_icon_preview.png`. 폰 홈 화면 확인, 공개 릴리스 APK도 교체함.
