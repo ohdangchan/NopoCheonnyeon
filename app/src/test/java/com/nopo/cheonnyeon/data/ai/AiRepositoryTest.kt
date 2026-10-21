@@ -121,4 +121,16 @@ class AiRepositoryTest {
         assertEquals("가게 이름이 잘렸어요. 위쪽까지 찍어 주세요.", r.valueOrNull)
         assertTrue(calls[0].contains("image/jpeg") && calls[0].contains("합계 5,000"))
     }
+
+    @Test fun `단골 충성도는 AI 점수를 기준 점수 안으로 고정하고 근거를 담는다`() = runBlocking {
+        val peers = (1..10).map { com.nopo.cheonnyeon.domain.rule.LoyaltyInput(20, it * 2, 1.0 + it / 10.0, 20) }
+        val input = com.nopo.cheonnyeon.domain.rule.LoyaltyInput(30, 3, 1.1, 30)
+        val calls = mutableListOf<String>()
+        val r = repo(200 to wrap("""{"score":99,"label":"가벼운 단골","summary":"재방문이 적은 편이에요.","reasons":["재방문율 10%","평균 1.1회"]}"""), calls = calls).loyalty("진미옥", input, peers, 4.2)
+        val v = (r as AppResult.Success).value
+        assertTrue(v.score <= v.baseline + 12 && v.score >= v.baseline - 12)
+        assertEquals(2, v.reasons.size)
+        assertEquals(10, v.peerCount)
+        assertTrue(calls[0].contains("재방문율") && calls[0].contains("기준 점수"))
+    }
 }

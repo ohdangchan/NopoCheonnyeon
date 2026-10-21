@@ -27,6 +27,19 @@ data class ChatContextInfo(
 /** 챗봇 답변: 글과, 후보 가게 중에서 고른 가게(ID, 이유; 코스면 순서대로) */
 data class ChatReply(val text: String, val picks: List<Pair<String, String>>)
 
+/** 단골 충성도 분석 결과 */
+data class LoyaltyAnalysis(
+    /** 최종 점수(0~100, 기준 점수 ±12 안) */
+    val score: Int,
+    val baseline: Int,
+    val label: String,
+    val summary: String,
+    val reasons: List<String>,
+    val peerCount: Int,
+    val topPercent: Int,
+    val input: com.nopo.cheonnyeon.domain.rule.LoyaltyInput,
+)
+
 /** 취향 분석에 쓰는 내 리뷰 한 개(가게 메뉴 포함) */
 data class TasteReview(val storeName: String, val storeMenus: List<String>, val rating: Int, val text: String)
 
@@ -54,6 +67,7 @@ data class StoreInsight(
 @Serializable private data class TranslateDto(val items: List<String> = emptyList())
 @Serializable private data class ChatPickDto(val id: String = "", val reason: String = "")
 @Serializable private data class ChatDto(val reply: String = "", val stores: List<ChatPickDto> = emptyList())
+@Serializable private data class LoyaltyDto(val score: Int = 0, val label: String = "", val summary: String = "", val reasons: List<String> = emptyList())
 @Serializable private data class HintDto(val tip: String = "")
 @Serializable private data class MenuDto(val menu: String = "", val reason: String = "")
 @Serializable private data class InsightDto(
@@ -132,6 +146,43 @@ class AiRepository(private val client: GeminiClient) {
         val picks = dto.stores.filter { it.id in valid }.distinctBy { it.id }.take(6).map { it.id to it.reason.trim() }
         if (dto.reply.isBlank() && picks.isEmpty()) return AppError.E_AI_FAILED.asFailure()
         return ChatReply(dto.reply.trim(), picks).asSuccess()
+    }
+
+    /**
+     * 단골 충성도 점수(100점 만점): 이 가게의 재방문율·단골 횟수를 다른 가게들(비교 대상)과 견줘 AI가 점수와 이유를 낸다.
+     * 기준 점수(백분위 계산)를 근거로 주고, AI 점수는 기준 ±12 안으로 고정해 터무니없는 값이 나오지 않게 한다.
+     */
+    suspend fun loyalty(
+        storeName: String,
+        input: com.nopo.cheonnyeon.domain.rule.LoyaltyInput,
+        peers: List<com.nopo.cheonnyeon.domain.rule.LoyaltyInput>,
+        avgRating: Double?,
+    ): AppResult<LoyaltyAnalysis> {
+        val rule = com.nopo.cheonnyeon.domain.rule.LoyaltyScore
+        val summary = rule.summary(peers)
+        val baseline = rule.baseline(input, peers)
+        val top = rule.topPercent(input, peers)
+        fun pct(x: Double) = "%.0f%%".format(x * 100)
+        val prompt = buildString {
+            append("너는 노포 맛집의 '단골 충성도'를 분석하는 데이터 분석가야. '$storeName'의 재방문 지표를 다른 가게들과 비교해서 100점 만점으로 점수를 매겨 줘.\n\n")
+            append("[이 가게] 방문자 ${input.visitors}명, 다시 온 사람 ${input.revisitors}명(재방문율 ${pct(input.rate)}), 리뷰에 적힌 평균 단골 횟수 ${"%.2f".format(input.avgVisitCount)}회, 리뷰 ${input.reviewCount}개")
+            if (avgRating != null) append(", 평균 별점 ${"%.1f".format(avgRating)}")
+            append("\n[비교 대상 ${summary.count}곳] 재방문율 평균 ${pct(summary.meanRate)}, 중앙값 ${pct(summary.medianRate)}, 상위 25% 경계 ${pct(summary.p75Rate)}, 평균 단골 횟수 ${"%.2f".format(summary.meanVisits)}회\n")
+            append("[계산한 기준] 재방문율은 비교 대상 중 상위 ${top}%, 표본 보정까지 한 기준 점수는 ${baseline}점\n\n")
+            append("규칙: score는 기준 점수 ${baseline}에서 ±${rule.AI_ADJUST} 안으로만 조정해(표본이 적으면 기준에 가깝게, 지표가 뚜렷하면 더 벌려). ")
+            append("label은 '동네 단골 맛집'처럼 6~12자 이름표. summary는 두 문장 이내로 단골들의 충성도를 평가. reasons는 근거 2~3개(숫자를 인용한 짧은 문장). 한국어 JSON으로만 답해.")
+        }
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), LOYALTY_SCHEMA, temperature = 0.3)
+        val text = when (result) {
+            is AppResult.Success -> result.value
+            is AppResult.Failure -> return result
+        }
+        val dto = runCatching { json.decodeFromString<LoyaltyDto>(text) }.getOrNull() ?: return AppError.E_AI_FAILED.asFailure()
+        if (dto.summary.isBlank()) return AppError.E_AI_FAILED.asFailure()
+        return LoyaltyAnalysis(
+            score = rule.clamp(dto.score, baseline), baseline = baseline, label = dto.label.trim(), summary = dto.summary.trim(),
+            reasons = dto.reasons.map(String::trim).filter(String::isNotEmpty).take(3), peerCount = summary.count, topPercent = top, input = input,
+        ).asSuccess()
     }
 
     /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
@@ -258,6 +309,7 @@ class AiRepository(private val client: GeminiClient) {
             ),
         )
         val CHAT_SCHEMA: JsonElement = obj(mapOf("reply" to str(), "stores" to arr(obj(mapOf("id" to str(), "reason" to str())))))
+        val LOYALTY_SCHEMA: JsonElement = obj(mapOf("score" to buildJsonObject { put("type", "INTEGER") }, "label" to str(), "summary" to str(), "reasons" to arr(str())))
         val TRANSLATE_SCHEMA: JsonElement = obj(mapOf("items" to arr(str())))
         val HINT_SCHEMA: JsonElement = obj(mapOf("tip" to str("사용자에게 보여 줄 한두 문장")))
         val INSIGHT_SCHEMA: JsonElement = obj(

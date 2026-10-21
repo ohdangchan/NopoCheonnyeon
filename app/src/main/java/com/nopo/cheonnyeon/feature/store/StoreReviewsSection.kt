@@ -80,6 +80,10 @@ data class ReviewsUiState(
     val insight: com.nopo.cheonnyeon.data.ai.StoreInsight? = null,
     val insightLoading: Boolean = false,
     val insightError: AppError? = null,
+    /** 단골 충성도 점수(AI) */
+    val loyalty: com.nopo.cheonnyeon.data.ai.LoyaltyAnalysis? = null,
+    val loyaltyLoading: Boolean = false,
+    val loyaltyError: AppError? = null,
 )
 
 class ReviewsViewModel(private val container: AppContainer, private val store: Store) : ViewModel() {
@@ -186,6 +190,33 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             when (val r = container.ai.analyzeStore(store.id, store.name, store.menuItems, reviews)) {
                 is AppResult.Success -> _state.update { it.copy(insightLoading = false, insight = r.value) }
                 is AppResult.Failure -> _state.update { it.copy(insightLoading = false, insightError = r.error) }
+            }
+        }
+    }
+
+    /** 이 가게의 재방문 지표를 다른 가게들과 견줘 AI가 단골 충성도를 100점 만점으로 평가한다 */
+    fun analyzeLoyalty() {
+        val s = _state.value
+        if (s.loyaltyLoading) return
+        _state.update { it.copy(loyaltyLoading = true, loyaltyError = null) }
+        viewModelScope.launch {
+            val all = s.items + s.demoItems
+            val visitCounts = all.map { it.visitCount }
+            val stats = s.stats
+            val input = com.nopo.cheonnyeon.domain.rule.LoyaltyInput(
+                visitors = stats?.visitors ?: all.size,
+                revisitors = stats?.revisitors ?: all.count { it.visitCount >= 2 },
+                avgVisitCount = if (visitCounts.isEmpty()) 1.0 else visitCounts.average(),
+                reviewCount = all.size,
+            )
+            // 비교 대상: 시연용 예시 데이터에 있는 다른 가게들(리뷰 5개 이상)
+            val peers = container.demoReviews.load().byStore.filter { (id, list) -> id != store.id && list.size >= 5 }.map { (_, list) ->
+                com.nopo.cheonnyeon.domain.rule.LoyaltyInput(list.size, list.count { it.visitCount >= 2 }, list.map { it.visitCount }.average(), list.size)
+            }
+            val avg = s.summary?.average
+            when (val r = container.ai.loyalty(store.name, input, peers, avg)) {
+                is AppResult.Success -> _state.update { it.copy(loyaltyLoading = false, loyalty = r.value) }
+                is AppResult.Failure -> _state.update { it.copy(loyaltyLoading = false, loyaltyError = r.error) }
             }
         }
     }
@@ -301,6 +332,7 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit) {
         }
         state.error?.let { Text(it.message(LocalContext.current), color = c.stamp) }
         AiInsightSection(vm, state)
+        LoyaltySection(vm, state)
 
         when (state.eligibility) {
             ReviewEligibility.NOT_VISITED -> Text(stringResource(R.string.reviews_need_visit), style = NopoTheme.typography.bodySmall, color = c.ink2)
@@ -496,4 +528,40 @@ private fun AiInsightSection(vm: ReviewsViewModel, state: ReviewsUiState) {
         }
     }
     if (askConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyze() }, onDismiss = { askConsent = false })
+}
+
+/** 단골 충성도 점수(100점 만점): 재방문율을 다른 가게와 견준 AI 평가 */
+@Composable
+private fun LoyaltySection(vm: ReviewsViewModel, state: ReviewsUiState) {
+    if (!vm.aiAvailable) return
+    val c = NopoTheme.colors
+    val visitors = state.stats?.visitors ?: (state.items.size + state.demoItems.size)
+    if (visitors < 3) return
+    var askConsent by rememberSaveable { mutableStateOf(false) }
+    val consent by vm.aiConsent.collectAsStateWithLifecycle(initialValue = false)
+    val result = state.loyalty
+    if (result == null) {
+        NopoButton(
+            stringResource(if (state.loyaltyLoading) R.string.loyalty_loading else R.string.loyalty_button),
+            { if (consent) vm.analyzeLoyalty() else askConsent = true },
+            enabled = !state.loyaltyLoading, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth(),
+        )
+    }
+    state.loyaltyError?.let { Text(it.message(LocalContext.current), color = c.stamp) }
+    result?.let { r ->
+        Column(Modifier.fillMaxWidth().background(c.brassSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+            Text(stringResource(R.string.loyalty_title), style = NopoTheme.typography.titleSmall, color = c.primary)
+            Row(verticalAlignment = androidx.compose.ui.Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+                Text(stringResource(R.string.loyalty_score, r.score), style = NopoTheme.typography.displayMedium, color = c.stamp)
+                if (r.label.isNotBlank()) Text(r.label, style = NopoTheme.typography.titleMedium, color = c.ink)
+            }
+            androidx.compose.material3.LinearProgressIndicator(progress = { r.score / 100f }, modifier = Modifier.fillMaxWidth(), color = c.stamp, trackColor = c.surface)
+            Text(stringResource(R.string.loyalty_compare, r.peerCount, r.topPercent), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            Text(r.summary, style = NopoTheme.typography.bodyMedium, color = c.ink)
+            r.reasons.forEach { Text("• $it", style = NopoTheme.typography.bodyMedium, color = c.ink) }
+            Text(stringResource(R.string.loyalty_basis, r.input.visitors, r.input.revisitors, (r.input.rate * 100).toInt(), r.baseline), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            Text(stringResource(R.string.loyalty_disclaimer), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        }
+    }
+    if (askConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyzeLoyalty() }, onDismiss = { askConsent = false })
 }
