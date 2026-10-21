@@ -59,7 +59,7 @@ private const val MAX_MARKERS = 250
 
 /** 지도 탐색 탭 (S-502): 검색창 + 필터 칩 + 지도/목록 + 하단 시트 */
 @Composable
-fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: () -> Unit = {}) {
+fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val permission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -74,21 +74,27 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: () ->
             Modifier.fillMaxWidth().background(c.sign).statusBarsPadding().padding(NopoTheme.spacing.md),
             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
         ) {
-            // AI 노포 도우미: 말로 찾기·천년 경로·오늘의 코스
-            Row(
-                Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onOpenChat).padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.sm),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
-            ) {
-                Text(stringResource(R.string.chat_entry), style = NopoTheme.typography.titleSmall, color = c.primary)
-                Text(stringResource(R.string.chat_entry_sub), style = NopoTheme.typography.bodySmall, color = c.ink2, modifier = Modifier.weight(1f))
-            }
             OutlinedTextField(
                 value = state.filter.query,
                 onValueChange = vm::setQuery,
-                placeholder = { Text(stringResource(R.string.map_search_hint)) },
+                placeholder = { Text(stringResource(R.string.map_search_hint_ai)) },
                 singleLine = true,
+                // 검색창 하나로 가게 검색과 AI 도우미를 함께 쓴다: 오른쪽 "AI" 버튼 또는 키보드 검색을 누르면 지금 쓴 말로 AI 노포 도우미가 열린다
+                trailingIcon = { androidx.compose.material3.TextButton({ onOpenChat(state.filter.query) }) { Text(stringResource(R.string.map_search_ai), color = c.stamp, style = NopoTheme.typography.titleSmall) } },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { if (looksLikeQuestion(state.filter.query)) onOpenChat(state.filter.query) }),
                 modifier = Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md),
             )
+            // 말로 물어보는 문장(여러 단어)이면 AI에게 물어보라고 제안한다
+            if (looksLikeQuestion(state.filter.query)) {
+                Row(
+                    Modifier.fillMaxWidth().background(c.brassSoft, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenChat(state.filter.query) }.padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.sm),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
+                ) {
+                    Text(stringResource(R.string.map_search_ask_ai), style = NopoTheme.typography.titleSmall, color = c.primary)
+                    Text(state.filter.query, style = NopoTheme.typography.bodySmall, color = c.ink2, maxLines = 1, modifier = Modifier.weight(1f))
+                }
+            }
             Row(
                 Modifier.horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
@@ -283,4 +289,8 @@ private fun YearsPill(totalYears: Int) {
     )
 }
 
-
+/** 단어가 셋 이상이거나 물음표로 끝나면 "AI에게 물어보는 말"로 본다 */
+internal fun looksLikeQuestion(q: String): Boolean {
+    val t = q.trim()
+    return t.length >= 6 && (t.split(Regex("\\s+")).size >= 3 || t.endsWith("?") || t.endsWith("줘") || t.endsWith("요"))
+}

@@ -18,7 +18,8 @@ object Routes {
     const val DIAGNOSTICS = "diagnostics"
     const val HALL = "hall"
     const val ROULETTE = "roulette"
-    const val CHAT = "chat"
+    const val CHAT = "chat?q={q}"
+    fun chat(q: String = "") = if (q.isBlank()) "chat" else "chat?q=" + android.net.Uri.encode(q)
 
     /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
     val signedOutRoutes = setOf(LOGIN, SIGN_UP, RESET)

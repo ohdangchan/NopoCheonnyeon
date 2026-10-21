@@ -68,6 +68,8 @@ data class ChatUiState(
     val sending: Boolean = false,
     val error: AppError? = null,
     val remainingYears: Int = Title.MASTER.requiredYears,
+    /** 예전 기록 불러오기를 마쳤는가(검색창에서 넘어온 첫 질문은 그 뒤에 보낸다) */
+    val loaded: Boolean = false,
 )
 
 /**
@@ -88,7 +90,7 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
             _state.update {
                 it.copy(
                     messages = history, consent = container.settings.aiConsent.first(),
-                    remainingYears = (Title.MASTER.requiredYears - total).coerceAtLeast(0),
+                    remainingYears = (Title.MASTER.requiredYears - total).coerceAtLeast(0), loaded = true,
                 )
             }
         }
@@ -149,7 +151,7 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
 }
 
 @Composable
-fun ChatScreen(vm: ChatViewModel, onBack: () -> Unit, onOpenStore: (String) -> Unit) {
+fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit, onOpenStore: (String) -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
     val c = NopoTheme.colors
     val context = LocalContext.current
@@ -160,6 +162,14 @@ fun ChatScreen(vm: ChatViewModel, onBack: () -> Unit, onOpenStore: (String) -> U
     LaunchedEffect(state.messages.size, state.sending) {
         val last = state.messages.size + (if (state.sending) 1 else 0) - 1
         if (last >= 0) listState.animateScrollToItem(last)
+    }
+    // 지도 검색창에서 말로 물어보고 넘어왔으면 그 질문을 바로 보낸다(한 번만)
+    var handled by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(initialQuery, state.loaded) {
+        if (!handled && state.loaded && initialQuery.isNotBlank()) {
+            handled = true
+            if (state.consent) vm.send(initialQuery) else askConsent = initialQuery
+        }
     }
     fun submit(text: String) {
         if (text.isBlank()) return

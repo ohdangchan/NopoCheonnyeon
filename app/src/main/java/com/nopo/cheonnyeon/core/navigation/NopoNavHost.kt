@@ -96,7 +96,7 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.signOut() }) }
         composable(Routes.HOME) {
-            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) }, onOpenHall = { nav.navigate(Routes.HALL) }, onOpenRoulette = { nav.navigate(Routes.ROULETTE) }, onOpenChat = { nav.navigate(Routes.CHAT) })
+            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) }, onOpenHall = { nav.navigate(Routes.HALL) }, onOpenRoulette = { nav.navigate(Routes.ROULETTE) }, onOpenChat = { q -> nav.navigate(Routes.chat(q)) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
@@ -124,9 +124,9 @@ fun NopoNavHost(container: AppContainer) {
             val vm: com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel(container) })
             com.nopo.cheonnyeon.feature.passport.HallOfFameScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
-        composable(Routes.CHAT) {
+        composable(Routes.CHAT, arguments = listOf(navArgument("q") { type = NavType.StringType; defaultValue = "" })) { entry ->
             val vm: com.nopo.cheonnyeon.feature.ai.ChatViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.ai.ChatViewModel(container) })
-            com.nopo.cheonnyeon.feature.ai.ChatScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+            com.nopo.cheonnyeon.feature.ai.ChatScreen(vm, initialQuery = entry.arguments?.getString("q").orEmpty(), onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
         composable(Routes.ROULETTE) {
             val vm: com.nopo.cheonnyeon.feature.ai.MenuRouletteViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.ai.MenuRouletteViewModel(container) })

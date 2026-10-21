@@ -522,6 +522,9 @@
     <string name="translate_do">번역</string>
     <string name="translate_loading">%1$s(으)로 번역하는 중…</string>
     <string name="translate_notice">AI가 %1$s(으)로 번역했어요. 실제와 조금 다를 수 있어요.</string>
+    <string name="map_search_hint_ai">가게·지역·메뉴 검색 또는 AI에게 말로 물어보기</string>
+    <string name="map_search_ai">AI</string>
+    <string name="map_search_ask_ai">AI 도우미에게 물어보기 ›</string>
     <string name="chat_entry">AI 노포 도우미</string>
     <string name="chat_entry_sub">말로 찾기 · 천년 경로 · 오늘의 코스</string>
     <string name="chat_title">AI 노포 도우미</string>
