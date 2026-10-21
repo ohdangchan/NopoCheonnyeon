@@ -89,4 +89,36 @@ class AiRepositoryTest {
         val r = repo(200 to wrap("""{"oneLine":"","strengths":[],"menus":[],"weaknesses":[],"bestFor":""}""")).analyzeStore("S2", "가게", emptyList(), listOf(InsightReview(4, "좋아요")))
         assertEquals(AppError.E_AI_FAILED, r.errorOrNull)
     }
+
+    private fun cand(id: String, years: Int = 40) = com.nopo.cheonnyeon.domain.rule.ChatCandidate(com.nopo.cheonnyeon.domain.model.Store(id = id, name = "가게$id", foundedYear = 1980), years, 1.2, false)
+    private val chatInfo = ChatContextInfo("2026-10-21 12:00", "알 수 없음", 688, listOf(cand("S1"), cand("S2")))
+
+    @Test fun `챗봇은 후보에 없는 가게 ID를 버린다`() = runBlocking {
+        val json = """{"reply":"국밥을 추천해요","stores":[{"id":"S1","reason":"국물"},{"id":"ZZZ","reason":"지어낸 가게"},{"id":"S1","reason":"중복"},{"id":"S2","reason":"든든"}]}"""
+        val r = repo(200 to wrap(json)).chat(emptyList(), "국밥집", chatInfo)
+        assertEquals(listOf("S1", "S2"), (r as AppResult.Success).value.picks.map { it.first })
+        assertEquals("국밥을 추천해요", r.value.text)
+    }
+
+    @Test fun `챗봇 요청에는 시각 남은 세월 후보와 이전 대화가 들어간다`() = runBlocking {
+        val calls = mutableListOf<String>()
+        repo(200 to wrap("""{"reply":"네","stores":[]}"""), calls = calls)
+            .chat(listOf(ChatTurn(true, "안녕"), ChatTurn(false, "반가워요")), "코스 짜줘", chatInfo)
+        val body = calls[0]
+        assertTrue(body.contains("2026-10-21 12:00") && body.contains("312년") && body.contains("S1") && body.contains("반가워요") && body.contains("코스 짜줘"))
+    }
+
+    @Test fun `번역은 개수와 순서를 지키고 어긋나면 실패`() = runBlocking {
+        val ok = repo(200 to wrap("""{"items":["Hello","World"]}""")).translate(listOf("안녕","세상"), "English")
+        assertEquals(listOf("Hello", "World"), ok.valueOrNull)
+        val bad = repo(200 to wrap("""{"items":["Hello"]}""")).translate(listOf("안녕","세상"), "English")
+        assertEquals(AppError.E_AI_FAILED, bad.errorOrNull)
+    }
+
+    @Test fun `영수증 도우미는 안내 한 문장을 돌려주고 사진을 함께 보낸다`() = runBlocking {
+        val calls = mutableListOf<String>()
+        val r = repo(200 to wrap("""{"tip":"가게 이름이 잘렸어요. 위쪽까지 찍어 주세요."}"""), calls = calls).receiptHint("진미옥", listOf("합계 5,000"), "이름 잘림", "QUJD")
+        assertEquals("가게 이름이 잘렸어요. 위쪽까지 찍어 주세요.", r.valueOrNull)
+        assertTrue(calls[0].contains("image/jpeg") && calls[0].contains("합계 5,000"))
+    }
 }

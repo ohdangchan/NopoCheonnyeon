@@ -170,7 +170,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     }
 
     val aiAvailable: Boolean get() = container.ai.available
-    val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> = container.translator.state
+    val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> get() = container.translator.state
     /** 보이는 리뷰 글을 번역 대상으로 등록한다 */
     fun registerForTranslation(texts: List<String>) = container.translator.addSources(store.id, texts)
     val aiConsent get() = container.settings.aiConsent
