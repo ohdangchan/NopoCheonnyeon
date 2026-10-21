@@ -536,6 +536,9 @@
     <string name="chat_clear">기록 지우기</string>
     <string name="chat_clear_title">대화 기록을 모두 지울까요?</string>
     <string name="chat_clear_body">이 기기에 저장된 챗봇 대화가 모두 삭제돼요.</string>
+    <string name="chat_samples_title">이렇게 물어보세요 (눌러서 바로 질문)</string>
+    <string name="chat_samples_show">펼치기</string>
+    <string name="chat_samples_hide">접기</string>
     <string name="chat_sample_find">비 오는 날 종로에서 혼자 먹기 좋은 국밥집</string>
     <string name="chat_sample_route">1,000년까지 남은 %1$d년을 가장 빨리 채우는 코스를 짜 줘</string>
     <string name="chat_sample_today">지금 위치와 영업시간을 고려한 오늘의 노포 코스를 짜 줘</string>

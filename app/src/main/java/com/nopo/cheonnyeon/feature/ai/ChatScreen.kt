@@ -205,13 +205,27 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
             if (state.sending) item { Text(stringResource(R.string.chat_thinking), color = c.ink2, style = NopoTheme.typography.bodyMedium) }
             state.error?.let { e -> item { Text(e.message(context), color = c.stamp) } }
         }
-        Row(Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = NopoTheme.spacing.lg), horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
-            val remaining = state.remainingYears
-            listOf(
-                stringResource(R.string.chat_sample_find),
-                stringResource(R.string.chat_sample_route, remaining),
-                stringResource(R.string.chat_sample_today),
-            ).forEach { sample -> AssistChip(onClick = { submit(sample) }, label = { Text(sample) }, enabled = !state.sending) }
+        // 예시 질문: 눌러서 바로 물어볼 수 있다(접고 펼칠 수 있음)
+        var showSamples by rememberSaveable { mutableStateOf(true) }
+        Column(Modifier.fillMaxWidth().padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+            Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { showSamples = !showSamples }, verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.chat_samples_title), style = NopoTheme.typography.labelMedium, color = c.primary, modifier = Modifier.weight(1f))
+                Text(stringResource(if (showSamples) R.string.chat_samples_hide else R.string.chat_samples_show), style = NopoTheme.typography.labelMedium, color = c.ink2)
+            }
+            if (showSamples) {
+                listOf(
+                    stringResource(R.string.chat_sample_find),
+                    stringResource(R.string.chat_sample_route, state.remainingYears),
+                    stringResource(R.string.chat_sample_today),
+                ).forEach { sample ->
+                    Text(
+                        sample, style = NopoTheme.typography.bodyMedium, color = c.ink,
+                        modifier = Modifier.fillMaxWidth().background(c.tealSoft, NopoTheme.shapes.md)
+                            .clickable(enabled = !state.sending, role = Role.Button) { submit(sample) }
+                            .padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.sm),
+                    )
+                }
+            }
         }
         Row(Modifier.fillMaxWidth().padding(NopoTheme.spacing.md), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             OutlinedTextField(
