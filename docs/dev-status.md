@@ -318,3 +318,10 @@
 - **② 가게 리뷰 AI 분석**(가게 상세 리뷰 영역, 리뷰 3개 이상): 한 줄 요약·특장점·추천 메뉴·아쉬운 점·어울리는 사람. 같은 리뷰 묶음은 캐시.
 - 처음 사용 전 전송 동의 대화상자(`SettingsStore.aiConsent`), 개인정보 안내(앱·`privacy-notice.md`) 갱신, 오류 코드 `E_AI_FAILED`(27개째).
 - 시험: `MenuRouletteTest`(5), `AiRepositoryTest`(가짜 전송 9: 파싱·중복 재요청·오류 변환·캐시). 폰(S9+)에서 룰렛 3회(곰탕→순대국→닭볶음탕, 중복 없음)·가게 분석 동작 확인.
+
+## 2026-10-21 Gemini 키를 앱에서 제거(프록시 전환)
+- 앱(`GeminiClient`)은 키 없이 Firebase 로그인 ID 토큰으로 `AI_ENDPOINT`(Cloud Functions `gemini`, asia-northeast3)를 호출한다. 키는 Secret Manager `GEMINI_API_KEY`에만 있다.
+- 서버 코드: `firebase/functions/index.js` (ID 토큰 확인, 사용자당 하루 300회, 모델 고정, 허용 필드만 전달, 기록은 `aiUsage` 컬렉션).
+- 배포(사용자 PC): `firebase login --reauth` → Blaze 요금제 → `cd firebase && firebase functions:secrets:set GEMINI_API_KEY --project nopocheonnyeon` → `firebase deploy --only functions --project nopocheonnyeon`.
+- 배포 후: 새 릴리스 APK 업로드, 기존 릴리스(v0.1.0-demo)와 기존 키 폐기·새 키 발급.
+- 상태: 코드 완료·단위 테스트 통과, **서버 배포 전**(배포 전에는 AI 기능이 꺼짐).
