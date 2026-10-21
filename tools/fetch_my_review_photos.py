@@ -30,7 +30,7 @@ PLAN = [
     ("OR-f0dc9b95", ["haejangguk hangover soup", "suyuk boiled pork"], 3),
     ("BN-HND003115", ["samgyeopsal Korean barbecue", "Korean pork belly grill"], 1),
     ("BN-HND003112", ["kalguksu noodle soup", "wang mandu dumplings"], 2),
-    ("BN-HND003131", ["agujjim spicy monkfish", "Korean spicy braised fish"], 3),
+    ("BN-HND003131", ["agujjim", "monkfish stew", "Korean spicy braised seafood stew", "haemul jjim"], 3),
 ]
 
 

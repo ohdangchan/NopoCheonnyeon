@@ -26,7 +26,7 @@ private data class DemoMeRow(val totalYears: Int = 0, val visits: List<DemoVisit
 private data class DemoVisitRow(val s: String, val y: Int, val d: Int, val c: Int = 1)
 
 @Serializable
-private data class DemoMyReviewRow(val s: String, val n: String = "", val r: Int, val x: String = "", val d: Int = 1)
+private data class DemoMyReviewRow(val s: String, val n: String = "", val r: Int, val x: String = "", val d: Int = 1, val p: String = "", val p2: String = "", val p3: String = "")
 
 /** 명예의 전당에 쓰는 시연용 식객 한 명 */
 data class DemoUser(val nickname: String, val years: Int, val stores: Int, val reviews: Int)
@@ -80,6 +80,7 @@ class DemoReviews(private val context: Context, private val io: CoroutineDispatc
             r.s to ReviewItem(
                 id = "demo_me_$i", storeId = r.s, storeName = r.n, uid = DEMO_ME_UID, nickname = "", titleId = "ARTISAN", rating = r.r.coerceIn(1, 5),
                 text = r.x, visitCount = 1, updatedAtMillis = now - r.d * DAY_MS, demo = true,
+                photos = listOf(r.p, r.p2, r.p3).filter { it.isNotBlank() }.map { "asset:$it" },
             )
         }
         DemoData(

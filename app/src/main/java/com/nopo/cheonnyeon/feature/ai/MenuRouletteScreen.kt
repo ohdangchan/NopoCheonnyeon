@@ -12,6 +12,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -73,6 +78,10 @@ data class RouletteUiState(
     val usedPhotos: Int = 0,
     /** 추천 메뉴 → 그 메뉴가 있는 노포 */
     val storesByMenu: Map<String, List<Store>> = emptyMap(),
+    /** 룰렛 화면에서 흘러가는 사진: 내 리뷰 사진(없으면 내가 간 가게의 대표·리뷰 사진). Coil 모델(주소 문자열 또는 바이트) */
+    val reel: List<Any> = emptyList(),
+    /** [reel]이 내 리뷰 사진인지(true) 가게 사진 대체인지(false) */
+    val reelIsMine: Boolean = true,
 ) {
     val latest: List<MenuPick> get() = rounds.lastOrNull().orEmpty()
     val total: Int get() = rounds.sumOf { it.size }
@@ -87,6 +96,53 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch { _state.update { it.copy(consent = container.settings.aiConsent.first()) } }
+        viewModelScope.launch {
+            val (photos, mine) = loadReel()
+            _state.update { it.copy(reel = photos, reelIsMine = mine) }
+        }
+    }
+
+    /** 룰렛에서 흘러갈 사진 모으기: 내 리뷰 사진, 없으면 내가 간 가게의 대표 사진·리뷰 사진 */
+    private suspend fun loadReel(): Pair<List<Any>, Boolean> {
+        val mine = collectMyReviews().sortedByDescending { it.updatedAtMillis }
+        val own = mine.flatMap { it.photos }.mapNotNull(::photoModel).distinct()
+        if (own.isNotEmpty()) return own.take(MAX_REEL) to true
+        val catalog = container.catalog.all().associateBy { it.id }
+        val visited = container.visits.visitRefs().mapNotNull { catalog[it.storeId] }
+        val fallback = visited.flatMap { s ->
+            s.photoUrls.take(1) + (if (container.settings.demoData.first()) container.demoReviews.forStore(s.id).flatMap { it.photos }.take(2).mapNotNull(::photoModelString) else emptyList())
+        }.distinct()
+        return fallback.take(MAX_REEL) to false
+    }
+
+    private fun photoModelString(p: String): String? = (photoModel(p) as? String)
+
+    /** 리뷰 사진 문자열 → Coil 모델(시연용 "asset:" 경로는 주소, 실제 사진은 바이트) */
+    private fun photoModel(p: String): Any? =
+        if (p.startsWith("asset:")) "file:///android_asset/" + p.removePrefix("asset:") else com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec.decode(p)
+
+    /** 내 리뷰(서버·시험용 가게·시연용) 전부 */
+    private suspend fun collectMyReviews(): List<com.nopo.cheonnyeon.data.remote.ReviewItem> {
+        val nick = container.auth.currentNickname().orEmpty()
+        val items = ArrayList<com.nopo.cheonnyeon.data.remote.ReviewItem>()
+        container.auth.currentUid?.let { uid -> items += container.reviews.byUser(uid).valueOrNull.orEmpty() }
+        container.catalog.all().filter { it.isTest }.forEach { t ->
+            container.settings.testReviews(t.id).forEach { r ->
+                items += com.nopo.cheonnyeon.data.remote.ReviewItem(r.id, t.id, t.name, "", nick, "", r.rating, r.text, 1, r.at, photos = r.photos)
+            }
+        }
+        if (container.settings.demoData.first() && container.database.myVisitDao().demoVisitCount() > 0) {
+            items += container.demoReviews.myReviews(nick)
+        }
+        return items.distinctBy { it.id }
+    }
+
+    /** 시연용 사진(자산)도 AI에 보낼 수 있게 줄여서 base64 WebP로 */
+    private suspend fun assetBase64(path: String): String? = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        runCatching {
+            container.appContext.assets.open(path).use { android.graphics.BitmapFactory.decodeStream(it) }
+                ?.let { com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec.encode(it, 0) }
+        }.getOrNull()
     }
 
     /** 동의를 저장하고 바로 첫 룰렛을 돌린다 */
@@ -126,18 +182,7 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
     /** 내 리뷰(서버·시험용 가게·시연용)와 음식 사진, 없으면 방문한 가게의 메뉴로 취향 입력을 만든다 */
     private suspend fun loadTaste(): TasteInput {
         val catalog = container.catalog.all().associateBy { it.id }
-        val nick = container.auth.currentNickname().orEmpty()
-        val items = ArrayList<com.nopo.cheonnyeon.data.remote.ReviewItem>()
-        container.auth.currentUid?.let { uid -> items += container.reviews.byUser(uid).valueOrNull.orEmpty() }
-        catalog.values.filter { it.isTest }.forEach { t ->
-            container.settings.testReviews(t.id).forEach { r ->
-                items += com.nopo.cheonnyeon.data.remote.ReviewItem(r.id, t.id, t.name, "", nick, "", r.rating, r.text, 1, r.at, photos = r.photos)
-            }
-        }
-        if (container.settings.demoData.first() && container.database.myVisitDao().demoVisitCount() > 0) {
-            items += container.demoReviews.myReviews(nick)
-        }
-        val sorted = items.distinctBy { it.id }.sortedByDescending { it.updatedAtMillis }
+        val sorted = collectMyReviews().sortedByDescending { it.updatedAtMillis }
         var reviews = sorted.map { r ->
             val st = catalog[r.storeId]
             TasteReview(st?.name ?: r.storeName, st?.menuItems.orEmpty(), r.rating, r.text)
@@ -147,7 +192,10 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
             reviews = container.visits.visitRefs().mapNotNull { catalog[it.storeId] }.filter { it.menuItems.isNotEmpty() }
                 .map { TasteReview(it.name, it.menuItems, 4, "") }
         }
-        val photos = sorted.flatMap { it.photos }.filter { !it.startsWith("asset:") }.take(6)
+        // 최근 사진부터 최대 6장(시연용 자산 사진은 줄여서 함께 보낸다)
+        val photos = sorted.flatMap { it.photos }.take(MAX_AI_PHOTOS).mapNotNull { p ->
+            if (p.startsWith("asset:")) assetBase64(p.removePrefix("asset:")) else p
+        }
         return TasteInput(reviews, photos)
     }
 
@@ -160,6 +208,9 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
         }
     }
 }
+
+private const val MAX_REEL = 16
+private const val MAX_AI_PHOTOS = 6
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -179,7 +230,15 @@ fun MenuRouletteScreen(vm: MenuRouletteViewModel, onBack: () -> Unit, onOpenStor
             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Wheel(spinning = state.loading, Modifier.size(200.dp))
+            if (state.reel.isNotEmpty()) {
+                PhotoReel(state.reel, state.loading, Modifier.fillMaxWidth().height(250.dp))
+                Text(
+                    stringResource(if (state.reelIsMine) R.string.roulette_reel_mine else R.string.roulette_reel_visited, state.reel.size),
+                    style = NopoTheme.typography.labelMedium, color = c.primary,
+                )
+            } else {
+                Wheel(spinning = state.loading, Modifier.size(200.dp))
+            }
             Text(stringResource(R.string.roulette_intro), style = NopoTheme.typography.bodyMedium, color = c.ink2)
             if (!state.available) {
                 Text(stringResource(R.string.ai_unavailable), color = c.stamp)
@@ -295,4 +354,70 @@ fun AiConsentDialog(onAgree: () -> Unit, onDismiss: () -> Unit) {
         confirmButton = { TextButton(onAgree) { Text(stringResource(R.string.ai_consent_agree)) } },
         dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.detail_back)) } },
     )
+}
+
+/**
+ * 룰렛 화면의 사진 릴: 내 리뷰 사진이 두 줄로 반대 방향으로 흘러가고, AI가 분석하는 동안은 빠르게 돌다가 끝나면 천천히 멈춘다.
+ * 가운데 틀과 레이저 선이 "이 사진들을 AI가 보고 있다"는 느낌을 준다.
+ */
+@Composable
+private fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier) {
+    val c = NopoTheme.colors
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val itemW = 112.dp
+    val gap = 8.dp
+    val unit = with(density) { (itemW + gap).toPx() }
+    var pos by androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
+    val speed = androidx.compose.runtime.remember { Animatable(45f) }
+    LaunchedEffect(spinning) {
+        speed.animateTo(if (spinning) 2200f else 45f, tween(if (spinning) 600 else 1800, easing = FastOutSlowInEasing))
+    }
+    LaunchedEffect(Unit) {
+        var last = 0L
+        while (true) {
+            androidx.compose.runtime.withFrameNanos { t ->
+                if (last != 0L) pos += speed.value * (t - last) / 1_000_000_000f
+                last = t
+            }
+        }
+    }
+    val sweep = androidx.compose.animation.core.rememberInfiniteTransition(label = "sweep")
+    val scan by sweep.animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(tween(900, easing = LinearEasing), androidx.compose.animation.core.RepeatMode.Reverse), label = "scan")
+    // 한 줄은 사진을 여러 번 이어 붙여 끊김 없이 돈다
+    val reps = maxOf(2, kotlin.math.ceil(14f / photos.size).toInt() + 1)
+    val loop = unit * photos.size
+    fun rowPhotos(shift: Int) = List(photos.size * reps) { photos[(it + shift) % photos.size] }
+    Box(modifier.clip(NopoTheme.shapes.md).background(c.sign)) {
+        Column(Modifier.fillMaxSize().padding(vertical = NopoTheme.spacing.sm), verticalArrangement = Arrangement.spacedBy(gap)) {
+            listOf(0 to -1, photos.size / 2 to 1).forEach { (shift, dir) ->
+                Box(Modifier.fillMaxWidth().height(itemW).clip(NopoTheme.shapes.md)) {
+                    val x = if (dir < 0) -(pos % loop) else -loop + ((pos * 0.85f) % loop)
+                    Row(
+                        Modifier.wrapContentWidth(Alignment.Start, unbounded = true).offset { androidx.compose.ui.unit.IntOffset(x.toInt(), 0) },
+                        horizontalArrangement = Arrangement.spacedBy(gap),
+                    ) {
+                        rowPhotos(shift).forEach { m ->
+                            coil3.compose.AsyncImage(
+                                model = m, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                                modifier = Modifier.size(itemW).clip(NopoTheme.shapes.sm),
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        // 가운데 분석 틀과 레이저
+        Canvas(Modifier.fillMaxSize()) {
+            val fw = itemW.toPx() + 28.dp.toPx()
+            val left = (size.width - fw) / 2
+            drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), androidx.compose.ui.geometry.Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(3.dp.toPx()))
+            if (spinning) {
+                val y = 6.dp.toPx() + (size.height - 12.dp.toPx()) * scan
+                drawLine(c.laser, androidx.compose.ui.geometry.Offset(left, y), androidx.compose.ui.geometry.Offset(left + fw, y), 3.dp.toPx())
+            }
+            // 양쪽 가장자리를 어둡게
+            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(c.sign, androidx.compose.ui.graphics.Color.Transparent), 0f, 90.dp.toPx()), size = Size(90.dp.toPx(), size.height))
+            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(androidx.compose.ui.graphics.Color.Transparent, c.sign), size.width - 90.dp.toPx(), size.width), androidx.compose.ui.geometry.Offset(size.width - 90.dp.toPx(), 0f), Size(90.dp.toPx(), size.height))
+        }
+    }
 }

@@ -349,6 +349,20 @@ MY_TEXTS = [
 ]
 
 
+MY_PHOTO_TEXTS = [
+    "{menu} 사진 남겨요. 국물이 진하고 {years}년 가게다운 깊은 맛이었어요.",
+    "{name}에 또 왔어요. {menu} 정말 푸짐하게 나와서 사진부터 찍었어요.",
+    "{menu} 비주얼 보세요. 맛도 비주얼만큼 훌륭했어요!",
+    "오늘의 한 끼는 {menu}. 노포에서 먹으니 더 맛있어요.",
+    "{region}에서 이 집 {menu} 꼭 드셔 보세요. 사진으로 다 담기지 않는 맛이에요.",
+    "친구랑 {menu} 나눠 먹었어요. 양도 넉넉하고 정말 만족스러워요.",
+    "{menu} 먹고 힘이 났어요. {years}년을 지켜 온 집은 역시 다르네요.",
+    "사진 찍느라 식을 뻔했어요. {menu}는 따뜻할 때 먹어야 제맛!",
+    "{name}의 {menu}, 제 취향 저격이에요. 또 올게요.",
+    "{menu} 한 상 차림이 정갈해요. 사장님 솜씨가 그대로예요.",
+]
+
+
 def years_of(store):
     return max(30, 2026 - store["foundedYear"]) if store.get("foundedYear") else 30
 
@@ -376,6 +390,24 @@ def build_me(seoul):
             "s": s["id"], "n": name, "r": 5 if i % 3 else 4, "d": MY_REVIEW_DAYS[i],
             "x": MY_TEXTS[i].format(menu=menu, years=years_of(s), name=name, region=s.get("sigungu") or "서울"),
         })
+    # 사진이 붙은 내 리뷰 10개(AI 룰렛이 이 사진들을 분석하는 것처럼 보여 주기 위함): data/demo_my_photos.json
+    path = os.path.join(ROOT, "data", "demo_my_photos.json")
+    photos = json.load(open(path, encoding="utf-8")) if os.path.exists(path) else {}
+    by_id = {s["id"]: s for s in pick}
+    for i, (sid, files) in enumerate(photos.items()):
+        s = by_id.get(sid)
+        if not s or not files:
+            continue
+        name = s["name"].replace("주식회사 ", "")
+        menus = s.get("menuItems") or ["대표 메뉴"]
+        menu = menus[1] if len(menus) > 1 else menus[0]
+        row = {
+            "s": sid, "n": name, "r": 5 if i % 4 else 4, "d": 1 + i * 5,
+            "x": MY_PHOTO_TEXTS[i % len(MY_PHOTO_TEXTS)].format(menu=menu, years=years_of(s), name=name, region=s.get("sigungu") or "서울"),
+        }
+        for key, f in zip(("p", "p2", "p3"), files):
+            row[key] = f
+        mine.append(row)
     return {"totalYears": ME_TOTAL_YEARS, "visits": visits, "reviews": mine}
 
 
