@@ -25,6 +25,9 @@ data class NopoColors(
     val onPrimary: Color,
     val onStamp: Color,
     val onBrass: Color,
+    /** 영수증 스캔 연출: 형광펜 칠, 빨간 레이저 선 */
+    val highlighter: Color,
+    val laser: Color,
     val isDark: Boolean,
 )
 
@@ -45,6 +48,8 @@ val LightNopoColors = NopoColors(
     onPrimary = Color(0xFFFFFFFF),
     onStamp = Color(0xFFFFFFFF),
     onBrass = Color(0xFF2A1F00),
+    highlighter = Color(0xFFFFEB3B),
+    laser = Color(0xFFFF2B2B),
     isDark = false,
 )
 
@@ -65,6 +70,8 @@ val DarkNopoColors = NopoColors(
     onPrimary = Color(0xFF0D1614),
     onStamp = Color(0xFF0D1614),
     onBrass = Color(0xFF2A1F00),
+    highlighter = Color(0xFFFFEB3B),
+    laser = Color(0xFFFF4D4D),
     isDark = true,
 )
 

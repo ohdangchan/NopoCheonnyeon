@@ -51,7 +51,21 @@ data class VerifyUiState(
     val todayVisits: List<Pair<String, Int>> = emptyList(),
     /** 기기 시계가 서버와 10분 넘게 어긋남 (영수증 24시간 판정이 틀릴 수 있다). 어긋난 분 */
     val clockSkewMinutes: Long? = null,
+    /** 영수증 스캔 연출: 레이저가 훑는 중 → 인식한 글자에 형광펜 */
+    val scanPhase: ScanPhase = ScanPhase.NONE,
+    /** 방금 찍은 영수증 장면(화면 표시용으로 줄인 것, 메모리에서만 쓰고 파일로 저장하지 않는다) */
+    val scanFrame: android.graphics.Bitmap? = null,
+    val scanBoxes: List<com.nopo.cheonnyeon.platform.ocr.OcrBox> = emptyList(),
+    /** AI 촬영 도우미 안내(Gemini). 인식 실패 때 한두 문장 */
+    val aiHint: String? = null,
+    /** AI 안내를 받으려면 전송 동의가 필요함(처음 한 번) */
+    val askAiConsent: Boolean = false,
 )
+
+enum class ScanPhase { NONE, LASER, HIGHLIGHT }
+
+/** AI 촬영 도우미에 보낼 요청(동의를 기다리는 동안 들고 있는다) */
+private class HintRequest(val storeName: String, val lines: List<String>, val reason: String, val imageBase64: String?)
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
 class VerifyViewModel(
@@ -122,24 +136,102 @@ class VerifyViewModel(
     fun backToReceipt() = setStep(VerifyStep.RECEIPT)
     fun clearError() = _state.update { it.copy(error = null) }
 
-    /** ① 영수증: 촬영 → 글자 인식 → 판정 → 기록. 이미지는 메모리에서만 쓰고 바로 버린다. */
+    /** ① 영수증: 촬영 → (레이저 연출) 글자 인식 → (형광펜 연출) 판정 → 기록. 이미지는 메모리에서만 쓰고 파일로 저장하지 않는다. */
     fun captureReceipt(camera: CameraController) {
         val store = _state.value.store ?: return
         if (_state.value.busy) return
-        _state.update { it.copy(busy = true, error = null) }
+        clearScan()
+        _state.update { it.copy(busy = true, error = null, scanPhase = ScanPhase.LASER, aiHint = null) }
         viewModelScope.launch {
-            val lines = readText(camera)
-            if (lines == null) {
-                _state.update { it.copy(busy = false, error = AppError.E_RECEIPT_UNREADABLE) }
+            val t0 = android.os.SystemClock.elapsedRealtime()
+            val scan = scanReceipt(camera)
+            // 레이저가 최소 한 번은 훑고 지나가게 한다
+            val wait = LASER_MIN_MS - (android.os.SystemClock.elapsedRealtime() - t0)
+            if (wait > 0) kotlinx.coroutines.delay(wait)
+            if (scan == null) {
+                _state.update { it.copy(busy = false, scanPhase = ScanPhase.NONE, error = AppError.E_RECEIPT_UNREADABLE) }
+                requestHint(store.name, emptyList(), AppError.E_RECEIPT_UNREADABLE, null)
                 return@launch
             }
+            _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
+            kotlinx.coroutines.delay(HIGHLIGHT_MS)
             val visits = container.visits.visitRefs()
-            when (val r = VerifyReceiptUseCase.verify(lines, store, visits, container.clock.now())) {
-                is AppResult.Failure -> _state.update { it.copy(busy = false, error = r.error) }
-                is AppResult.Success -> finish(store, VerifyMethod.RECEIPT, photoVerified = true, hash = r.value.hash)
+            when (val r = VerifyReceiptUseCase.verify(scan.lines, store, visits, container.clock.now())) {
+                is AppResult.Failure -> {
+                    _state.update { it.copy(busy = false, error = r.error) }
+                    if (r.error in HINT_ERRORS) requestHint(store.name, scan.lines, r.error, state.value.scanFrame?.let(::jpegBase64))
+                }
+                is AppResult.Success -> {
+                    finish(store, VerifyMethod.RECEIPT, photoVerified = true, hash = r.value.hash)
+                    clearScan()
+                }
             }
         }
     }
+
+    /** 촬영해서 글자와 위치를 읽는다. 화면에 보일 줄인 장면은 상태에 둔다. 실패하면 null */
+    private suspend fun scanReceipt(camera: CameraController): com.nopo.cheonnyeon.platform.ocr.OcrScan? = try {
+        val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
+        withContext(Dispatchers.Default) {
+            try {
+                val scale = FRAME_SIDE.toFloat() / maxOf(bitmap.width, bitmap.height)
+                val frame = if (scale < 1f) android.graphics.Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+                _state.update { it.copy(scanFrame = frame) }
+                withTimeout(OCR_TIMEOUT_MS) { recognizer.readScan(bitmap) }
+            } finally {
+                bitmap.recycle()
+            }
+        }
+    } catch (_: TimeoutCancellationException) {
+        null
+    } catch (_: Exception) {
+        null
+    }
+
+    private fun jpegBase64(frame: android.graphics.Bitmap): String? = runCatching {
+        val out = java.io.ByteArrayOutputStream()
+        frame.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out)
+        android.util.Base64.encodeToString(out.toByteArray(), android.util.Base64.NO_WRAP)
+    }.getOrNull()
+
+    private var pendingHint: HintRequest? = null
+
+    /** 인식에 실패했을 때 Gemini가 원인과 다시 찍는 방법을 알려 준다. 키가 없거나 동의 전이면 건너뛴다 */
+    private fun requestHint(storeName: String, lines: List<String>, error: AppError, imageBase64: String?) {
+        if (!container.ai.available) return
+        val req = HintRequest(storeName, lines, hintReason(error), imageBase64)
+        viewModelScope.launch {
+            if (container.settings.aiConsent.first()) runHint(req) else { pendingHint = req; _state.update { it.copy(askAiConsent = true) } }
+        }
+    }
+
+    /** AI 안내 동의 대화상자에서 동의/거절 */
+    fun answerAiConsent(agree: Boolean) {
+        val req = pendingHint
+        pendingHint = null
+        _state.update { it.copy(askAiConsent = false) }
+        if (agree && req != null) viewModelScope.launch { container.settings.setAiConsent(true); runHint(req) }
+    }
+
+    private suspend fun runHint(req: HintRequest) {
+        val r = container.ai.receiptHint(req.storeName, req.lines, req.reason, req.imageBase64)
+        if (r is AppResult.Success) _state.update { it.copy(aiHint = r.value) }
+    }
+
+    private fun hintReason(error: AppError) = when (error) {
+        AppError.E_RECEIPT_MISMATCH -> "영수증의 가게 이름이 이 가게와 맞지 않아 보임(이름이 잘렸거나 다른 가게 영수증일 수 있음)"
+        AppError.E_RECEIPT_NO_DATE -> "영수증에서 날짜·시간을 찾지 못함(잘렸거나 흐릴 수 있음)"
+        else -> "영수증 글자를 거의 읽지 못함(흐림·어두움·기울어짐·너무 멀거나 가까움 등)"
+    }
+
+    /** 안내 창을 닫거나 다시 찍을 때: 연출 화면을 지우고 카메라로 돌아간다 */
+    fun clearScan() {
+        val old = _state.value.scanFrame
+        _state.update { it.copy(scanFrame = null, scanBoxes = emptyList(), scanPhase = ScanPhase.NONE, aiHint = null) }
+        runCatching { old?.recycle() }
+    }
+
+    fun dismissHint() = _state.update { it.copy(aiHint = null) }
 
     /** ② 사진·위치: 먼저 위치를 잰다 (최대 15초, 가장 정확한 값). */
     fun measureLocation(permissionGranted: Boolean, approximateOnly: Boolean) {
@@ -255,6 +347,7 @@ class VerifyViewModel(
     }
 
     override fun onCleared() {
+        runCatching { _state.value.scanFrame?.recycle() }
         if (recognizerLazy.isInitialized()) recognizer.close()
     }
 
@@ -263,6 +356,10 @@ class VerifyViewModel(
         const val KEY_ATTEMPTS = "attempts"
         const val KEY_IN_RANGE = "in_range"
         const val OCR_TIMEOUT_MS = 10_000L
+        const val LASER_MIN_MS = 1_700L
+        const val HIGHLIGHT_MS = 1_800L
+        const val FRAME_SIDE = 900
+        val HINT_ERRORS = setOf(AppError.E_RECEIPT_UNREADABLE, AppError.E_RECEIPT_MISMATCH, AppError.E_RECEIPT_NO_DATE)
         const val OCR_MAX_SIDE = 1_600
         const val RESTORE_WAIT_MS = 10_000L
     }

@@ -505,8 +505,12 @@
     <string name="roulette_stores">이 메뉴가 있는 노포</string>
     <string name="ai_unavailable">AI 기능을 쓸 수 없는 빌드예요. (API 키가 없어요)</string>
     <string name="ai_consent_title">AI 분석 안내</string>
-    <string name="ai_consent_body">AI 분석을 위해 내 리뷰 글·별점·올린 음식 사진과 가게 메뉴가 Google Gemini로 전송돼요. 위치·영수증·이메일은 보내지 않아요. 계속할까요?</string>
+    <string name="ai_consent_body">AI 기능을 위해 내 리뷰 글·별점·올린 음식 사진과 가게 메뉴, 번역할 글, 챗봇에 쓴 말, 그리고 영수증 인식에 실패했을 때 방금 찍은 영수증 사진이 Google Gemini로 전송돼요(저장하지 않아요). 위치 좌표·이메일은 보내지 않아요. 계속할까요?</string>
     <string name="ai_consent_agree">동의하고 계속</string>
+    <string name="cd_receipt_scan">스캔한 영수증</string>
+    <string name="verify_ai_hint_title">AI 촬영 도우미</string>
+    <string name="verify_ai_hint_retake">다시 찍기</string>
+    <string name="verify_ai_hint_close">닫기</string>
     <string name="insight_button">AI로 리뷰 분석하기</string>
     <string name="insight_loading">AI가 리뷰를 읽는 중…</string>
     <string name="insight_need_reviews">리뷰가 3개 이상 쌓이면 AI가 분석해 줘요</string>

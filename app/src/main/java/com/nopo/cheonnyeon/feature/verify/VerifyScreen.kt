@@ -89,8 +89,14 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
                 Text(stringResource(R.string.verify_receipt_title), style = NopoTheme.typography.titleMedium, color = c.ink)
                 Text(stringResource(R.string.verify_receipt_guide), style = NopoTheme.typography.bodyMedium, color = c.ink2)
                 androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth()) {
-                    CameraArea(camera, cameraPermission, Modifier.fillMaxSize())
-                    if (cameraPermission.status == PermissionStatus.GRANTED) ReceiptGuideOverlay(Modifier.fillMaxSize())
+                    val frame = state.scanFrame
+                    if (frame != null) {
+                        // 찍은 영수증 위를 레이저가 훑고, 읽은 글자에 형광펜이 칠해진다
+                        ReceiptScanView(frame, state.scanBoxes, state.scanPhase, Modifier.fillMaxSize())
+                    } else {
+                        CameraArea(camera, cameraPermission, Modifier.fillMaxSize())
+                        if (cameraPermission.status == PermissionStatus.GRANTED) ReceiptGuideOverlay(Modifier.fillMaxSize())
+                    }
                 }
                 ErrorText(state.error, state.errorMeters)
                 NopoButton(
@@ -143,6 +149,17 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
 
             VerifyStep.DONE -> Unit
         }
+        // AI 촬영 도우미 안내(예: "가게 이름이 잘렸어요. 위쪽까지 찍어 주세요")
+        state.aiHint?.let { tip ->
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = vm::dismissHint,
+                title = { Text(stringResource(R.string.verify_ai_hint_title)) },
+                text = { Text(tip) },
+                confirmButton = { androidx.compose.material3.TextButton({ vm.clearScan() }) { Text(stringResource(R.string.verify_ai_hint_retake)) } },
+                dismissButton = { androidx.compose.material3.TextButton(vm::dismissHint) { Text(stringResource(R.string.verify_ai_hint_close)) } },
+            )
+        }
+        if (state.askAiConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.answerAiConsent(true) }, onDismiss = { vm.answerAiConsent(false) })
         if (!state.busy) NopoButton(stringResource(R.string.verify_cancel), onClose, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
     }
 }
