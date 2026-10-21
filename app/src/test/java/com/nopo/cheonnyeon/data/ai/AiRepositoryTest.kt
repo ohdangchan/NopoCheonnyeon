@@ -11,9 +11,11 @@ import org.junit.Test
 
 /** 가짜 전송으로 Gemini 응답 처리·중복 제거·재요청·오류 변환을 시험한다 (실제 호출 없음) */
 class AiRepositoryTest {
-    private fun wrap(inner: String): String {
-        val esc = inner.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\n")
-        return """{"candidates":[{"content":{"parts":[{"text":"$esc"}]}}]}"""
+    private fun wrap(inner: String) = inner
+
+    /** 보낸 내용을 한 문자열로: 글은 그대로, 사진은 inline_data:종류 */
+    private fun describe(parts: List<GeminiPart>) = parts.joinToString("\n") {
+        when (it) { is GeminiPart.Text -> it.text; is GeminiPart.Image -> "inline_data:" + it.mimeType }
     }
 
     private fun picks(vararg names: String) =
@@ -21,7 +23,12 @@ class AiRepositoryTest {
 
     private fun repo(vararg responses: Pair<Int, String>, calls: MutableList<String> = mutableListOf()): AiRepository {
         val queue = ArrayDeque(responses.toList())
-        return AiRepository(GeminiClient("test-key", transport = { _, _, body -> calls += body; queue.removeFirst() }))
+        return AiRepository(GeminiClient(transport = { parts, _, _ ->
+            calls += describe(parts)
+            val (code, text) = queue.removeFirst()
+            if (code !in 200..299) throw IllegalStateException("서버 오류 $code")
+            text
+        }))
     }
 
     private val input = TasteInput(listOf(TasteReview("진미옥", listOf("설렁탕"), 5, "맛있어요")), photos = listOf("QUJD"))
@@ -47,12 +54,12 @@ class AiRepositoryTest {
     }
 
     @Test fun `전송 중 입출력 오류는 네트워크 오류`() = runBlocking {
-        val r = AiRepository(GeminiClient("k", transport = { _, _, _ -> throw java.io.IOException("x") })).recommendMenus(input, emptyList())
+        val r = AiRepository(GeminiClient(transport = { _, _, _ -> throw java.io.IOException("x") })).recommendMenus(input, emptyList())
         assertEquals(AppError.E_NETWORK, r.errorOrNull)
     }
 
     @Test fun `키가 없으면 호출 없이 실패`() = runBlocking {
-        val repo = AiRepository(GeminiClient("", transport = { _, _, _ -> error("호출하면 안 된다") }))
+        val repo = AiRepository(GeminiClient(model = "", transport = { _, _, _ -> error("호출하면 안 된다") }))
         assertFalse(repo.available)
         assertEquals(AppError.E_AI_FAILED, repo.recommendMenus(input, emptyList()).errorOrNull)
     }
@@ -64,11 +71,10 @@ class AiRepositoryTest {
         assertEquals(0, calls.size)
     }
 
-    @Test fun `요청 본문에 사진과 키 없이 모델 주소만 쓴다`() = runBlocking {
+    @Test fun `요청에 사진이 함께 들어간다`() = runBlocking {
         val calls = mutableListOf<String>()
         repo(200 to wrap(picks("곰탕", "냉면", "물회")), calls = calls).recommendMenus(input, emptyList())
-        assertTrue(calls[0].contains("inline_data") && calls[0].contains("image/webp"))
-        assertFalse(calls[0].contains("test-key"))
+        assertTrue(calls[0].contains("inline_data:image/webp"))
     }
 
     private val insightJson = """{"oneLine":"국물이 진한 집","strengths":["국물","양"],"menus":[{"menu":"설렁탕","reason":"가장 많이 언급"}],"weaknesses":["웨이팅"],"bestFor":"혼밥"}"""
@@ -119,7 +125,7 @@ class AiRepositoryTest {
         val calls = mutableListOf<String>()
         val r = repo(200 to wrap("""{"tip":"가게 이름이 잘렸어요. 위쪽까지 찍어 주세요."}"""), calls = calls).receiptHint("진미옥", listOf("합계 5,000"), "이름 잘림", "QUJD")
         assertEquals("가게 이름이 잘렸어요. 위쪽까지 찍어 주세요.", r.valueOrNull)
-        assertTrue(calls[0].contains("image/jpeg") && calls[0].contains("합계 5,000"))
+        assertTrue(calls[0].contains("inline_data:image/jpeg") && calls[0].contains("합계 5,000"))
     }
 
     @Test fun `단골 충성도는 AI 점수를 기준 점수 안으로 고정하고 근거를 담는다`() = runBlocking {

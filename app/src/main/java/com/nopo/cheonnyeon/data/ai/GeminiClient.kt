@@ -1,24 +1,16 @@
 package com.nopo.cheonnyeon.data.ai
 
+import com.google.firebase.Firebase
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.content
+import com.google.firebase.ai.type.generationConfig
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
 import com.nopo.cheonnyeon.core.common.asFailure
 import com.nopo.cheonnyeon.core.common.asSuccess
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.put
-import java.net.HttpURLConnection
-import java.net.URL
 
 /** Gemini에 보내는 내용 한 조각 */
 sealed interface GeminiPart {
@@ -28,89 +20,63 @@ sealed interface GeminiPart {
     data class Image(val mimeType: String, val base64: String) : GeminiPart
 }
 
-/** HTTP 한 번의 결과. 시험에서는 가짜로 바꾼다 */
+/** 모델 호출 한 번. 성공하면 모델이 만든 JSON 문자열, 실패하면 예외. 시험에서는 가짜로 바꾼다 */
 fun interface GeminiTransport {
-    suspend fun post(url: String, idToken: String, body: String): Pair<Int, String>
+    suspend fun generate(parts: List<GeminiPart>, temperature: Double, model: String): String?
 }
 
-private object HttpTransport : GeminiTransport {
-    override suspend fun post(url: String, idToken: String, body: String): Pair<Int, String> = withContext(Dispatchers.IO) {
-        val conn = URL(url).openConnection() as HttpURLConnection
-        try {
-            conn.requestMethod = "POST"
-            conn.connectTimeout = 15_000
-            conn.readTimeout = 60_000
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.setRequestProperty("Authorization", "Bearer $idToken")
-            conn.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
-            val code = conn.responseCode
-            val stream = if (code in 200..299) conn.inputStream else conn.errorStream
-            code to (stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty())
-        } finally {
-            conn.disconnect()
+/** Firebase AI Logic(Gemini Developer API). 키는 앱에 없고 Firebase 프로젝트가 보관한다 */
+private object FirebaseTransport : GeminiTransport {
+    override suspend fun generate(parts: List<GeminiPart>, temperature: Double, model: String): String? {
+        val m = Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
+            modelName = model,
+            generationConfig = generationConfig {
+                responseMimeType = "application/json"
+                this.temperature = temperature.toFloat()
+            },
+        )
+        val request = content {
+            parts.forEach { p ->
+                when (p) {
+                    is GeminiPart.Text -> text(p.text)
+                    is GeminiPart.Image -> inlineData(android.util.Base64.decode(p.base64, android.util.Base64.DEFAULT), p.mimeType)
+                }
+            }
         }
+        return m.generateContent(request).text
     }
 }
 
 /**
- * Gemini 호출. 앱에는 Gemini 키가 없다: 우리 서버(Cloud Functions 프록시, firebase/functions)에 로그인 ID 토큰을 보내면
- * 서버가 보관한 키로 Gemini를 부른다. 모델·응답 형식 제한과 하루 호출 수 제한은 서버가 맡는다.
- * [endpoint]가 비어 있거나 로그인하지 않았으면 AI 기능은 꺼진다.
+ * Gemini 호출(Firebase AI Logic). 앱에는 Gemini 키가 없다. 응답 형식(스키마)은 프롬프트 끝에 붙여 JSON으로만 답하게 한다.
+ * [model]이 비어 있으면 AI 기능은 꺼진다.
  */
 class GeminiClient(
-    private val endpoint: String,
-    private val tokenProvider: suspend () -> String? = { "" },
-    private val transport: GeminiTransport = HttpTransport,
+    private val model: String = DEFAULT_MODEL,
+    private val transport: GeminiTransport = FirebaseTransport,
 ) {
-    val available: Boolean get() = endpoint.isNotBlank()
+    val available: Boolean get() = model.isNotBlank()
 
-    private val json = Json { ignoreUnknownKeys = true }
-
-    /** [schema]는 Gemini responseSchema(JSON). 성공하면 모델이 만든 JSON 문자열을 돌려준다 */
+    /** [schema]는 응답 JSON 모양(Gemini responseSchema 형식). 성공하면 모델이 만든 JSON 문자열을 돌려준다 */
     suspend fun generateJson(parts: List<GeminiPart>, schema: JsonElement, temperature: Double = 0.9): AppResult<String> {
         if (!available) return AppError.E_AI_FAILED.asFailure()
+        val withSchema = parts + GeminiPart.Text("반드시 아래 JSON 스키마(OpenAPI 형식)를 그대로 지키는 JSON 하나만 답해. 설명·코드블록 금지.\n$schema")
         return try {
-            val token = tokenProvider() ?: return AppError.E_AUTH_REQUIRED.asFailure()
-            val (code, text) = transport.post(endpoint, token, buildBody(parts, schema, temperature).toString())
-            if (code !in 200..299) return AppError.E_AI_FAILED.asFailure()
-            extractText(text)?.asSuccess() ?: AppError.E_AI_FAILED.asFailure()
+            val text = transport.generate(withSchema, temperature, model)?.trim().orEmpty()
+            clean(text)?.asSuccess() ?: AppError.E_AI_FAILED.asFailure()
         } catch (e: CancellationException) {
             throw e
-        } catch (_: java.io.IOException) {
-            AppError.E_NETWORK.asFailure()
-        } catch (_: Exception) {
-            AppError.E_AI_FAILED.asFailure()
+        } catch (e: Exception) {
+            if (generateSequence<Throwable>(e) { it.cause }.any { it is java.io.IOException }) AppError.E_NETWORK.asFailure() else AppError.E_AI_FAILED.asFailure()
         }
     }
 
-    internal fun buildBody(parts: List<GeminiPart>, schema: JsonElement, temperature: Double): JsonObject = buildJsonObject {
-        put("contents", buildJsonArray {
-            add(buildJsonObject {
-                put("parts", buildJsonArray {
-                    parts.forEach { p ->
-                        add(buildJsonObject {
-                            when (p) {
-                                is GeminiPart.Text -> put("text", p.text)
-                                is GeminiPart.Image -> put("inline_data", buildJsonObject { put("mime_type", p.mimeType); put("data", p.base64) })
-                            }
-                        })
-                    }
-                })
-            })
-        })
-        put("generationConfig", buildJsonObject {
-            put("responseMimeType", "application/json")
-            put("responseSchema", schema)
-            put("temperature", temperature)
-        })
-    }
+    /** 혹시 붙은 ```json 코드블록 표시를 벗기고, 비었으면 null */
+    internal fun clean(text: String): String? =
+        text.removePrefix("```json").removePrefix("```").removeSuffix("```").trim().takeIf { it.isNotBlank() }
 
-    /** candidates[0].content.parts[0].text. 차단·빈 응답이면 null */
-    internal fun extractText(response: String): String? = runCatching {
-        val root = json.parseToJsonElement(response).jsonObject
-        root["candidates"]?.jsonArray?.firstOrNull()?.jsonObject
-            ?.get("content")?.jsonObject?.get("parts")?.jsonArray?.firstOrNull()?.jsonObject
-            ?.get("text")?.jsonPrimitive?.contentOrNull
-    }.getOrNull()?.takeIf { it.isNotBlank() }
+    companion object {
+        /** 빠르고 저렴한 모델. 바꾸려면 이 한 곳만 */
+        const val DEFAULT_MODEL = "gemini-3.1-flash-lite"
+    }
 }
