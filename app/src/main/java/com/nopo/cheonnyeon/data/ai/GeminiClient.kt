@@ -43,7 +43,15 @@ private object FirebaseTransport : GeminiTransport {
                 }
             }
         }
-        return m.generateContent(request).text
+        return try {
+            m.generateContent(request).text
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // 원인 확인용: 종류와 짧은 설명만 남긴다(요청 내용·키 없음)
+            android.util.Log.w("Nopo", "AI 호출 실패 " + e.javaClass.simpleName + ": " + e.message?.take(300))
+            throw e
+        }
     }
 }
 
