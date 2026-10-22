@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -75,7 +76,7 @@ fun MyScreen(
     val real = state.stamps.filter { !it.isTest }
     val title = TitlePolicy.titleFor(state.totalYears)
     val recent = real.sortedByDescending { it.visit.lastVisitedAt }.mapNotNull { it.store }.take(8)
-    Column(Modifier.fillMaxSize().background(c.paper).verticalScroll(rememberScrollState()).padding(bottom = sp.xl), verticalArrangement = Arrangement.spacedBy(sp.md)) {
+    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().verticalScroll(rememberScrollState()).padding(bottom = sp.xl), verticalArrangement = Arrangement.spacedBy(sp.md)) {
         Text(stringResource(R.string.app_name), style = NopoTheme.typography.displaySmall, color = c.sign, modifier = Modifier.padding(horizontal = sp.lg, vertical = sp.md))
         Column(Modifier.padding(horizontal = sp.lg).fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(c.surface).padding(sp.lg), verticalArrangement = Arrangement.spacedBy(sp.sm)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(sp.md)) {

@@ -99,7 +99,12 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         NavigationBar {
             listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings).forEachIndexed { i, label ->
-                NavigationBarItem(selected = tab == i, onClick = { tab = i }, icon = {}, label = { Text(stringResource(label)) }, alwaysShowLabel = true)
+                NavigationBarItem(
+                    selected = tab == i, onClick = { tab = i }, icon = {}, label = { Text(stringResource(label)) }, alwaysShowLabel = true,
+                    colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                        selectedTextColor = NopoTheme.colors.sign, unselectedTextColor = NopoTheme.colors.ink2, indicatorColor = NopoTheme.colors.accent,
+                    ),
+                )
             }
         }
     }

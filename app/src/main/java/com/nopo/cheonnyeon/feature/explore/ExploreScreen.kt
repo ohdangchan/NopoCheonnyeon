@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -79,7 +80,7 @@ fun ExploreScreen(vm: ExploreViewModel, initialQuery: String = "", onOpenStore: 
     val sp = NopoTheme.spacing
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize().background(c.paper),
+        modifier = Modifier.fillMaxSize().background(c.paper).statusBarsPadding(),
         contentPadding = PaddingValues(horizontal = sp.lg, vertical = sp.lg),
         horizontalArrangement = Arrangement.spacedBy(sp.md),
         verticalArrangement = Arrangement.spacedBy(sp.md),

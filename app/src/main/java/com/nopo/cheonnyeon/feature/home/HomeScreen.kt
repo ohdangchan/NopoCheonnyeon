@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -67,7 +68,7 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
     val pick = remember(stores) { if (stores.isEmpty()) null else stores[(today.toEpochDay() % stores.size).toInt()] }
     val oldest = remember(stores) { stores.sortedByDescending { YearsCalculator.yearsAtVisit(it.foundedYear, year) }.take(10) }
     val tourPrompt = stringResource(R.string.home_tour_prompt)
-    Column(Modifier.fillMaxSize().background(c.paper).verticalScroll(rememberScrollState()).padding(bottom = sp.xl)) {
+    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().verticalScroll(rememberScrollState()).padding(bottom = sp.xl)) {
         Row(Modifier.fillMaxWidth().padding(horizontal = sp.lg, vertical = sp.md), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.app_name), style = NopoTheme.typography.displaySmall, color = c.sign)
