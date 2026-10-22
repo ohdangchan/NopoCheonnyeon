@@ -228,6 +228,11 @@
     <string name="auth_invalid_nick_chars">한글·영문·숫자만 쓸 수 있어요</string>
 
     <!-- 지도 탐색·가게 (E5) -->
+    <string name="region_stamps_count">지역 스탬프 %1$d개 수집</string>
+    <string name="region_stamps_next">다음 스탬프까지 %1$s 노포 %2$d곳을 더 방문해보세요!</string>
+    <string name="region_stamps_progress">%1$d / %2$d</string>
+    <string name="region_stamps_empty">한 지역의 노포를 %1$d곳 방문하면 그 지역 스탬프가 찍혀요.</string>
+    <string name="regions_stamp_row">%1$d / %2$d곳</string>
     <string name="tab_home">홈</string>
     <string name="tab_explore">탐색</string>
     <string name="tab_map">지도</string>

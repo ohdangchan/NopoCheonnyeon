@@ -21,4 +21,22 @@ class RegionProgressTest {
     @Test fun `가게가 없으면 0퍼센트`() {
         assertEquals(0, RegionProgress("서울", 0, 0).percent)
     }
+
+    @Test fun `목표 5곳을 채우면 지역 스탬프가 찍힌다`() {
+        assertEquals(false, RegionProgress("서울", 4, 270).stamped)
+        assertEquals(true, RegionProgress("서울", 5, 270).stamped)
+        assertEquals(1, RegionProgress("서울", 4, 270).remaining)
+    }
+
+    @Test fun `가게가 목표보다 적은 지역은 전부 방문하면 찍힌다`() {
+        assertEquals(true, RegionProgress("세종", 3, 3).stamped)
+        assertEquals(false, RegionProgress("세종", 2, 3).stamped)
+        assertEquals(false, RegionProgress("없음", 0, 0).stamped)
+    }
+
+    @Test fun `다음 스탬프는 방문이 가장 많은 미완성 지역`() {
+        val r = listOf(RegionProgress("서울", 5, 9), RegionProgress("부산", 3, 9), RegionProgress("대구", 1, 9), RegionProgress("광주", 0, 9))
+        assertEquals("부산", RegionProgressRule.next(r)?.sido)
+        assertEquals(null, RegionProgressRule.next(listOf(RegionProgress("광주", 0, 9))))
+    }
 }

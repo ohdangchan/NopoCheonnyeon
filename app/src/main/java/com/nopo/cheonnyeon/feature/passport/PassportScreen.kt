@@ -157,21 +157,7 @@ fun PassportScreen(vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenP
             TextButton({ onOpenRoulette() }) { Text(stringResource(R.string.roulette_button)) }
         }
         if (regionsTab) {
-            androidx.compose.foundation.lazy.LazyColumn(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
-                item { Text(stringResource(R.string.regions_title), style = NopoTheme.typography.titleLarge, color = c.ink) }
-                items(state.regions.size) { i ->
-                    val r = state.regions[i]
-                    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(r.sido, color = c.ink, style = NopoTheme.typography.titleSmall)
-                            Text(stringResource(R.string.regions_row, r.visited, r.total, r.percent), color = c.ink2, style = NopoTheme.typography.bodySmall)
-                        }
-                        androidx.compose.material3.LinearProgressIndicator(
-                            progress = { r.percent / 100f }, modifier = Modifier.fillMaxWidth(), color = c.primary, trackColor = c.tealSoft,
-                        )
-                    }
-                }
-            }
+            RegionStamps(state.regions)
         } else if (reviewsTab) {
             val list = myReviews
             when {
