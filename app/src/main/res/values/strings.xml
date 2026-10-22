@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
-    <string name="app_name">노포천년</string>
+    <string name="app_name">노포 패스포트</string>
 
     <!-- 칭호 -->
     <string name="title_sprout">첫술 식객</string>
@@ -384,14 +384,14 @@
     <string name="settings_verify">방문 인증</string>
     <string name="settings_location_only">글자 확인이 3번 실패하면 위치 확인 도장 허용</string>
     <string name="settings_location_only_help">끄면 영수증 글자가 가게와 맞아야만 도장을 받을 수 있어요. 켜 두면 가게 30m 안에서 글자 확인이 3번 실패했을 때 위치로 도장을 받는 선택지가 나와요.</string>
-    <string name="share_card_heading">노포 천년 미식가</string>
+    <string name="share_card_heading">노포 패스포트</string>
     <string name="share_card_years_label">쌓은 세월</string>
     <string name="share_card_years">%1$d년</string>
     <string name="share_card_count">도장 %1$d개</string>
     <string name="share_card_recent">최근 도장</string>
     <string name="share_card_qr_line1">QR을 찍으면</string>
     <string name="share_card_qr_line2">앱을 내려받을 수 있어요</string>
-    <string name="share_card_message">노포 천년 미식가에서 쌓은 내 세월이에요. 앱 받기: %1$s</string>
+    <string name="share_card_message">노포 패스포트에서 쌓은 내 세월이에요. 앱 받기: %1$s</string>
     <string name="share_card_chooser">패스포트 카드 공유</string>
     <string name="share_card_button">패스포트 카드 공유</string>
     <string name="share_card_failed">카드를 만들지 못했어요. 잠시 뒤 다시 해 주세요.</string>

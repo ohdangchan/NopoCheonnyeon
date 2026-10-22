@@ -38,7 +38,7 @@ fun NopoButton(
 ) {
     val c = NopoTheme.colors
     val (container, content) = when (style) {
-        NopoButtonStyle.Primary -> c.primary to c.onPrimary
+        NopoButtonStyle.Primary -> c.accent to c.onAccent
         NopoButtonStyle.Stamp -> c.stamp to c.onStamp
         NopoButtonStyle.Outline -> c.surface to c.primary
     }

@@ -121,7 +121,7 @@ class AiRepository(private val client: GeminiClient) {
     suspend fun chat(history: List<ChatTurn>, userText: String, info: ChatContextInfo): AppResult<ChatReply> {
         val remaining = (com.nopo.cheonnyeon.domain.model.Title.MASTER.requiredYears - info.totalYears).coerceAtLeast(0)
         val prompt = buildString {
-            append("너는 '노포 천년 미식가' 앱의 AI 노포 도우미야. 오래된 노포(30년 이상) 맛집을 찾고 코스를 짜 줘. 친근하지만 존댓말로, 한국어로 답해.\n")
+            append("너는 '노포 패스포트' 앱의 AI 노포 도우미야. 오래된 노포(30년 이상) 맛집을 찾고 코스를 짜 줘. 친근하지만 존댓말로, 한국어로 답해.\n")
             append("앱 규칙: 노포를 방문 인증하면 그 가게의 업력(년)만큼 '세월'이 쌓이고, 세월 1,000년이 되면 '천년 미식가'야. 이미 가 본 곳(visited=Y)은 세월이 더 쌓이지 않아.\n")
             append("지금 시각: ${info.nowText}\n내 위치: ${info.locationText}\n내 세월: ${info.totalYears}년 (1,000년까지 ${remaining}년 남음)\n\n")
             append("[요청 유형 가이드]\n")
