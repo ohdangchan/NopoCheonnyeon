@@ -17,6 +17,7 @@ object Routes {
     fun profile(uid: String) = "profile/$uid"
     const val DIAGNOSTICS = "diagnostics"
     const val HALL = "hall"
+    const val NOTIFICATIONS = "notifications"
     const val ROULETTE = "roulette"
     const val CHAT = "chat?q={q}"
     fun chat(q: String = "") = if (q.isBlank()) "chat" else "chat?q=" + android.net.Uri.encode(q)

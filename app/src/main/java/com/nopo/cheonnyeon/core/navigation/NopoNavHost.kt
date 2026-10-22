@@ -96,7 +96,11 @@ fun NopoNavHost(container: AppContainer) {
         composable(Routes.RESET) { ResetPasswordScreen(authVm, onBack = { authVm.clearError(); nav.popBackStack() }) }
         composable(Routes.NICKNAME) { NicknameSetupScreen(authVm, onSignOut = { container.signOut() }) }
         composable(Routes.HOME) {
-            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) }, onOpenHall = { nav.navigate(Routes.HALL) }, onOpenRoulette = { nav.navigate(Routes.ROULETTE) }, onOpenChat = { q -> nav.navigate(Routes.chat(q)) })
+            MainScreen(container, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onDiagnostics = { nav.navigate(Routes.DIAGNOSTICS) }, onOpenHall = { nav.navigate(Routes.HALL) }, onOpenRoulette = { nav.navigate(Routes.ROULETTE) }, onOpenChat = { q -> nav.navigate(Routes.chat(q)) }, onOpenNotifications = { nav.navigate(Routes.NOTIFICATIONS) })
+        }
+        composable(Routes.NOTIFICATIONS) {
+            val vm: com.nopo.cheonnyeon.feature.notifications.NotificationsViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.notifications.NotificationsViewModel(container) })
+            com.nopo.cheonnyeon.feature.notifications.NotificationsScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()

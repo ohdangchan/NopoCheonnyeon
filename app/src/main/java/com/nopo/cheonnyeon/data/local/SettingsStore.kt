@@ -24,6 +24,8 @@ class SettingsStore(private val context: Context) {
     private val demoDataKey = booleanPreferencesKey("demo_data")
     private val aiConsentKey = booleanPreferencesKey("ai_consent")
     private val bookmarksKey = stringSetPreferencesKey("bookmarks")
+    private val notifyNewsKey = booleanPreferencesKey("notify_news")
+    private val notifyRecoKey = booleanPreferencesKey("notify_reco")
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[onboardingDoneKey] ?: false }
     val foodOnly: Flow<Boolean> = context.dataStore.data.map { it[foodOnlyKey] ?: false }
@@ -77,6 +79,12 @@ class SettingsStore(private val context: Context) {
     /** AI 기능 안내(리뷰 글·음식 사진이 Google Gemini로 전송됨)에 동의했는지 */
     val aiConsent: Flow<Boolean> = context.dataStore.data.map { it[aiConsentKey] ?: false }
     /** 저장한 노포(북마크). 이 기기에만 저장하고 서버에는 올리지 않는다. */
+    /** 알림 설정 (새 소식·오늘의 추천). 기기 안에 저장만 하고, 알림 목록 화면이 이 값을 따른다 */
+    val notifyNews: Flow<Boolean> = context.dataStore.data.map { it[notifyNewsKey] ?: true }
+    val notifyReco: Flow<Boolean> = context.dataStore.data.map { it[notifyRecoKey] ?: true }
+    suspend fun setNotifyNews(v: Boolean) { context.dataStore.edit { it[notifyNewsKey] = v } }
+    suspend fun setNotifyReco(v: Boolean) { context.dataStore.edit { it[notifyRecoKey] = v } }
+
     val bookmarks: Flow<Set<String>> = context.dataStore.data.map { it[bookmarksKey] ?: emptySet() }
     suspend fun toggleBookmark(storeId: String) {
         context.dataStore.edit { p ->

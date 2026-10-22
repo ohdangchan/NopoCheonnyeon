@@ -120,6 +120,7 @@ class AppContainer(
         visits.clearUserData()
         settings.clearBookmarks()
         java.io.File(appContext.filesDir, "proofs").deleteRecursively()
+        java.io.File(appContext.filesDir, "profile.jpg").delete()
     }
 
     /** 내비게이션이 보는 로그인 게이트 상태 */
