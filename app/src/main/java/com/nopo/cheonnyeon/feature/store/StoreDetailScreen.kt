@@ -117,6 +117,7 @@ private fun StorySection(story: String, showSource: Boolean) {
 }
 
 private const val GOOGLE_PHOTO_PREFIX = "file:///android_asset/places/"
+private const val VISITSEOUL_PHOTO_PREFIX = "file:///android_asset/visitseoul/"
 private const val STORY_PREVIEW_CHARS = 180
 private const val STORY_PREVIEW_LINES = 5
 
@@ -165,10 +166,16 @@ private fun Photos(store: Store) {
         HorizontalPager(pager, Modifier.fillMaxWidth().aspectRatio(4f / 3f)) { page ->
             androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
                 StorePhoto(store, Modifier.fillMaxSize(), index = page)
-                // Google 지도 사진은 출처를 표시한다
-                if (store.photoUrls.getOrNull(page)?.startsWith(GOOGLE_PHOTO_PREFIX) == true) {
+                // Google 지도·비짓서울 사진은 출처를 표시한다
+                val photo = store.photoUrls.getOrNull(page)
+                val credit = when {
+                    photo?.startsWith(GOOGLE_PHOTO_PREFIX) == true -> R.string.photo_credit_google
+                    photo?.startsWith(VISITSEOUL_PHOTO_PREFIX) == true -> R.string.photo_credit_visitseoul
+                    else -> null
+                }
+                if (credit != null) {
                     Text(
-                        stringResource(R.string.photo_credit_google),
+                        stringResource(credit),
                         style = NopoTheme.typography.labelMedium,
                         color = NopoTheme.colors.onSign,
                         modifier = Modifier.align(androidx.compose.ui.Alignment.BottomEnd).padding(NopoTheme.spacing.sm)

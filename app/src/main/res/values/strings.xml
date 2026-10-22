@@ -265,6 +265,7 @@
     <string name="detail_reward_test">시험용 가게예요. 인증해도 세월과 하루 한도에는 들어가지 않아요.</string>
     <string name="reviews_test_store">시험용 가게예요. 내 리뷰는 이 기기에만 저장돼요.</string>
     <string name="photo_credit_google">사진: Google 지도</string>
+    <string name="photo_credit_visitseoul">사진: 서울관광재단(비짓서울)</string>
     <string name="auth_consent">개인정보 처리방침에 동의해요 (필수)</string>
     <string name="auth_consent_view">처리방침 전체 보기</string>
     <string name="passport_stat_stamps">도장</string>
