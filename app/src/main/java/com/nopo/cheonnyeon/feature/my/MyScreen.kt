@@ -164,7 +164,7 @@ fun MyScreen(
     val real = remember(state.stamps) { state.stamps.filter { !it.isTest && it.store != null } }
     val visited = remember(real) { real.sortedByDescending { it.visit.lastVisitedAt } }
     val title = TitlePolicy.titleFor(state.totalYears)
-    val goal = maxOf(50, ((real.size / 50) + 1) * 50)
+    val goal = com.nopo.cheonnyeon.domain.rule.CollectionRules.goal(real.size)
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> if (uri != null) vm.setPhoto(uri) }
     BackHandler(enabled = sub != Sub.NONE) { sub = Sub.NONE }
 

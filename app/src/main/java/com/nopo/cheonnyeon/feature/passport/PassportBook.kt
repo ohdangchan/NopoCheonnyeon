@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -93,7 +95,8 @@ internal fun spreadCount(pages: Int) = 1 + (maxOf(0, pages - 1) + 1) / 2
 @Composable
 internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (PassportStamp) -> Unit, modifier: Modifier = Modifier) {
     val spreads = spreadCount(pages.size)
-    val pos = remember { Animatable(0f) }
+    var savedSpread by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableIntStateOf(0) }
+    val pos = remember { Animatable(savedSpread.coerceIn(0, spreadCount(pages.size) - 1).toFloat()) }
     val scope = rememberCoroutineScope()
     val pageWpx = with(LocalDensity.current) { px(PAGE_W).toPx() }
     val density = LocalDensity.current.density
@@ -103,6 +106,7 @@ internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (Pas
         val v = pos.value
         val f = v - floor(v)
         val target = if (lastDx < 0f) { if (f > 0.2f) ceil(v) else floor(v) } else { if (f < 0.8f) floor(v) else ceil(v) }
+        savedSpread = target.coerceIn(0f, maxPos).toInt()
         scope.launch { pos.animateTo(target.coerceIn(0f, maxPos), tween(260)) }
     }
 

@@ -153,7 +153,7 @@ fun PassportScreen(
     val title = TitlePolicy.titleFor(state.totalYears)
     val nextTitle = Title.entries.firstOrNull { it.requiredYears > state.totalYears }
     val pages = remember(state.regions, state.stamps) { buildPages(state.regions, state.stamps) }
-    val goal = maxOf(50, ((real.size / 50) + 1) * 50)
+    val goal = com.nopo.cheonnyeon.domain.rule.CollectionRules.goal(real.size)
     val stats = BookStats(visited = real.size, goal = goal, titles = title.ordinal + 1)
 
     if (all) {

@@ -147,8 +147,8 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
         val density = androidx.compose.ui.platform.LocalDensity.current.density
         MockStage(originY = 92, heightPx = 1420, modifier = Modifier.graphicsLayer {
             transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
-            scaleX = 760f / 738f
-            translationX = -12f * (760f / 738f) * u * density
+            scaleX = 760f / 734f
+            translationX = -14f * (760f / 734f) * u * density
         }) {
             MockPic(R.drawable.mk_home_header, 760, 116, Modifier.at(0, 90))
             Box(Modifier.at(575, 92).size(px(80), px(70)).clickable(role = Role.Button, onClick = onSearch))
