@@ -11,7 +11,7 @@
 **바뀐 사실(아래 2026-10-21 절의 낡은 내용):**
 - **APK에 Gemini 키가 없다.** `GeminiClient`는 Firebase AI Logic(`firebase-ai`)으로 호출한다. `BuildConfig.GEMINI_API_KEY`·환경변수 주입은 제거됨. 모델 `GeminiClient.DEFAULT_MODEL`(`gemini-3.1-flash-lite`), 25초 제한, 예비 `gemini-3.5-flash-lite`(2.5는 신규 사용자 차단). 번역은 8개씩 묶어 동시 요청. 오류 문구는 `res/raw/keep.xml`로 릴리스 리소스 축소에서 보호(`err_*`).
 - 공개 릴리스 `v0.1.0-demo` APK(88,027,991바이트) = 폰(S9+) 설치 앱 = 키 없는 최신 빌드. 새 아이콘(`tools/gen_app_icon.py`).
-- 단위 테스트 291개 이상 통과, lint 오류 0. 리뷰 편집 사진은 화면을 돌려도 유지(ViewModel 초안).
+- 단위 테스트 293개 통과(실패 0), lint 오류 0. 리뷰 편집 사진은 화면을 돌려도 유지(ViewModel 초안).
 - `중간 평가 기획안/` 폴더에 평가용 문서 5종(PDF 기획서, 발표자료 HTML, 제작기 HTML, docx 2개). 생성 스크립트 `tools/mid_eval/`(pip: pymupdf python-docx playwright pillow). 양식 원본 `ex_copy/`는 저장소에 없다.
 
 **사용자 판단 대기(건드리지 말고 사용자에게 물을 것):** ① 기존 Gemini 키 폐기 ② 시연 뒤 Firebase App Check에서 AI Logic 적용을 다시 켜기(지금 해제 상태) ③ 2026-11-02부터 AI Logic App Check 적용 의무 → 서버 프록시(Blaze) 또는 App Check 제공자 결정 ④ Google Places 사진 약관·서명 키 백업·노출 키 폐기.
