@@ -67,8 +67,8 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
     private val local = MutableStateFlow(MapUiState())
     private val allStores = MutableStateFlow<List<Store>>(emptyList())
     private val location by lazy { FusedLocationAdapter(container.appContext) }
-    val ratings = container.ratings
-    val bookmarks = container.settings.bookmarks
+    val ratings by lazy { container.ratings }
+    val bookmarks by lazy { container.settings.bookmarks }
     fun toggleBookmark(id: String) { viewModelScope.launch { container.settings.toggleBookmark(id) } }
 
     val state: StateFlow<MapUiState> = combine(
@@ -123,7 +123,7 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
             val quick = try { location.quickFix() } catch (_: Exception) { null }
             local.update { it.copy(locating = false, fix = quick ?: it.fix, recenter = if (quick != null) it.recenter + 1 else it.recenter) }
             val fine = try { location.bestFix(timeoutMs = 8_000L, earlyStopM = 30.0) } catch (_: Exception) { null }
-            (fine ?: quick)?.let { container.lastFix.value = it }
+            (fine ?: quick)?.let { runCatching { container.lastFix.value = it } }
             if (fine != null) local.update { it.copy(fix = fine, recenter = if (quick == null && it.fix == null) it.recenter + 1 else it.recenter) }
         }
     }
