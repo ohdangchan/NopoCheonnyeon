@@ -68,6 +68,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -158,7 +160,7 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
             // 오른쪽 동그라미: 시안의 필터 아이콘 자리에 AI 아이콘
             Box(
                 Modifier.at(662, 261).size(px(76), px(76)).clip(CircleShape).background(MockColors.Card).border(1.dp, MockColors.CardLine, CircleShape)
-                    .clickable(role = Role.Button) { onOpenChat(state.filter.query) },
+                    .semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(state.filter.query) },
                 contentAlignment = Alignment.Center,
             ) { AiSparkIcon(44) }
             // 지역 칩

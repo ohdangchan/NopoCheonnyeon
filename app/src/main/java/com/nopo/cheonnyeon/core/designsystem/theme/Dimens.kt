@@ -27,8 +27,8 @@ object NopoSpacing {
 @Immutable
 object NopoShapes {
     val sm = RoundedCornerShape(8.dp)
-    val md = RoundedCornerShape(12.dp)
-    val card = RoundedCornerShape(16.dp)
+    val md = RoundedCornerShape(16.dp)
+    val card = RoundedCornerShape(18.dp)
     val sheet = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     val pill = RoundedCornerShape(percent = 50)
 }
@@ -38,5 +38,5 @@ internal val NopoMaterialShapes = Shapes(
     small = NopoShapes.sm,
     medium = NopoShapes.md,
     large = NopoShapes.card,
-    extraLarge = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(26.dp),
 )

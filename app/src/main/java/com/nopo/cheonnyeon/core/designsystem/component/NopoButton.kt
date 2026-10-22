@@ -40,7 +40,7 @@ fun NopoButton(
     val (container, content) = when (style) {
         NopoButtonStyle.Primary -> c.accent to c.onAccent
         NopoButtonStyle.Stamp -> c.stamp to c.onStamp
-        NopoButtonStyle.Outline -> c.surface to c.primary
+        NopoButtonStyle.Outline -> c.paper to c.primary
     }
     Button(
         onClick = onClick,
@@ -48,14 +48,14 @@ fun NopoButton(
         modifier = modifier
             .heightIn(min = size.height)
             .defaultMinSize(minWidth = 88.dp),
-        shape = NopoTheme.shapes.md,
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = container,
             contentColor = content,
             disabledContainerColor = c.line,
             disabledContentColor = c.ink2,
         ),
-        border = if (style == NopoButtonStyle.Outline && enabled) BorderStroke(1.5.dp, c.primary) else null,
+        border = if (style == NopoButtonStyle.Outline && enabled) BorderStroke(2.dp, c.primary) else null,
         contentPadding = PaddingValues(horizontal = NopoTheme.spacing.xl, vertical = NopoTheme.spacing.sm),
     ) {
         if (leadingIcon != null) {

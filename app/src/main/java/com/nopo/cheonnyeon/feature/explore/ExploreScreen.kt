@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -156,7 +158,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                         )
                     }
                     Box(
-                        Modifier.at(672, 352).size(px(60), px(56)).clickable(role = Role.Button) { onOpenChat(query) },
+                        Modifier.at(672, 352).size(px(60), px(56)).semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(query) },
                         contentAlignment = Alignment.Center,
                     ) { AiSparkIcon(44) }
                     // 칩 줄

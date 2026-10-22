@@ -14,7 +14,7 @@ private val LocalNopoExtraTypography = staticCompositionLocalOf { NopoExtraTypog
 /** 브랜드 색이 정체성이라 다이내믹 컬러(배경화면 색)는 쓰지 않는다. */
 @Composable
 fun NopoTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false, // 시안은 크림 종이 한 가지 모습이라 시스템 다크 모드를 따르지 않는다 (v2 결정)
     content: @Composable () -> Unit,
 ) {
     val colors = if (darkTheme) DarkNopoColors else LightNopoColors

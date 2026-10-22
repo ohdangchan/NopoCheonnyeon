@@ -176,7 +176,7 @@
     <string name="err_auth_nick_taken">이미 사용 중인 닉네임이에요</string>
 
     <!-- 임시 화면 (E4~E5에서 교체) -->
-    <string name="placeholder_splash">노포천년</string>
+    <string name="placeholder_splash">노포 패스포트</string>
 
     <!-- 진단 사진 탭 (공식 사진 시험) -->
     <string name="diag_tab_photo">사진</string>
@@ -396,7 +396,7 @@
     <string name="onboarding_next">다음</string>
     <string name="onboarding_start">시작하기</string>
     <string name="settings_app_info">앱 정보</string>
-    <string name="settings_version">노포천년 버전 %1$s</string>
+    <string name="settings_version">노포 패스포트 버전 %1$s</string>
     <string name="settings_catalog">노포 목록 %1$d곳 · 데이터 버전 %2$d</string>
     <string name="settings_data_source">데이터 출처</string>
     <string name="settings_data_source_body">백년가게는 중소벤처기업부·소상공인시장진흥공단 백년가게 정보, 오래가게는 서울특별시 오래가게 정보를 바탕으로 해요. 사진은 백년가게 공식 페이지의 사진을 불러와요. 주소의 좌표는 네이버 지도로 찾았어요.</string>
