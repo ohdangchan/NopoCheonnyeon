@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FilterChip
@@ -92,7 +93,7 @@ fun HallOfFameScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (
     val c = NopoTheme.colors
     var tab by rememberSaveable { mutableIntStateOf(0) }
 
-    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
+    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding().padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             TextButton(onBack) { Text(stringResource(R.string.detail_back)) }
             Text(stringResource(R.string.hall_title), style = NopoTheme.typography.headlineMedium, color = c.primary)

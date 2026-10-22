@@ -34,7 +34,7 @@ object NopoShapes {
 }
 
 internal val NopoMaterialShapes = Shapes(
-    extraSmall = RoundedCornerShape(4.dp),
+    extraSmall = RoundedCornerShape(14.dp),
     small = NopoShapes.sm,
     medium = NopoShapes.md,
     large = NopoShapes.card,

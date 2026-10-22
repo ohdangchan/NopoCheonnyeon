@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -77,7 +78,7 @@ class NotificationsViewModel(private val container: AppContainer) : ViewModel() 
 @Composable
 fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenStore: (String) -> Unit) {
     val items by vm.items.collectAsStateWithLifecycle()
-    Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
+    Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ 알림", 34, font = MockSerif, weight = FontWeight.ExtraBold) }
         }

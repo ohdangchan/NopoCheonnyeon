@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -156,7 +157,7 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
                 }
             }
         }
-        NopoButton(stringResource(R.string.detail_back), onBack, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth().padding(NopoTheme.spacing.md))
+        NopoButton(stringResource(R.string.detail_back), onBack, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(NopoTheme.spacing.md))
     }
 }
 

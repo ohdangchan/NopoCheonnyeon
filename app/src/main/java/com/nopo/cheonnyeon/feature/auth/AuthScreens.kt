@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -49,7 +50,7 @@ private fun AuthInvalid.messageRes(): Int = when (this) {
 private fun AuthFrame(title: String, subtitle: String, content: @Composable () -> Unit) {
     val c = NopoTheme.colors
     Column(
-        modifier = Modifier.fillMaxSize().statusBarsPadding().imePadding().verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().imePadding().verticalScroll(rememberScrollState())
             .padding(NopoTheme.spacing.lg),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
     ) {
