@@ -20,6 +20,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -102,7 +105,9 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
     val photoCount = store.photoUrls.size.coerceAtLeast(1)
     val pager = rememberPagerState { photoCount }
 
-    Column(Modifier.fillMaxSize().background(MockColors.Cream)) {
+    val heroPx = with(androidx.compose.ui.platform.LocalDensity.current) { px(600).toPx() }
+    Box(Modifier.fillMaxSize().background(MockColors.Cream)) {
+    Column(Modifier.fillMaxSize()) {
         Column(Modifier.weight(1f).verticalScroll(scroll)) {
             MockStage(originY = 0, heightPx = 1540) {
                 // 사진
@@ -173,7 +178,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 MockText("시간이 만든 맛을 여행하는 곳", 22, Modifier.at(189, 672), color = MockColors.Ink2)
                 MockText(
                     store.foundedYear?.let { "${it}년부터, ${state.years}년 전통" } ?: "${state.years}년 전통",
-                    38, Modifier.at(189, 706).width(px(430)), font = MockSerif, weight = FontWeight.ExtraBold,
+                    33, Modifier.at(189, 710).width(px(390)), font = MockSerif, weight = FontWeight.ExtraBold,
                 )
                 MockText("한 그릇에 담긴 세월,\n지금도 변함없는 맛으로\n사람들을 맞이합니다.", 22, Modifier.at(189, 758).width(px(380)), color = MockColors.Ink2, maxLines = 3, lineHeightPx = 31)
 
@@ -267,6 +272,9 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
             }
         }
     }
+    // 사진을 지나 스크롤하면 상태 표시줄 뒤를 종이색으로 덮어 글자가 겹쳐 보이지 않게 한다
+    if (scroll.value > heroPx) Box(Modifier.align(Alignment.TopStart).fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(MockColors.Cream))
+    }
 
     if (allMenu) {
         androidx.compose.material3.AlertDialog(
@@ -319,13 +327,20 @@ private fun ShareIcon() {
 @Composable
 private fun Modifier.mockMenuCard(): Modifier = this.clip(RoundedCornerShape(px(16))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16)))
 
-/** 대표 메뉴 카드: 메뉴 사진은 이 가게의 사진을 돌려 쓰고, 첫 카드에만 "대표 메뉴" 태그 */
+/** 대표 메뉴 카드: 요리 종류가 같은 자유 이용 사진(Wikimedia Commons)을 쓰고, 맞는 사진이 없으면 가게 사진, 첫 카드에만 "대표 메뉴" 태그 */
 @Composable
 private fun MenuCard(store: Store, menu: String, index: Int, years: Int) {
     Column(Modifier.width(px(343)).height(px(280)).mockMenuCard()) {
         Box(Modifier.fillMaxWidth().height(px(170))) {
-            val photoIndex = if (store.photoUrls.isEmpty()) 0 else index % store.photoUrls.size
-            StorePhoto(store, Modifier.fillMaxSize(), index = photoIndex)
+            val menuUrl = MenuPhotos.urlFor(menu)
+            if (menuUrl != null) {
+                coil3.compose.AsyncImage(menuUrl, contentDescription = menu, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                val credit = MenuPhotos.credit(LocalContext.current, menu)
+                if (credit != null) MockText(credit, 14, Modifier.align(Alignment.BottomEnd).padding(end = px(8), bottom = px(6)), color = Color(0xCCFFFFFF))
+            } else {
+                val photoIndex = if (store.photoUrls.isEmpty()) 0 else index % store.photoUrls.size
+                StorePhoto(store, Modifier.fillMaxSize(), index = photoIndex)
+            }
             if (index == 0) Box(Modifier.padding(start = px(15), top = px(15))) { Pill("대표 메뉴") }
         }
         Column(Modifier.padding(horizontal = px(16)).padding(top = px(8)), verticalArrangement = Arrangement.spacedBy(px(4))) {
