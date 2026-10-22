@@ -48,6 +48,48 @@ import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.domain.catalog.Program
 import com.nopo.cheonnyeon.domain.model.StampGrade
 import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon
+import com.nopo.cheonnyeon.core.designsystem.mock.BookmarkIcon
+import com.nopo.cheonnyeon.core.designsystem.mock.ChevronDown
+import com.nopo.cheonnyeon.core.designsystem.mock.LocalMockU
+import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
+import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
+import com.nopo.cheonnyeon.core.designsystem.mock.MockSans
+import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
+import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
+import com.nopo.cheonnyeon.core.designsystem.mock.MockText
+import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
+import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
+import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
+import com.nopo.cheonnyeon.domain.catalog.StoreFilters
+import com.nopo.cheonnyeon.feature.common.StoreCardData
+import com.nopo.cheonnyeon.feature.common.StoreCards
+import com.nopo.cheonnyeon.feature.store.StorePhoto
 import com.nopo.cheonnyeon.platform.map.NaverMapView
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
@@ -56,53 +98,82 @@ private val CITY_HALL = LatLng(37.5665, 126.9780)
 private const val MIN_ZOOM_FOR_MARKERS = 9.0
 private const val CAPTION_ZOOM = 14.0
 private const val MAX_MARKERS = 250
+private const val BUBBLES = 6
 
-/** 지도 탐색 탭 (S-502): 검색창 + 필터 칩 + 지도/목록 + 하단 시트 */
+/** 시안 "지도"(5.webp) 복제: 머리글 + 검색창 + 지역 칩 + 실제 네이버 지도 + 하단 "지금 이 근처 노포" 카드. 비행기 버튼은 뺐다. */
 @Composable
-fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}) {
+fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}, onBell: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
-    val c = NopoTheme.colors
+    val ratings by vm.ratings.collectAsStateWithLifecycle()
+    val bookmarks by vm.bookmarks.collectAsStateWithLifecycle(initialValue = emptySet())
     val permission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    var sigungu by rememberSaveable { mutableStateOf<String?>(null) }
+    var regionMenu by remember { mutableStateOf(false) }
+    var focusTick by rememberSaveable { mutableIntStateOf(0) }
+    var focusTarget by remember { mutableStateOf<LatLng?>(null) }
+    val focus = androidx.compose.ui.platform.LocalFocusManager.current
 
-    // 권한이 허용되면 내 위치를 한 번 찾는다
     LaunchedEffect(permission.status) {
         if (permission.status == PermissionStatus.GRANTED && state.fix == null) vm.findMe()
     }
 
-    Column(Modifier.fillMaxSize().background(c.paper)) {
-        Column(
-            Modifier.fillMaxWidth().background(c.sign).statusBarsPadding().padding(NopoTheme.spacing.md),
-            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
-        ) {
-            OutlinedTextField(
-                value = state.filter.query,
-                onValueChange = vm::setQuery,
-                placeholder = { Text(stringResource(R.string.map_search_hint_ai)) },
-                singleLine = true,
-                // 검색창 하나로 가게 검색과 AI 도우미를 함께 쓴다: 오른쪽 "AI" 버튼 또는 키보드 검색을 누르면 지금 쓴 말로 AI 노포 도우미가 열린다
-                trailingIcon = { androidx.compose.material3.TextButton({ onOpenChat(state.filter.query) }) { Text(stringResource(R.string.map_search_ai), color = c.stamp, style = NopoTheme.typography.titleSmall) } },
-                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
-                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { if (looksLikeQuestion(state.filter.query)) onOpenChat(state.filter.query) }),
-                modifier = Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md),
-            )
-            // 말로 물어보는 문장(여러 단어)이면 AI에게 물어보라고 제안한다
-            if (looksLikeQuestion(state.filter.query)) {
-                Row(
-                    Modifier.fillMaxWidth().background(c.brassSoft, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenChat(state.filter.query) }.padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.sm),
-                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
-                ) {
-                    Text(stringResource(R.string.map_search_ask_ai), style = NopoTheme.typography.titleSmall, color = c.primary)
-                    Text(state.filter.query, style = NopoTheme.typography.bodySmall, color = c.ink2, maxLines = 1, modifier = Modifier.weight(1f))
-                }
+    val shown = remember(state, sigungu) { if (sigungu == null) state else state.copy(filtered = state.filtered.filter { it.sigungu == sigungu }) }
+    val chipNames = remember(state.filtered) {
+        state.filtered.filter { it.sigungu.isNotBlank() }.groupingBy { it.sigungu }.eachCount().entries.sortedByDescending { it.value }.map { it.key }
+    }
+    val year = state.currentYear
+    val nearCards = remember(shown, state.fix, ratings, bookmarks) {
+        val base = shown.filtered.filter { it.lat != null && it.lng != null && !it.isTest }
+        val from = state.fix
+        val sorted = if (from != null) StoreFilters.sortByDistance(base, from.lat, from.lng) else StoreFilters.sortByDistance(base, CITY_HALL.latitude, CITY_HALL.longitude)
+        val withPhoto = sorted.filter { it.photoUrls.isNotEmpty() }
+        (withPhoto.ifEmpty { sorted }).take(12).map { StoreCards.of(it, year, ratings, from, bookmarks) }
+    }
+    fun focusOn(n: String) {
+        sigungu = n
+        val list = state.filtered.filter { it.sigungu == n && it.lat != null && it.lng != null }
+        if (list.isNotEmpty()) { focusTarget = LatLng(list.map { it.lat!! }.average(), list.map { it.lng!! }.average()); focusTick++ }
+    }
+
+    Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
+        MockStage(originY = 84, heightPx = 336) {
+            MockPic(R.drawable.mk_deco_map, 330, 140, Modifier.at(430, 140))
+            MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
+            MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = {})
+            MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
+            // 검색창
+            Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
+            MockPic(R.drawable.mk_map_ic_search, 36, 36, Modifier.at(44, 280))
+            Box(Modifier.at(100, 270).size(px(535), px(56)), contentAlignment = Alignment.CenterStart) {
+                if (state.filter.query.isEmpty()) MockText("지역, 식당명으로 검색해보세요", 24, color = MockColors.Hint)
+                BasicTextField(
+                    value = state.filter.query, onValueChange = vm::setQuery, singleLine = true,
+                    textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(24), color = MockColors.Navy),
+                    cursorBrush = SolidColor(MockColors.Navy),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(onSearch = { focus.clearFocus(); if (looksLikeQuestion(state.filter.query)) onOpenChat(state.filter.query) }),
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
-            Row(
-                Modifier.horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
-            ) {
-                Chip(R.string.map_chip_food, state.filter.foodOnly, vm::toggleFood)
-                Chip(R.string.map_chip_baeknyeon, state.filter.program == Program.BAEKNYEON) { vm.toggleProgram(Program.BAEKNYEON) }
-                Chip(R.string.map_chip_orae, state.filter.program == Program.ORAE) { vm.toggleProgram(Program.ORAE) }
-                Chip(R.string.map_chip_unvisited, state.filter.unvisitedOnly, vm::toggleUnvisited)
+            // 오른쪽 동그라미: 시안의 필터 아이콘 자리에 AI 아이콘
+            Box(
+                Modifier.at(662, 261).size(px(76), px(76)).clip(CircleShape).background(MockColors.Card).border(1.dp, MockColors.CardLine, CircleShape)
+                    .clickable(role = Role.Button) { onOpenChat(state.filter.query) },
+                contentAlignment = Alignment.Center,
+            ) { AiSparkIcon(44) }
+            // 지역 칩
+            Row(Modifier.at(20, 349).fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(px(13))) {
+                MapChip("전체", sigungu == null, 76) { sigungu = null }
+                chipNames.take(5).forEach { n -> MapChip(n, sigungu == n, 94) { focusOn(n) } }
+                Box {
+                    Row(
+                        Modifier.height(px(54)).clip(RoundedCornerShape(50)).background(MockColors.Chip).clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) { MockText("더보기", 22, weight = FontWeight.Medium); Box(Modifier.width(px(10))); ChevronDown(20) }
+                    DropdownMenu(expanded = regionMenu, onDismissRequest = { regionMenu = false }) {
+                        chipNames.forEach { n -> DropdownMenuItem(text = { Text(n) }, onClick = { regionMenu = false; focusOn(n) }) }
+                    }
+                }
             }
         }
 
@@ -111,14 +182,14 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                 Column(Modifier.fillMaxSize()) {
                     if (state.mapFailed) {
                         Text(
-                            stringResource(R.string.map_failed_fallback), style = NopoTheme.typography.labelMedium, color = c.ink,
-                            modifier = Modifier.fillMaxWidth().background(c.stampSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
+                            stringResource(R.string.map_failed_fallback), style = NopoTheme.typography.labelMedium, color = NopoTheme.colors.ink,
+                            modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.stampSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
                         )
                     }
-                    StoreListScreen(state, vm::setSort, onOpenStore)
+                    StoreListScreen(shown, vm::setSort, onOpenStore)
                 }
             } else {
-                MapContent(state, vm, onOpenStore, onLocate = {
+                MapContent(shown, vm, ratings, onOpenStore, focusTarget, focusTick, onLocate = {
                     when (permission.status) {
                         PermissionStatus.GRANTED -> vm.findMe()
                         PermissionStatus.PERMANENTLY_DENIED -> permission.openSettings()
@@ -126,29 +197,72 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                     }
                 })
             }
-            // 지도/목록 전환 (검색어가 있으면 목록 고정)
-            if (state.filter.query.isBlank()) {
-                NopoButton(
-                    text = stringResource(if (state.listMode) R.string.map_show_map else R.string.map_show_list),
-                    onClick = vm::toggleListMode,
-                    size = NopoButtonSize.Medium,
-                    style = NopoButtonStyle.Outline,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(NopoTheme.spacing.md),
-                )
+        }
+
+        // 하단 "지금 이 근처 노포"
+        Box(Modifier.fillMaxWidth().height(px(435)).clip(RoundedCornerShape(topStart = px(34), topEnd = px(34))).background(MockColors.Card)) {
+            Box(Modifier.align(Alignment.TopCenter).padding(top = px(16)).size(px(60), px(7)).clip(RoundedCornerShape(50)).background(Color(0xFFCFCBBB)))
+            MockPic(R.drawable.mk_map_title_near, 252, 52, Modifier.padding(start = px(18), top = px(23)))
+            MockPic(R.drawable.mk_map_more, 95, 48, Modifier.align(Alignment.TopEnd).padding(end = px(15), top = px(27)), onClick = vm::toggleListMode)
+            LazyRow(
+                Modifier.padding(top = px(87)).fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = px(22)),
+                horizontalArrangement = Arrangement.spacedBy(px(16)),
+            ) {
+                items(nearCards, key = { it.store.id }) { c -> NearCard(c, onOpen = { onOpenStore(c.store.id) }, onBookmark = { vm.toggleBookmark(c.store.id) }) }
             }
         }
     }
 }
 
 @Composable
-private fun Chip(label: Int, selected: Boolean, onClick: () -> Unit) {
-    FilterChip(selected = selected, onClick = onClick, label = { Text(stringResource(label)) })
+private fun MapChip(label: String, selected: Boolean, widthPx: Int, onClick: () -> Unit) {
+    Box(
+        Modifier.height(px(54)).widthIn(min = px(widthPx)).clip(RoundedCornerShape(50)).background(if (selected) MockColors.Lime else MockColors.Chip)
+            .clickable(role = Role.Button, onClick = onClick).padding(horizontal = px(16)),
+        contentAlignment = Alignment.Center,
+    ) { MockText(label, 22, weight = if (selected) FontWeight.Bold else FontWeight.Medium) }
 }
 
 @Composable
-private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String) -> Unit, onLocate: () -> Unit) {
+private fun NearCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Unit) {
+    Column(Modifier.width(px(281)).height(px(343)).clip(RoundedCornerShape(px(16))).background(MockColors.Cream).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16))).clickable(role = Role.Button, onClick = onOpen)) {
+        Box(Modifier.fillMaxWidth().height(px(156))) {
+            StorePhoto(c.store, Modifier.fillMaxSize())
+            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(40)).clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
+                BookmarkIcon(32, filled = c.bookmarked)
+            }
+            Box(
+                Modifier.align(Alignment.BottomStart).padding(start = px(16), bottom = px(14)).clip(RoundedCornerShape(50)).background(Color(0x66000000))
+                    .border(1.dp, Color.White, RoundedCornerShape(50)).padding(horizontal = px(14), vertical = px(4)),
+            ) { MockText(c.tag, 19, color = Color.White, weight = FontWeight.Medium) }
+        }
+        Column(Modifier.padding(horizontal = px(15)).padding(top = px(10)), verticalArrangement = Arrangement.spacedBy(px(5))) {
+            MockText(c.store.name, 25, font = MockSerif, weight = FontWeight.ExtraBold)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RatingText(c.rating?.average, c.rating?.count, 20)
+                c.distanceLabel?.let { MockText(" · $it", 20, color = MockColors.Ink2) }
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PinIcon(19); Box(Modifier.width(px(6)))
+                MockText(c.regionLabel, 19, color = MockColors.Ink2)
+            }
+            MockText(c.oneLiner, 19, color = MockColors.Hint, maxLines = 2, lineHeightPx = 28)
+        }
+    }
+}
+
+@Composable
+private fun MapContent(
+    state: MapUiState, vm: MapViewModel, ratings: Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>, onOpenStore: (String) -> Unit,
+    focusTarget: LatLng?, focusTick: Int, onLocate: () -> Unit,
+) {
     val context = LocalContext.current
     val c = NopoTheme.colors
+    val u = LocalMockU.current
+    val density = androidx.compose.ui.platform.LocalDensity.current.density
+    val bubbleW = (u * 190 * density).toInt()
+    val bubbleH = bubbleW * BubbleIcons.H / BubbleIcons.W
     var naverMap by remember { mutableStateOf<NaverMap?>(null) }
     var cameraTick by remember { mutableIntStateOf(0) }
     var authError by rememberSaveable { mutableStateOf<String?>(null) }
@@ -175,6 +289,12 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
         if (state.recenter == movedTick) return@LaunchedEffect
         movedTick = state.recenter
         map.moveCamera(CameraUpdate.scrollAndZoomTo(LatLng(fix.lat, fix.lng), 14.0).animate(CameraAnimation.Easing))
+    }
+
+    LaunchedEffect(naverMap, focusTick) {
+        val map = naverMap ?: return@LaunchedEffect
+        val t = focusTarget ?: return@LaunchedEffect
+        map.moveCamera(CameraUpdate.scrollAndZoomTo(t, 13.0).animate(CameraAnimation.Easing))
     }
 
     // 화면 영역 안의 가게만 마커로 그린다 (FR-MAP-04). 카메라가 멈추거나 필터가 바뀌면 다시 계산
@@ -235,6 +355,21 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
             marker.height = if (s.id == state.selectedId) 80 else 56
             marker.captionText = if (zoom >= CAPTION_ZOOM) captionYears.format(years, s.name) else ""
         }
+        // 가까운 가게 몇 곳은 시안처럼 사진 말풍선으로 바꾼다
+        if (zoom >= 12.0) {
+            visible.filter { it.photoUrls.isNotEmpty() }.take(BUBBLES).forEach { s ->
+                val rating = ratings[s.id]?.average
+                val icon = BubbleIcons.load(context, s, rating) ?: return@forEach
+                markers[s.id]?.apply {
+                    this.icon = icon
+                    width = bubbleW
+                    height = bubbleH
+                    anchor = android.graphics.PointF(64f / BubbleIcons.W, (BubbleIcons.H - 10f) / BubbleIcons.H)
+                    captionText = ""
+                    zIndex = if (s.id == state.selectedId) 10 else 0
+                }
+            }
+        }
     }
     DisposableEffect(Unit) { onDispose { markers.values.forEach { it.map = null }; markers.clear() } }
 
@@ -247,9 +382,6 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
             map.addOnCameraIdleListener { cameraTick++ }
             map.setOnMapClickListener { _, _ -> vm.select(null) }
         }
-        Column(Modifier.align(Alignment.TopStart).padding(NopoTheme.spacing.md)) {
-            YearsPill(state.totalYears)
-        }
         authError?.let {
             Text(
                 stringResource(R.string.diag_map_auth_failed, it),
@@ -257,14 +389,11 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
                 modifier = Modifier.align(Alignment.TopCenter).background(c.stamp).padding(NopoTheme.spacing.md),
             )
         }
-        NopoButton(
-            text = stringResource(if (state.locating) R.string.map_locating else R.string.map_my_location),
-            onClick = onLocate,
-            size = NopoButtonSize.Medium,
-            style = NopoButtonStyle.Outline,
-            enabled = !state.locating,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(end = NopoTheme.spacing.md, bottom = if (state.selected != null) 220.dp else NopoTheme.spacing.md),
-        )
+        Box(
+            Modifier.align(Alignment.BottomEnd).padding(end = px(16), bottom = if (state.selected != null) 220.dp else px(40)).size(px(80))
+                .shadow(6.dp, CircleShape).clip(CircleShape).background(Color.White).clickable(enabled = !state.locating, role = Role.Button, onClick = onLocate),
+            contentAlignment = Alignment.Center,
+        ) { MockPic(R.drawable.mk_map_ic_locate, 80, 80) }
         state.selected?.let { s ->
             StoreSheet(
                 store = s,
@@ -276,17 +405,6 @@ private fun MapContent(state: MapUiState, vm: MapViewModel, onOpenStore: (String
             )
         }
     }
-}
-
-@Composable
-private fun YearsPill(totalYears: Int) {
-    val c = NopoTheme.colors
-    Text(
-        stringResource(R.string.map_my_years, totalYears),
-        style = NopoTheme.extraTypography.metric,
-        color = c.primary,
-        modifier = Modifier.background(c.surface, NopoTheme.shapes.md).padding(horizontal = NopoTheme.spacing.md, vertical = NopoTheme.spacing.xs),
-    )
 }
 
 /** 단어가 셋 이상이거나 물음표로 끝나면 "AI에게 물어보는 말"로 본다 */

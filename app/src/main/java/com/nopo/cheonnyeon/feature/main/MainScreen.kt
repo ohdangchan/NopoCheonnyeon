@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -43,8 +46,15 @@ import com.nopo.cheonnyeon.feature.my.MyViewModel
 
 /** 로그인 뒤 첫 화면: 아래 탭 5개 (홈 / 탐색 / 지도 / 컬렉션 / 마이). 컬렉션은 패스포트, 마이는 설정 화면이다. */
 @Composable
-fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onDiagnostics: () -> Unit, onOpenHall: () -> Unit, onOpenRoulette: () -> Unit, onOpenChat: (String) -> Unit = {}) {
+fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onDiagnostics: () -> Unit, onOpenHall: () -> Unit, onOpenRoulette: () -> Unit, onOpenChat: (String) -> Unit = {}, onOpenNotifications: () -> Unit = {}) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
+    val locationPermission = com.nopo.cheonnyeon.platform.permission.rememberPermission(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+    androidx.compose.runtime.LaunchedEffect(locationPermission.status) {
+        if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) container.refreshLocation()
+    }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) locationPermission.request()
+    }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
     val homeVm: HomeViewModel = viewModel(factory = factoryOf { HomeViewModel(container) })
@@ -65,7 +75,8 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
             confirmButton = { androidx.compose.material3.TextButton(container.visits::dismissDuplicateNotice) { Text(stringResource(com.nopo.cheonnyeon.R.string.verify_done_close)) } },
         )
     }
-    Column(Modifier.fillMaxSize()) {
+    com.nopo.cheonnyeon.core.designsystem.mock.ProvideMockScale {
+    Column(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) {
         com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(
             visible = !online, pendingCount = pending,
             modifier = Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { showQueue = true },
@@ -80,9 +91,9 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenChat = onOpenChat)
-                1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore)
-                2 -> MapScreen(mapVm, onOpenStore, onOpenChat)
+                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat)
+                1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
+                2 -> MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications)
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette)
                 else -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }) else SettingsScreen(
                     container,
@@ -97,14 +108,27 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 )
             }
         }
-        NavigationBar {
-            listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings).forEachIndexed { i, label ->
-                NavigationBarItem(
-                    selected = tab == i, onClick = { tab = i }, icon = {}, label = { Text(stringResource(label)) }, alwaysShowLabel = true,
-                    colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                        selectedTextColor = NopoTheme.colors.sign, unselectedTextColor = NopoTheme.colors.ink2, indicatorColor = NopoTheme.colors.accent,
-                    ),
-                )
+        MockNavBar(tab) { tab = it }
+    }
+    }
+}
+
+/** 시안의 하단 탭 줄: 화면마다 선택된 탭 모양이 다른 그림을 그대로 쓰고, 다섯 칸을 눌러 이동한다 */
+@Composable
+private fun MockNavBar(selected: Int, onSelect: (Int) -> Unit) {
+    val res = listOf(R.drawable.mk_nav_home, R.drawable.mk_nav_explore, R.drawable.mk_nav_map, R.drawable.mk_nav_collection, R.drawable.mk_nav_my)
+    val labels = listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings)
+    Column(Modifier.fillMaxWidth().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream).navigationBarsPadding()) {
+        androidx.compose.foundation.layout.Box {
+            com.nopo.cheonnyeon.core.designsystem.mock.MockPic(res[selected], 760, listOf(84, 98, 98, 87, 98)[selected])
+            androidx.compose.foundation.layout.Row(Modifier.matchParentSize()) {
+                for (i in 0..4) {
+                    val label = stringResource(labels[i])
+                    androidx.compose.foundation.layout.Box(
+                        Modifier.weight(1f).fillMaxSize().clickable(role = androidx.compose.ui.semantics.Role.Tab) { onSelect(i) }
+                            .semantics { contentDescription = label },
+                    )
+                }
             }
         }
     }

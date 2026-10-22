@@ -22,6 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -56,6 +57,9 @@ class AppContainer(
     val pendingReviewStoreId = MutableStateFlow<String?>(null)
     /** 가게 상세에서 "리뷰 남기기"를 눌러 방문 인증 화면으로 넘어간 가게 ID. 인증에 성공하면 리뷰 편집기가 열린다 */
     val reviewIntentStoreId = MutableStateFlow<String?>(null)
+    /** 가게 카드의 평점(시연용 예시 리뷰 기준)과 마지막으로 안 내 위치 */
+    val ratings = MutableStateFlow<Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>>(emptyMap())
+    val lastFix = MutableStateFlow<com.nopo.cheonnyeon.platform.location.Fix?>(null)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 
     init {
@@ -64,6 +68,26 @@ class AppContainer(
             catalogSeeder.seedIfNeeded()
                 .onFailure { Log.e("Nopo", "카탈로그 적재 실패", it) }
                 .onSuccess { Log.d("Nopo", "카탈로그 적재 완료 (새로 적재=$it)"); catalog.invalidate() }
+        }
+    }
+
+    /** 가까운 순·거리 표시에 쓸 내 위치를 빠르게 다시 받는다(권한이 없으면 아무 일도 없다) */
+    fun refreshLocation() {
+        scope.launch {
+            val fix = runCatching { com.nopo.cheonnyeon.platform.location.FusedLocationAdapter(appContext).quickFix() }.getOrNull()
+            if (fix != null) lastFix.value = fix
+        }
+    }
+
+    init {
+        scope.launch {
+            runCatching {
+                if (settings.demoData.first()) {
+                    ratings.value = demoReviews.load().byStore.mapValues { (_, list) ->
+                        com.nopo.cheonnyeon.data.remote.StoreRating(list.sumOf { it.rating }.toDouble() / list.size, list.size)
+                    }
+                }
+            }
         }
     }
 
