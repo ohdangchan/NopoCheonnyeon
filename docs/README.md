@@ -26,3 +26,5 @@
 | `archive/` | 구버전 보관 — **참조 금지** | — |
 
 관련: `../design/stitch/README.md`·`PRD-차이점.md`(시안 매핑·금지 사항), `../data/README.md`(카탈로그), `../firebase/`(규칙·색인), `../tools/`(데이터 스크립트·시험 이미지).
+
+- `handoff-conversation-log.md` — 사용자와의 모든 대화·요청·결정·약속·함정을 시간순으로 정리한 인수인계(2026-10-22). 새 에이전트는 이것부터 읽는다.

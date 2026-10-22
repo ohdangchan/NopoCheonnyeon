@@ -1,8 +1,26 @@
 # 개발 현황·인수인계 (이어서 개발하는 에이전트용)
 
-> 최종 갱신: 2026-10-21 (맨 위 "★ 최신 인수인계" 참고; 아래 본문 일부는 2026-10-20 기준이라 낡았을 수 있음). **이 문서를 먼저 읽고**, 그다음 `CLAUDE.md` → `docs/nopo-01-PRD.md` 순서로 읽는다.
+> 최종 갱신: 2026-10-22 (맨 위 "★★ 최신 인수인계"가 가장 최신, 그다음 "★ 최신 인수인계(2026-10-21)"; 아래 본문 일부는 2026-10-20 기준이라 낡았을 수 있음). **이 문서를 먼저 읽고**, 그다음 `CLAUDE.md` → `docs/nopo-01-PRD.md` 순서로 읽는다.
 > 목표: **오늘 오후 해커톤에서 공기계에 설치해 심사위원에게 시연**. 기획된 기능 전부 구현 + QA 체크리스트 통과 문서(`docs/qa-report.md`).
 > 이 문서 6장 "코드 점검에서 찾은 차이·미구현"은 이번 재독에서 새로 확인한 것이다. 문서와 코드가 다르면 **코드가 현재 사실**이고, 기준 우선순위는 `CLAUDE.md`의 PRD → 아키텍처 → 스토리 순이다.
+
+## ★★ 최신 인수인계 (2026-10-22) — 이것이 가장 최신. 아래 2026-10-21 절과 충돌하면 이 절이 맞다
+
+**먼저 읽기:** `docs/handoff-conversation-log.md`(사용자와의 모든 요청·결정·약속·함정을 시간순으로 정리 — 대화를 못 본 에이전트는 이것부터), 그다음 이 문서 → `docs/qa-final-2026-10-21.md`(10장까지) → `CLAUDE.md`.
+
+**바뀐 사실(아래 2026-10-21 절의 낡은 내용):**
+- **APK에 Gemini 키가 없다.** `GeminiClient`는 Firebase AI Logic(`firebase-ai`)으로 호출한다. `BuildConfig.GEMINI_API_KEY`·환경변수 주입은 제거됨. 모델 `GeminiClient.DEFAULT_MODEL`(`gemini-3.1-flash-lite`), 25초 제한, 예비 `gemini-3.5-flash-lite`(2.5는 신규 사용자 차단). 번역은 8개씩 묶어 동시 요청. 오류 문구는 `res/raw/keep.xml`로 릴리스 리소스 축소에서 보호(`err_*`).
+- 공개 릴리스 `v0.1.0-demo` APK(88,027,991바이트) = 폰(S9+) 설치 앱 = 키 없는 최신 빌드. 새 아이콘(`tools/gen_app_icon.py`).
+- 단위 테스트 291개 이상 통과, lint 오류 0. 리뷰 편집 사진은 화면을 돌려도 유지(ViewModel 초안).
+- `중간 평가 기획안/` 폴더에 평가용 문서 5종(PDF 기획서, 발표자료 HTML, 제작기 HTML, docx 2개). 생성 스크립트 `tools/mid_eval/`(pip: pymupdf python-docx playwright pillow). 양식 원본 `ex_copy/`는 저장소에 없다.
+
+**사용자 판단 대기(건드리지 말고 사용자에게 물을 것):** ① 기존 Gemini 키 폐기 ② 시연 뒤 Firebase App Check에서 AI Logic 적용을 다시 켜기(지금 해제 상태) ③ 2026-11-02부터 AI Logic App Check 적용 의무 → 서버 프록시(Blaze) 또는 App Check 제공자 결정 ④ Google Places 사진 약관·서명 키 백업·노출 키 폐기.
+
+**사용자만 할 수 있는 폰 확인:** 영수증·간판 촬영 연출과 AI 촬영 도우미 팝업, 강화된 규칙으로 실제 가게 리뷰 저장(가장 중요), 리뷰 사진 카메라·앨범 업로드, QR 설치. 표는 `qa-final` 3·8·10장.
+
+**빌드(이 PC는 램 7.4GB라 기본 빌드가 멈춘다):** `./gradlew.bat assembleRelease --no-daemon --max-workers=1 -Pkotlin.compiler.execution.strategy=in-process --console=plain`(약 7분, Android Studio를 닫으면 램 확보). 메모리 부족으로 시스템이 백그라운드 명령을 죽였다면 사용자가 말하기 전까지 다시 시작하지 말 것. 디스크 여유도 작다(Gradle 캐시 `9.6.0`·`modules-2`는 지우지 말 것).
+
+**릴리스 교체 방법:** `gh release upload v0.1.0-demo app/build/outputs/apk/release/app-release.apk#nopo-cheonnyeon.apk --clobber`(또는 파일 이름을 `nopo-cheonnyeon.apk`로 복사해 올리고 크기 비교). QR 주소는 변하지 않는다.
 
 ## ★ 최신 인수인계 (2026-10-21) — 가장 먼저 읽을 것
 
