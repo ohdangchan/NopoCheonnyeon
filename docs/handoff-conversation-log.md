@@ -51,7 +51,23 @@
 | 24 | 램·디스크 부족 → `app/build`와 Gradle 옛 캐시 3개 삭제 허용 | 릴리스 재빌드 성공(7분), 공개 릴리스 교체 |
 | 25 | 대화 이어받는 법 문의, 인수인계 요청 | 이 문서와 메모리 `project-state-2026-10-22` |
 
+### 1-4. 2026-10-22 오후~밤 (이 문서 이후 세션, 데스크톱 앱에서 이어감)
+| 순서 | 사용자 요청/결정 | 결과 |
+|---|---|---|
+| 26 | 남은 개발 점검 | 단위 테스트 293 통과, 큰 글씨(1.6·2.0배) 화면 점검(문제 없음). 서버 규칙 에뮬레이터 시험은 jar 다운로드 문제로 여전히 미실행 |
+| 27 | 디스크 정리(C: 5.5GB → 약 31GB) | npm·pip 캐시, playwright, 에뮬레이터 `Medium_Phone`, Edge 사용자 데이터, 옛 Claude Code 버전 삭제. **Edge 프로그램은 Windows가 막아 못 지움**(종료 코드 93). `.gradle`·Android SDK는 빌드에 필요해 유지 |
+| 28 | Ollama를 D:로 이동 | `D:\Ollama\app`에 재설치(모델 `D:\Ollama\home\models`, 환경변수 `OLLAMA_MODELS`). 앱이 서버를 스스로 못 켜는 문제 미해결(서버를 직접 `ollama serve`로 켜면 정상). 이 프로젝트와 무관 |
+| 29 | UX 도구 질문, 음식점 사진·리뷰 **크롤링 요청** | 약관·저작권 때문에 **거절**(네이버·카카오·다이닝코드 등). 합법 대안만 제시 |
+| 30 | 서울관광재단에 전화로 "비짓서울 사진은 내려받아 활용 가능" 확인 → 비짓서울 사진 수집 | `tools/fetch_visitseoul.py`·`apply_visitseoul.py`. 서울 33곳·133장을 맨 앞에 추가, 출처 표시. **서면 확인은 없음**(전화만). 사진은 10분 자동 저장이 이미 공개 저장소에 올렸고 사용자가 괜찮다고 함 |
+| 31 | 릴리스 요청 | **v0.2.0**(앱 버전 0.2.0, 코드 2) GitHub 릴리스, QR 주소 그대로 새 앱을 내려줌 |
+| 32 | UI/UX가 별로라 시안 6장 첨부, 다음 버전 가능한지 | **가능**하다고 답함(5탭·홈·탐색·컬렉션·지역 스탬프·저장하기 필요). 시안의 음식 사진은 AI 생성이라 앱에 쓸 수 없고, 앱 이름이 시안은 "노포 패스포트"(미정). 순서 제안: ①색·글꼴 ②5탭·홈·탐색 ③컬렉션·지역 스탬프 ④저장하기·마이 |
+| 33 | 제로 버전으로 언제든 되돌아갈 분기점 | 태그 `v0.2.0`, 브랜치 `baseline/v0.2.0`(고정), `master`(그 지점에서 멈춤), 새 개발은 **`redesign/v1`**. `docs/rollback.md` |
+| 34 | 10분 자동 저장 끄기 | 꺼짐. 이제 큰 단계마다 직접 커밋·푸시 |
+
+**새 에이전트에게:** 최신 작업은 `redesign/v1` 브랜치에 있다(`git switch redesign/v1`). `master`는 v0.2.0에서 멈춰 있다. 사용자는 새 디자인 시작 순서(①부터)와 앱 이름을 아직 정해 주지 않았다.
+
 ## 2. 사용자가 이미 내린 결정 (되돌리지 말 것)
+- **무단 크롤링은 하지 않는다**(2026-10-22). 사진·리뷰는 허락받은 출처(비짓서울)나 공식 API, 라이선스가 있는 자료만 쓴다. 사용자가 크롤링을 다시 요청해도 약관·저작권·개인정보 문제를 설명하고 합법 대안을 제시한다.
 - 저장소 **공개** 전환 허용(`https://github.com/ohdangchan/NopoCheonnyeon`). 공개 이후에는 비밀이 커밋에 들어가면 안 된다.
 - 이전 공개 APK에 들어 있던 Gemini 키 노출은 **데모 한정으로 감수**했고, 이후 키를 APK에서 뺐다. **기존 키 폐기는 아직 사용자가 하지 않았다.**
 - 영수증 인증은 **위치를 쓰지 않는다**. 영수증 이미지는 저장하지 않는다.
@@ -80,6 +96,7 @@
 ## 6. 이 PC에서 일할 때의 함정
 - **램 7.4GB·디스크 여유가 작다.** 기본 `assembleRelease`는 멈춘다. 이렇게 빌드한다: `./gradlew.bat assembleRelease --no-daemon --max-workers=1 -Pkotlin.compiler.execution.strategy=in-process --console=plain`(약 7분). 빌드 전 Android Studio를 닫으면 램 1.6GB가 확보된다. 시스템이 메모리 부족으로 백그라운드 명령을 죽였다면 **사용자가 말하기 전에 다시 시작하지 말 것.**
 - **Gradle이 `Unable to establish loopback connection`으로 죽으면**(Java 25가 임시 폴더에서 내부 연결을 못 엶): `mkdir C:\gt` 후 `export JAVA_HOME=/d/android/android_studio/jbr TEMP='C:\gt' TMP='C:\gt' JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=C:\gt'` 를 걸고 실행한다. `JAVA_HOME`이 비어 있으면 Android Studio 안의 `D:\android\android_studio\jbr`를 쓴다(2026-10-22 확인).
+- **PowerShell에서 gradle:** `-Pkotlin.compiler.execution.strategy=in-process` 는 점 때문에 쪼개지므로 반드시 작은따옴표로 감싼다. `git`이 PATH에 없을 수 있다 → `C:\Program Files\Git\cmd\git.exe`(2026-10-22에 Git이 정리 프로그램에 지워져 다시 설치함). 정리 프로그램(IObit)이 개발 도구를 지울 수 있으니 주의. 파이썬 `-I` 옵션은 사용자 설치 패키지(pillow)를 못 본다. `keystore.properties`는 읽을 수 없다(보안 규칙).
 - Git-Bash heredoc에 한글·따옴표가 섞이면 깨진다 → 스크립트는 Write 도구로 파일을 만들어 실행. 파이썬에서 문자열 안의 `\n`이 실제 줄바꿈으로 들어가는 일이 반복됐다 → 소스를 고칠 땐 Edit 도구를 쓰거나 `chr(92)`로 역슬래시를 만든다.
 - `adb`: `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`, 경로 인자에 `MSYS_NO_PATHCONV=1`. 폰이 바탕화면이면 앱이 아닌 다른 앱(날씨 등)을 건드리지 않도록 먼저 앱이 앞에 있는지 `dumpsys window | grep mCurrentFocus`로 확인.
 - 폰 화면 조작 좌표는 S9+ 1080×2220 기준(`tools/device_translate_check.sh`에 예).
