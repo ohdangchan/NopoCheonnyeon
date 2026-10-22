@@ -72,7 +72,7 @@ fun px(n: Float): Dp = (n * LocalMockU.current).dp
 
 @Composable
 @ReadOnlyComposable
-fun pxSp(n: Int): TextUnit = (n * LocalMockU.current).sp
+fun pxSp(n: Int): TextUnit = with(androidx.compose.ui.platform.LocalDensity.current) { (n * LocalMockU.current).dp.toSp() } // 시안 좌표 레이아웃이 깨지지 않게 시스템 글자 크기 배율과 무관한 고정 크기
 
 /** 시안에서 잰 색 */
 object MockColors {
@@ -109,9 +109,28 @@ fun MockStage(originY: Int, heightPx: Int, modifier: Modifier = Modifier, conten
 /** 시안에서 잘라 낸 그림. 원래 크기(w x h px)로 그린다. */
 @Composable
 fun MockPic(@DrawableRes id: Int, w: Int, h: Int, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, description: String? = null) {
+    // 누를 수 있는 그림은 TalkBack 이 읽을 이름이 필요하다: 그림 파일 이름으로 정한다
+    val label = description ?: if (onClick != null) {
+        val name = androidx.compose.ui.platform.LocalContext.current.resources.getResourceEntryName(id)
+        when {
+            name.contains("bell") -> "알림"
+            name.contains("ic_search") -> "검색"
+            name.contains("menu_all") -> "전체 메뉴 보기"
+            name.contains("my_edit") -> "프로필 편집"
+            name.contains("_all") -> "전체 보기"
+            name.contains("more") -> "더보기"
+            name.contains("card_saved") -> "저장한 노포"
+            name.contains("card_history") -> "방문 기록"
+            name.contains("card_alarm") -> "알림 설정"
+            name.contains("card_prefs") -> "앱 환경 설정"
+            name.contains("card_account") -> "계정 관리"
+            name.contains("card_support") -> "고객센터"
+            else -> null
+        }
+    } else null
     androidx.compose.foundation.Image(
         painter = painterResource(id),
-        contentDescription = description,
+        contentDescription = label,
         contentScale = ContentScale.FillBounds,
         modifier = modifier.size(px(w), px(h)).then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier),
     )

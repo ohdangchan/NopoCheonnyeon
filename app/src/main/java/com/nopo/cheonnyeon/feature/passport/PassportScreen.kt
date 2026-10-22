@@ -163,7 +163,7 @@ fun PassportScreen(
             MockStage(originY = 84, heightPx = 1490) {
                 MockPic(R.drawable.mk_deco_collection, 330, 160, Modifier.at(430, 150))
                 MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
-                MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = {})
+                MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90))
                 MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
                 MockPic(R.drawable.mk_col_title, 470, 113, Modifier.at(0, 232))
                 MockPic(R.drawable.mk_col_note, 270, 120, Modifier.at(490, 290))

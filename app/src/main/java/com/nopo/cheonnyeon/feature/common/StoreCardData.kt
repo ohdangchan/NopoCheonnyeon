@@ -30,14 +30,14 @@ object StoreCards {
 
     /** 시안은 "60년 전통"과 "1964년 개업" 두 가지 표기를 섞어 쓴다. 가게마다 같은 표기가 나오도록 id 로 고른다. */
     fun tag(store: Store, currentYear: Int): String {
-        val years = YearsCalculator.yearsAtVisit(store.foundedYear, currentYear)
+        val years = YearsCalculator.yearsAtVisit(store.foundedYear?.takeIf { it <= currentYear }, currentYear)
         val founded = store.foundedYear
         return if (founded != null && store.id.hashCode() % 2 == 0) "${founded}년 개업" else "${years}년 전통"
     }
 
     fun of(store: Store, currentYear: Int, ratings: Map<String, StoreRating>, fix: Fix?, bookmarks: Set<String>): StoreCardData {
         val d = if (fix != null && store.lat != null && store.lng != null) GeoDistance.meters(fix.lat, fix.lng, store.lat, store.lng) else null
-        return StoreCardData(store, YearsCalculator.yearsAtVisit(store.foundedYear, currentYear), tag(store, currentYear), ratings[store.id], d, store.id in bookmarks)
+        return StoreCardData(store, YearsCalculator.yearsAtVisit(store.foundedYear?.takeIf { it <= currentYear }, currentYear), tag(store, currentYear), ratings[store.id], d, store.id in bookmarks)
     }
 
     /** 대표 메뉴로 보이는 말: 첫 번째 메뉴 */
