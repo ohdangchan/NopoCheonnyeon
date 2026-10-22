@@ -34,13 +34,19 @@ import com.nopo.cheonnyeon.feature.settings.SettingsScreen
 import com.nopo.cheonnyeon.feature.passport.PassportScreen
 import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 import com.nopo.cheonnyeon.feature.map.MapViewModel
+import com.nopo.cheonnyeon.feature.explore.ExploreScreen
+import com.nopo.cheonnyeon.feature.explore.ExploreViewModel
+import com.nopo.cheonnyeon.feature.home.HomeScreen
+import com.nopo.cheonnyeon.feature.home.HomeViewModel
 
-/** 로그인 뒤 첫 화면: 아래 탭 3개 (지도 탐색 / 내 패스포트 / 설정). 패스포트·설정은 E7·E9에서 채운다. */
+/** 로그인 뒤 첫 화면: 아래 탭 5개 (홈 / 탐색 / 지도 / 컬렉션 / 마이). 컬렉션은 패스포트, 마이는 설정 화면이다. */
 @Composable
 fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onDiagnostics: () -> Unit, onOpenHall: () -> Unit, onOpenRoulette: () -> Unit, onOpenChat: (String) -> Unit = {}) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
+    val homeVm: HomeViewModel = viewModel(factory = factoryOf { HomeViewModel(container) })
+    val exploreVm: ExploreViewModel = viewModel(factory = factoryOf { ExploreViewModel(container) })
     var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
@@ -69,8 +75,10 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> MapScreen(mapVm, onOpenStore, onOpenChat)
-                1 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette)
+                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenChat = onOpenChat)
+                1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore)
+                2 -> MapScreen(mapVm, onOpenStore, onOpenChat)
+                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette)
                 else -> SettingsScreen(
                     container,
                     signOutButton = { SignOutButton(container) },
@@ -85,7 +93,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
             }
         }
         NavigationBar {
-            listOf(R.string.tab_map, R.string.tab_passport, R.string.tab_settings).forEachIndexed { i, label ->
+            listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings).forEachIndexed { i, label ->
                 NavigationBarItem(selected = tab == i, onClick = { tab = i }, icon = {}, label = { Text(stringResource(label)) }, alwaysShowLabel = true)
             }
         }

@@ -228,9 +228,26 @@
     <string name="auth_invalid_nick_chars">한글·영문·숫자만 쓸 수 있어요</string>
 
     <!-- 지도 탐색·가게 (E5) -->
-    <string name="tab_map">지도 탐색</string>
-    <string name="tab_passport">내 패스포트</string>
-    <string name="tab_settings">설정</string>
+    <string name="tab_home">홈</string>
+    <string name="tab_explore">탐색</string>
+    <string name="tab_map">지도</string>
+    <string name="tab_passport">컬렉션</string>
+    <string name="tab_settings">마이</string>
+    <string name="home_tagline">시간이 만든 맛, 지금도 사랑받는 노포를 찾아서</string>
+    <string name="home_search">검색</string>
+    <string name="home_hero_title">세월이 만든 진짜 맛집을 찾아보세요</string>
+    <string name="home_hero_body">오래된 시간 속, 지금도 사랑받는 노포가 있습니다.</string>
+    <string name="home_pick_label">오늘의 추천</string>
+    <string name="home_oldest_title">업력이 깊은 노포</string>
+    <string name="home_tour_title">노포 투어 코스</string>
+    <string name="home_tour_body">AI가 내 위치와 남은 세월에 맞춰 코스를 짜 드려요.</string>
+    <string name="home_tour_prompt">지금 위치와 영업시간을 고려한 오늘의 노포 코스를 짜 줘</string>
+    <string name="explore_title">탐색</string>
+    <string name="explore_subtitle">전국의 특별한 노포를 발견해보세요.</string>
+    <string name="explore_search_hint">지역, 식당명, 메뉴로 검색해보세요.</string>
+    <string name="explore_chip_all">전체</string>
+    <string name="explore_empty">조건에 맞는 노포가 없어요.</string>
+    <string name="explore_years_tag">%1$d년 전통</string>
     <string name="map_search_hint">가게 이름, 지역, 메뉴로 찾기</string>
     <string name="map_chip_food">음식점만</string>
     <string name="map_chip_baeknyeon">백년가게</string>
