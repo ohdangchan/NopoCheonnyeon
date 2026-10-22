@@ -32,6 +32,11 @@ class StoreDetailViewModel(private val container: AppContainer, private val stor
     val bookmarked: StateFlow<Boolean> = container.settings.bookmarks.map { storeId in it }
         .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, false)
 
+    val ratings = container.ratings
+    val lastFix = container.lastFix
+
+    init { container.refreshLocation() }
+
     fun toggleBookmark() { viewModelScope.launch { container.settings.toggleBookmark(storeId) } }
 
     /** AI 번역 상태(이 가게 것만) */
