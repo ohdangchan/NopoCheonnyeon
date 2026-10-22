@@ -94,6 +94,7 @@ class AppContainer(
     /** 방문 기록·대기열·인증샷 삭제 (로그아웃·탈퇴 때). 카탈로그는 남긴다 */
     suspend fun clearLocalUserData() {
         visits.clearUserData()
+        settings.clearBookmarks()
         java.io.File(appContext.filesDir, "proofs").deleteRecursively()
     }
 

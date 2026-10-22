@@ -28,6 +28,12 @@ class StoreDetailViewModel(private val container: AppContainer, private val stor
     /** 가게 정보 오류 제보 (FR-STORE-06) */
     suspend fun reportInfo(reason: String) = container.reviews.reportStoreInfo(storeId, reason)
 
+    /** 저장한 노포 여부 (저장하기 버튼) */
+    val bookmarked: StateFlow<Boolean> = container.settings.bookmarks.map { storeId in it }
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Eagerly, false)
+
+    fun toggleBookmark() { viewModelScope.launch { container.settings.toggleBookmark(storeId) } }
+
     /** AI 번역 상태(이 가게 것만) */
     val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> = container.translator.state
         .map { t -> t?.takeIf { it.storeId == storeId } }

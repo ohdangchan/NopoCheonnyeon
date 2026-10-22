@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -62,7 +65,21 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                     Text(stringResource(R.string.years_value, state.years), style = NopoTheme.typography.displayMedium, color = c.stamp)
                     if (store.foundedYear == null) Text(stringResource(R.string.detail_years_checking), style = NopoTheme.typography.bodySmall, color = c.ink2)
                 }
-                Text(store.name, style = NopoTheme.typography.headlineMedium, color = c.ink)
+                Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                    Text(store.name, style = NopoTheme.typography.headlineMedium, color = c.ink, modifier = Modifier.weight(1f))
+                    if (!store.isTest) {
+                        val saved by vm.bookmarked.collectAsStateWithLifecycle()
+                        Text(
+                            stringResource(if (saved) R.string.detail_saved else R.string.detail_save),
+                            style = NopoTheme.typography.labelLarge,
+                            color = if (saved) c.onAccent else c.ink,
+                            modifier = Modifier.clip(androidx.compose.foundation.shape.RoundedCornerShape(50))
+                                .background(if (saved) c.accent else c.tealSoft)
+                                .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = vm::toggleBookmark)
+                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                        )
+                    }
+                }
                 ProgramBadges(store)
                 translateBar(store)
                 store.summary?.let { Text(translation?.pick(it) ?: it, style = NopoTheme.typography.bodyMedium, color = c.ink2) }

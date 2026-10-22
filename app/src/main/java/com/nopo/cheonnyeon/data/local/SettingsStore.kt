@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -22,6 +23,7 @@ class SettingsStore(private val context: Context) {
     private val locationOnlyKey = booleanPreferencesKey("allow_location_only")
     private val demoDataKey = booleanPreferencesKey("demo_data")
     private val aiConsentKey = booleanPreferencesKey("ai_consent")
+    private val bookmarksKey = stringSetPreferencesKey("bookmarks")
 
     val onboardingDone: Flow<Boolean> = context.dataStore.data.map { it[onboardingDoneKey] ?: false }
     val foodOnly: Flow<Boolean> = context.dataStore.data.map { it[foodOnlyKey] ?: false }
@@ -74,6 +76,15 @@ class SettingsStore(private val context: Context) {
     suspend fun setAllowLocationOnly(v: Boolean) { context.dataStore.edit { it[locationOnlyKey] = v } }
     /** AI 기능 안내(리뷰 글·음식 사진이 Google Gemini로 전송됨)에 동의했는지 */
     val aiConsent: Flow<Boolean> = context.dataStore.data.map { it[aiConsentKey] ?: false }
+    /** 저장한 노포(북마크). 이 기기에만 저장하고 서버에는 올리지 않는다. */
+    val bookmarks: Flow<Set<String>> = context.dataStore.data.map { it[bookmarksKey] ?: emptySet() }
+    suspend fun toggleBookmark(storeId: String) {
+        context.dataStore.edit { p ->
+            val cur = p[bookmarksKey] ?: emptySet()
+            p[bookmarksKey] = if (storeId in cur) cur - storeId else cur + storeId
+        }
+    }
+    suspend fun clearBookmarks() { context.dataStore.edit { it.remove(bookmarksKey) } }
     suspend fun setAiConsent(v: Boolean) { context.dataStore.edit { it[aiConsentKey] = v } }
     suspend fun setDemoData(v: Boolean) { context.dataStore.edit { it[demoDataKey] = v } }
     suspend fun setFoodOnly(v: Boolean) { context.dataStore.edit { it[foodOnlyKey] = v } }

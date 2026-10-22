@@ -38,6 +38,8 @@ import com.nopo.cheonnyeon.feature.explore.ExploreScreen
 import com.nopo.cheonnyeon.feature.explore.ExploreViewModel
 import com.nopo.cheonnyeon.feature.home.HomeScreen
 import com.nopo.cheonnyeon.feature.home.HomeViewModel
+import com.nopo.cheonnyeon.feature.my.MyScreen
+import com.nopo.cheonnyeon.feature.my.MyViewModel
 
 /** 로그인 뒤 첫 화면: 아래 탭 5개 (홈 / 탐색 / 지도 / 컬렉션 / 마이). 컬렉션은 패스포트, 마이는 설정 화면이다. */
 @Composable
@@ -47,6 +49,9 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
     val homeVm: HomeViewModel = viewModel(factory = factoryOf { HomeViewModel(container) })
     val exploreVm: ExploreViewModel = viewModel(factory = factoryOf { ExploreViewModel(container) })
+    val myVm: MyViewModel = viewModel(factory = factoryOf { MyViewModel(container) })
+    var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsOpen) { settingsOpen = false }
     var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
@@ -79,7 +84,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore)
                 2 -> MapScreen(mapVm, onOpenStore, onOpenChat)
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette)
-                else -> SettingsScreen(
+                else -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }) else SettingsScreen(
                     container,
                     signOutButton = { SignOutButton(container) },
                     devTools = {
