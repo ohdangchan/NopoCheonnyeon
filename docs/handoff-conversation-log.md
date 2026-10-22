@@ -79,6 +79,7 @@
 
 ## 6. 이 PC에서 일할 때의 함정
 - **램 7.4GB·디스크 여유가 작다.** 기본 `assembleRelease`는 멈춘다. 이렇게 빌드한다: `./gradlew.bat assembleRelease --no-daemon --max-workers=1 -Pkotlin.compiler.execution.strategy=in-process --console=plain`(약 7분). 빌드 전 Android Studio를 닫으면 램 1.6GB가 확보된다. 시스템이 메모리 부족으로 백그라운드 명령을 죽였다면 **사용자가 말하기 전에 다시 시작하지 말 것.**
+- **Gradle이 `Unable to establish loopback connection`으로 죽으면**(Java 25가 임시 폴더에서 내부 연결을 못 엶): `mkdir C:\gt` 후 `export JAVA_HOME=/d/android/android_studio/jbr TEMP='C:\gt' TMP='C:\gt' JAVA_TOOL_OPTIONS='-Djava.io.tmpdir=C:\gt'` 를 걸고 실행한다. `JAVA_HOME`이 비어 있으면 Android Studio 안의 `D:\android\android_studio\jbr`를 쓴다(2026-10-22 확인).
 - Git-Bash heredoc에 한글·따옴표가 섞이면 깨진다 → 스크립트는 Write 도구로 파일을 만들어 실행. 파이썬에서 문자열 안의 `\n`이 실제 줄바꿈으로 들어가는 일이 반복됐다 → 소스를 고칠 땐 Edit 도구를 쓰거나 `chr(92)`로 역슬래시를 만든다.
 - `adb`: `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe`, 경로 인자에 `MSYS_NO_PATHCONV=1`. 폰이 바탕화면이면 앱이 아닌 다른 앱(날씨 등)을 건드리지 않도록 먼저 앱이 앞에 있는지 `dumpsys window | grep mCurrentFocus`로 확인.
 - 폰 화면 조작 좌표는 S9+ 1080×2220 기준(`tools/device_translate_check.sh`에 예).
