@@ -94,7 +94,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat)
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications)
-                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette)
+                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications)
                 else -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }) else SettingsScreen(
                     container,
                     signOutButton = { SignOutButton(container) },
