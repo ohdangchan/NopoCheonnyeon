@@ -22,6 +22,8 @@ MAX_SIDE = 1080
 MAX_DISTANCE_M = 300
 DELAY = 1.0
 _last = [0.0]
+# 우리 데이터에 주소·좌표가 없어 위치로 확인할 수 없는 가게 중, 상호가 뚜렷해 이름만으로 같은 곳이라고 본 것(2026-10-22 검토)
+NAME_ONLY_OK = {"하동관", "명동함흥면옥", "남포면옥", "효자베이커리", "을지다방", "지대방", "피터팬1978", "함스브로트과자점", "김용안 과자점"}
 
 
 def fetch(url, binary=False):
@@ -145,7 +147,9 @@ def stage_match():
                 toks = [t for t in re.split(r"\s+", s["address"]) if t]
                 road = [t for t in toks if re.search(r"(로|길)\d*$|(로|길)$", t)]
                 addr_ok = bool(road) and all(r in d["address"] for r in road[:1]) and (len(toks) < 2 or toks[1] in d["address"] or True)
-            ok = (dist is not None and dist <= MAX_DISTANCE_M) or (dist is None and addr_ok)
+            # 주소·좌표가 없는 가게는 이름이 서울에서 하나뿐인 곳만 이름으로 인정한다(분식·떡집처럼 흔한 이름은 제외)
+            name_only = dist is None and not s.get("address") and s["name"] in NAME_ONLY_OK
+            ok = (dist is not None and dist <= MAX_DISTANCE_M) or (dist is None and addr_ok) or name_only
             rec = {"storeId": s["id"], "storeName": s["name"], "vsId": c["id"], "vsName": c["name"], "href": c["href"],
                    "distanceM": None if dist is None else round(dist), "addrOk": addr_ok, "photos": d["photos"], "og": d["og"],
                    "vsAddress": d["address"], "website": d["website"], "phone": d["phone"]}
@@ -155,7 +159,7 @@ def stage_match():
             rejected.append(rec)
     (CACHE / "matches.json").write_text(json.dumps(list(matches.values()), ensure_ascii=False, indent=1), encoding="utf8")
     (CACHE / "rejected.json").write_text(json.dumps(rejected, ensure_ascii=False, indent=1), encoding="utf8")
-    total_photos = sum(len(m["photos"]) or 1 for m in matches.values())
+    total_photos = sum(len(m["photos"]) + (1 if m["og"] else 0) for m in matches.values())
     print(f"seoul stores {len(stores)}, name candidates {len(stores) - nocand}, matched {len(matches)}, rejected {len(rejected)}, photos {total_photos}")
 
 
@@ -176,7 +180,14 @@ def stage_download():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     index = {}
     for i, m in enumerate(matches, 1):
-        urls = m["photos"] or ([m["og"]] if m["og"] else [])
+        # 대표 사진(og) + 갤러리 사진을 모두 받는다. 같은 사진(parentSn+fileNo)은 한 번만
+        urls, seen = [], set()
+        for u in ([m["og"]] if m["og"] else []) + m["photos"]:
+            q = urllib.parse.parse_qs(urllib.parse.urlsplit(u).query)
+            ident = (q.get("srvcId", [""])[0], q.get("parentSn", [""])[0], q.get("fileNo", [""])[0]) if q else u
+            if ident not in seen:
+                seen.add(ident)
+                urls.append(u)
         files = []
         for k, u in enumerate(urls, 1):
             name = f"{m['storeId']}_{k}.jpg"

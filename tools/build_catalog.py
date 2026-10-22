@@ -257,6 +257,13 @@ def main():
         with open(gpath, encoding="utf-8") as f:
             google_photos = json.load(f)
 
+    # 비짓서울 사진(tools/fetch_visitseoul.py): 개수 제한 없이 맨 앞. 이어서 `python tools/apply_visitseoul.py` 로도 같은 결과를 낼 수 있다
+    vs_photos = {}
+    vpath = os.path.join(a.assets, "visitseoul_photos.json")
+    if os.path.exists(vpath):
+        with open(vpath, encoding="utf-8") as f:
+            vs_photos = {k: ["file:///android_asset/visitseoul/" + n for n in v["files"]] for k, v in json.load(f).items()}
+
     stores = []
     for rid, l in by_id.items():
         d = det.get(rid, {})
@@ -490,7 +497,7 @@ def main():
             "story": s["story"] or None,
             "generation": s["generation"] if isinstance(s["generation"], int) else None,
             "sourceUrl": s["source_url"] or None,
-            "photoUrls": (photos.get(s["id"], []) + ([google_photos[s["id"]]] if s["id"] in google_photos else []) + demo_photos.get(s["id"], []))[:3],
+            "photoUrls": vs_photos.get(s["id"], []) + (photos.get(s["id"], []) + ([google_photos[s["id"]]] if s["id"] in google_photos else []) + demo_photos.get(s["id"], []))[:3],
         })
     with open(os.path.join(a.assets, "stores.json"), "w", encoding="utf-8") as f:
         json.dump({"version": a.version, "generatedAt": datetime.datetime.now().isoformat(timespec="seconds"),
