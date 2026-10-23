@@ -190,7 +190,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit, onReview: () -> Unit 
             onDismissRequest = vm::dismissHint,
             title = { Text(stringResource(R.string.verify_ai_hint_title)) },
             text = { Text(tip) },
-            confirmButton = { TextButton({ vm.clearScan() }) { Text(stringResource(R.string.verify_ai_hint_retake)) } },
+            confirmButton = { TextButton({ vm.clearScan(); vm.clearError(); failedShown = false; cameraOpen = true }) { Text(stringResource(R.string.verify_ai_hint_retake)) } },
             dismissButton = { TextButton(vm::dismissHint) { Text(stringResource(R.string.verify_ai_hint_close)) } },
         )
     }
@@ -272,6 +272,7 @@ private fun CameraScreen(
             MockStage(originY = 84, heightPx = 150) {
                 Box(Modifier.at(24, 108).size(px(76)).clip(CircleShape).background(Color(0xFFF1EDE0)).clickable(role = Role.Button, onClick = onBack).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
                 MockPic(R.drawable.mk2_v10_hdr, 490, 145, Modifier.at(110, 90))
+                MockText("영수증 전체가 프레임 안에 들어오게 촬영해주세요.", 22, Modifier.at(40, 188).width(px(700)), color = Gray)
             }
         }
         Box(Modifier.weight(1f).fillMaxWidth().clip(androidx.compose.ui.graphics.RectangleShape)) {
@@ -430,80 +431,58 @@ private fun StepScreen(
     val context = LocalContext.current
     val photo = state.step == VerifyStep.PHOTO
     if (!photo) { GpsVerifyScreen(vm, state, locationPermission); return }
-    val locGranted = locationPermission.status == PermissionStatus.GRANTED
     val camGranted = cameraPermission.status == PermissionStatus.GRANTED
-    Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
-        MockStage(originY = 84, heightPx = 1560) {
-            VerifyHeader(onClose)
-            Box(Modifier.at(18, 228).size(px(70)).clickable(role = Role.Button, onClick = vm::backToReceipt).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_09), 42, Modifier.at(92, 226), font = MockSerif, weight = FontWeight.ExtraBold)
-            MockText(if (photo) "가게 간판이나 메뉴판을 찍어 방문을 인증해요." else "가게 앞에서 현재 위치를 확인해요.", 22, Modifier.at(94, 290).width(px(620)), color = Gray, maxLines = 2, lineHeightPx = 32)
-            MockPic(R.drawable.mk2_v5_steps, 725, 140, Modifier.at(20, 395))
-            // 지도(위치 확인) 또는 카메라(가게 사진)
-            Box(Modifier.at(0, 545).size(px(760), px(380)).clip(androidx.compose.ui.graphics.RectangleShape)) {
-                if (photo) {
-                    val frame = state.scanFrame
-                    when {
-                        frame != null -> ReceiptScanView(frame, state.scanBoxes, state.scanPhase, Modifier.fillMaxSize())
-                        camGranted -> com.nopo.cheonnyeon.platform.camera.CameraPreview(camera, Modifier.fillMaxSize())
-                        else -> Column(Modifier.fillMaxSize().background(Color(0xFF1B1B1B)).padding(px(30)), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                            MockText(stringResource(R.string.perm_camera_needed), 22, color = Color.White, align = TextAlign.Center, maxLines = 3)
-                        }
-                    }
-                } else MockPic(R.drawable.mk2_v5_map, 760, 380)
+    // 머리글(노포 패스포트)을 빼고 제목·단계 표시를 바짝 붙여, 촬영 화면이 크게 보이게 한다
+    Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
+        Box(Modifier.fillMaxWidth().height(px(232))) {
+            MockStage(originY = 0, heightPx = 232) {
+                Box(Modifier.at(14, 14).size(px(70)).clickable(role = Role.Button, onClick = vm::backToReceipt).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_09), 40, Modifier.at(90, 14), font = MockSerif, weight = FontWeight.ExtraBold)
+                Box(Modifier.at(652, 14).size(px(76)).clickable(role = Role.Button, onClick = onClose).desc("닫기"), contentAlignment = Alignment.Center) { CloseX(36) }
+                MockPic(R.drawable.mk2_v5_steps, 725, 140, Modifier.at(20, 84))
             }
-            // 상태 카드
-            Box(Modifier.at(22, 940).size(px(716), px(132)).clip(RoundedCornerShape(px(26))).background(Color(0xFFEEF6C8)))
-            PinIcon(46, Modifier.at(48, 972))
+        }
+        Box(Modifier.weight(1f).fillMaxWidth().clip(androidx.compose.ui.graphics.RectangleShape)) {
+            val frame = state.scanFrame
+            when {
+                frame != null -> ReceiptScanView(frame, state.scanBoxes, state.scanPhase, Modifier.fillMaxSize())
+                camGranted -> {
+                    com.nopo.cheonnyeon.platform.camera.CameraPreview(camera, Modifier.fillMaxSize())
+                    ScanFrame(Modifier.fillMaxSize())
+                }
+                else -> Column(Modifier.fillMaxSize().background(Color(0xFF1B1B1B)).padding(px(30)), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                    MockText(stringResource(R.string.perm_camera_needed), 22, color = Color.White, align = TextAlign.Center, maxLines = 3)
+                    Box(Modifier.height(px(20)))
+                    MockLimeBar(stringResource(if (cameraPermission.status == PermissionStatus.PERMANENTLY_DENIED) R.string.perm_open_settings else R.string.perm_request), 76, Modifier.fillMaxWidth(), textPx = 24) {
+                        if (cameraPermission.status == PermissionStatus.PERMANENTLY_DENIED) cameraPermission.openSettings() else cameraPermission.request()
+                    }
+                }
+            }
+        }
+        // 아래: 상태 한 줄 + 촬영 버튼(작게)
+        Column(Modifier.fillMaxWidth().background(MockColors.Cream).padding(horizontal = px(22), vertical = px(10)), verticalArrangement = Arrangement.spacedBy(px(8))) {
             val statusTitle = when {
-                state.busy && !photo -> "현재 위치 확인 중…"
                 state.busy -> "글자를 읽는 중…"
                 state.error != null -> "다시 시도해 주세요"
-                state.withinRange -> "가게 근처에서 확인됐어요"
-                photo -> "가게 사진 인증"
-                else -> "위치 확인이 필요해요"
+                else -> "가게 사진 인증"
             }
-            MockText(statusTitle, 28, Modifier.at(130, 962), weight = FontWeight.ExtraBold)
-            val sub = state.error?.message(context, state.errorMeters)
-                ?: if (state.busy && !photo) stringResource(R.string.verify_locating, state.locatingBest?.let { "%.0f".format(it) } ?: "-")
-                else if (photo) "간판이나 메뉴판의 글자가 보이게 찍어 주세요." else "선택한 노포 반경 50m 이내에서 위치를 확인합니다."
-            MockText(sub, 20, Modifier.at(130, 1006).width(px(580)), color = if (state.error != null) Red else Gray, maxLines = 2, lineHeightPx = 27)
-            // 안내 + 큰 버튼 카드
-            Box(Modifier.at(22, 1088).size(px(716), px(228)).clip(RoundedCornerShape(px(26))).background(Color(0xFFFFFFFF)).border(1.dp, Hairline, RoundedCornerShape(px(26))))
-            MockPic(R.drawable.mk2_v5_ic_receipt, 52, 70, Modifier.at(48, 1108))
-            MockText(if (photo) "가게 사진 인증" else "위치 인증", 30, Modifier.at(135, 1104), weight = FontWeight.ExtraBold)
-            MockText(
-                if (photo) "앱 안 카메라로 가게 간판이나 메뉴판을 찍어 주세요." else "휴대폰 위치로 가게 앞에 있는지 확인해요.", 21,
-                Modifier.at(135, 1150).width(px(560)), color = Gray, maxLines = 2, lineHeightPx = 29,
-            )
-            val actionText = when {
-                photo && state.busy -> "분석 중…"
-                photo -> "가게 사진 촬영하기"
-                state.busy -> "위치 측정 중…"
-                !locGranted -> "위치 권한 허용하기"
-                else -> "내 위치 확인하기"
-            }
+            val sub = state.error?.message(context, state.errorMeters) ?: "앱 안 카메라로 가게 간판이나 메뉴판의 글자가 보이게 찍어 주세요."
+            MockText(statusTitle, 24, weight = FontWeight.ExtraBold)
+            MockText(sub, 19, color = if (state.error != null) Red else Gray, maxLines = 2, lineHeightPx = 25)
             Box(
-                Modifier.at(40, 1210).size(px(682), px(92)).clip(RoundedCornerShape(px(24))).background(MockColors.Navy).clickable(enabled = !state.busy, role = Role.Button) {
-                    if (photo) vm.capturePhoto(camera)
-                    else if (!locGranted) { if (locationPermission.status == PermissionStatus.PERMANENTLY_DENIED) locationPermission.openSettings() else locationPermission.request() }
-                    else vm.measureLocation(permissionGranted = true, approximateOnly = locationPermission.approximateOnly)
-                },
+                Modifier.fillMaxWidth().height(px(84)).clip(RoundedCornerShape(px(24))).background(MockColors.Navy).clickable(enabled = !state.busy, role = Role.Button) { vm.capturePhoto(camera) },
                 contentAlignment = Alignment.Center,
             ) {
-                MockText(actionText, 28, color = Color.White, weight = FontWeight.ExtraBold)
-                Box(Modifier.align(Alignment.CenterEnd).padding(end = px(28))) { ChevronRight(28, color = Color.White) }
+                MockText(if (state.busy) "분석 중…" else "가게 사진 촬영하기", 28, color = Color.White, weight = FontWeight.ExtraBold)
             }
-            if (photo && state.failedPhotoAttempts > 0) MockText(stringResource(R.string.verify_attempts, state.failedPhotoAttempts, com.nopo.cheonnyeon.domain.rule.VerificationConfig.PHOTO_OCR_MAX_ATTEMPTS), 19, Modifier.at(40, 1322), color = Hint)
-            if (photo && vm.canOfferLocationOnly()) {
-                Box(Modifier.at(40, 1336).size(px(682), px(70)).clip(RoundedCornerShape(px(20))).border(2.dp, Red, RoundedCornerShape(px(20))).clickable(enabled = !state.busy, role = Role.Button, onClick = vm::acceptLocationOnly), contentAlignment = Alignment.Center) {
+            if (state.failedPhotoAttempts > 0) MockText(stringResource(R.string.verify_attempts, state.failedPhotoAttempts, com.nopo.cheonnyeon.domain.rule.VerificationConfig.PHOTO_OCR_MAX_ATTEMPTS), 19, color = Red)
+            if (vm.canOfferLocationOnly()) {
+                Box(Modifier.fillMaxWidth().height(px(64)).clip(RoundedCornerShape(px(20))).border(2.dp, Red, RoundedCornerShape(px(20))).clickable(enabled = !state.busy, role = Role.Button, onClick = vm::acceptLocationOnly), contentAlignment = Alignment.Center) {
                     MockText(stringResource(R.string.verify_location_only), 22, color = Red, weight = FontWeight.Bold)
                 }
             }
-            val sy = if (photo && vm.canOfferLocationOnly()) 1420 else 1346
-            MockPic(R.drawable.mk2_v5_safe, 720, 180, Modifier.at(22, sy))
-            Box(Modifier.at(22, sy + 190).size(px(716), px(70)).clip(RoundedCornerShape(px(20))).background(Color(0xFFF1EDE0)).clickable(role = Role.Button, onClick = vm::backToReceipt), contentAlignment = Alignment.Center) {
-                MockText(stringResource(R.string.verify_back_to_receipt), 22, weight = FontWeight.Medium)
+            Box(Modifier.fillMaxWidth().height(px(60)).clip(RoundedCornerShape(px(18))).background(Color(0xFFF1EDE0)).clickable(role = Role.Button, onClick = vm::backToReceipt), contentAlignment = Alignment.Center) {
+                MockText(stringResource(R.string.verify_back_to_receipt), 21, weight = FontWeight.Medium)
             }
         }
     }

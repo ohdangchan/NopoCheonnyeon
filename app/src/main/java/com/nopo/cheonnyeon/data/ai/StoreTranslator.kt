@@ -2,6 +2,8 @@ package com.nopo.cheonnyeon.data.ai
 
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,14 +47,27 @@ class StoreTranslator(private val ai: AiRepository) {
         val key = storeId + "|" + lang + "|" + texts.hashCode()
         cache[key]?.let { _state.value = StoreTranslation(storeId, lang, it); return }
         _state.value = StoreTranslation(storeId, lang, loading = true)
-        when (val r = ai.translate(texts, lang)) {
-            is AppResult.Success -> {
-                val map = texts.zip(r.value).toMap()
-                cache[key] = map
-                _state.value = StoreTranslation(storeId, lang, map)
-            }
-            is AppResult.Failure -> _state.value = StoreTranslation(storeId, lang, error = r.error)
+        // 소개글(앞의 두 개)을 먼저 따로 번역해 바로 보여 주고, 나머지(리뷰)는 위에서부터 작게 나눠 동시에 번역한다.
+        // 한 묶음이 끝날 때마다 화면에 반영한다.
+        val chunks = listOf(texts.take(INTRO_COUNT)) + texts.drop(INTRO_COUNT).chunked(CHUNK)
+        val done = LinkedHashMap<String, String>()
+        var failure: AppError? = null
+        val lock = Any()
+        kotlinx.coroutines.coroutineScope {
+            chunks.filter { it.isNotEmpty() }.map { chunk ->
+                async {
+                    when (val r = ai.translateChunk(chunk, lang)) {
+                        is AppResult.Success -> synchronized(lock) {
+                            done.putAll(chunk.zip(r.value))
+                            _state.value = StoreTranslation(storeId, lang, LinkedHashMap(done), loading = true)
+                        }
+                        is AppResult.Failure -> synchronized(lock) { failure = r.error }
+                    }
+                }
+            }.awaitAll()
         }
+        if (done.isNotEmpty()) cache[key] = LinkedHashMap(done)
+        _state.value = if (done.isEmpty()) StoreTranslation(storeId, lang, error = failure ?: AppError.E_AI_FAILED) else StoreTranslation(storeId, lang, LinkedHashMap(done))
     }
 
     /** 원문으로 되돌린다 */
@@ -60,5 +75,7 @@ class StoreTranslator(private val ai: AiRepository) {
 
     private companion object {
         const val MAX_TEXTS = 40
+        const val INTRO_COUNT = 2
+        const val CHUNK = 4
     }
 }

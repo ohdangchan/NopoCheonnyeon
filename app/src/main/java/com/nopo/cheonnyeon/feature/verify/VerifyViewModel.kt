@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 
 enum class VerifyStep { RECEIPT, LOCATE, PHOTO, DONE }
 
@@ -66,6 +67,9 @@ data class VerifyUiState(
     val region: com.nopo.cheonnyeon.domain.rule.RegionProgress? = null,
     /** 마지막으로 잰 가게까지의 거리(미터). 아직 안 쟀으면 null */
     val distanceM: Int? = null,
+    /** 마지막으로 잰 내 위치(지도에 표시만 하고 저장·전송하지 않는다) */
+    val myLat: Double? = null,
+    val myLng: Double? = null,
     /** 최근 인증한 노포(최신순, 최대 5곳) */
     val recent: List<RecentVisit> = emptyList(),
 )
@@ -205,13 +209,15 @@ class VerifyViewModel(
                 requestHint(store.name, emptyList(), AppError.E_RECEIPT_UNREADABLE, null)
                 return@launch
             }
-            _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
-            kotlinx.coroutines.delay(HIGHLIGHT_MS)
+            // 판정은 바로 해 두고, 실패면 형광펜 연출이 도는 동안 AI 안내를 미리 요청한다(화면에 늦게 뜨지 않게)
             val visits = container.visits.visitRefs()
-            when (val r = VerifyReceiptUseCase.verify(scan.lines, store, visits, container.clock.now())) {
+            val verdict = VerifyReceiptUseCase.verify(scan.lines, store, visits, container.clock.now())
+            _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
+            if (verdict is AppResult.Failure && verdict.error in HINT_ERRORS) requestHint(store.name, scan.lines, verdict.error, null)
+            kotlinx.coroutines.delay(if (verdict is AppResult.Failure) FAIL_HIGHLIGHT_MS else HIGHLIGHT_MS)
+            when (val r = verdict) {
                 is AppResult.Failure -> {
                     _state.update { it.copy(busy = false, error = r.error) }
-                    if (r.error in HINT_ERRORS) requestHint(store.name, scan.lines, r.error, state.value.scanFrame?.let(::jpegBase64))
                 }
                 is AppResult.Success -> {
                     // 바로 도장을 찍지 않고, 읽은 정보를 보여 주고 사용자가 확정할 때 기록한다
@@ -278,10 +284,20 @@ class VerifyViewModel(
         if (agree && req != null) viewModelScope.launch { container.settings.setAiConsent(true); runHint(req) }
     }
 
+    /**
+     * AI 안내는 2~3초 안에 띄운다. 사진을 같이 보내면 오래 걸려 글자 줄만 보내고, 그래도 늦으면 앱이 가진 안내문으로 대신한다.
+     */
     private suspend fun runHint(req: HintRequest) {
-        val r = container.ai.receiptHint(req.storeName, req.lines, req.reason, req.imageBase64, req.subject)
-        if (r is AppResult.Success) _state.update { it.copy(aiHint = r.value) }
+        val r = withTimeoutOrNull(HINT_TIMEOUT_MS) { container.ai.receiptHint(req.storeName, req.lines, req.reason, null, req.subject) }
+        val tip = (r as? AppResult.Success)?.value ?: localHint(req.subject)
+        // 판정 연출이 끝나(실패 화면으로 바뀌)기 전에는 띄우지 않는다
+        withTimeoutOrNull(5_000L) { _state.first { !it.busy } }
+        if (_state.value.error != null || _state.value.confirm == null) _state.update { it.copy(aiHint = tip) }
     }
+
+    private fun localHint(subject: String) =
+        if (subject == "영수증") "영수증 전체가 화면 틀 안에 들어오게, 가게 이름·날짜·금액이 선명하게 보이도록 밝은 곳에서 평평하게 다시 찍어 주세요."
+        else "간판이나 메뉴판의 가게 이름이 크게 보이도록 가까이서, 흔들리지 않게 다시 찍어 주세요."
 
     private fun hintReason(error: AppError) = when (error) {
         AppError.E_RECEIPT_MISMATCH -> "영수증의 가게 이름이 이 가게와 맞지 않아 보임(이름이 잘렸거나 다른 가게 영수증일 수 있음)"
@@ -331,7 +347,7 @@ class VerifyViewModel(
                     saved[KEY_IN_RANGE] = inRange
                     _state.update {
                         it.copy(
-                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(),
+                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(), myLat = fix.lat, myLng = fix.lng,
                             errorMeters = if (err == AppError.E_ACCURACY) fix.accuracyM.toInt() else distance.toInt(),
                         )
                     }
@@ -447,8 +463,10 @@ class VerifyViewModel(
         const val KEY_ATTEMPTS = "attempts"
         const val KEY_IN_RANGE = "in_range"
         const val OCR_TIMEOUT_MS = 10_000L
+        const val HINT_TIMEOUT_MS = 2_500L
         const val LASER_MIN_MS = 1_700L
         const val HIGHLIGHT_MS = 1_800L
+        const val FAIL_HIGHLIGHT_MS = 700L
         const val FRAME_SIDE = 900
         val HINT_ERRORS = setOf(AppError.E_RECEIPT_UNREADABLE, AppError.E_RECEIPT_MISMATCH, AppError.E_RECEIPT_NO_DATE, AppError.E_PHOTO_NO_MATCH)
         const val OCR_MAX_SIDE = 1_600

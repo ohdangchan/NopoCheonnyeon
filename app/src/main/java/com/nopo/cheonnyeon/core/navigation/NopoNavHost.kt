@@ -70,6 +70,7 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
 
     LaunchedEffect(state, onboardingDone, splashDone) {
         if (!splashDone) return@LaunchedEffect
+        if (state != SessionState.Loading) authVm.settle()
         val current = nav.currentDestination?.route
         val target = when (state) {
             SessionState.Loading -> Routes.SPLASH
@@ -80,7 +81,7 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
                 else -> Routes.LOGIN
             }
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if ((BuildConfig.DEBUG && (current in Routes.signedOutRoutes || current == Routes.ONBOARDING)) || current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true || current?.startsWith("review/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if ((BuildConfig.DEBUG && debugRoute != null && (current in Routes.signedOutRoutes || current == Routes.ONBOARDING)) || current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true || current?.startsWith("review/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }

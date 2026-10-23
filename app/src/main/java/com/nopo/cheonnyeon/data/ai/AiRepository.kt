@@ -136,7 +136,7 @@ class AiRepository(private val client: GeminiClient) {
             append("\n[이전 대화]\n")
             history.takeLast(MAX_CHAT_TURNS).forEach { append(if (it.isUser) "사용자: " else "도우미: "); append(it.text.take(300)); append('\n') }
             append("\n[지금 사용자 말]\n$userText\n\n")
-            append("답변 규칙: reply는 5문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 6개(코스면 방문 순서대로)와 한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
+            append("답변 규칙: reply는 3문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 5개(코스면 방문 순서대로)와 한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
         }
         val result = client.generateJson(listOf(GeminiPart.Text(prompt)), CHAT_SCHEMA, temperature = 0.7)
         val text = when (result) {
@@ -205,7 +205,8 @@ class AiRepository(private val client: GeminiClient) {
         return out.asSuccess()
     }
 
-    private suspend fun translateChunk(texts: List<String>, language: String): AppResult<List<String>> {
+    /** 글 몇 개를 한 번에 번역한다. 소개글을 먼저 빨리 보여 주려고 [StoreTranslator]가 작게 나눠 부른다 */
+    suspend fun translateChunk(texts: List<String>, language: String): AppResult<List<String>> {
         val prompt = buildString {
             append("다음 JSON 배열의 각 글을 '$language'(으)로 자연스럽게 번역해 줘. 한국 음식·가게 소개글과 이용자 리뷰야.\n")
             append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang (설렁탕)). 번역 결과만 JSON으로 답해.\n\n")

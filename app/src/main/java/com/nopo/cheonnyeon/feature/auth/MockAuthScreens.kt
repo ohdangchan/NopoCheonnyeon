@@ -109,7 +109,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                     if (onDiagnostics != null) Box(Modifier.at(40, 250).size(px(420), px(170)).combinedClickable(onClick = {}, onLongClick = onDiagnostics))
                     MockPic(R.drawable.mk2_n_login_in1, 760, 92, Modifier.at(0, 870))
                     MockInput(email, { email = it }, "이메일을 입력하세요", Modifier.at(132, 897).size(px(520), px(46)), keyboard = KeyboardType.Email)
-                    MockPic(R.drawable.mk2_n_login_in2, 760, 94, Modifier.at(0, 968))
+                    MockPic(R.drawable.mk2_n_login_in2, 760, 104, Modifier.at(0, 958))
                     MockInput(password, { password = it }, "비밀번호를 입력하세요", Modifier.at(132, 994).size(px(500), px(46)), password = true, visible = showPw, ime = ImeAction.Done, onDone = submit)
                     Box(Modifier.at(632, 985).size(px(110), px(72)).clickable(role = Role.Button) { showPw = !showPw }.semantics { contentDescription = "비밀번호 보기" })
 
@@ -143,7 +143,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                         contentAlignment = Alignment.Center,
                     ) {
                         androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-                            MockPic(R.drawable.mk2_n_login_user, 47, 47); Box(Modifier.width(px(20))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_05), 27, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(28)
+                            MockPic(R.drawable.mk2_n_login_user, 50, 50); Box(Modifier.width(px(20))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_05), 27, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(28)
                         }
                     }
                     MockPic(R.drawable.mk2_n_login_foot, 760, 161, Modifier.at(0, 1490))

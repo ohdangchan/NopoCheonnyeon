@@ -119,7 +119,9 @@ def build_verify():
     save(s9, "v9_ic_cam", (258, 912, 310, 965))
     # 10: 카메라 화면 장식(코너 틀)과 셔터
     s10 = fix_corners(screen(10))
-    save(s10, "v10_hdr", (110, 90, 600, 235))
+    bg10 = tuple(int(v) for v in np.median(np.asarray(s10.crop((300, 160, 340, 175))).reshape(-1, 3), axis=0))
+    h10 = erase(s10.copy(), (30, 183, 500, 236), color=bg10)
+    save(h10, "v10_hdr", (110, 90, 600, 235))
     # 8: 정보 확인 행 라벨(아이콘+글자+AI 칩)
     s8 = fix_corners(screen(8))
     for i, (y0, y1) in enumerate(((795, 865), (895, 960), (990, 1060), (1085, 1190), (1195, 1300))):
@@ -129,14 +131,28 @@ def build_verify():
     # 4: 실패 화면
     s4 = fix_corners(screen(4))
     save(s4, "v4_hero", (0, 205, 760, 625))
-    save(s4, "v4_reasons", (25, 722, 740, 1118))
+    r4 = s4.copy()
+    for yy in (770, 902, 1034):
+        bg4 = tuple(int(v) for v in np.median(np.asarray(r4.crop((650, yy + 10, 670, yy + 24))).reshape(-1, 3), axis=0))
+        r4 = erase(r4, (672, yy - 4, 716, yy + 44), color=bg4)   # 행마다 오른쪽 ">" 화살표
+    save(r4, "v4_reasons", (25, 722, 740, 1118))
     save(s4, "v4_ic_retry", (258, 1155, 310, 1210))
     save(s4, "v4_ic_cam", (98, 1472, 140, 1512))
     save(s4, "v4_ic_head", (470, 1470, 510, 1515))
     save(s4, "v4_tip", (25, 1335, 740, 1510))
     # 5: 위치 확인 화면
     s5 = fix_corners(screen(5))
-    save(s5, "v5_steps", (20, 395, 745, 535))
+    st5 = s5.copy()
+    bg5 = tuple(int(v) for v in np.median(np.asarray(st5.crop((520, 470, 560, 480))).reshape(-1, 3), axis=0))
+    st5 = erase(st5, (262, 460, 495, 540), color=bg5)
+    from PIL import ImageFont
+    d5 = ImageDraw.Draw(st5)
+    f5a = ImageFont.truetype("C:/Windows/Fonts/NanumGothicExtraBold.ttf", 22)
+    f5b = ImageFont.truetype("C:/Windows/Fonts/NanumGothic.ttf", 17)
+    for txt, f, y, col in (("간판·메뉴판 인증", f5a, 466, (17, 24, 39)), ("간판이나 메뉴판을 촬영합니다.", f5b, 512, (75, 85, 99))):
+        w = d5.textlength(txt, font=f)
+        d5.text((381 - w / 2, y), txt, font=f, fill=col)
+    save(st5, "v5_steps", (20, 395, 745, 535))
     save(s5, "v5_map", (0, 545, 760, 925))
     save(s5, "v5_ic_receipt", (48, 1100, 100, 1170))
     save(s5, "v5_safe", (22, 1325, 742, 1505))
@@ -201,6 +217,13 @@ def build_account():
     l = erase(l, (600, 1150, 690, 1195))   # 허용됨
     bg = tuple(int(v) for v in np.median(np.asarray(l.crop((540, 770, 580, 792))).reshape(-1, 3), axis=0))
     l = erase(l, (322, 768, 505, 796), color=bg)   # "(카카오, 네이버, 구글)" — 소셜 로그인은 구글만 둔다
+    # "위치 권한 설정" → "권한 설정": 제목 줄을 지우고 같은 자리에 다시 쓴다(좌표는 a_list 그림 기준 + 크롭 시작점 12, 608)
+    bg = tuple(int(v) for v in np.median(np.asarray(l.crop((300, 1135, 360, 1145))).reshape(-1, 3), axis=0))
+    l = erase(l, (136, 1126, 310, 1166), color=bg)
+    from PIL import ImageFont
+    d = ImageDraw.Draw(l)
+    f = ImageFont.truetype("C:/Windows/Fonts/NanumGothicExtraBold.ttf", 27)
+    d.text((144, 1129), "권한 설정", font=f, fill=(15, 22, 36))
     save(l, "a_list", (12, 608, 748, 1305))
     save(s12, "a_logout", (12, 1325, 748, 1415))
     save(s12, "a_delete", (12, 1432, 748, 1522))
@@ -252,8 +275,9 @@ def patch_badge(im, box, shift):
 def build_new():
     # 27 로딩 화면: 전체 화면 그림(스피너·글자는 지우고 앱이 직접 그린다)
     s = fix_corners(screen(27))
-    s = erase(s, (430, 1462, 530, 1530), pad=6)
-    s = erase(s, (320, 1545, 620, 1585), pad=6)
+    s = erase(s, (338, 1455, 430, 1536), pad=6)
+    s = erase(s, (228, 1536, 538, 1584), pad=6)
+    s = erase(s, (250, 1626, 510, 1650), pad=5)
     save(s, "n_splash", (0, 72, 760, 1651))
     # 26 설치 후 첫 화면(눌리는 곳만 앱에서 얹는다)
     s = fix_corners(screen(26))
@@ -284,11 +308,11 @@ def build_new():
     # 28 로그인
     s = fix_corners(screen(28))
     save(s, "n_login_head", (0, 84, 760, 885))
-    for name, box, er in (("n_login_in1", (0, 870, 760, 962), (120, 895, 700, 945)), ("n_login_in2", (0, 968, 760, 1062), (120, 990, 640, 1040))):
+    for name, box, er in (("n_login_in1", (0, 870, 760, 962), (120, 895, 700, 945)), ("n_login_in2", (0, 958, 760, 1062), (120, 990, 640, 1040))):
         t = s.copy()
         t = erase(t, er, color=paper_at(s, (er[0] + 200, er[1] - 2, er[0] + 210, er[1])) if False else (251, 247, 237))
         save(t, name, box)
-    save(s, "n_login_user", (265, 1428, 312, 1475))
+    save(s, "n_login_user", (262, 1416, 312, 1466))
     save(erase(s.copy(), (285, 1548, 480, 1594), pad=6), "n_login_foot", (0, 1490, 760, 1651))
     # 22 후기 작성
     s = fix_corners(screen(22))

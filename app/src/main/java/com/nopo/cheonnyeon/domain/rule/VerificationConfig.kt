@@ -13,7 +13,7 @@ object VerificationConfig {
     const val PHOTO_NAME_SIM_MIN = 0.60
     const val PHOTO_OCR_MAX_ATTEMPTS = 3
     const val ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL = true
-    const val LOCATION_TIMEOUT_MS = 15_000L
+    const val LOCATION_TIMEOUT_MS = 10_000L
     const val DAILY_LIMIT = 5
 
     /** 위치 측정 중 이 정확도 이하면 15초를 기다리지 않고 끝낸다 (아키텍처 5.2) */

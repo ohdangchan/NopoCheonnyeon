@@ -28,8 +28,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nopo.cheonnyeon.R
+import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.platform.ocr.OcrBox
+
+/** 스캔선·모서리 색: 앱의 연두색(방문 인증 버튼과 같은 색) */
+private val LimeScan = MockColors.Lime2
 
 /**
  * 영수증 스캔 연출 (Stitch 시안 receipt_scan 재현): 찍은 영수증 위를 빨간 레이저 선이 위아래로 훑고,
@@ -54,8 +58,8 @@ fun ReceiptScanView(frame: android.graphics.Bitmap, boxes: List<OcrBox>, phase: 
             val len = 28.dp.toPx()
             val stroke = 3.dp.toPx()
             listOf(Offset(left, top) to (1f to 1f), Offset(left + w, top) to (-1f to 1f), Offset(left, top + h) to (1f to -1f), Offset(left + w, top + h) to (-1f to -1f)).forEach { (p, d) ->
-                drawLine(c.laser, p, Offset(p.x + d.first * len, p.y), stroke)
-                drawLine(c.laser, p, Offset(p.x, p.y + d.second * len), stroke)
+                drawLine(LimeScan, p, Offset(p.x + d.first * len, p.y), stroke)
+                drawLine(LimeScan, p, Offset(p.x, p.y + d.second * len), stroke)
             }
         }
         if (phase == ScanPhase.LASER) LaserSweep(frame.width.toFloat() / frame.height)
@@ -78,15 +82,15 @@ private fun LaserSweep(aspect: Float) {
         val glow = 64.dp.toPx()
         // 선 위쪽으로 빛이 번진다
         val brush = Brush.verticalGradient(
-            listOf(Color.Transparent, c.laser.copy(alpha = 0.38f)),
+            listOf(Color.Transparent, LimeScan.copy(alpha = 0.38f)),
             startY = y - glow, endY = y,
         )
         drawRect(brush, Offset(left, (y - glow).coerceAtLeast(top)), Size(w, (glow.coerceAtMost(y - top))))
-        drawLine(c.laser, Offset(left, y), Offset(left + w, y), strokeWidth = 3.dp.toPx())
+        drawLine(LimeScan, Offset(left, y), Offset(left + w, y), strokeWidth = 3.dp.toPx())
         drawLine(Color.White.copy(alpha = 0.8f), Offset(left, y), Offset(left + w, y), strokeWidth = 1.dp.toPx())
         // 양 끝의 작은 불빛
-        drawCircle(c.laser, 5.dp.toPx(), Offset(left, y))
-        drawCircle(c.laser, 5.dp.toPx(), Offset(left + w, y))
+        drawCircle(LimeScan, 5.dp.toPx(), Offset(left, y))
+        drawCircle(LimeScan, 5.dp.toPx(), Offset(left + w, y))
     }
 }
 

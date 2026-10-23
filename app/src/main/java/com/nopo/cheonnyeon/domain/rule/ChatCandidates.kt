@@ -12,8 +12,8 @@ data class ChatCandidate(val store: Store, val years: Int, val distanceKm: Doubl
  * 1,000년 경로를 짤 때를 위해 안 가 본 곳 중 업력이 높은 곳도 따로 더한다.
  */
 object ChatCandidates {
-    const val NEAR_LIMIT = 40
-    const val RICH_LIMIT = 20
+    const val NEAR_LIMIT = 24
+    const val RICH_LIMIT = 10
 
     fun pick(
         stores: List<Store>,

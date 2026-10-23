@@ -135,7 +135,7 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
         val nowText = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + " (" + listOf("월", "화", "수", "목", "금", "토", "일")[now.dayOfWeek.value - 1] + "요일, 서울 시간)"
         val granted = androidx.core.content.ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
             androidx.core.content.ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
-        val fix = if (granted) runCatching { FusedLocationAdapter(container.appContext).quickFix() }.getOrNull() else null
+        val fix = container.lastFix.value ?: if (granted) runCatching { FusedLocationAdapter(container.appContext).quickFix() }.getOrNull() else null
         val visits = container.database.myVisitDao().observeAll().first()
         val total = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded }
         val candidates = ChatCandidates.pick(

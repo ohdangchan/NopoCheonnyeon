@@ -99,7 +99,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat)
+                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 }, onOpenChat = onOpenChat, onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 })
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED && !mapPermLater) {
                     if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.PERMANENTLY_DENIED) {

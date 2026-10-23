@@ -61,6 +61,8 @@ class AppContainer(
     val ratings = MutableStateFlow<Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>>(emptyMap())
     /** 별도 화면(룰렛·랭킹)의 하단 탭이 메인 화면에 "이 탭으로 가 달라"고 알리는 값 */
     val requestedTab = MutableStateFlow<Int?>(null)
+    /** 홈의 "내 주변 노포 찾기" 칩이 탐색 탭에 "이 칩을 눌러 달라"고 알리는 값(ExploreChips 의 번호) */
+    val requestedExploreChip = MutableStateFlow<Int?>(null)
     val lastFix = MutableStateFlow<com.nopo.cheonnyeon.platform.location.Fix?>(null)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 

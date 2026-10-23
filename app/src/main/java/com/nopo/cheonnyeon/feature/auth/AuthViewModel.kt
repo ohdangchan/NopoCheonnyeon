@@ -33,18 +33,21 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
     private var nickJob: Job? = null
 
-    fun signIn(email: String, password: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signIn(email, password) }
+    fun signIn(email: String, password: String) = run(keepBusy = true, onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signIn(email, password) }
 
     fun signUp(email: String, password: String, nickname: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.signUp() }) { repo.signUp(email, password, nickname) }
 
     /** 구글 로그인: [token] 은 [com.nopo.cheonnyeon.platform.auth.GoogleSignIn] 이 받은 ID 토큰 */
-    fun googleSignIn(token: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signInWithGoogle(token) }
+    fun googleSignIn(token: String) = run(keepBusy = true, onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signInWithGoogle(token) }
 
     fun showMessage(error: AppError) = _state.update { it.copy(error = error) }
 
     fun createProfile(nickname: String) = run { repo.createProfile(nickname) }
 
     fun sendReset(email: String) = run(onSuccess = { _state.update { it.copy(resetSent = true) } }) { repo.sendPasswordReset(email) }
+
+    /** 로그인 성공 뒤 화면이 넘어가기까지 "로그인 중…" 을 유지했다가, 세션이 정해지면 푼다 */
+    fun settle() = _state.update { if (it.busy) it.copy(busy = false) else it }
 
     fun clearError() = _state.update { it.copy(error = null) }
 
@@ -63,13 +66,15 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
         }
     }
 
-    private fun run(onSuccess: () -> Unit = {}, block: suspend () -> AppResult<Unit>) {
+    private fun run(keepBusy: Boolean = false, onSuccess: () -> Unit = {}, block: suspend () -> AppResult<Unit>) {
         if (_state.value.busy) return
         _state.update { it.copy(busy = true, error = null, resetSent = false) }
         viewModelScope.launch {
             val r = block()
-            _state.update { it.copy(busy = false, error = r.errorOrNull) }
+            val stay = keepBusy && r is AppResult.Success
+            _state.update { it.copy(busy = stay, error = r.errorOrNull) }
             if (r is AppResult.Success) onSuccess()
+            if (stay) { kotlinx.coroutines.delay(8_000); settle() }
         }
     }
 }

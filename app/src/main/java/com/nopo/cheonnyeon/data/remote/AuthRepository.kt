@@ -54,7 +54,7 @@ class AuthRepository(
 
     /** 확인할 수 없으면(오프라인 등) 막지 않고 있는 것으로 본다 */
     private suspend fun hasProfile(uid: String): Boolean = try {
-        withTimeout(TIMEOUT_MS) { db.collection("users").document(uid).get().await().exists() }
+        withTimeout(PROFILE_TIMEOUT_MS) { db.collection("users").document(uid).get().await().exists() }
     } catch (e: CancellationException) {
         if (e is TimeoutCancellationException) true else throw e
     } catch (_: Exception) {
@@ -194,5 +194,7 @@ class AuthRepository(
 
     private companion object {
         const val TIMEOUT_MS = 15_000L
+        /** 로그인 직후 프로필 확인은 짧게: 늦으면 있는 것으로 보고 홈으로 보낸다 */
+        const val PROFILE_TIMEOUT_MS = 5_000L
     }
 }

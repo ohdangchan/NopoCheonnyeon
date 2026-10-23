@@ -50,8 +50,9 @@ private object FirebaseTransport : GeminiTransport {
                 }
             }
         }
+        val t0 = android.os.SystemClock.elapsedRealtime()
         return try {
-            m.generateContent(request).text
+            m.generateContent(request).text.also { android.util.Log.d("Nopo", "AI " + model + " " + (android.os.SystemClock.elapsedRealtime() - t0) + "ms") }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

@@ -141,7 +141,8 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         MockStage(originY = 84, heightPx = 336) {
             MockPic(R.drawable.mk_deco_map, 330, 140, Modifier.at(430, 140))
-            MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
+            MockPic(R.drawable.mk_hdr_tab, 432, 122, Modifier.at(20, 84))
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.brand_sub_tab), 21, Modifier.at(158, 168), color = MockColors.Navy)
             MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = onSearch)
             MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
             // 검색창
