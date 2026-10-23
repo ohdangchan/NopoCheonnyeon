@@ -639,7 +639,7 @@ private fun Modifier.fillMaxWidthFraction(f: Float): Modifier = this.then(Modifi
 @Composable
 private fun VisitStamp(name: String, founded: Int?, grade: StampGrade) {
     val ink = when (grade) { StampGrade.GOLD -> Color(0xFFB8860B); else -> Red }
-    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) {
         Canvas(Modifier.fillMaxSize()) {
             val c = Offset(size.width / 2, size.height / 2)
             val r = size.minDimension / 2 - 4.dp.toPx()
