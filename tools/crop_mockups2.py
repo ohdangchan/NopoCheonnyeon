@@ -254,7 +254,7 @@ def build_perm():
     s = fix_corners(screen(21))
     save(s, "g_head", (0, 205, 760, 365))
     save(s, "g_map", (15, 378, 748, 822))
-    save(s, "g_steps", (30, 1170, 735, 1352))
+    save(s, "g_steps", (30, 1170, 735, 1374))
     save(s, "g_info", (15, 1405, 748, 1508))
     save(s, "g_ic_pin", (289, 863, 343, 917))
 

@@ -96,7 +96,8 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
                     kotlinx.coroutines.delay(250)
                     list = container.catalog.all()
                 }
-                allStores.value = list
+                // 개발용 테스트 가게는 지도·목록에 넣지 않는다
+                allStores.value = list.filter { !it.isTest }
                 if (list.isEmpty()) local.update { it.copy(loading = false) }
             }
         }

@@ -267,6 +267,8 @@ private fun MapContent(
     val bubbleW = (u * 190 * density).toInt()
     val bubbleH = bubbleW * BubbleIcons.H / BubbleIcons.W
     var naverMap by remember { mutableStateOf<NaverMap?>(null) }
+    // 지도가 8초 안에 준비되지 않으면(그림이 안 뜨는 기기) 목록으로 바꿔 빈 화면을 막는다
+    LaunchedEffect(Unit) { kotlinx.coroutines.delay(8_000); if (naverMap == null) vm.onMapFailed() }
     var cameraTick by remember { mutableIntStateOf(0) }
     var authError by rememberSaveable { mutableStateOf<String?>(null) }
     var zoomedOut by remember { mutableStateOf(false) }

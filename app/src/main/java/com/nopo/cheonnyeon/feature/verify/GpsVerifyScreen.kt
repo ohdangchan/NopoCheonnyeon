@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.common.message
@@ -77,6 +78,16 @@ internal fun GpsVerifyScreen(vm: VerifyViewModel, state: VerifyUiState, location
         err != null -> err.message(context, state.errorMeters)
         ok -> "선택한 노포 근처에 있습니다."
         else -> "아래 '위치 확인'을 눌러 주세요."
+    }
+    // 가게와 멀거나 위치를 못 찾았을 때는 빨간 큰 글씨 팝업으로 알린다
+    var dismissedKey by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    val errKey = err?.let { it.code + "|" + state.distanceM }
+    if (err != null && !state.busy && errKey != dismissedKey) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { dismissedKey = errKey },
+            text = { androidx.compose.material3.Text(err.message(context, state.errorMeters), color = Red, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 32.sp) },
+            confirmButton = { androidx.compose.material3.TextButton({ dismissedKey = errKey }) { androidx.compose.material3.Text("확인", fontSize = 18.sp) } },
+        )
     }
     var needLocation by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     if (needLocation) {
@@ -151,7 +162,7 @@ internal fun GpsVerifyScreen(vm: VerifyViewModel, state: VerifyUiState, location
                     }
                     PinIcon(26); Box(Modifier.width(px(8))); MockText(dText, 24, weight = FontWeight.Medium)
                 }
-                MockPic(R.drawable.mk2_g_steps, 705, 182, Modifier.at(30, 1170))
+                MockPic(R.drawable.mk2_g_steps, 705, 204, Modifier.at(30, 1170))
             }
             MockPic(R.drawable.mk2_g_info, 733, 103, Modifier.at(15, 1405))
         }

@@ -71,6 +71,7 @@ private const val PAGE_W = 314
 private const val PAGE_H = 426
 private const val SPINE = 432
 private const val PAGE_TOP = 78
+private const val BOOK_TILT = 4f
 private const val FIRST_PAGE_SLOTS = 6
 private const val PAGE_SLOTS = 9
 
@@ -131,6 +132,8 @@ internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (Pas
         },
     ) {
         MockPic(R.drawable.mk_col_book, 760, 560)
+        // 배경 사진 속 여권이 살짝 기울어 있어, 펼친 면도 같은 각도로 기울여 진짜 책처럼 맞춘다
+        Box(Modifier.fillMaxSize().graphicsLayer { rotationZ = BOOK_TILT; transformOrigin = TransformOrigin(0.5f, 0.52f) }) {
         // 왼쪽 정지면
         if (k >= 1) PageSurface(left = true, Modifier.offset(px(SPINE - PAGE_W), px(PAGE_TOP))) { PageBody(2 * k - 1, page(2 * k - 1), stats, onStamp) }
         // 오른쪽에 드러날 다음 장
@@ -156,6 +159,7 @@ internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (Pas
                 },
                 shade = 0.32f * sin(PI.toFloat() * t),
             ) { PageBody(2 * (k + 1) - 1, page(2 * (k + 1) - 1), stats, onStamp) }
+        }
         }
         // 쪽 표시
         Box(Modifier.align(Alignment.BottomCenter).offset(y = -px(6))) {

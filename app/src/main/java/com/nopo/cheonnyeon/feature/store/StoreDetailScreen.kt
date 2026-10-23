@@ -244,7 +244,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
             Modifier.fillMaxWidth().background(MockColors.Cream).border(1.dp, MockColors.CardLine).navigationBarsPadding().padding(horizontal = px(18), vertical = px(14)),
             horizontalArrangement = Arrangement.spacedBy(px(12)), verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (!store.isTest) {
+            run {
                 Row(
                     Modifier.weight(0.8f).height(px(76)).clip(RoundedCornerShape(px(18))).background(MockColors.Chip).saveDescription().clickable(role = Role.Button, onClick = vm::toggleBookmark),
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,

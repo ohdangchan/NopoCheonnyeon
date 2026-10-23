@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -144,7 +145,6 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                 MockStage(originY = 84, heightPx = 426) {
                     MockPic(R.drawable.mk_deco_explore, 330, 160, Modifier.at(430, 150))
                     MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
-                    MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90))
                     MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
                     MockPic(R.drawable.mk_explore_title, 380, 111, Modifier.at(20, 225))
                     // 검색창
@@ -164,7 +164,9 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                     Box(
                         Modifier.at(672, 352).size(px(60), px(56)).semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(query) },
                         contentAlignment = Alignment.Center,
-                    ) { AiSparkIcon(44) }
+                    ) {
+                            Box(Modifier.size(px(52)).clip(CircleShape).background(MockColors.Lime2), contentAlignment = Alignment.Center) { MockText("AI", 24, weight = FontWeight.ExtraBold, color = MockColors.Navy) }
+                        }
                     // 칩 줄
                     Row(Modifier.at(24, 438).fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(px(13))) {
                         ExploreChips.forEachIndexed { i, label -> Chip(label, selected = chip == i && region == null || (i == 0 && chip == 0 && region == null)) { vm.chip.value = i; vm.region.value = null } }

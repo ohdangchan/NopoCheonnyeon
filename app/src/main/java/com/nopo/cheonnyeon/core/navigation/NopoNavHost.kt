@@ -112,7 +112,7 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
         }
         composable(Routes.NOTIFICATIONS) {
             val vm: com.nopo.cheonnyeon.feature.notifications.NotificationsViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.notifications.NotificationsViewModel(container) })
-            com.nopo.cheonnyeon.feature.notifications.NotificationsScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+            com.nopo.cheonnyeon.feature.notifications.NotificationsScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) }, onOpenTab = { t -> container.requestedTab.value = t; nav.popBackStack(Routes.HOME, false) })
         }
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()

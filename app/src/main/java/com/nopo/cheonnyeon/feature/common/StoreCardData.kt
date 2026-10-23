@@ -32,7 +32,7 @@ object StoreCards {
     fun tag(store: Store, currentYear: Int): String {
         val years = YearsCalculator.yearsAtVisit(store.foundedYear?.takeIf { it <= currentYear }, currentYear)
         val founded = store.foundedYear
-        return if (founded != null && store.id.hashCode() % 2 == 0) "${founded}년 개업" else "${years}년 전통"
+        return "${years}년 전통"
     }
 
     fun of(store: Store, currentYear: Int, ratings: Map<String, StoreRating>, fix: Fix?, bookmarks: Set<String>): StoreCardData {

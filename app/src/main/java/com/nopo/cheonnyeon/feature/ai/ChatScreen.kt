@@ -6,6 +6,9 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -202,7 +205,13 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
                 }
             }
             items(state.messages, key = { it.id }) { m -> Bubble(m, onOpenStore) }
-            if (state.sending) item { Text(stringResource(R.string.chat_thinking), color = c.ink2, style = NopoTheme.typography.bodyMedium) }
+            if (state.sending) item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    androidx.compose.material3.CircularProgressIndicator(Modifier.size(28.dp), color = c.primary, strokeWidth = 3.dp)
+                    Spacer(Modifier.width(12.dp))
+                    Text(stringResource(R.string.chat_thinking), color = c.ink, style = NopoTheme.typography.titleMedium)
+                }
+            }
             state.error?.let { e -> item { Text(e.message(context), color = c.stamp) } }
         }
         // 예시 질문: 눌러서 바로 물어볼 수 있다(접고 펼칠 수 있음)

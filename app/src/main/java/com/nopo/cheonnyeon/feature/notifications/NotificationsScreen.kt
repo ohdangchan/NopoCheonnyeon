@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import java.time.Instant
 
-data class NoticeItem(val key: String, val title: String, val body: String, val at: Long, val storeId: String? = null, val lime: Boolean = false)
+data class NoticeItem(val key: String, val title: String, val body: String, val at: Long, val storeId: String? = null, val lime: Boolean = false, val tab: Int? = null)
 
 /**
  * 알림 목록. 서버 푸시 없이, 이 기기의 방문 기록에서 도장·칭호 소식을 만들고
@@ -62,11 +62,11 @@ fun buildNotices(
             val before = total
             total += v.yearsAwarded
             out += NoticeItem("stamp-${v.storeId}", "도장을 찍었어요", "$name 방문 인증 완료 · 세월 +${v.yearsAwarded}년", v.firstVisitedAt, v.storeId, lime = true)
-            TitlePolicy.titleUp(before, total)?.let { out += NoticeItem("title-${it.name}", "새 칭호를 얻었어요", "누적 세월 ${total}년 · 새 칭호를 확인해 보세요", v.firstVisitedAt + 1) }
+            TitlePolicy.titleUp(before, total)?.let { out += NoticeItem("title-${it.name}", "새 칭호를 얻었어요", "누적 세월 ${total}년 · 새 칭호를 확인해 보세요", v.firstVisitedAt + 1, tab = 3) }
         }
     }
-    if (reco) out += NoticeItem("reco", "오늘의 추천", "홈 화면의 '오늘의 AI 추천'에서 오늘 가볼 노포를 확인해 보세요.", nowMs - 1)
-    out += NoticeItem("welcome", "노포 패스포트에 오신 걸 환영해요", "방문할수록 더 특별해지는 나만의 노포 여행 기록을 시작해 보세요.", 0L)
+    if (reco) out += NoticeItem("reco", "오늘의 추천", "홈 화면의 '오늘의 AI 추천'에서 오늘 가볼 노포를 확인해 보세요.", nowMs - 1, tab = 0)
+    out += NoticeItem("welcome", "노포 패스포트에 오신 걸 환영해요", "방문할수록 더 특별해지는 나만의 노포 여행 기록을 시작해 보세요.", 0L, tab = 4)
     return out.sortedByDescending { it.at }
 }
 
@@ -83,7 +83,7 @@ class NotificationsViewModel(private val container: AppContainer) : ViewModel() 
 }
 
 @Composable
-fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenStore: (String) -> Unit) {
+fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenStore: (String) -> Unit, onOpenTab: (Int) -> Unit = {}) {
     val items by vm.items.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
@@ -93,7 +93,7 @@ fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenSt
             items(items, key = { it.key }) { n ->
                 Row(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18)))
-                        .then(if (n.storeId != null) Modifier.clickable(role = Role.Button) { onOpenStore(n.storeId) } else Modifier).padding(px(22)),
+                        .clickable(role = Role.Button) { if (n.storeId != null) onOpenStore(n.storeId) else if (n.tab != null) onOpenTab(n.tab) }.padding(px(22)),
                     horizontalArrangement = Arrangement.spacedBy(px(16)), verticalAlignment = Alignment.Top,
                 ) {
                     Box(Modifier.padding(top = px(8)).size(px(16)).clip(CircleShape).background(if (n.lime) MockColors.LimeDeep else Color_Gray))

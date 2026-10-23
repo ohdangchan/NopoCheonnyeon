@@ -463,7 +463,7 @@ class VerifyViewModel(
         const val KEY_ATTEMPTS = "attempts"
         const val KEY_IN_RANGE = "in_range"
         const val OCR_TIMEOUT_MS = 10_000L
-        const val HINT_TIMEOUT_MS = 2_500L
+        const val HINT_TIMEOUT_MS = 1_800L
         const val LASER_MIN_MS = 1_700L
         const val HIGHLIGHT_MS = 1_800L
         const val FAIL_HIGHLIGHT_MS = 700L
