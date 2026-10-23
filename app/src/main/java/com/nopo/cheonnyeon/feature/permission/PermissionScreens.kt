@@ -204,7 +204,7 @@ private fun ToggleSwitch(on: Boolean) {
 }
 
 
-private val RowTitles = listOf("위치 정보", "카메라", "알림", "마케팅 정보 수신", "방문 기록 공유", "앱 사용 데이터 수집")
+private val RowTitles = listOf("위치 정보", "카메라", "알림", "마케팅 정보 수신", "방문 기록 공유", "앱 사용 데이터 수집", "사진 앨범")
 
 /**
  * 시안 18: 권한 관리. 위치·카메라·알림은 실제 권한 상태이고, 마케팅·방문 기록 공유·사용 데이터 수집은 이 앱 안의 선택이다.
@@ -213,7 +213,7 @@ private val RowTitles = listOf("위치 정보", "카메라", "알림", "마케�
 @Composable
 fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (Int) -> Unit, onInfo: () -> Unit) {
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
-        MockStage(originY = 88, heightPx = 1425) {
+        MockStage(originY = 88, heightPx = 1580) {
             MockPic(R.drawable.mk2_pm_head, 760, 468, Modifier.at(0, 88))
             Box(Modifier.at(18, 110).size(px(80), px(80)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "뒤로" })
             val rows = listOf(R.drawable.mk2_pm_row1, R.drawable.mk2_pm_row2, R.drawable.mk2_pm_row3, R.drawable.mk2_pm_row4, R.drawable.mk2_pm_row5, R.drawable.mk2_pm_row6)
@@ -229,8 +229,30 @@ fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (In
                 Box(Modifier.at(612, y0 + 36)) { ToggleSwitch(on) }
                 Box(Modifier.at(12, y0).size(px(736), px(130)).clickable(role = Role.Switch) { onRow(i) }.semantics { contentDescription = RowTitles[i] })
             }
-            MockPic(R.drawable.mk2_pm_info, 736, 98, Modifier.at(12, 1410))
-            Box(Modifier.at(12, 1410).size(px(736), px(98)).clickable(role = Role.Button, onClick = onInfo))
+            // 일곱째 줄: 사진 앨범 (시안에는 없어서 같은 모양으로 직접 그린다)
+            val ay = 1398
+            val aOn = states.getOrElse(6) { false }
+            Box(Modifier.at(12, ay).size(px(736), px(130)).clip(RoundedCornerShape(px(22))).background(Color(0xFFFCFAF4)).border(1.dp, Color(0xFFEFE9D8), RoundedCornerShape(px(22))))
+            Box(Modifier.at(40, ay + 30).size(px(70)).clip(CircleShape).background(Color(0xFFE2F77A)), contentAlignment = Alignment.Center) { AlbumGlyph() }
+            MockText("사진 앨범", 28, Modifier.at(142, ay + 20), weight = FontWeight.ExtraBold, font = com.nopo.cheonnyeon.core.designsystem.mock.MockSans)
+            MockText("리뷰에 음식 사진을 올릴 때\n앨범에서 고를 수 있어요.", 20, Modifier.at(142, ay + 62).size(px(360), px(60)), color = Color(0xFF4B5563), maxLines = 2, lineHeightPx = 28)
+            MockText(if (aOn) "허용됨" else "허용 안 됨", 22, Modifier.at(486, ay + 38).size(px(118), px(40)), color = if (aOn) Color(0xFF3F8F0A) else Color(0xFF4B5563), weight = FontWeight.Medium, align = TextAlign.End)
+            Box(Modifier.at(612, ay + 36)) { ToggleSwitch(aOn) }
+            Box(Modifier.at(12, ay).size(px(736), px(130)).clickable(role = Role.Switch) { onRow(6) }.semantics { contentDescription = RowTitles[6] })
+            MockPic(R.drawable.mk2_pm_info, 736, 98, Modifier.at(12, 1550))
+            Box(Modifier.at(12, 1550).size(px(736), px(98)).clickable(role = Role.Button, onClick = onInfo))
         }
+    }
+}
+
+@Composable
+private fun AlbumGlyph() {
+    androidx.compose.foundation.Canvas(Modifier.size(px(40))) {
+        val w = size.width
+        val st = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.08f, join = androidx.compose.ui.graphics.StrokeJoin.Round, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+        drawRoundRect(MockColors.Navy, androidx.compose.ui.geometry.Offset(w * 0.08f, w * 0.12f), androidx.compose.ui.geometry.Size(w * 0.84f, w * 0.76f), androidx.compose.ui.geometry.CornerRadius(w * 0.1f), style = st)
+        drawCircle(MockColors.Navy, w * 0.07f, androidx.compose.ui.geometry.Offset(w * 0.34f, w * 0.34f))
+        val p = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.12f, w * 0.78f); lineTo(w * 0.4f, w * 0.52f); lineTo(w * 0.58f, w * 0.68f); lineTo(w * 0.72f, w * 0.5f); lineTo(w * 0.9f, w * 0.72f) }
+        drawPath(p, MockColors.Navy, style = st)
     }
 }

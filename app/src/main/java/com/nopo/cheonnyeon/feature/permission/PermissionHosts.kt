@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,9 +63,11 @@ fun PermissionManageHost(container: AppContainer, onBack: () -> Unit, onNotifica
     val marketing by container.settings.marketing.collectAsStateWithLifecycle(initialValue = false)
     val analytics by container.settings.analyticsOn.collectAsStateWithLifecycle(initialValue = true)
     var share by remember { mutableStateOf(true) }
+    var albumTick by remember { mutableIntStateOf(0) }
+    val album = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { albumTick++ }
     LaunchedEffect(Unit) { container.auth.currentUid?.let { uid -> container.profiles.profile(uid).valueOrNull?.let { share = it.visibility != "PRIVATE" } } }
-    val states = remember(tick, loc.status, cam.status, marketing, analytics, share) {
-        listOf(locationGranted(context), cameraGranted(context), notificationsGranted(context), marketing, share, analytics)
+    val states = remember(tick, albumTick, loc.status, cam.status, marketing, analytics, share) {
+        listOf(locationGranted(context), cameraGranted(context), notificationsGranted(context), marketing, share, analytics, albumGranted(context))
     }
     PermissionManageScreen(
         states = states, onBack = onBack,
@@ -81,7 +84,8 @@ fun PermissionManageHost(container: AppContainer, onBack: () -> Unit, onNotifica
                     share = next
                     scope.launch { container.auth.currentUid?.let { container.profiles.setVisibility(it, if (next) "ALL" else "PRIVATE") } }
                 }
-                else -> scope.launch { container.settings.setAnalyticsOn(!analytics) }
+                5 -> scope.launch { container.settings.setAnalyticsOn(!analytics) }
+                else -> if (states[6]) openAppSettings(context) else album.launch(AlbumPermission)
             }
         },
         onInfo = { openAppSettings(context) },
