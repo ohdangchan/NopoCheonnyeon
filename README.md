@@ -2,7 +2,7 @@
   <img src="design/brand/play-store-icon-512.png" width="140" alt="노포 패스포트 앱 아이콘">
 </p>
 
-<h1 align="center">노포 패스포트</h1>
+<h1 align="center">노포 패스포트 · 버전2 (Version 2)</h1>
 <p align="center"><b>세월을 맛보고, 추억을 모으다.</b><br>
 전국 백년가게·서울 오래가게 1,277곳을 찾아가 <b>방문 인증 도장</b>을 모으고, 쌓인 <b>세월 1,000년</b>을 채우는 노포 여행 앱</p>
 
