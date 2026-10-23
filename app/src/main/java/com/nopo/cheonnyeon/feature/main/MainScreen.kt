@@ -91,7 +91,7 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat, onBell = onOpenNotifications)
+                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat)
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 })

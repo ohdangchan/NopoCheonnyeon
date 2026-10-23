@@ -179,14 +179,7 @@ build_navs()
 
 # --- 홈 ---
 save(s[3], "home_header", (0, 90, 760, 206))
-hero = s[3].crop((0, 205, 760, 578))
-hp = hero.load()
-paper = (252, 247, 235)
-for x in range(hero.width):  # 시안 3의 옛 머리글 우표 조각이 사진 위 종이 부분에 남아 있어 종이색으로 덮는다
-    edge = 25 + 0.0889 * (x - 300)
-    for y in range(0, max(0, int(edge) - 3)):
-        hp[x, y] = paper
-save(hero, "home_hero", (0, 0, 760, 373))
+save(s[3], "home_hero", (0, 205, 760, 578))
 save(s[3], "home_chips", (20, 1298, 745, 1374))
 banner = erase(s[3], (112, 1404, 400, 1486))
 save(banner, "home_banner", (28, 1388, 734, 1500))
