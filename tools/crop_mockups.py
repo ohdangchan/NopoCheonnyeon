@@ -105,23 +105,73 @@ def block(strip, i, bgc):
     return cell.crop(box), box
 
 
+def split_block(img, bgc):
+    """아이콘+글자 덩어리를 (아이콘, 글자) 로 나눈다: 가로로 빈 줄을 기준으로 맨 아래 덩어리가 글자."""
+    a = np.asarray(img).astype(int)
+    rows = (np.abs(a - np.array(bgc)).sum(axis=2) > 90).any(axis=1)
+    ys = np.where(rows)[0]
+    groups = np.split(ys, np.where(np.diff(ys) > 1)[0] + 1)
+    label_top = groups[-1][0]
+    icon = img.crop((0, 0, img.width, groups[-2][-1] + 1)) if len(groups) > 1 else img
+    label = img.crop((0, label_top, img.width, img.height))
+    return icon, label
+
+
+def lime_fill(icon, bgc):
+    """윤곽선 아이콘의 닫힌 안쪽을 연두색으로 칠한다(바깥에서 물을 부어 닿지 않는 곳이 안쪽)."""
+    from PIL import ImageDraw
+    pad = 3
+    big = Image.new("RGB", (icon.width + 2 * pad, icon.height + 2 * pad), bgc)
+    big.paste(icon, (pad, pad))
+    a = np.asarray(big).astype(int)
+    ink = (np.abs(a - np.array(bgc)).sum(axis=2) > 60)
+    # 바깥: 가장자리의 잉크 아닌 칸에서 시작해 잉크에 막힐 때까지 번지는 영역
+    outside = np.zeros_like(ink)
+    outside[0, :] = outside[-1, :] = outside[:, 0] = outside[:, -1] = True
+    outside &= ~ink
+    while True:
+        grown = outside.copy()
+        grown[1:, :] |= outside[:-1, :]
+        grown[:-1, :] |= outside[1:, :]
+        grown[:, 1:] |= outside[:, :-1]
+        grown[:, :-1] |= outside[:, 1:]
+        grown &= ~ink
+        if (grown == outside).all():
+            break
+        outside = grown
+    inside = ~outside & ~ink
+    out = np.asarray(big).copy()
+    out[inside] = (0xBD, 0xF6, 0x42)
+    return Image.fromarray(out)
+
+
 def build_navs():
     order = ["home", "explore", "map", "collection", "my"]
     bgc = bg(navs["my"], (300, 40, 360, 50))
-    # 안 선택: 윤곽선 아이콘(마이 시안 줄), 마이는 지도 시안 줄에서
-    plain = {k: block(navs["my"], i, bgc) for i, k in enumerate(order[:4])}
-    plain["my"] = block(navs["map"], 4, bgc)
-    # 선택: 각 시안의 선택된 칸, 홈은 컬렉션 시안의 굵은 홈
-    sel = {
-        "home": block(navs["collection"], 0, bgc), "explore": block(navs["explore"], 1, bgc), "map": block(navs["map"], 2, bgc),
-        "collection": block(navs["collection"], 3, bgc), "my": block(navs["my"], 4, bgc),
+    plain_src = {k: block(navs["my"], i, bgc)[0] for i, k in enumerate(order[:4])}
+    plain_src["my"] = block(navs["map"], 4, bgc)[0]
+    sel_src = {
+        "home": block(navs["collection"], 0, bgc)[0], "explore": block(navs["explore"], 1, bgc)[0], "map": block(navs["map"], 2, bgc)[0],
+        "collection": block(navs["collection"], 3, bgc)[0], "my": block(navs["my"], 4, bgc)[0],
     }
-    top = 22
+    plain = {k: split_block(v, bgc) for k, v in plain_src.items()}
+    sel_label = {k: split_block(v, bgc)[1] for k, v in sel_src.items()}
+    # 마이 탭 이름은 "마이페이지": 홈 시안 줄의 글자를 쓰고, 선택 때는 가로로 한 번 겹쳐 굵게 만든다
+    from PIL import ImageChops
+    mp_label = split_block(block(navs["home"], 4, bgc)[0], bgc)[1]
+    plain["my"] = (plain["my"][0], mp_label)
+    sel_label["my"] = ImageChops.darker(mp_label, ImageChops.offset(mp_label, 1, 0))
+    gap = 7
     for cur in order:
         strip = Image.new("RGB", (760, 98), bgc)
         for i, k in enumerate(order):
-            img, _ = (sel if k == cur else plain)[k]
-            strip.paste(img, (152 * i + 76 - img.width // 2, 92 - img.height))
+            icon, label = plain[k]
+            if k == cur:
+                icon, label = lime_fill(icon, bgc), sel_label[k]
+            cx = 152 * i + 76
+            ly = 92 - label.height
+            strip.paste(label, (cx - label.width // 2, ly))
+            strip.paste(icon, (cx - icon.width // 2, ly - gap - icon.height))
         save(strip, f"nav_{cur}", (0, 0, 760, 98))
 
 
@@ -129,7 +179,14 @@ build_navs()
 
 # --- 홈 ---
 save(s[3], "home_header", (0, 90, 760, 206))
-save(s[3], "home_hero", (0, 205, 760, 578))
+hero = s[3].crop((0, 205, 760, 578))
+hp = hero.load()
+paper = (252, 247, 235)
+for x in range(hero.width):  # 시안 3의 옛 머리글 우표 조각이 사진 위 종이 부분에 남아 있어 종이색으로 덮는다
+    edge = 25 + 0.0889 * (x - 300)
+    for y in range(0, max(0, int(edge) - 3)):
+        hp[x, y] = paper
+save(hero, "home_hero", (0, 0, 760, 373))
 save(s[3], "home_chips", (20, 1298, 745, 1374))
 banner = erase(s[3], (112, 1404, 400, 1486))
 save(banner, "home_banner", (28, 1388, 734, 1500))

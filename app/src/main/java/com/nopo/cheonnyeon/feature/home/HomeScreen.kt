@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -138,21 +139,25 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
  * "오늘의 AI 추천" 카드와 가게 카드는 실제 가게로 채운다.
  */
 @Composable
-fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit, onOpenChat: (String) -> Unit) {
+fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit, onOpenChat: (String) -> Unit, onBell: () -> Unit = {}) {
     val ui by vm.state.collectAsStateWithLifecycle()
     val tourPrompt = androidx.compose.ui.res.stringResource(R.string.home_tour_prompt)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
+        // 머리글은 다른 탭과 똑같이(도장 로고·제목·부제·검색·알림). 홈 시안의 큰 머리글은 쓰지 않는다
+        MockStage(originY = 84, heightPx = 121) {
+            Box(Modifier.at(430, 150).size(px(330), px(55)).clipToBounds()) { MockPic(R.drawable.mk_deco_my, 330, 160) }
+            MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
+            MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = onSearch)
+            MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
+        }
         // 시안 3번 폰은 화면 폭이 738px(왼쪽 12px은 테두리)라서 가로로 3% 늘려 화면에 꼭 맞춘다
         val u = com.nopo.cheonnyeon.core.designsystem.mock.LocalMockU.current
         val density = androidx.compose.ui.platform.LocalDensity.current.density
-        MockStage(originY = 92, heightPx = 1420, modifier = Modifier.graphicsLayer {
+        MockStage(originY = 205, heightPx = 1307, modifier = Modifier.graphicsLayer {
             transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
             scaleX = 760f / 734f
             translationX = -14f * (760f / 734f) * u * density
         }) {
-            MockPic(R.drawable.mk_home_header, 760, 116, Modifier.at(0, 90))
-            Box(Modifier.at(575, 92).size(px(80), px(70)).clickable(role = Role.Button, onClick = onSearch))
-            Box(Modifier.at(660, 96).size(px(70), px(60)).clickable(role = Role.Button, onClick = onOpenMy))
             MockPic(R.drawable.mk_home_hero, 760, 373, Modifier.at(0, 205))
 
             // 오늘의 AI 추천 카드
