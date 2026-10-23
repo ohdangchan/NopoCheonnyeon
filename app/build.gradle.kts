@@ -116,6 +116,10 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
+    // 구글 로그인(Credential Manager): 간편 로그인 구글 버튼
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play)
+    implementation(libs.google.id)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ai)
     implementation(libs.kotlinx.coroutines.play.services)

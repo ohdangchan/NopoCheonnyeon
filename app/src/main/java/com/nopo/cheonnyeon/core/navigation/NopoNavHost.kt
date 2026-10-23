@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -63,7 +64,12 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
 
     val onboardingDone by container.settings.onboardingDone.collectAsStateWithLifecycle(initialValue = null)
 
-    LaunchedEffect(state, onboardingDone) {
+    // 로딩 화면은 앱을 켤 때마다(처음 설치든 다시 켜든) 가장 먼저, 최소 1.4초 보여 준다
+    var splashDone by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    LaunchedEffect(Unit) { kotlinx.coroutines.delay(1400); splashDone = true }
+
+    LaunchedEffect(state, onboardingDone, splashDone) {
+        if (!splashDone) return@LaunchedEffect
         val current = nav.currentDestination?.route
         val target = when (state) {
             SessionState.Loading -> Routes.SPLASH
@@ -85,9 +91,9 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
     }
 
     NavHost(navController = nav, startDestination = Routes.SPLASH) {
-        composable(Routes.SPLASH) { Placeholder(R.string.placeholder_splash) }
+        composable(Routes.SPLASH) { com.nopo.cheonnyeon.feature.splash.SplashScreen() }
         composable(Routes.ONBOARDING) {
-            OnboardingScreen(onDone = { scope.launch { container.settings.setOnboardingDone() } })
+            OnboardingScreen(container, onDone = { scope.launch { container.settings.setOnboardingDone() } })
         }
         composable(Routes.LOGIN) {
             LoginScreen(

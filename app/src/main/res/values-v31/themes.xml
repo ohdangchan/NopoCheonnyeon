@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.NopoCheonnyeon" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/window_splash</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <!-- 안드로이드 12 이상의 시스템 시작 화면은 종이색 바탕에 아이콘 없이 짧게만 보인다 -->
+        <item name="android:windowSplashScreenBackground">@color/paper</item>
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
+</resources>

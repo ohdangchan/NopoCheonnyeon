@@ -37,6 +37,11 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
 
     fun signUp(email: String, password: String, nickname: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.signUp() }) { repo.signUp(email, password, nickname) }
 
+    /** 구글 로그인: [token] 은 [com.nopo.cheonnyeon.platform.auth.GoogleSignIn] 이 받은 ID 토큰 */
+    fun googleSignIn(token: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signInWithGoogle(token) }
+
+    fun showMessage(error: AppError) = _state.update { it.copy(error = error) }
+
     fun createProfile(nickname: String) = run { repo.createProfile(nickname) }
 
     fun sendReset(email: String) = run(onSuccess = { _state.update { it.copy(resetSent = true) } }) { repo.sendPasswordReset(email) }

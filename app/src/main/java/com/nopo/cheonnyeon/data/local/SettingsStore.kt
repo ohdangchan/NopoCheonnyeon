@@ -28,6 +28,8 @@ class SettingsStore(private val context: Context) {
     private val marketingKey = booleanPreferencesKey("pref_marketing")
     private val shareVisitsKey = booleanPreferencesKey("pref_share_visits")
     private val analyticsKey = booleanPreferencesKey("pref_analytics")
+    private val prefRegionsKey = stringSetPreferencesKey("pref_regions")
+    private val prefFoodsKey = stringSetPreferencesKey("pref_foods")
     private val keepLoginKey = booleanPreferencesKey("keep_login")
     private val notifyNewsKey = booleanPreferencesKey("notify_news")
     private val notifyRecoKey = booleanPreferencesKey("notify_reco")
@@ -100,6 +102,11 @@ class SettingsStore(private val context: Context) {
     suspend fun setMarketing(v: Boolean) { context.dataStore.edit { it[marketingKey] = v } }
     suspend fun setShareVisits(v: Boolean) { context.dataStore.edit { it[shareVisitsKey] = v } }
     suspend fun setAnalyticsOn(v: Boolean) { context.dataStore.edit { it[analyticsKey] = v } }
+
+    /** 처음 설치 때 고른 좋아하는 지역·음식 (추천에 쓴다) */
+    val prefRegions: Flow<Set<String>> = context.dataStore.data.map { it[prefRegionsKey] ?: emptySet() }
+    val prefFoods: Flow<Set<String>> = context.dataStore.data.map { it[prefFoodsKey] ?: emptySet() }
+    suspend fun setTaste(regions: Set<String>, foods: Set<String>) { context.dataStore.edit { it[prefRegionsKey] = regions; it[prefFoodsKey] = foods } }
 
     val keepLogin: Flow<Boolean> = context.dataStore.data.map { it[keepLoginKey] ?: true }
     suspend fun setKeepLogin(v: Boolean) { context.dataStore.edit { it[keepLoginKey] = v } }

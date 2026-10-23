@@ -126,6 +126,13 @@ class AuthRepository(
         null
     }
 
+    /** 구글 ID 토큰으로 로그인한다. 처음 쓰는 계정이면 프로필이 없어 세션 상태가 NeedsNickname 이 되고, 닉네임 화면으로 이어진다. */
+    suspend fun signInWithGoogle(idToken: String): AppResult<Unit> = call {
+        auth.signInWithCredential(com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)).await()
+        profileRefresh.value++
+        Unit.asSuccess()
+    }
+
     /** 닉네임 변경 (S-408): 새 닉네임 확보 → 옛 닉네임 해제 → 내 리뷰의 닉네임 일괄 갱신, 한 묶음으로 */
     suspend fun changeNickname(newNick: String): AppResult<Unit> = call {
         val me = auth.currentUser?.uid ?: return@call AppError.E_AUTH_REQUIRED.asFailure()

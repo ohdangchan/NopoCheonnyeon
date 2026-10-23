@@ -31,15 +31,28 @@ def fix_corners(im, r=70):
     return Image.fromarray(a.astype(np.uint8))
 
 
-def erase(im, box, color=None):
-    """box 안을 색 하나로 지운다(색을 안 주면 박스 바로 위 가장자리 가운데 색)."""
+def erase(im, box, color=None, pad=None):
+    """box 를 지운다. color 를 주면 한 가지 색, 안 주면 네 변의 색을 섞어 매끈하게 메운다."""
     x0, y0, x1, y1 = box
-    px = im.load()
-    c = color or px[(x0 + x1) // 2, max(0, y0 - 2)]
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            px[x, y] = c
-    return im
+    if color is not None:
+        px = im.load()
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                px[x, y] = color
+        return im
+    pad = pad or 4
+    a = np.asarray(im).astype(np.float32)
+    h, w = y1 - y0, x1 - x0
+    top = a[y0 - pad:y0, x0:x1].mean(axis=0)
+    bot = a[y1:y1 + pad, x0:x1].mean(axis=0)
+    left = a[y0:y1, x0 - pad:x0].mean(axis=1)
+    right = a[y0:y1, x1:x1 + pad].mean(axis=1)
+    ty = np.linspace(0, 1, h)[:, None, None]
+    tx = np.linspace(0, 1, w)[None, :, None]
+    v = top[None, :, :] * (1 - ty) + bot[None, :, :] * ty
+    hz = left[:, None, :] * (1 - tx) + right[:, None, :] * tx
+    a[y0:y1, x0:x1] = (v + hz) / 2
+    return Image.fromarray(a.clip(0, 255).astype(np.uint8))
 
 
 def build():
@@ -211,6 +224,74 @@ def build_perm():
     save(s, "g_ic_pin", (289, 863, 343, 917))
 
 
+def paper_at(im, box):
+    a = np.asarray(im.crop(box)).reshape(-1, 3)
+    return tuple(int(v) for v in np.median(a, axis=0))
+
+
+def patch_badge(im, box, shift):
+    """사진 위 선택 표시(동그라미)를 왼쪽 옆 조각으로 덮는다."""
+    x0, y0, x1, y1 = box
+    src = im.crop((x0 - shift, y0, x1 - shift, y1))
+    im.paste(src, (x0, y0))
+    return im
+
+
+def build_new():
+    # 27 로딩 화면: 전체 화면 그림(스피너·글자는 지우고 앱이 직접 그린다)
+    s = fix_corners(screen(27))
+    s = erase(s, (430, 1462, 530, 1530), pad=6)
+    s = erase(s, (320, 1545, 620, 1585), pad=6)
+    save(s, "n_splash", (0, 72, 760, 1651))
+    # 26 설치 후 첫 화면(눌리는 곳만 앱에서 얹는다)
+    s = fix_corners(screen(26))
+    save(s, "n_intro1", (0, 84, 760, 1651))
+    # 25 / 24 취향 선택: 머리글 그림은 글자를 지우고 앱이 글자를 그린다
+    for n, name in ((25, "n_pref2_head"), (24, "n_pref3_head")):
+        s = fix_corners(screen(n))
+        s = erase(s, (30, 232, 470, 570), pad=6)
+        save(s, name, (0, 84, 760, 590))
+    s = fix_corners(screen(25))
+    foot = erase(s.copy(), (270, 1548, 480, 1610), pad=6)
+    save(foot, "n_pref_foot", (0, 1500, 760, 1651))
+    regs = ["jongno", "euljiro", "mapo", "seongsu", "busan"]
+    for i, r in enumerate(regs):
+        x = 28 + int(i * 145.0)
+        t = s.copy()
+        t = patch_badge(t, (x + 80, 674, x + 126, 720), 52)
+        save(t, f"n_reg_{r}", (x, 672, x + 128, 812))
+    foods = ["naengmyeon", "gukbap", "bunsik", "gogi", "kalguksu", "jeontongju", "haemul", "jeon"]
+    for i, f in enumerate(foods):
+        col, row = i % 4, i // 4
+        x = [30, 214, 393, 570][col]
+        y = 1048 if row == 0 else 1235
+        w = 164
+        t = s.copy()
+        t = patch_badge(t, (x + w - 50, y + 2, x + w - 4, y + 48), 56)
+        save(t, f"n_food_{f}", (x, y, x + w, y + 98))
+    # 28 로그인
+    s = fix_corners(screen(28))
+    save(s, "n_login_head", (0, 84, 760, 885))
+    for name, box, er in (("n_login_in1", (0, 870, 760, 962), (120, 895, 700, 945)), ("n_login_in2", (0, 968, 760, 1062), (120, 990, 640, 1040))):
+        t = s.copy()
+        t = erase(t, er, color=paper_at(s, (er[0] + 200, er[1] - 2, er[0] + 210, er[1])) if False else (251, 247, 237))
+        save(t, name, box)
+    save(s, "n_login_user", (265, 1428, 312, 1475))
+    save(erase(s.copy(), (285, 1548, 480, 1594), pad=6), "n_login_foot", (0, 1490, 760, 1651))
+    # 22 후기 작성
+    s = fix_corners(screen(22))
+    save(s, "n_rev_head", (0, 84, 760, 430))
+    save(s, "n_rev_banner", (20, 1332, 740, 1462))
+    save(s, "n_rev_ic_person", (385, 575, 425, 625))
+    # 23 도움말 센터
+    s = fix_corners(screen(23))
+    t = erase(s.copy(), (95, 448, 560, 490), color=(251, 247, 237))
+    save(t, "n_help_head", (0, 84, 760, 524))
+    for i, (x, y) in enumerate(((36, 534), (402, 534), (36, 651), (402, 651), (36, 768), (402, 768))):
+        save(s, f"n_help_ic{i+1}", (x, y, x + 78, y + 78))
+
+
+build_new()
 build_perm()
 build_account()
 build_rank()
