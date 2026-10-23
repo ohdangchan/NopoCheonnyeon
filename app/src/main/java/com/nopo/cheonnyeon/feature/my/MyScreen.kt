@@ -76,6 +76,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.model.Title
@@ -239,7 +240,7 @@ fun MyScreen(
                         Box(Modifier.width(px(245)).height(px(170)).clip(RoundedCornerShape(px(14))).clickable(role = Role.Button) { onOpenStore(store.id) }) {
                             StorePhoto(store, Modifier.fillMaxSize())
                             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xB3000000)), startY = 100f)))
-                            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(36)).clickable(role = Role.Button) { vm.toggleBookmark(store.id) }, contentAlignment = Alignment.Center) {
+                            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(36)).saveDescription().clickable(role = Role.Button) { vm.toggleBookmark(store.id) }, contentAlignment = Alignment.Center) {
                                 BookmarkIcon(28, filled = store.id in bookmarks)
                             }
                             Column(Modifier.align(Alignment.BottomStart).padding(start = px(14), bottom = px(10)), verticalArrangement = Arrangement.spacedBy(px(2))) {

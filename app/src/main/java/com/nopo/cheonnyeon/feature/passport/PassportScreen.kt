@@ -71,6 +71,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.data.local.MyVisitEntity
 import com.nopo.cheonnyeon.domain.model.Store
@@ -255,7 +256,7 @@ private fun VisitedCard(s: PassportStamp, bookmarked: Boolean, width: androidx.c
         Box(Modifier.fillMaxWidth().height(px(198))) {
             StorePhoto(store, Modifier.fillMaxSize())
             Box(
-                Modifier.align(Alignment.TopEnd).padding(top = px(14), end = px(12)).size(px(40)).clip(CircleShape).background(Color(0xE6FFFFFF)).clickable(role = Role.Button, onClick = onBookmark),
+                Modifier.align(Alignment.TopEnd).padding(top = px(14), end = px(12)).size(px(40)).clip(CircleShape).background(Color(0xE6FFFFFF)).saveDescription().clickable(role = Role.Button, onClick = onBookmark),
                 contentAlignment = Alignment.Center,
             ) { BookmarkIcon(26, color = MockColors.Navy, filled = bookmarked) }
             Box(Modifier.align(Alignment.BottomStart).padding(start = px(10), bottom = px(8)).size(px(84)).rotate(-9f).clip(CircleShape).background(Color(0xCCFFFFFF)).border(2.dp, MockColors.Stamp, CircleShape), contentAlignment = Alignment.Center) {

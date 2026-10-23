@@ -86,6 +86,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
 import com.nopo.cheonnyeon.domain.catalog.StoreFilters
@@ -231,7 +232,7 @@ private fun NearCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Uni
     Column(Modifier.width(px(281)).height(px(343)).clip(RoundedCornerShape(px(16))).background(MockColors.Cream).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16))).clickable(role = Role.Button, onClick = onOpen)) {
         Box(Modifier.fillMaxWidth().height(px(156))) {
             StorePhoto(c.store, Modifier.fillMaxSize())
-            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(40)).clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
+            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(40)).saveDescription().clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
                 BookmarkIcon(32, filled = c.bookmarked)
             }
             Box(

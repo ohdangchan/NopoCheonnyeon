@@ -33,6 +33,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -361,3 +363,10 @@ fun Modifier.mockPadX(x: Int): Modifier = this.padding(horizontal = px(x))
 @Composable
 fun Modifier.fullWidth(): Modifier = this.fillMaxWidth()
 
+
+/** 북마크(저장하기) 버튼에 TalkBack 이 읽을 이름을 붙인다 */
+@Composable
+fun Modifier.saveDescription(): Modifier {
+    val label = androidx.compose.ui.res.stringResource(R.string.det_save)
+    return this.semantics { contentDescription = label }
+}

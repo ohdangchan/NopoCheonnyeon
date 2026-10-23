@@ -65,6 +65,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.StarIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.core.util.GeoDistance
@@ -129,7 +130,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 Box(Modifier.at(20, 72).size(px(64), px(64)).clickable(role = Role.Button, onClick = onBack), contentAlignment = Alignment.Center) { BackChevron() }
                 MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_01), 23, Modifier.at(88, 88), color = Color.White, weight = FontWeight.Medium)
                 if (!store.isTest) {
-                    Box(Modifier.at(600, 72).size(px(64), px(64)).clickable(role = Role.Button, onClick = vm::toggleBookmark), contentAlignment = Alignment.Center) {
+                    Box(Modifier.at(600, 72).size(px(64), px(64)).saveDescription().clickable(role = Role.Button, onClick = vm::toggleBookmark), contentAlignment = Alignment.Center) {
                         BookmarkIcon(40, filled = saved)
                     }
                 }
@@ -245,7 +246,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
         ) {
             if (!store.isTest) {
                 Row(
-                    Modifier.weight(0.8f).height(px(76)).clip(RoundedCornerShape(px(18))).background(MockColors.Chip).clickable(role = Role.Button, onClick = vm::toggleBookmark),
+                    Modifier.weight(0.8f).height(px(76)).clip(RoundedCornerShape(px(18))).background(MockColors.Chip).saveDescription().clickable(role = Role.Button, onClick = vm::toggleBookmark),
                     horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
                 ) {
                     BookmarkIcon(36, color = MockColors.Navy, filled = saved)

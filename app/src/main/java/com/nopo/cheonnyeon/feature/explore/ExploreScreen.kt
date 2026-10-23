@@ -63,6 +63,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.mockCardBox
 import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
 import com.nopo.cheonnyeon.core.designsystem.mock.px
@@ -212,7 +213,7 @@ fun ExploreCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Unit, mo
         Box(Modifier.fillMaxWidth().height(px(243))) {
             StorePhoto(c.store, Modifier.fillMaxSize())
             Box(Modifier.padding(start = px(15), top = px(21))) { LimePill(c.tag, 20, padX = 16, padY = 5) }
-            Box(Modifier.align(Alignment.TopEnd).padding(top = px(18), end = px(14)).size(px(40)).clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
+            Box(Modifier.align(Alignment.TopEnd).padding(top = px(18), end = px(14)).size(px(40)).saveDescription().clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
                 BookmarkIcon(34, filled = c.bookmarked)
             }
         }
