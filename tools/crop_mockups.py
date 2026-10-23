@@ -73,7 +73,8 @@ save(s[4], "hdr_logo", (20, 84, 452, 206))
 save(s[4], "ic_search", (604, 90, 658, 142))
 save(s[4], "ic_bell", (682, 88, 736, 144))
 
-# --- 하단 탭 줄(화면마다 선택된 탭 모양이 달라 그대로 쓴다) ---
+# --- 하단 탭 줄: 시안마다 아이콘 크기·세로 위치·아이콘 모양이 달라서, 칸마다 그림 덩어리만 떼어 같은 기준선에 다시 놓는다 ---
+navs = {}
 for n, name in ((3, "home"), (4, "explore"), (5, "map"), (6, "collection"), (2, "my")):
     im = s[n].copy()
     nav_strip(im, rx=175)
@@ -84,7 +85,47 @@ for n, name in ((3, "home"), (4, "explore"), (5, "map"), (6, "collection"), (2, 
             for x in list(range(0, 20)) + list(range(736, 760)):
                 px[x, y] = c
         im = erase(im, (258, 1594, 500, 1612), pad=2)
-    save(im, f"nav_{name}", (0, 1520, 760, {3: 1604, 6: 1607}.get(n, 1618)))
+    navs[name] = im.crop((0, 1520, 760, {3: 1604, 6: 1607}.get(n, 1618)))
+
+
+def block(strip, i, bgc):
+    """탭 줄 i번째 칸(폭 152)에서 아이콘+글자 덩어리를 잘라 (그림, 위쪽 y) 로 돌려준다."""
+    y0 = 0 if strip.height < 90 else 14  # 위쪽 가장자리에는 뒤 화면의 카드 조각이 찍혀 있다(높이 98짜리 줄)
+    cell = strip.crop((152 * i + 6, y0, 152 * (i + 1) - 6, strip.height))
+    a = np.asarray(cell).astype(int)
+    diff = np.abs(a - np.array(bgc)).sum(axis=2) > 90
+    rows = diff.any(axis=1)
+    # 선택된 칸 아래의 작은 점(연두색 표시)은 떼어 낸다: 맨 아래 덩어리가 12줄 미만이고 위와 떨어져 있으면 버린다
+    ylist = np.where(rows)[0]
+    groups = np.split(ylist, np.where(np.diff(ylist) > 1)[0] + 1)
+    if len(groups) > 1 and len(groups[-1]) < 12:
+        diff[groups[-1][0]:, :] = False
+    ys, xs = np.where(diff)
+    box = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
+    return cell.crop(box), box
+
+
+def build_navs():
+    order = ["home", "explore", "map", "collection", "my"]
+    bgc = bg(navs["my"], (300, 40, 360, 50))
+    # 안 선택: 윤곽선 아이콘(마이 시안 줄), 마이는 지도 시안 줄에서
+    plain = {k: block(navs["my"], i, bgc) for i, k in enumerate(order[:4])}
+    plain["my"] = block(navs["map"], 4, bgc)
+    # 선택: 각 시안의 선택된 칸, 홈은 컬렉션 시안의 굵은 홈
+    sel = {
+        "home": block(navs["collection"], 0, bgc), "explore": block(navs["explore"], 1, bgc), "map": block(navs["map"], 2, bgc),
+        "collection": block(navs["collection"], 3, bgc), "my": block(navs["my"], 4, bgc),
+    }
+    top = 22
+    for cur in order:
+        strip = Image.new("RGB", (760, 98), bgc)
+        for i, k in enumerate(order):
+            img, _ = (sel if k == cur else plain)[k]
+            strip.paste(img, (152 * i + 76 - img.width // 2, 92 - img.height))
+        save(strip, f"nav_{cur}", (0, 0, 760, 98))
+
+
+build_navs()
 
 # --- 홈 ---
 save(s[3], "home_header", (0, 90, 760, 206))

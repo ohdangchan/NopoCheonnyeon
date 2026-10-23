@@ -120,7 +120,7 @@ private fun MockNavBar(selected: Int, onSelect: (Int) -> Unit) {
     val labels = listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings)
     Column(Modifier.fillMaxWidth().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream).navigationBarsPadding()) {
         androidx.compose.foundation.layout.Box {
-            com.nopo.cheonnyeon.core.designsystem.mock.MockPic(res[selected], 760, listOf(84, 98, 98, 87, 98)[selected])
+            com.nopo.cheonnyeon.core.designsystem.mock.MockPic(res[selected], 760, 98)
             androidx.compose.foundation.layout.Row(Modifier.matchParentSize()) {
                 for (i in 0..4) {
                     val label = stringResource(labels[i])
