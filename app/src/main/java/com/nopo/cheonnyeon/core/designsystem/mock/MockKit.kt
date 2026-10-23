@@ -370,3 +370,64 @@ fun Modifier.saveDescription(): Modifier {
     val label = androidx.compose.ui.res.stringResource(R.string.det_save)
     return this.semantics { contentDescription = label }
 }
+
+/** 시안 입력칸 위에 얹는 글자 입력(안내 글자 포함). 배경은 시안 그림이 그린다. */
+@Composable
+fun MockInput(
+    value: String,
+    onChange: (String) -> Unit,
+    hint: String,
+    modifier: Modifier = Modifier,
+    sizePx: Int = 24,
+    password: Boolean = false,
+    visible: Boolean = false,
+    keyboard: androidx.compose.ui.text.input.KeyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
+    ime: androidx.compose.ui.text.input.ImeAction = androidx.compose.ui.text.input.ImeAction.Next,
+    onDone: (() -> Unit)? = null,
+) {
+    Box(modifier, contentAlignment = Alignment.CenterStart) {
+        if (value.isEmpty()) MockText(hint, sizePx, color = Color(0xFF9AA0AB))
+        androidx.compose.foundation.text.BasicTextField(
+            value = value, onValueChange = onChange, singleLine = true,
+            textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(sizePx), color = MockColors.Navy),
+            cursorBrush = androidx.compose.ui.graphics.SolidColor(MockColors.Navy),
+            visualTransformation = if (password && !visible) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = if (password) androidx.compose.ui.text.input.KeyboardType.Password else keyboard, imeAction = ime),
+            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { onDone?.invoke() }),
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/** 시안의 둥근 네모 체크칸: 켜지면 연두색에 검은 체크 */
+@Composable
+fun MockCheck(checked: Boolean, sizePx: Int, modifier: Modifier = Modifier, onChange: (Boolean) -> Unit) {
+    val shape = RoundedCornerShape(px((sizePx * 0.25f).toInt()))
+    Box(
+        modifier.size(px(sizePx)).clip(shape)
+            .then(if (checked) Modifier.background(MockColors.Lime) else Modifier.border(1.5.dp, Color(0xFFB8B3A3), shape))
+            .clickable(role = Role.Checkbox) { onChange(!checked) },
+        contentAlignment = Alignment.Center,
+    ) {
+        if (checked) Canvas(Modifier.size(px((sizePx * 0.6f).toInt()))) {
+            val p = Path().apply { moveTo(size.width * 0.1f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.85f); lineTo(size.width * 0.92f, size.height * 0.18f) }
+            drawPath(p, MockColors.Navy, style = Stroke(width = size.width * 0.16f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        }
+    }
+}
+
+/** 연두색 긴 버튼(글자 가운데, 오른쪽에 > 표시) */
+@Composable
+fun MockLimeBar(text: String, heightPx: Int, modifier: Modifier = Modifier, textPx: Int = 28, enabled: Boolean = true, arrowCircle: Boolean = false, onClick: () -> Unit) {
+    Box(
+        modifier.height(px(heightPx)).clip(RoundedCornerShape(50)).background(if (enabled) MockColors.Lime else Color(0xFFE2E8C4))
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        MockText(text, textPx, weight = FontWeight.ExtraBold, color = if (enabled) MockColors.Navy else Color(0xFF8A9078))
+        Box(Modifier.align(Alignment.CenterEnd).padding(end = px(if (arrowCircle) 18 else 34))) {
+            if (arrowCircle) Box(Modifier.size(px(52)).clip(CircleShape).background(Color(0xCCFFFFFF)), contentAlignment = Alignment.Center) { ChevronRight(28) }
+            else ChevronRight(30)
+        }
+    }
+}

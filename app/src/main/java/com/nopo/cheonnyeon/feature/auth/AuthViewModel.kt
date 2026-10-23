@@ -25,7 +25,10 @@ data class AuthUiState(
 )
 
 /** 로그인·가입·재설정·닉네임 복구 화면이 함께 쓴다. 성공하면 세션 상태가 바뀌어 내비게이션이 알아서 이동한다. */
-class AuthViewModel(private val repo: AuthRepository) : ViewModel() {
+class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (Boolean) -> Unit = {}) : ViewModel() {
+    /** 로그인 상태 유지 체크: 꺼 두면 앱을 다시 켤 때 로그아웃된다 */
+    fun setKeepLogin(keep: Boolean) = onKeepLogin(keep)
+
     private val _state = MutableStateFlow(AuthUiState())
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
     private var nickJob: Job? = null

@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                         contentAlignment = Alignment.TopCenter,
                     ) {
                         Box(Modifier.widthIn(max = com.nopo.cheonnyeon.core.designsystem.mock.MOCK_MAX_WIDTH_DP.dp).fillMaxHeight()) {
-                            NopoNavHost(container)
+                            NopoNavHost(container, debugRoute = intent?.getStringExtra("debug_route"))
                         }
                     }
                 }

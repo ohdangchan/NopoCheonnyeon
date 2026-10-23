@@ -52,16 +52,16 @@ import androidx.lifecycle.ViewModelProvider
 
 /** 세션 상태가 바뀌면 그래프를 통째로 바꾼다: 로그아웃 → 로그인, 프로필 없음 → 닉네임, 로그인 → 홈 (FR-AUTH-06·07). */
 @Composable
-fun NopoNavHost(container: AppContainer) {
+fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
     val nav = rememberNavController()
     val state by container.sessionState.collectAsStateWithLifecycle()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
     val authVm: AuthViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = AuthViewModel(container.auth) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = AuthViewModel(container.auth) { keep -> scope.launch { container.settings.setKeepLogin(keep) } } as T
     })
 
     val onboardingDone by container.settings.onboardingDone.collectAsStateWithLifecycle(initialValue = null)
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     LaunchedEffect(state, onboardingDone) {
         val current = nav.currentDestination?.route
@@ -74,9 +74,14 @@ fun NopoNavHost(container: AppContainer) {
                 else -> Routes.LOGIN
             }
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if (current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if ((BuildConfig.DEBUG && (current in Routes.signedOutRoutes || current == Routes.ONBOARDING)) || current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
+    }
+
+    // 디버그 빌드 전용: adb 로 `--es debug_route login` 처럼 주면 로그인 상태에서도 그 화면을 볼 수 있다
+    androidx.compose.runtime.LaunchedEffect(debugRoute) {
+        if (BuildConfig.DEBUG && debugRoute != null) { kotlinx.coroutines.delay(1500); nav.navigate(debugRoute) }
     }
 
     NavHost(navController = nav, startDestination = Routes.SPLASH) {

@@ -91,6 +91,13 @@ class AppContainer(
         }
     }
 
+    init {
+        // 로그인 화면에서 "로그인 상태 유지"를 끈 채로 들어왔다면 앱을 다시 켤 때 로그아웃한다
+        scope.launch {
+            if (!settings.keepLogin.first() && auth.currentUid != null) { settings.setKeepLogin(true); signOut() }
+        }
+    }
+
     /** 앱을 켤 때 올라가지 못한 기록이 있으면 다시 보낸다 */
     fun syncPending() = syncScheduler.enqueue()
 

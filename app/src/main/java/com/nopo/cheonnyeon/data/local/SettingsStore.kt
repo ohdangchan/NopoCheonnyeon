@@ -24,6 +24,7 @@ class SettingsStore(private val context: Context) {
     private val demoDataKey = booleanPreferencesKey("demo_data")
     private val aiConsentKey = booleanPreferencesKey("ai_consent")
     private val bookmarksKey = stringSetPreferencesKey("bookmarks")
+    private val keepLoginKey = booleanPreferencesKey("keep_login")
     private val notifyNewsKey = booleanPreferencesKey("notify_news")
     private val notifyRecoKey = booleanPreferencesKey("notify_reco")
 
@@ -84,6 +85,9 @@ class SettingsStore(private val context: Context) {
     val notifyReco: Flow<Boolean> = context.dataStore.data.map { it[notifyRecoKey] ?: true }
     suspend fun setNotifyNews(v: Boolean) { context.dataStore.edit { it[notifyNewsKey] = v } }
     suspend fun setNotifyReco(v: Boolean) { context.dataStore.edit { it[notifyRecoKey] = v } }
+
+    val keepLogin: Flow<Boolean> = context.dataStore.data.map { it[keepLoginKey] ?: true }
+    suspend fun setKeepLogin(v: Boolean) { context.dataStore.edit { it[keepLoginKey] = v } }
 
     val bookmarks: Flow<Set<String>> = context.dataStore.data.map { it[bookmarksKey] ?: emptySet() }
     suspend fun toggleBookmark(storeId: String) {
