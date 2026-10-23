@@ -59,7 +59,6 @@ import com.nopo.cheonnyeon.domain.rule.AuthValidation
 private val Hairline = Color(0xFFE2DDCB)
 private val HintGray = Color(0xFF5F6877)
 private val ErrorRed = Color(0xFFB4332A)
-private val NaverGreen = Color(0xFF03C75A)
 
 private fun AuthInvalid.text(): String = when (this) {
     AuthInvalid.EMAIL -> "이메일 형식이 맞지 않아요."
@@ -68,25 +67,6 @@ private fun AuthInvalid.text(): String = when (this) {
     AuthInvalid.PASSWORD_MISMATCH -> "비밀번호가 서로 달라요."
     AuthInvalid.NICK_LENGTH -> "닉네임은 2~12자로 써 주세요."
     AuthInvalid.NICK_CHARS -> "한글·영문·숫자만 쓸 수 있어요."
-}
-
-/** 구글·카카오·네이버 간편 로그인은 각 서비스의 앱 키가 있어야 한다. 키가 준비되기 전에는 안내만 띄운다. */
-@Composable
-private fun SocialNotReadyDialog(provider: String?, onDismiss: () -> Unit) {
-    if (provider == null) return
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("${provider}로 시작하기") },
-        text = { Text("${provider} 간편 로그인은 준비 중이에요. 지금은 이메일로 가입하고 로그인해 주세요.") },
-        confirmButton = { TextButton(onDismiss) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
-    )
-}
-
-@Composable
-private fun NaverMark(sizePx: Int) {
-    Box(Modifier.size(px(sizePx)).clip(RoundedCornerShape(px(sizePx / 5))).background(NaverGreen), contentAlignment = Alignment.Center) {
-        MockText("N", (sizePx * 0.68f).toInt(), color = Color.White, weight = FontWeight.ExtraBold)
-    }
 }
 
 private fun android.content.Context.findActivity(): android.app.Activity? {
@@ -128,7 +108,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                     MockPic(R.drawable.mk2_n_login_head, 760, 801, Modifier.at(0, 84))
                     if (onDiagnostics != null) Box(Modifier.at(40, 250).size(px(420), px(170)).combinedClickable(onClick = {}, onLongClick = onDiagnostics))
                     MockPic(R.drawable.mk2_n_login_in1, 760, 92, Modifier.at(0, 870))
-                    MockInput(email, { email = it }, "이메일 또는 휴대폰 번호를 입력하세요", Modifier.at(132, 897).size(px(520), px(46)), keyboard = KeyboardType.Email)
+                    MockInput(email, { email = it }, "이메일을 입력하세요", Modifier.at(132, 897).size(px(520), px(46)), keyboard = KeyboardType.Email)
                     MockPic(R.drawable.mk2_n_login_in2, 760, 94, Modifier.at(0, 968))
                     MockInput(password, { password = it }, "비밀번호를 입력하세요", Modifier.at(132, 994).size(px(500), px(46)), password = true, visible = showPw, ime = ImeAction.Done, onDone = submit)
                     Box(Modifier.at(632, 985).size(px(110), px(72)).clickable(role = Role.Button) { showPw = !showPw }.semantics { contentDescription = "비밀번호 보기" })
@@ -176,7 +156,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
 
 private val TermsText = "노포 패스포트 이용약관(요약)\n\n1. 이 앱은 공개된 백년가게·오래가게 자료를 정리해 보여 주는 서비스예요.\n2. 방문 인증은 본인이 실제로 방문해 결제한 영수증으로만 할 수 있어요. 타인의 영수증·조작된 영수증을 쓰면 인증이 취소될 수 있어요.\n3. 리뷰와 닉네임은 다른 이용자에게 보여요. 욕설·광고 등 서비스 운영을 방해하는 글은 삭제될 수 있어요.\n4. 이 앱은 중소벤처기업부·서울특별시와 관련이 없어요."
 
-/** 시안 "회원가입"(1.webp) 복제. 간편 가입은 구글·카카오·네이버. */
+/** 시안 "회원가입"(1.webp) 복제. 간편 가입은 구글만. */
 @Composable
 fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -192,7 +172,6 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
     var privacy by rememberSaveable { mutableStateOf(false) }
     var marketing by rememberSaveable { mutableStateOf(false) }
     var dialog by rememberSaveable { mutableStateOf<String?>(null) }
-    var social by rememberSaveable { mutableStateOf<String?>(null) }
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     var note by rememberSaveable { mutableStateOf<String?>(null) }
     val nickInvalid = AuthValidation.nickname(nick).takeIf { nick.isNotEmpty() }
@@ -227,7 +206,8 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                     // 이메일
                     MockPic(R.drawable.mk2_su_in_mail, 760, 86, Modifier.at(0, 728))
                     MockInput(email, { email = it }, "이메일을 입력해주세요", Modifier.at(112, 750).size(px(360), px(46)), keyboard = KeyboardType.Email)
-                    Box(Modifier.at(548, 748).size(px(164), px(50)).clickable(role = Role.Button) { dialog = "휴대폰 번호로 가입은 준비 중이에요. 지금은 이메일로 가입해 주세요." })
+                    // 시안의 "또는 휴대폰 번호" 칩은 가입을 지원하지 않아 같은 바탕색으로 덮는다
+                    Box(Modifier.at(476, 744).size(px(236), px(60)).background(Color(0xFFFBF8F0)))
                     MockText(emailInvalid?.text() ?: "계정 인증 및 중요한 알림을 위해 사용돼요.", 20, Modifier.at(42, 817), color = if (emailInvalid != null) ErrorRed else HintGray)
 
                     // 비밀번호
@@ -262,25 +242,16 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                     Box(Modifier.at(40, 1487).size(px(180), 1.dp).background(Hairline))
                     Box(Modifier.at(540, 1487).size(px(180), 1.dp).background(Hairline))
                     MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_07), 20, Modifier.at(224, 1474).width(px(314)), color = HintGray, align = TextAlign.Center)
-                    Box(Modifier.at(278, 1520).size(1.dp, px(80)).background(Hairline))
-                    Box(Modifier.at(485, 1520).size(1.dp, px(80)).background(Hairline))
-                    val cx = listOf(188, 381, 590)
-                    val names = listOf("Google", "카카오", "네이버")
-                    cx.forEachIndexed { i, x ->
-                        Box(Modifier.at(x - 70, 1512).size(px(140), px(130)).clickable(role = Role.Button) { if (i == 0) scope.launch { doGoogle(context, vm) { note = it } } else social = names[i] })
-                        MockText("${names[i]}로 시작하기", 20, Modifier.at(x - 70, 1606).width(px(140)), align = TextAlign.Center, color = Color(0xFF4B5563))
-                    }
-                    Box(Modifier.at(148, 1516).size(px(80)).clip(CircleShape).background(Color.White).border(1.dp, Hairline, CircleShape), contentAlignment = Alignment.Center) {
+                    Box(Modifier.at(300, 1512).size(px(160), px(130)).clickable(role = Role.Button) { scope.launch { doGoogle(context, vm) { note = it } } })
+                    MockText("Google로 시작하기", 20, Modifier.at(300, 1606).width(px(160)), align = TextAlign.Center, color = Color(0xFF4B5563))
+                    Box(Modifier.at(340, 1516).size(px(80)).clip(CircleShape).background(Color.White).border(1.dp, Hairline, CircleShape), contentAlignment = Alignment.Center) {
                         MockPic(R.drawable.mk2_lg_ic_google, 44, 44)
                     }
-                    MockPic(R.drawable.mk2_su_ic_kakao, 80, 80, Modifier.at(341, 1516))
-                    MockPic(R.drawable.mk2_su_ic_naver, 80, 80, Modifier.at(550, 1516))
                 }
                 androidx.compose.foundation.layout.Spacer(Modifier.navigationBarsPadding())
             }
         }
     }
-    SocialNotReadyDialog(social) { social = null }
     dialog?.let { d ->
         AlertDialog(
             onDismissRequest = { dialog = null },

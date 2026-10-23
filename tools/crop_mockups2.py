@@ -74,7 +74,6 @@ def build():
     e2 = erase(e2, (655, 915, 715, 960))
     save(e2, "lg_in2", (0, 887, 760, 987))
     save(s, "lg_eye", (660, 915, 706, 957))
-    save(s, "lg_ic_kakao", (357, 1280, 407, 1330))
     save(s, "lg_ic_google", (590, 1280, 640, 1330))
     save(s, "lg_bottom", (0, 1495, 760, 1651))
 
@@ -93,9 +92,6 @@ def build():
         save(t, name, box)
     save(s, "su_phone_chip", (548, 748, 712, 798))
     save(s, "su_eye", (660, 880, 706, 920))
-    save(s, "su_ic_kakao", (340, 1513, 424, 1597))
-    save(s, "su_ic_naver", (548, 1511, 632, 1595))
-    save(s, "su_naver_n", (572, 1534, 610, 1568))
 
 
 def build_verify():
