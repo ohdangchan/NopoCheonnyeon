@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -295,7 +296,9 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             SectionHead({ StarIcon(36, color = MockColors.Navy) }, 1128, "이런 노포는 어떠세요?", "당신의 취향에 딱 맞는 노포를 엄선했어요.")
             val st = pick
             if (st != null) {
-                val card = StoreCards.of(st, year, container.ratings.value, container.lastFix.value, emptySet())
+                val ratingMap by container.ratings.collectAsStateWithLifecycle()
+                val fix by container.lastFix.collectAsStateWithLifecycle()
+                val card = StoreCards.of(st, year, ratingMap, fix, emptySet())
                 Row(Modifier.at(20, 1218).size(px(722), px(206)).clip(RoundedCornerShape(px(22))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(22)))) {
                     Box(Modifier.size(px(338), px(206)).clip(RoundedCornerShape(px(18)))) {
                         StorePhoto(st, Modifier.fillMaxSize())
