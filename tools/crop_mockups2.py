@@ -199,6 +199,8 @@ def build_account():
     l = s12.copy()
     l = erase(l, (600, 1050, 690, 1095))   # 한국어
     l = erase(l, (600, 1150, 690, 1195))   # 허용됨
+    bg = tuple(int(v) for v in np.median(np.asarray(l.crop((540, 770, 580, 792))).reshape(-1, 3), axis=0))
+    l = erase(l, (322, 768, 505, 796), color=bg)   # "(카카오, 네이버, 구글)" — 소셜 로그인은 구글만 둔다
     save(l, "a_list", (12, 608, 748, 1305))
     save(s12, "a_logout", (12, 1325, 748, 1415))
     save(s12, "a_delete", (12, 1432, 748, 1522))

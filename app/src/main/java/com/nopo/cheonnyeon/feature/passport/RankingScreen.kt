@@ -108,7 +108,9 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                         Podium(top[1], 18, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFE6EAF2), Color(0xFFF6F4EC))), Color(0xFF7A8AA6), 2)
                         Podium(top[0], 250, 534, 262, 447, Brush.verticalGradient(listOf(Color(0xFFFBE9A6), Color(0xFFFCF3D0))), Color(0xFFD9A323), 1)
                         Podium(top[2], 505, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFF8DCC4), Color(0xFFFBEFE3))), Color(0xFFB8692B), 3)
-                    } else if (tab != 0) {
+                    } else if (tab == 0) {
+                        MockText("아직 순위를 보여 줄 만큼 이용자가 모이지 않았어요.\n방문 인증을 하면 내 순위가 아래에 나와요.", 24, Modifier.at(40, 620).width(px(680)), color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
+                    } else {
                         MockText(if (tab == 1) "서울 랭킹은 준비 중이에요." else "친구 랭킹은 준비 중이에요.\n친구를 초대하면 함께 겨룰 수 있어요.", 24, Modifier.at(40, 620).width(px(680)), color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
                     }
                 }
@@ -134,7 +136,7 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                         }
                     }
                 }
-                itemsIndexed(rows.drop(3), key = { _, r -> r.rank }) { _, r ->
+                itemsIndexed(if (rows.size >= 3) rows.drop(3) else rows, key = { _, r -> r.rank }) { _, r ->
                     Box(Modifier.fillMaxWidth().padding(horizontal = px(18)).background(Color(0xFFFCFAF4)).border(0.5.dp, Line)) { RankLine(r) }
                 }
             }
