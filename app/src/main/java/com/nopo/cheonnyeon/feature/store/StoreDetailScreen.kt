@@ -259,7 +259,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                     .clickable(enabled = store.lat != null && store.lng != null, role = Role.Button) { openDirections(context, store) },
                 horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
             ) {
-                MockPic(R.drawable.mk_det_ic_go, 50, 40)
+                GoGlyph()
                 Box(Modifier.width(px(10)))
                 MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_08), 25, weight = FontWeight.Bold)
             }
@@ -423,5 +423,17 @@ private fun dial(context: Context, phone: String) {
     try {
         context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     } catch (_: ActivityNotFoundException) {
+    }
+}
+
+/** 가보기 버튼의 길찾기 화살표 */
+@Composable
+private fun GoGlyph() {
+    Canvas(Modifier.size(px(40))) {
+        val w = size.width
+        val p = androidx.compose.ui.graphics.Path().apply {
+            moveTo(w * 0.88f, w * 0.12f); lineTo(w * 0.12f, w * 0.44f); lineTo(w * 0.46f, w * 0.54f); lineTo(w * 0.56f, w * 0.88f); close()
+        }
+        drawPath(p, MockColors.Navy, style = androidx.compose.ui.graphics.drawscope.Stroke(w * 0.09f, join = androidx.compose.ui.graphics.StrokeJoin.Round))
     }
 }

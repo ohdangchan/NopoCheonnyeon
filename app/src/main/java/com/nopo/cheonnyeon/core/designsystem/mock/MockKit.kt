@@ -143,7 +143,25 @@ fun MockPic(@DrawableRes id: Int, w: Int, h: Int, modifier: Modifier = Modifier,
     )
 }
 
-/** 시안 글자. 크기는 시안 px(글자 높이 기준에 가까운 값). */
+/**
+ * 글자 크기 단계표(시안 px). 화면마다 제각각이던 크기를 이 단계로 모은다:
+ * 캡션 18 · 작은 글 20 · 본문 22 · 본문 큰 24 · 소제목 26 · 강조 28 · 제목 30 · 큰 제목 34 · 표제 40.
+ * 40을 넘는 큰 숫자·제목은 그대로 둔다.
+ */
+fun snapTextPx(n: Int): Int = when {
+    n <= 18 -> 18
+    n <= 20 -> 20
+    n <= 22 -> 22
+    n <= 24 -> 24
+    n <= 26 -> 26
+    n <= 28 -> 28
+    n <= 31 -> 30
+    n <= 35 -> 34
+    n <= 45 -> 40
+    else -> n
+}
+
+/** 시안 글자. 크기는 시안 px 로 적으면 [snapTextPx] 단계로 맞춰 그린다. */
 @Composable
 fun MockText(
     text: String,
@@ -156,6 +174,8 @@ fun MockText(
     align: TextAlign = TextAlign.Start,
     lineHeightPx: Int? = null,
 ) {
+    val size = snapTextPx(sizePx)
+    val line = if (lineHeightPx != null) maxOf(lineHeightPx, (size * 1.3f).toInt()) else null
     Text(
         text,
         modifier = modifier,
@@ -164,8 +184,8 @@ fun MockText(
         overflow = TextOverflow.Ellipsis,
         textAlign = align,
         style = TextStyle(
-            fontFamily = font, fontWeight = weight, fontSize = pxSp(sizePx),
-            lineHeight = if (lineHeightPx != null) pxSp(lineHeightPx) else TextUnit.Unspecified,
+            fontFamily = font, fontWeight = weight, fontSize = pxSp(size),
+            lineHeight = if (line != null) pxSp(line) else TextUnit.Unspecified,
         ),
     )
 }
