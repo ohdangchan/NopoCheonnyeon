@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="노포 천년 미식가 v0.4 통합 기획안: APK 실기기 무결점 목표, 1일차 기능 검증, 계정·평점·프로필, 전국 백년가게·서울 오래가게 데이터">
-<title>[버전2] 노포 천년 미식가</title>
+<meta name="description" content="노포 패스포트 버전2 최종 기획안: 시안 그대로의 화면, 구글 로그인, 방문 인증 3가지, AI 룰렛·도우미, 여권·칭호·랭킹, 개인정보 원칙과 개발·QA 현황">
+<title>노포 패스포트 기획안 — 버전2 (최종)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -192,12 +192,12 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
       <text x="50" y="58" text-anchor="middle" font-size="32" style="font-family:var(--display);fill:currentColor">千年</text>
       <text x="50" y="76" text-anchor="middle" font-size="9" style="fill:currentColor;letter-spacing:.2em">美食家</text>
     </svg>
-    <div class="meta">기획안 v0.5 최종 · 2026.10.23 · ANDROID · KOTLIN · APK</div>
-    <h1>노포 패스포트 <small style="font-size:.45em;font-weight:400">(구 노포 천년 미식가)</small></h1>
+    <div class="meta">기획안 버전2 (최종) · 2026.10.23 · ANDROID · KOTLIN · APK</div>
+    <h1>노포 패스포트 기획안 <small style="font-size:.45em;font-weight:400">— 버전2 (최종) · 구 노포 천년 미식가</small></h1>
     <p class="lead">내가 먹어 온 노포의 세월을 모아 천 년을 채우는 안드로이드 미식 패스포트. 이번 버전은 APK를 폰에 설치했을 때 모든 기능이 버그 없이 도는 것을 최우선으로 다시 설계했습니다.</p>
     <ul class="nav">
-      <li><a href="#v05">v0.5 최종</a></li>
-      <li><a href="#v04">v0.4 변경</a></li>
+      <li><a href="#v05">최종 개발 상태</a></li>
+      <li><a href="#v04">완성도 목표</a></li>
       <li><a href="#concept">컨셉</a></li>
       <li><a href="#users">사용자</a></li>
       <li><a href="#loop">세월 규칙</a></li>
@@ -254,19 +254,19 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
       <span>→ 창업연도로 업력 계산</span>
     </div>
   </div>
-  <figcaption>v0.4의 흐름입니다. 처음부터 계정으로 로그인하고, 인증한 가게에만 평점을 남기며, 다른 미식가의 칭호와 다녀온 노포를 볼 수 있습니다.</figcaption>
+  <figcaption>버전2의 흐름입니다. 처음부터 계정(이메일 또는 구글)으로 로그인하고, 인증한 가게에만 평점을 남기며, 다른 미식가의 칭호와 다녀온 노포를 볼 수 있습니다.</figcaption>
 </figure>
 
-<!-- 00. v0.5 최종 -->
+<!-- 00. 버전2 최종 -->
 <section id="v05">
-  <p class="label">Final · v0.5 (2026-10-23)</p>
+  <p class="label">버전2 최종 (2026-10-23)</p>
   <h2>최종 개발 상태: 기획이 앱이 되었습니다</h2>
-  <p>v0.4의 목표(폰에 설치해 모든 기능이 버그 없이 도는 APK)를 이어, 마지막 주에는 <b>시안 그대로의 화면</b>과 <b>AI 기능의 속도·완성도</b>, <b>방문 인증의 사용성</b>을 끌어올렸습니다. 아래가 본문과 다르면 이 절이 맞습니다.</p>
+  <p>초기 기획의 목표(폰에 설치해 모든 기능이 버그 없이 도는 APK)를 이어, 마지막 주에는 <b>시안 그대로의 화면</b>과 <b>AI 기능의 속도·완성도</b>, <b>방문 인증의 사용성</b>을 끌어올렸습니다. 아래가 본문과 다르면 이 절이 맞습니다.</p>
   <div class="scroll">
     <table>
-      <thead><tr><th>영역</th><th>이전(v0.4)</th><th>최종(v0.5)</th></tr></thead>
+      <thead><tr><th>영역</th><th>초기 기획</th><th>버전2 최종</th></tr></thead>
       <tbody>
-        <tr><td><b>앱 이름·화면</b></td><td>노포 천년 미식가, 시스템 기본 화면</td><td><b>노포 패스포트</b>, 시안(design/redesign·redesign2 28장)을 좌표 그대로 복제, 앱 아이콘·브랜드 적용, 글자 크기 단계표 통일</td></tr>
+        <tr><td><b>앱 이름·화면</b></td><td>노포 천년 미식가라는 이름, 기본 화면</td><td><b>노포 패스포트</b>, 시안(design/redesign·redesign2 28장)을 좌표 그대로 복제, 앱 아이콘·브랜드 적용, 글자 크기 단계표 통일</td></tr>
         <tr><td><b>로그인</b></td><td>이메일 + 게스트 둘러보기</td><td><b>이메일 + 구글만</b>. 카카오·네이버·휴대폰 가입·게스트 삭제. 처음 실행은 온보딩 3단계(취향 고르기)</td></tr>
         <tr><td><b>홈·탐색</b></td><td>목록 중심</td><td>오늘의 AI 추천(취향 반영), 내 주변 칩 → 탐색 칩 연동, 카드는 "N년 전통" 통일, 검색창 AI 원 버튼</td></tr>
         <tr><td><b>방문 인증</b></td><td>영수증 → 즉시 도장 / 30m 사진</td><td>영수증 <b>정보 확인 → 확정</b>, 영수증 없음: <b>GPS(실제 지도·거리·10초 안내) → 가게 사진(확대 카메라·연두 스캔선)</b>, 실패 시 AI 촬영 도우미 2초 안</td></tr>
@@ -282,16 +282,16 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
   <p><b>아직 남은 것</b> — 구글 로그인 Firebase 설정(사용자), 릴리스 서명 키 SHA 등록, 고객센터 운영 주소, 서울관광재단 비짓서울 사진의 <b>서면 허가</b>, 폴드8 지도 탭 실기기 확인, 48dp 터치 영역·TalkBack.</p>
 </section>
 
-<!-- 0. v0.4 변경 -->
+<!-- 0. 버전2 변경 -->
 <section id="v04">
-  <p class="label">What changed · v0.4</p>
+  <p class="label">완성도 목표 · 버전2의 출발점</p>
   <h2>최우선 목표: 폰에서 버그 없이 도는 APK</h2>
-  <p>v0.4는 출시보다 <b>완성도</b>를 앞에 둡니다. Google Play 등록은 다음 버전으로 미루고, APK를 폰에 설치했을 때 기획한 모든 기능이 실제로 도는 것을 첫 번째 목표로 삼았습니다. 그래서 개발 첫날 오전을 실기기 기능 검증에 쓰고, 마지막 하루를 실기기 QA에 씁니다.</p>
+  <p>버전2는 출시보다 <b>완성도</b>를 앞에 둡니다. Google Play 등록은 다음 버전으로 미루고, APK를 폰에 설치했을 때 기획한 모든 기능이 실제로 도는 것을 첫 번째 목표로 삼았습니다. 그래서 개발 첫날 오전을 실기기 기능 검증에 쓰고, 마지막 하루를 실기기 QA에 씁니다.</p>
   <figure class="fig">
     <div class="scroll">
-    <svg viewBox="0 0 760 470" style="min-width:640px" role="img" aria-label="v0.3에서 v0.4로 바뀐 여덟 가지를 왼쪽과 오른쪽 상자로 비교한 도식">
-      <text x="265" y="22" font-size="13" text-anchor="middle" class="t2" style="font-weight:700">v0.3</text>
-      <text x="585" y="22" font-size="13" text-anchor="middle" style="font-weight:700;fill:var(--stamp)">v0.4</text>
+    <svg viewBox="0 0 760 470" style="min-width:640px" role="img" aria-label="이전 기획에서 버전2로 바뀐 여덟 가지를 왼쪽과 오른쪽 상자로 비교한 도식">
+      <text x="265" y="22" font-size="13" text-anchor="middle" class="t2" style="font-weight:700">이전 기획</text>
+      <text x="585" y="22" font-size="13" text-anchor="middle" style="font-weight:700;fill:var(--stamp)">버전2</text>
       <g font-size="13">
         <text x="10" y="62" style="font-weight:700">목표</text>
         <text x="10" y="114" style="font-weight:700">개발 방식</text>
@@ -346,7 +346,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
 <section id="concept">
   <p class="label">Concept</p>
   <h2>한 줄 정의와 차별점</h2>
-  <p>노포 천년 미식가는 내가 먹어 온 세월을 모으는 앱입니다. 별점 대신 업력을 점수로 씁니다. 1964년에 문을 연 설렁탕집에 가면 62년이, 1990년에 문을 연 분식집에 가면 36년이 내 패스포트에 쌓입니다. 합계가 1,000년이 되면 ‘천년 미식가’ 칭호를 받습니다.</p>
+  <p>노포 패스포트는 내가 먹어 온 세월을 모으는 앱입니다. 별점 대신 업력을 점수로 씁니다. 1964년에 문을 연 설렁탕집에 가면 62년이, 1990년에 문을 연 분식집에 가면 36년이 내 패스포트에 쌓입니다. 합계가 1,000년이 되면 ‘천년 미식가’ 칭호를 받습니다.</p>
   <p>맛집 앱이 “어디가 맛있나”에 답한다면, 이 앱은 “나는 지금까지 얼마나 오래된 맛을 먹어 봤나”에 답합니다. 평점과 리뷰도 남길 수 있지만, <b>그 가게를 방문 인증한 사람만</b> 남길 수 있습니다. 그래서 이 앱의 평점은 “실제로 다녀온 사람의 평가”입니다.</p>
   <figure class="fig">
     <div class="scroll">
@@ -366,7 +366,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
       <text x="466" y="252" font-size="13">스탬프 투어 앱</text>
       <circle cx="500" cy="96" r="15" class="s-stamp"/>
       <text x="500" y="100" font-size="11" text-anchor="middle" class="ts" style="font-weight:700">千年</text>
-      <text x="500" y="128" font-size="13" text-anchor="middle" style="font-weight:700">노포 천년 미식가</text>
+      <text x="500" y="128" font-size="13" text-anchor="middle" style="font-weight:700">노포 패스포트</text>
       <text x="340" y="344" font-size="13" text-anchor="middle" class="t2">모으는 재미 (기록·수집·성장) →</text>
       <text x="22" y="172" font-size="13" text-anchor="middle" class="t2" transform="rotate(-90 22 172)">노포 전문성 →</text>
       <text x="610" y="368" font-size="11.5" text-anchor="end" class="t2">기획자 가설 기준의 배치이며 조사 결과가 아닙니다</text>
@@ -374,7 +374,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
     </div>
     <figcaption>오른쪽 위가 비어 있다는 가설이 이 기획의 출발점입니다.</figcaption>
   </figure>
-  <div class="note"><b class="k">제안</b>앱 이름은 ‘노포 천년 미식가’를 그대로 쓰고, 도장 속에 千年(천년) 문양을 넣어 이름과 보상을 하나로 묶습니다.</div>
+  <div class="note"><b class="k">제안</b>앱 이름은 ‘노포 패스포트’로 확정했고(구 노포 천년 미식가), 도장 속에 千年(천년) 문양을 넣어 이름과 보상을 하나로 묶습니다.</div>
 </section>
 
 <!-- 2. 사용자 -->
@@ -1108,7 +1108,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
 <!-- 8. 지도 -->
 <section id="map">
   <p class="label">Q2 · Map SDK</p>
-  <h2>지도 SDK: 네이버와 카카오</h2>
+  <h2>지도 SDK: 비교 끝에 네이버 지도로 확정</h2>
   <p><b>네이버 지도를 추천합니다.</b> 이 앱에서 지도는 디자인의 일부라서, 지도 색을 앱 색에 맞출 수 있는 커스텀 스타일과 Jetpack Compose 연동이 가장 중요합니다. 카카오는 장소 검색 API가 강점인데, 이 앱은 가게 목록을 직접 갖고 있어 그 강점을 쓸 일이 적습니다.</p>
   <figure class="fig">
     <div class="scroll">
@@ -1149,7 +1149,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
       </tbody>
     </table>
   </div>
-  <div class="note"><b class="k">v0.4 결정</b>안정성을 위해 비공식 Compose 래퍼는 쓰지 않고 공식 <code>MapView</code>를 직접 감쌉니다. 1일차 오전 기능 검증의 첫 항목이 지도이며, 실패하면 같은 시험을 카카오맵으로 합니다.</div>
+  <div class="note"><b class="k">버전2 결정</b>안정성을 위해 비공식 Compose 래퍼는 쓰지 않고 공식 <code>MapView</code>를 직접 감쌉니다. 1일차 오전 기능 검증의 첫 항목이 지도이며, 실패하면 같은 시험을 카카오맵으로 합니다.</div>
 </section>
 
 
@@ -1158,7 +1158,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
   <p class="label">Q3 · Backend</p>
   <h2>Firebase와 Vercel, 어느 쪽이 맞나</h2>
   <p><b>Firebase를 추천합니다.</b> Vercel은 웹사이트와 서버 함수를 올리는 곳이라, 로그인과 데이터베이스는 다른 서비스를 붙이고 API 코드를 직접 써야 합니다. Firebase는 안드로이드용 SDK가 로그인, 데이터베이스, 오프라인 동기화까지 한 번에 줍니다. 짧은 개발 일정에서는 이 차이가 큽니다.</p>
-  <p>v0.4에서 <b>Firebase로 확정</b>했습니다. 계정·평점·리뷰가 더해지면서 로그인과 데이터베이스, 오프라인 동기화를 한 곳에서 해결하는 장점이 더 커졌습니다. 앱은 Kotlin + Compose로 개발합니다.</p>
+  <p>버전2에서 <b>Firebase로 확정</b>했습니다. 계정·평점·리뷰가 더해지면서 로그인과 데이터베이스, 오프라인 동기화를 한 곳에서 해결하는 장점이 더 커졌습니다. 앱은 Kotlin + Compose로 개발합니다.</p>
   <figure class="fig">
     <div class="scroll">
     <svg viewBox="0 0 760 300" style="min-width:640px" role="img" aria-label="Firebase와 Vercel 각각에서 직접 만들어야 하는 부분을 쌓은 막대로 비교">
@@ -1202,7 +1202,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
 <section id="tech">
   <p class="label">Q9 · Architecture</p>
   <h2>아키텍처: Kotlin · Compose · MVVM, 공식 SDK를 직접</h2>
-  <p>v0.3보다 라이브러리를 줄였습니다. 의존성 주입 라이브러리(Hilt)와 비공식 지도 래퍼를 빼고, 네이버 지도는 공식 지도 화면을 직접 감쌉니다. 빌드 설정에서 생기는 오류와 기기별 호환 문제를 줄이기 위해서입니다.</p>
+  <p>초기 기획보다 라이브러리를 줄였습니다. 의존성 주입 라이브러리(Hilt)와 비공식 지도 래퍼를 빼고, 네이버 지도는 공식 지도 화면을 직접 감쌉니다. 빌드 설정에서 생기는 오류와 기기별 호환 문제를 줄이기 위해서입니다.</p>
   <figure class="fig">
     <div class="scroll">
     <svg viewBox="0 0 900 420" style="min-width:760px" role="img" aria-label="화면, 뷰모델, 도메인, 데이터와 기기 기능 계층, 외부 서비스로 이루어진 구조도">
@@ -1315,7 +1315,7 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
 <section id="bmad">
   <p class="label">Q5 · Method</p>
   <h2>BMAD를 쓸까: 방식만 빌려 Claude Code로</h2>
-  <p><b>전체 도입은 추천하지 않고, 방식만 빌려 쓰는 것을 추천합니다.</b> BMAD는 분석가, PM, 아키텍트, UX, 스크럼 마스터, 개발자, QA 역할의 AI 에이전트가 문서를 차례로 넘기며 개발하는 오픈소스 방법론입니다. 좋은 방법이지만, 지금 이 기획안에 들어 있는 PRD, 아키텍처, 스토리 분할, QA 체크리스트가 바로 BMAD가 앞 단계에서 만들어 내는 산출물입니다. 그 단계를 다시 도구로 돌리면 짧은 개발 기간 중 반나절 이상이 설치와 문서 재생성에 들어갑니다. v0.4에서는 남은 개발 단계를 Claude Code가 맡고, QA 역할은 <code>nopo-qa</code> 서브에이전트와 실기기 확인이 맡습니다.</p>
+  <p><b>전체 도입은 추천하지 않고, 방식만 빌려 쓰는 것을 추천합니다.</b> BMAD는 분석가, PM, 아키텍트, UX, 스크럼 마스터, 개발자, QA 역할의 AI 에이전트가 문서를 차례로 넘기며 개발하는 오픈소스 방법론입니다. 좋은 방법이지만, 지금 이 기획안에 들어 있는 PRD, 아키텍처, 스토리 분할, QA 체크리스트가 바로 BMAD가 앞 단계에서 만들어 내는 산출물입니다. 그 단계를 다시 도구로 돌리면 짧은 개발 기간 중 반나절 이상이 설치와 문서 재생성에 들어갑니다. 버전2에서는 남은 개발 단계를 Claude Code가 맡고, QA 역할은 <code>nopo-qa</code> 서브에이전트와 실기기 확인이 맡습니다.</p>
   <figure class="fig">
     <div class="scroll">
     <svg viewBox="0 0 880 250" style="min-width:760px" role="img" aria-label="BMAD 전체 흐름과 이 기획안의 가벼운 흐름을 비교한 두 줄 흐름도">
@@ -1535,7 +1535,7 @@ Material 3 기준, 모서리 16dp, 터치 영역 48dp 이상.</div>
 
 <!-- D. 개발 문서 -->
 <section id="docs">
-  <p class="label">Q8–Q11 · Dev package v0.4</p>
+  <p class="label">Q8–Q11 · 개발 문서 묶음 (버전2)</p>
   <h2>개발자에게 넘기는 문서와 파일</h2>
   <p>아래 파일을 Android Studio 프로젝트 루트에 복사하면 Claude Code가 바로 1일차 오전 기능 검증부터 시작할 수 있습니다.</p>
   <div class="tbl">
@@ -1819,7 +1819,7 @@ Material 3 기준, 모서리 16dp, 터치 영역 48dp 이상.</div>
 </main>
 
 <footer>
-  <div class="wrap">노포 천년 미식가 기획안 v0.4 · 가게 이름과 숫자는 모두 예시이며, 제도 기준은 해당 기관의 최신 공고로 다시 확인해야 합니다.</div>
+  <div class="wrap">노포 패스포트 기획안 버전2 (최종) · 가게 이름과 숫자는 모두 예시이며, 제도 기준은 해당 기관의 최신 공고로 다시 확인해야 합니다.</div>
 </footer>
 <script>
 (function(){

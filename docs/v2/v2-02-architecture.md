@@ -1,11 +1,8 @@
 # 노포 패스포트 — 아키텍처 (버전2)
 
-> **[v2 문서]** 2026-10-23 작성. 원본 `docs/nopo-02-architecture.md` 를 복사해 시안(design/redesign/1~6.webp) 우선 기준으로 고친 문서입니다.
-> 원본은 그대로 두며, 이 문서와 원본이 다르면 **이 v2 문서가 우선**입니다. 변경 요약은 [v2-00-changes.md](v2-00-changes.md) 참조.
+> **노포 패스포트 버전2 — 아키텍처 설계서(최종)**. 이 문서가 원본 `docs/nopo-02-architecture.md`보다 우선합니다. 변경 이력은 [v2-00-changes.md](v2-00-changes.md).
 
-# 노포 천년 미식가 — 아키텍처 설계서 v0.4
-
-## ★ v0.3 최종 반영 (2026-10-23 밤) — 구조 변경 사항
+## 0. 버전2 구조 요약
 - **화면 복제 방식**: `core/designsystem/mock` — 시안 폭 760px 좌표(`MockStage`·`Modifier.at`), 글자는 `snapTextPx` 단계표, 시안 조각은 `res/drawable-nodpi/mk_*·mk2_*` (생성 도구 `tools/crop_mockups*.py`, 아이콘 `tools/make_icon.py`).
 - **로그인 게이트**: `AuthRepository.sessionState`(프로필 확인 5초 제한) + `AuthViewModel.settle()`로 로그인 직후 화면 전환까지 busy 유지. 구글은 Credential Manager(`platform/auth/GoogleSignIn`).
 - **AI**: `GeminiClient`(Firebase AI Logic, 호출 시간 로그) · `AiRepository.warmUp()`(룰렛 열 때 연결 예열) · 룰렛 AI는 4초 제한 후 `fallbackReason` · 촬영 도우미 1.8초 제한 · 번역은 `StoreTranslator`가 소개글(2개)을 먼저, 나머지를 4개씩 동시 번역.
@@ -15,17 +12,12 @@
 - **위치 제한**: `VerificationConfig.LOCATION_TIMEOUT_MS = 10초`.
 - 변경 없음: 수동 주입, Room·DataStore·WorkManager, 영수증 위치 미사용·이미지 미저장 규칙, 패키지명 동일 규칙.
 
-**남은 사용자 확인·결정 (아직 유효)**
-- 구글 로그인: Firebase 콘솔 Google 사용 설정 + SHA 지문 + 새 `google-services.json` (`google-login-setup.md`)
-- 릴리스 서명 키 SHA 등록, 고객센터 이메일 운영 주소 교체(지금은 `wow.sillyer@gmail.com` 임시)
-- 서울관광재단 비짓서울 사진·이야기 글: 전화 답변만 있고 **서면 허가 대기**
-- 폴드8 지도 탭은 실기기 미확인(테스트 가게 제외 + 8초 안에 지도가 안 뜨면 목록으로 대체하는 방어만 적용)
 
 관련 문서: `nopo-01-PRD.md`(요구사항), `nopo-03-stories.md`(구현 단위), `nopo-06-spike-plan.md`(1일차 기능 검증), `nopo-07-firebase-setup.md`(서버 설정)
 
 > **⚠ 2026-10-20 현황 주의**: 이 문서는 설계 기준이며 구현과 다른 곳이 있다 — Room은 `fallbackToDestructiveMigration` 사용 중(6.1), 실제 보안 규칙(`firebase/firestore.rules`)은 닉네임 변경 허용(6.3), 릴리스 abi는 `arm64-v8a`만(7.3), R8은 `-dontoptimize`(7.4), 패키지 `feature/stamp`·`feature/review`·`platform/haptics`·`data/sync`·`domain/repository`는 만들어지지 않았다. 자세한 목록은 `docs/nopo-11-backlog.md` C-01.
 
-> 설계 원칙은 하나입니다. **실제 폰에서 버그 없이 도는 것.** 그래서 v0.3보다 라이브러리를 줄이고(Hilt·비공식 지도 래퍼 제거), 공식 SDK를 직접 쓰며, 모든 기기 기능 호출에 제한 시간과 실패 처리를 둡니다.
+> 설계 원칙은 하나입니다. **실제 폰에서 버그 없이 도는 것.** 그래서 이전 버전(v0.3)보다 라이브러리를 줄이고(Hilt·비공식 지도 래퍼 제거), 공식 SDK를 직접 쓰며, 모든 기기 기능 호출에 제한 시간과 실패 처리를 둡니다.
 
 > 라이브러리 버전: 확인된 값은 네이버 지도 SDK `3.24.0`, ML Kit 한국어 `16.0.1`뿐입니다. 나머지는 Android Studio 최신 안정판의 새 프로젝트 템플릿이 만든 버전과, Android Studio가 제안하는 최신 안정 버전을 쓰고 `libs.versions.toml`에 고정합니다.
 
@@ -122,13 +114,16 @@ NopoCheonnyeon/
 ## 3. 화면 흐름과 로그인 게이트
 
 ```
-앱 시작 → CatalogSeeder(필요 시) → 로그인 상태?
-  ├─ 아니오 → [auth 그래프] 온보딩 → 로그인 ↔ 가입 ↔ 비밀번호 재설정
-  └─ 예 → users/{uid} 문서 있음?
+앱 시작(로딩 화면 최소 1.4초) → CatalogSeeder(필요 시) → 로그인 상태?
+  ├─ 아니오 → [auth 그래프] 온보딩 3단계(시작 → 취향 → 준비 완료) → 로그인(이메일·구글) ↔ 가입 ↔ 비밀번호 재설정
+  └─ 예 → users/{uid} 문서 있음?(5초 제한, 늦으면 있는 것으로 간주)
         ├─ 아니오 → 닉네임 정하기
-        └─ 예 → [main 그래프] 하단 탭: 지도 | 패스포트 | 설정
-              지도 → 가게 상세 → 영수증 인증 → (사진·위치 인증) → 결과/도장 연출
-              가게 상세 → 리뷰 작성 / 리뷰 항목 → 유저 프로필 → 가게 상세 …
+        └─ 예 → [main 그래프] 하단 탭: 홈 | 탐색 | 지도 | 컬렉션 | 마이페이지
+              홈 → 알림 / 가게 상세 / 탐색(칩) / AI 도우미 / AI 룰렛
+              탐색·지도 → 가게 상세 → 방문 인증(영수증 → 정보 확인 → 도장) / (영수증 없음: GPS → 가게 사진) → 인증 완료 → 후기 작성
+              컬렉션 → 여권 / 전체 보기(방문한 노포·내가 쓴 리뷰·칭호 도감·명예의 전당·내 프로필) / AI 룰렛(결과 3곳)
+              마이 → 저장한 노포·방문 기록·알림 설정·앱 환경 설정·계정 관리(설정 통계 버튼 → 컬렉션·저장·리뷰·칭호)·고객센터(도움말)
+              알림 → 가게 / 컬렉션 / 홈 / 마이
               설정 → 앱 정보 5회 탭 → 진단(테스트 가게)
 ```
 - `NopoNavHost`는 `AuthRepository.sessionState: StateFlow<SessionState>`(SignedOut / NeedsNickname / SignedIn)만 보고 그래프를 바꾼다. 화면 코드가 직접 이동 판단을 하지 않는다.
@@ -597,3 +592,10 @@ QA는 반드시 릴리스 APK로 한다(디버그에서 되던 것이 R8 때문�
 | ADR-10 | 리뷰 문서 ID = `storeId_uid` | 1인 1리뷰를 구조로 보장 | 신규 |
 | ADR-11 | 평균은 집계 쿼리 | 별도 합계 문서·서버 함수 불필요 | 신규 |
 | ADR-12 | QA는 릴리스 APK로 | R8로 인한 릴리스 전용 버그 조기 발견 | 신규 |
+
+## 12. 남은 사용자 확인·결정
+- 구글 로그인: Firebase 콘솔 Google 사용 설정 + SHA 지문 + 새 `google-services.json` (`google-login-setup.md`)
+- 릴리스 서명 키 SHA 등록, 고객센터 이메일 운영 주소 교체(지금은 `wow.sillyer@gmail.com` 임시)
+- 서울관광재단 비짓서울 사진·이야기 글: 전화 답변만 있고 **서면 허가 대기**
+- 폴드8 지도 탭은 실기기 미확인(테스트 가게 제외 + 8초 안에 지도가 안 뜨면 목록으로 대체하는 방어만 적용)
+
