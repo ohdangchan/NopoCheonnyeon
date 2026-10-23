@@ -280,9 +280,9 @@ def build_new():
     save(erase(s.copy(), (285, 1548, 480, 1594), pad=6), "n_login_foot", (0, 1490, 760, 1651))
     # 22 후기 작성
     s = fix_corners(screen(22))
-    save(s, "n_rev_head", (0, 84, 760, 430))
+    save(erase(s.copy(), (18, 280, 545, 340), pad=6), "n_rev_head", (0, 84, 760, 430))
     save(s, "n_rev_banner", (20, 1332, 740, 1462))
-    save(s, "n_rev_ic_person", (385, 575, 425, 625))
+    save(s, "n_rev_ic_person", (552, 588, 584, 628))
     # 23 도움말 센터
     s = fix_corners(screen(23))
     t = erase(s.copy(), (95, 448, 560, 490), color=(251, 247, 237))

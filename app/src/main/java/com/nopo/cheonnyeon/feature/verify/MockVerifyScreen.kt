@@ -148,7 +148,7 @@ private fun CameraGlyph(sizePx: Int) {
 
 /** 방문 인증 화면 (시안 영수증 인증 흐름 복제): 안내 → 촬영 → 정보 확인 → 완료, 실패 안내, 위치·가게 사진 인증 */
 @Composable
-fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
+fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit, onReview: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val camera = rememberCameraController()
     LaunchedEffect(state.error) { state.error?.let { com.nopo.cheonnyeon.core.common.ErrorLog.verifyFailed(it); com.nopo.cheonnyeon.core.common.Analytics.verifyResult(state.step.name, "fail", it.code) } }
@@ -167,7 +167,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
 
     Box(Modifier.fillMaxSize().background(MockColors.Cream)) {
         when {
-            state.step == VerifyStep.DONE && state.award != null -> DoneScreen(state, onReview = { vm.requestReview() }, onClose = onClose)
+            state.step == VerifyStep.DONE && state.award != null -> DoneScreen(state, onReview = onReview, onClose = onClose)
             state.blocked -> FailScreen(state, blocked = true, onRetry = onClose, onClose = onClose, onGuide = { guide = true }, onSupport = { mailSupport(context) })
             state.confirm != null -> ConfirmScreen(state, vm::retakeReceipt, vm::confirmReceipt)
             state.step == VerifyStep.RECEIPT && (state.error != null && !state.busy && state.scanFrame == null || failedShown && state.error != null) && !cameraOpen ->
@@ -626,7 +626,7 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                     Box(Modifier.align(Alignment.CenterEnd).padding(end = px(22))) { ChevronRight(26) }
                 }
                 Box(Modifier.at(25, 1660).size(px(700), px(40)), contentAlignment = Alignment.Center) {
-                    TextButton(onClick = { onReview(); onClose() }) { Text(stringResource(R.string.verify_done_review)) }
+                    TextButton(onClick = { onReview() }) { Text(stringResource(R.string.verify_done_review)) }
                 }
             }
         }

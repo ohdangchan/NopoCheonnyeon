@@ -96,6 +96,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     /** 리뷰 편집 중 고른 사진. 화면을 돌려도 ViewModel이 살아 있어 유지된다(Bundle에는 용량이 커서 넣지 않음). 저장·닫기 때 비운다 */
     var draftPhotos: List<String>? = null
 
+    val ratingsFlow get() = container.ratings
     val myUid: String? get() = container.auth.currentUid
     val storeId: String get() = store.id
     val pendingReview get() = container.pendingReviewStoreId

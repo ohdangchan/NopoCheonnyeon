@@ -54,7 +54,7 @@ import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 @Composable
 fun MockSettingsScreen(
     myVm: MyViewModel, passportVm: PassportViewModel,
-    onNotify: () -> Unit, onLegacy: () -> Unit, onPermissions: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit,
+    onNotify: () -> Unit, onLegacy: () -> Unit, onPermissions: () -> Unit, onHelp: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val state by passportVm.state.collectAsStateWithLifecycle()
@@ -106,7 +106,7 @@ fun MockSettingsScreen(
             val actions: List<() -> Unit> = listOf(
                 onLegacy, { dialog = 1 }, onNotify, onLegacy, { dialog = 2 },
                 onPermissions,
-                { support = true },
+                onHelp,
             )
             actions.forEachIndexed { i, a -> Box(Modifier.at(12, 608 + i * 99).size(px(736), px(99)).clickable(role = Role.Button, onClick = a)) }
             // 로그아웃 · 회원 탈퇴

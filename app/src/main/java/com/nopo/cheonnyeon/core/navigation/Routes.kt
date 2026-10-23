@@ -13,6 +13,8 @@ object Routes {
     fun store(id: String) = "store/$id"
     const val VERIFY = "verify/{id}"
     fun verify(id: String) = "verify/$id"
+    const val REVIEW = "review/{id}"
+    fun review(id: String) = "review/$id"
     const val PROFILE = "profile/{uid}"
     fun profile(uid: String) = "profile/$uid"
     const val DIAGNOSTICS = "diagnostics"

@@ -80,7 +80,7 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
                 else -> Routes.LOGIN
             }
             SessionState.NeedsNickname -> Routes.NICKNAME
-            SessionState.SignedIn -> if ((BuildConfig.DEBUG && (current in Routes.signedOutRoutes || current == Routes.ONBOARDING)) || current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true) current else Routes.HOME
+            SessionState.SignedIn -> if ((BuildConfig.DEBUG && (current in Routes.signedOutRoutes || current == Routes.ONBOARDING)) || current == Routes.DIAGNOSTICS || current == Routes.HALL || current == Routes.ROULETTE || current == Routes.CHAT || current?.startsWith("store/") == true || current?.startsWith("profile/") == true || current?.startsWith("verify/") == true || current?.startsWith("review/") == true) current else Routes.HOME
         }
         if (target != null && current != target) nav.navigate(target) { popUpTo(0) { inclusive = true } }
     }
@@ -150,7 +150,19 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
                 override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T =
                     VerifyViewModel(container, id, extras.createSavedStateHandle()) as T
             })
-            VerifyScreen(vm, onClose = { nav.popBackStack() })
+            VerifyScreen(vm, onClose = { nav.popBackStack() }, onReview = { nav.popBackStack(); nav.navigate(Routes.review(id)) })
+        }
+        composable(Routes.REVIEW, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
+            val id = entry.arguments?.getString("id").orEmpty()
+            val store = androidx.compose.runtime.produceState<com.nopo.cheonnyeon.domain.model.Store?>(null, id) { value = container.catalog.byId(id) }.value
+            if (store != null) {
+                val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
+                com.nopo.cheonnyeon.feature.store.ReviewWriteScreen(
+                    reviewsVm, store, onBack = { nav.popBackStack() },
+                    onOpenStore = { nav.popBackStack(); nav.navigate(Routes.store(store.id)) },
+                    onTab = { t -> container.requestedTab.value = t; nav.popBackStack(Routes.HOME, false) },
+                )
+            }
         }
         composable(Routes.PROFILE, arguments = listOf(navArgument("uid") { type = NavType.StringType })) { entry ->
             val uid = entry.arguments?.getString("uid").orEmpty()

@@ -110,12 +110,13 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 else -> when (settingsSub) {
                     0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 })
                         else com.nopo.cheonnyeon.feature.settings.MockSettingsScreen(
-                            myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onLogout = { logoutAsk = true },
+                            myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onHelp = { settingsSub = 5 }, onLogout = { logoutAsk = true },
                             onBell = onOpenNotifications, onBack = { settingsOpen = false },
                         )
                     2 -> com.nopo.cheonnyeon.feature.my.NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
                     3 -> com.nopo.cheonnyeon.feature.permission.PermissionManageHost(container, onBack = { settingsSub = 0 }, onNotificationScreen = { settingsSub = 4 })
                     4 -> com.nopo.cheonnyeon.feature.permission.NotificationPermissionHost(onDone = { settingsSub = 3 })
+                    5 -> com.nopo.cheonnyeon.feature.help.HelpCenterScreen(myVm.email, onBack = { settingsSub = 0 })
                     else -> SettingsScreen(
                         container,
                         signOutButton = { SignOutButton(container) },
