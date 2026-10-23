@@ -1,311 +1,524 @@
 <p align="center">
-  <img src="design/brand/play-store-icon-512.png" width="140" alt="노포 패스포트 앱 아이콘">
+  <img src="design/brand/play-store-icon-512.png" width="150" alt="노포 패스포트 앱 아이콘">
 </p>
 
-<h1 align="center">노포 패스포트 · 버전2 (Version 2)</h1>
-<p align="center"><b>세월을 맛보고, 추억을 모으다.</b><br>
-전국 백년가게·서울 오래가게 1,277곳을 찾아가 <b>방문 인증 도장</b>을 모으고, 쌓인 <b>세월 1,000년</b>을 채우는 노포 여행 앱</p>
+<h1 align="center">노포 패스포트 · 버전2</h1>
 
 <p align="center">
-  <img alt="platform" src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white">
-  <img alt="kotlin" src="https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white">
-  <img alt="arch" src="https://img.shields.io/badge/MVVM-단방향%20흐름-061A31">
-  <img alt="firebase" src="https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore%20%7C%20AI-FFCA28?logo=firebase&logoColor=black">
-  <img alt="map" src="https://img.shields.io/badge/Naver%20Map-SDK%203.24.0-03C75A">
-  <img alt="ml" src="https://img.shields.io/badge/ML%20Kit-한국어%20OCR-4285F4">
-  <img alt="tests" src="https://img.shields.io/badge/단위%20테스트-통과-BDF642?labelColor=061A31">
-  <img alt="package" src="https://img.shields.io/badge/package-com.nopo.cheonnyeon-FCF7EB?labelColor=061A31">
+  <b>세월을 맛보고, 추억을 모으다.</b><br>
+  전국 백년가게·서울 오래가게 <b>1,277곳</b>을 찾아가 <b>방문 인증 도장</b>을 모으고,<br>
+  쌓인 <b>세월 1,000년</b>을 채우면 <b>「천년 미식가」</b>가 되는 노포 여행 앱
 </p>
 
-> **평가 담당자께** — 한눈에 보는 순서: [① 이 앱은?](#1-이-앱은) → [② 핵심 흐름](#2-핵심-사용-흐름) → [③ 화면 갤러리](#3-화면-갤러리) → [④ 기능표](#4-기능표) → [⑤ 구조](#5-구조와-기술) → [⑥ 개인정보·안전](#6-개인정보와-안전-규칙) → [⑦ QA 현황](#9-qa-현황) → [⑧ 문서 색인](#11-문서-색인)
+<p align="center">
+  <img alt="버전" src="https://img.shields.io/badge/버전-2.0.0-BDF642?labelColor=061A31">
+  <img alt="Android" src="https://img.shields.io/badge/Android-8.0%2B-3DDC84?logo=android&logoColor=white">
+  <img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?logo=kotlin&logoColor=white">
+  <img alt="구조" src="https://img.shields.io/badge/MVVM-단방향%20흐름-061A31">
+  <img alt="Firebase" src="https://img.shields.io/badge/Firebase-Auth%20·%20Firestore%20·%20AI%20Logic-FFCA28?logo=firebase&logoColor=black">
+  <img alt="지도" src="https://img.shields.io/badge/지도-Naver%20Map%203.24.0-03C75A">
+  <img alt="OCR" src="https://img.shields.io/badge/OCR-ML%20Kit%20한국어-4285F4">
+  <img alt="테스트" src="https://img.shields.io/badge/@Test-331개-BDF642?labelColor=061A31">
+  <img alt="패키지" src="https://img.shields.io/badge/package-com.nopo.cheonnyeon-FCF7EB?labelColor=061A31">
+</p>
+
+<p align="center">
+  <a href="https://github.com/ohdangchan/NopoCheonnyeon/releases/latest"><b>⬇️ APK 내려받기</b></a> ·
+  <a href="docs/v2/report/노포패스포트_버전2_발표자료.html"><b>🎞️ 발표자료(시뮬레이터)</b></a> ·
+  <a href="https://www.figma.com/design/IP2EihmKnZEYYoGUKrYeYG"><b>🎨 Figma 구조도</b></a> ·
+  <a href="docs/eval/노포패스포트_버전2_평가자료.pdf"><b>📑 평가자료 PDF</b></a>
+</p>
+
+<p align="center">
+  <img src="docs/v2/screens/01_home.png" width="190" alt="홈">
+  <img src="docs/v2/screens/04_collection.png" width="190" alt="컬렉션 여권">
+  <img src="docs/v2/screens/56_roulette_result.png" width="190" alt="AI 룰렛 결과">
+  <img src="docs/v2/screens/22_verify_done.png" width="190" alt="방문 인증 완료">
+</p>
 
 ---
 
-## 목차
-1. [이 앱은?](#1-이-앱은) · 2. [핵심 사용 흐름](#2-핵심-사용-흐름) · 3. [화면 갤러리](#3-화면-갤러리) · 4. [기능표](#4-기능표) · 5. [구조와 기술](#5-구조와-기술) · 6. [개인정보와 안전 규칙](#6-개인정보와-안전-규칙) · 7. [데이터](#7-데이터) · 8. [빌드·실행·테스트](#8-빌드실행테스트) · 9. [QA 현황](#9-qa-현황) · 10. [이번 버전(v0.3 최종) 변경점](#10-이번-버전v03-최종-변경점) · 11. [문서 색인](#11-문서-색인) · 12. [폴더 지도](#12-폴더-지도) · 13. [한계와 로드맵](#13-한계와-로드맵) · 14. [라이선스·출처](#14-라이선스출처)
+<details open>
+<summary><b>📲 APK 내려받기 · QR로 설치하기</b></summary>
 
----
+<br>
 
-## 1. 이 앱은?
-
-| | |
+| 방법 | 안내 |
 |---|---|
-| **한 줄 정의** | 오래된 가게(노포)를 찾아가 **직접 먹고 인증**하면, 가게의 업력(년)만큼 **세월**이 쌓이는 방문 인증 여행 앱 |
-| **목표 칭호** | 누적 세월 **1,000년** → "천년 미식가". 100년 단위로 칭호가 오른다 |
-| **누구에게** | 노포를 좋아하지만 어디서 시작할지 모르는 사람, 지역을 돌며 기록을 모으고 싶은 사람, 외국인 친구에게 한국 노포를 소개하려는 사람 |
-| **차별점** | ① 영수증 글자 인식 + 가게 사진 인증(**위치 좌표·영수증 이미지를 서버에 남기지 않음**) ② 여권을 넘겨 보는 컬렉션 ③ AI 룰렛·AI 노포 도우미 ④ 가게 소개·후기 AI 번역 |
-| **데이터** | 중소벤처기업부 **백년가게** + 서울특별시 **오래가게** (1,277곳, 앱 안 JSON으로 동봉) |
-| **로그인** | 이메일 + **구글** 간편 로그인(카카오·네이버·휴대폰 가입·게스트 둘러보기는 두지 않음) |
+| 🔗 **링크** | **[릴리스 페이지의 최신 APK](https://github.com/ohdangchan/NopoCheonnyeon/releases/latest)** 에서 `app-release.apk`를 내려받습니다. |
+| 📷 **QR** | 아래 QR을 폰 카메라로 비추면 릴리스 페이지가 열립니다. |
 
-<p align="center"><img src="docs/v2/screens_overview/flow_2.png" width="100%" alt="가게 고르기에서 방문 인증·후기까지의 화면 흐름"></p>
-<p align="center"><sub>가게 고르기 → 상세 → 방문 인증(영수증/GPS/가게 사진) → 완료 → 후기</sub></p>
+<p align="center"><img src="docs/v2/qr/apk-qr.png" width="220" alt="APK 릴리스 QR"></p>
+
+1. 폰에서 APK를 내려받아 누릅니다.
+2. "출처를 알 수 없는 앱" 허용 창이 뜨면 내려받은 앱(크롬 등)의 설치를 허용합니다.
+3. 설치 후 이메일로 가입하거나 로그인합니다. (구글 로그인은 Firebase 설정 후 켜집니다 — [설정 방법](docs/v2/google-login-setup.md))
+
+자세한 안내: [APK 설치 안내](docs/v2/v2-apk-install-guide.md)
+</details>
+
+## 📌 목차
+[1. 이 앱은?](#1--이-앱은) · [2. 핵심 흐름](#2--핵심-사용-흐름) · [3. 화면 갤러리](#3--화면-갤러리) · [4. 기능표](#4--기능표) · [5. 데이터](#5--데이터-노포-1277곳) · [6. 세월·칭호](#6--세월과-칭호-규칙) · [7. 방문 인증](#7--방문-인증-규칙) · [8. AI 기능](#8--ai-기능) · [9. 구조](#9--구조) · [10. 개인정보·보안](#10--개인정보와-보안-원칙) · [11. 빌드·실행](#11--빌드실행테스트) · [12. 폴더 지도](#12--폴더-지도) · [13. 문서](#13--문서와-산출물) · [14. QA](#14--qa-현황) · [15. 릴리스 노트](#15--릴리스-노트-200) · [16. 한계·계획](#16--한계와-계획) · [17. 출처](#17--출처와-라이선스)
 
 ---
 
-## 2. 핵심 사용 흐름
+## 1. 🍜 이 앱은?
+
+> **노포(오래된 가게)를 찾아가 먹고, 영수증이나 간판으로 인증하면 그 가게의 업력만큼 "세월"이 쌓입니다.**
+> 세월이 1,000년을 채우면 천년 미식가. 오래된 가게를 지키는 사람들의 시간을 내 여권에 도장으로 남깁니다.
+
+| 🎯 문제 | 💡 해결 |
+|---|---|
+| 노포 정보는 흩어져 있고, 어디를 다녀왔는지 기록하기 어렵다 | 공식 지정 가게 1,277곳을 한 앱에 모으고 방문 인증으로 기록 |
+| 인증이 허술하면 도장이 의미 없다 | 영수증(위치 미사용) 또는 간판·위치 30m 이내 인증으로 실제 방문만 인정 |
+| 기록은 쌓이는데 목표가 없다 | 업력을 모아 칭호 11단계, 목표 "세월 1,000년" |
+| 오늘 어디 갈지 고르기 어렵다 | 내 리뷰·방문을 읽는 AI 룰렛과 AI 노포 도우미 |
+
+<p align="center">
+  <img src="docs/v2/readme_img/chart_titles.png" width="620" alt="칭호 11단계">
+</p>
+
+---
+
+## 2. 🧭 핵심 사용 흐름
 
 ```mermaid
 flowchart LR
-    A([앱 실행<br/>로딩 화면]) --> B{로그인 상태?}
-    B -- 처음 --> C[온보딩 3단계<br/>취향 고르기] --> D[로그인 / 회원가입<br/>이메일 · 구글]
-    B -- 로그인됨 --> H
-    D --> H[홈 · 탐색 · 지도<br/>컬렉션 · 마이]
-    H --> S[가게 상세]
-    S --> V{방문 인증}
-    V -- 영수증 --> R[촬영 → 글자 인식 → 정보 확인 → 확정]
-    V -- 영수증 없음 --> G[GPS 위치 확인<br/>실제 지도 + 거리] --> P[가게 사진 인증<br/>간판·메뉴판]
-    R --> DONE[도장 + 칭호 획득]
-    P --> DONE
-    DONE --> RV[후기 작성<br/>별점 · 사진 · 태그]
-    DONE --> C2[컬렉션: 여권에 도장 추가<br/>다음 칭호까지 N년]
-    H --> AI[AI 룰렛 · AI 노포 도우미]
+    A([앱 시작]) --> B[온보딩 3단계<br/>지역·음식 취향]
+    B --> C{로그인}
+    C -->|이메일 · 구글| D[홈 · 오늘의 AI 추천]
+    D --> E[탐색 · 지도에서 가게 고르기]
+    E --> F[가게 상세]
+    F --> G{방문 인증}
+    G -->|영수증| H[글자 읽기 → 정보 확인 → 확정]
+    G -->|영수증 없음| I[GPS 30m + 간판·메뉴판 사진]
+    H --> J[도장 · 세월 +N년]
+    I --> J
+    J --> K[컬렉션 여권 · 칭호 · 랭킹]
+    J --> L[후기 쓰기]
+    D --> M[AI 룰렛 · AI 도우미]
+    M --> F
 ```
 
-**영수증 인증은 위치를 쓰지 않습니다.** 영수증이 없을 때만 GPS 위치 확인(가게 반경 30m 안) → 가게 사진 인증으로 넘어갑니다.
+<p align="center">
+  <a href="docs/v2/screens_overview/flow_2.png"><img src="docs/v2/screens_overview/flow_2.png" width="900" alt="화면 흐름도 — 가게 고르기에서 방문 인증·후기까지"></a><br>
+  <sub>화면 흐름도 (클릭하면 크게 보입니다) · 전체: <a href="docs/v2/screens_overview/flow_1.png">①처음 실행</a> · <a href="docs/v2/screens_overview/flow_2.png">②인증·후기</a> · <a href="docs/v2/screens_overview/flow_3.png">③컬렉션·AI</a> · <a href="docs/v2/screens_overview/flow_4.png">④마이·설정</a></sub>
+</p>
 
 ---
 
-## 3. 화면 갤러리
+## 3. 📱 화면 갤러리
 
-> 모든 화면은 `design/redesign`·`design/redesign2` 시안을 기준으로 복제했고, 폰(Galaxy S9+)에서 찍은 실제 화면입니다. 전체 개요: [`docs/v2/screens_overview/00_all_screens_8k.png`](docs/v2/screens_overview/00_all_screens_8k.png), 화면 흐름도: [`flow_1~4.png`](docs/v2/screens_overview/).
+> 실제 폰(Galaxy S9+) 캡처입니다. 전체 한 장 모음: [`00_all_screens_8k.png`](docs/v2/screens_overview/00_all_screens_8k.png)
 
-### ① 처음 실행과 로그인
-<p>
-<img src="docs/v2/screens/15_splash.png" width="15%"> <img src="docs/v2/screens/16_onboarding_1.png" width="15%"> <img src="docs/v2/screens/16b_onboarding_2.png" width="15%"> <img src="docs/v2/screens/16d_onboarding_3.png" width="15%"> <img src="docs/v2/screens/17_login.png" width="15%"> <img src="docs/v2/screens/18_signup.png" width="15%">
-</p>
+### ① 처음 실행 · 로그인
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/15_splash.png" width="200"><br><sub>시작 화면</sub></td>
+<td align="center"><img src="docs/v2/screens/16_onboarding_1.png" width="200"><br><sub>설치 후 첫 화면</sub></td>
+<td align="center"><img src="docs/v2/screens/16b_onboarding_2.png" width="200"><br><sub>취향 고르기 2/3</sub></td>
+<td align="center"><img src="docs/v2/screens/16d_onboarding_3.png" width="200"><br><sub>준비 완료 3/3</sub></td>
+<td align="center"><img src="docs/v2/screens/17_login.png" width="200"><br><sub>로그인</sub></td>
+<td align="center"><img src="docs/v2/screens/18_signup.png" width="200"><br><sub>회원가입</sub></td>
+</tr>
+</table>
 
 ### ② 메인 탭 — 홈 · 탐색 · 지도 · 컬렉션 · 마이페이지
-<p>
-<img src="docs/v2/screens/01_home.png" width="15%"> <img src="docs/v2/screens/02_explore.png" width="15%"> <img src="docs/v2/screens/03_map.png" width="15%"> <img src="docs/v2/screens/04_collection.png" width="15%"> <img src="docs/v2/screens/04b_collection_page2.png" width="15%"> <img src="docs/v2/screens/05_my.png" width="15%">
-</p>
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/01_home.png" width="200"><br><sub>홈</sub></td>
+<td align="center"><img src="docs/v2/screens/02_explore.png" width="200"><br><sub>탐색</sub></td>
+<td align="center"><img src="docs/v2/screens/03_map.png" width="200"><br><sub>지도</sub></td>
+<td align="center"><img src="docs/v2/screens/04_collection.png" width="200"><br><sub>컬렉션(여권)</sub></td>
+<td align="center"><img src="docs/v2/screens/05_my.png" width="200"><br><sub>마이페이지</sub></td>
+<td align="center"><img src="docs/v2/screens/06_notifications.png" width="200"><br><sub>알림</sub></td>
+</tr>
+</table>
 
 ### ③ 가게 상세 → 방문 인증 → 후기
-<p>
-<img src="docs/v2/screens/08_store_detail.png" width="15%"> <img src="docs/v2/screens/09_store_detail_menu.png" width="15%"> <img src="docs/v2/screens/12_verify_intro.png" width="15%"> <img src="docs/v2/screens/13_verify_camera.png" width="15%"> <img src="docs/v2/screens/21_verify_confirm.png" width="15%"> <img src="docs/v2/screens/22_verify_done.png" width="15%">
-</p>
-<p>
-<img src="docs/v2/screens/25_review_write.png" width="15%"> <img src="docs/v2/screens/06_notifications.png" width="15%">
-</p>
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/08_store_detail.png" width="200"><br><sub>가게 상세</sub></td>
+<td align="center"><img src="docs/v2/screens/12_verify_intro.png" width="200"><br><sub>인증 안내</sub></td>
+<td align="center"><img src="docs/v2/screens/13_verify_camera.png" width="200"><br><sub>영수증 촬영</sub></td>
+<td align="center"><img src="docs/v2/screens/21_verify_confirm.png" width="200"><br><sub>정보 확인</sub></td>
+<td align="center"><img src="docs/v2/screens/22_verify_done.png" width="200"><br><sub>인증 완료</sub></td>
+<td align="center"><img src="docs/v2/screens/25_review_write.png" width="200"><br><sub>후기 작성</sub></td>
+</tr>
+</table>
 
-### ④ 컬렉션 · AI · 랭킹
-<p>
-<img src="docs/v2/screens/50_collection_all.png" width="15%"> <img src="docs/v2/screens/52_collection_titles.png" width="15%"> <img src="docs/v2/screens/24_hall_of_fame.png" width="15%"> <img src="docs/v2/screens/23_roulette.png" width="15%"> <img src="docs/v2/screens/56_roulette_result.png" width="15%"> <img src="docs/v2/screens/26_ai_chat.png" width="15%">
-</p>
+### ④ AI · 컬렉션 · 랭킹
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/23_roulette.png" width="200"><br><sub>AI 노포 룰렛</sub></td>
+<td align="center"><img src="docs/v2/screens/56_roulette_result.png" width="200"><br><sub>룰렛 결과(이유+3곳)</sub></td>
+<td align="center"><img src="docs/v2/screens/26_ai_chat.png" width="200"><br><sub>AI 노포 도우미</sub></td>
+<td align="center"><img src="docs/v2/screens/52_collection_titles.png" width="200"><br><sub>칭호 도감</sub></td>
+<td align="center"><img src="docs/v2/screens/24_hall_of_fame.png" width="200"><br><sub>미식가 랭킹</sub></td>
+<td align="center"><img src="docs/v2/screens/50_collection_all.png" width="200"><br><sub>방문한 노포</sub></td>
+</tr>
+</table>
 
 ### ⑤ 마이페이지 · 설정 · 권한 · 도움말
-<p>
-<img src="docs/v2/screens/32_my_saved.png" width="15%"> <img src="docs/v2/screens/34_notify_settings.png" width="15%"> <img src="docs/v2/screens/36_account_menu.png" width="15%"> <img src="docs/v2/screens/42_permission_manage.png" width="15%"> <img src="docs/v2/screens/43_help_center.png" width="15%"> <img src="docs/v2/screens/30_my_profile_edit.png" width="15%">
-</p>
-
-<details>
-<summary><b>전체 화면 흐름도 4장 펼치기</b></summary>
-
-![처음 실행에서 로그인](docs/v2/screens_overview/flow_1.png)
-![가게 고르기에서 방문 인증·후기](docs/v2/screens_overview/flow_2.png)
-![컬렉션과 AI](docs/v2/screens_overview/flow_3.png)
-![마이페이지와 설정](docs/v2/screens_overview/flow_4.png)
-
-</details>
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/36_account_menu.png" width="200"><br><sub>설정</sub></td>
+<td align="center"><img src="docs/v2/screens/32_my_saved.png" width="200"><br><sub>저장한 노포</sub></td>
+<td align="center"><img src="docs/v2/screens/34_notify_settings.png" width="200"><br><sub>알림 설정</sub></td>
+<td align="center"><img src="docs/v2/screens/35_app_settings.png" width="200"><br><sub>앱 환경 설정</sub></td>
+<td align="center"><img src="docs/v2/screens/42_permission_manage.png" width="200"><br><sub>권한 관리</sub></td>
+<td align="center"><img src="docs/v2/screens/43_help_center.png" width="200"><br><sub>도움말 센터</sub></td>
+</tr>
+</table>
 
 ---
 
-## 4. 기능표
+## 4. ✅ 기능표
 
 | 영역 | 기능 | 상태 |
 |---|---|---|
-| **계정** | 이메일 가입·로그인, 비밀번호 재설정, 닉네임(중복 확인), **구글 간편 로그인**, 로그인 상태 유지, 탈퇴 | ✅ (구글은 Firebase 콘솔 설정 필요) |
-| **처음 실행** | 로딩 → 온보딩 3단계(시작 → 좋아하는 지역·음식 고르기 → 취향 추천) → 로그인 | ✅ |
-| **홈** | 오늘의 AI 추천(취향 반영), 지금 가장 핫한 노포, 내 주변 노포 찾기 칩 → 탐색 연동, AI 투어 코스 배너 | ✅ |
-| **탐색** | 검색·음식 칩(국밥·면·고기·분식·카페)·지역 필터, 카드는 **"N년 전통"** 표기 통일, 검색창 오른쪽 **AI 원 버튼** → AI 도우미 | ✅ |
-| **지도** | 네이버 지도, 내 위치, 가까운 노포 카드, 시·군·구 칩. 지도가 8초 안에 안 뜨면 목록으로 대체 | ✅ (폴드 기기 실기기 미확인) |
-| **가게 상세** | 사진 넘기기, 대표 메뉴 사진(위키미디어 CC), 영업시간·주소·전화, 저장하기, 길찾기, 소개글·후기 **AI 번역**(소개글 먼저), AI 리뷰 분석 | ✅ |
-| **방문 인증** | ① 영수증: 촬영 → 글자 인식(ML Kit) → **정보 확인 → 확정** ② 영수증 없음: **GPS 확인(실제 네이버 지도·거리·10초 안내)** → 가게 사진(간판·메뉴판, 확대 카메라·연두 스캔선) ③ 실패 시 **AI 촬영 도우미**(1.8초 안에, 늦으면 기본 안내) → 다시 찍기 | ✅ |
-| **도장·칭호** | 업력만큼 세월 적립, 100년 단위 칭호, 지역 스탬프(시·도별), 하루 한도·중복 방지 | ✅ |
-| **컬렉션** | 밀어서 넘기는 **여권 책**(배경 사진과 맞춰 기울임), 다음 칭호까지, 방문한 노포·내 리뷰·칭호 도감·명예의 전당·내 프로필 | ✅ |
-| **AI 룰렛** | 지역·가격대·음식 종류·도보 거리 선택 → **큰 사진 릴이 돌아가는 연출**(분석 안내 팝업) → **AI가 추천한 이유 + 추천 노포 3곳**, 다시 돌려도 최대 **30곳 겹치지 않게** | ✅ |
-| **AI 노포 도우미** | 말로 찾기·천년 경로 설계·오늘의 코스. "생각 중" 큰 글자 + 돌아가는 원 | ✅ |
-| **후기** | 별점·글·사진 3장·태그, 방문 인증한 가게에만, 신고·AI 분석 | ✅ |
-| **알림** | 방문 기록에서 만든 알림 목록, **누르면 가게·컬렉션·홈·마이로 이동** | ✅ |
-| **마이페이지** | 프로필 사진·닉네임, 나의 노포 여정, 저장한 노포, 방문 기록, 알림 설정, 앱 환경 설정, 계정 관리, 고객센터 | ✅ |
-| **권한·도움말** | 첫 실행 권한 안내, 카메라·위치·알림·사진 앨범 개별 안내, **권한 관리**, 도움말 센터(FAQ·검색·이메일 문의) | ✅ |
-| **랭킹** | 미식가 랭킹(전국), 명예의 전당. 서울·친구 랭킹은 준비 중 표시 | ◐ |
+| 🔐 계정 | 이메일 가입·로그인, **구글 로그인**(Firebase 설정 후), 닉네임 중복 확인, 비밀번호 재설정, 로그인 유지 | ✅ (구글은 사용자 설정 필요) |
+| 🌱 처음 실행 | 로딩 → 온보딩 3단계(취향 저장) → 로그인 | ✅ |
+| 🏠 홈 | 오늘의 AI 추천(취향 반영), 알림 벨, 지금 가장 핫한 노포, 내 주변 노포 칩 → 탐색 연동 | ✅ |
+| 🔎 탐색 | 검색, 음식 칩, 지역, "N년 전통" 카드, 검색창 AI 버튼, 저장하기 | ✅ |
+| 🗺️ 지도 | 네이버 지도 마커·내 위치·목록 전환, 지도 오류 시 목록 자동 대체 | ✅ (폴드 기기 미확인) |
+| 🏮 가게 상세 | 사진·메뉴·소개, 저장하기, 길찾기, 공유, 번역(소개글 먼저), 리뷰·평점 | ✅ |
+| 🧾 방문 인증 | 영수증(글자 읽기→정보 확인→확정), GPS+간판·메뉴판 사진, AI 촬영 도우미 | ✅ |
+| 📖 컬렉션 | 넘기는 여권(지역·가게 도장), 칭호 도감 11단계, 명예의 전당, 공유 카드 | ✅ |
+| 🏆 랭킹 | 전국 랭킹 · 정렬 3종 (서울·친구 랭킹은 준비 중 표시) | ✅ 부분 |
+| 🎰 AI 룰렛 | 지역·가격대·음식·도보 조건 → 3곳 추천, 최대 30곳 비중복 | ✅ |
+| 🤖 AI 도우미 | 말로 찾기·천년 경로·오늘의 코스 | ✅ |
+| 🔔 알림 | 도장·칭호·추천 알림, 눌러서 해당 화면 이동 | ✅ |
+| ⚙️ 설정 | 프로필·알림·앱 환경·권한 관리·도움말 센터·통계 버튼 | ✅ |
+
+<p align="center">
+  <img src="docs/v2/readme_img/chart_commits.png" width="640" alt="하루별 커밋">
+</p>
 
 ---
 
-## 5. 구조와 기술
+## 5. 📊 데이터: 노포 1,277곳
+
+공식 지정 자료(중소벤처기업부 백년가게, 서울특별시 오래가게)를 정리한 `app/src/main/assets/stores.json` 기준입니다.
+
+<table>
+<tr>
+<td><img src="docs/v2/readme_img/chart_sido.png" width="440" alt="시도별"></td>
+<td><img src="docs/v2/readme_img/chart_age.png" width="440" alt="업력 분포"></td>
+</tr>
+<tr>
+<td><img src="docs/v2/readme_img/chart_program.png" width="360" alt="지정 종류"></td>
+<td><img src="docs/v2/readme_img/chart_category.png" width="440" alt="업종"></td>
+</tr>
+</table>
+
+| 항목 | 값 |
+|---|---|
+| 전체 | **1,277곳** (백년가게 1,126 · 서울 오래가게 139 · 두 지정 12) |
+| 업력 계산 | 연도 기준(올해 − 창업 연도), 업력 정보가 있는 1,237곳 평균 **약 40년**, 100년 이상 8곳 |
+| 좌표 | 네이버 지오코딩으로 보강(`tools/geocode.py`) |
+| 사진 | 백년가게 공식 사진 URL, 메뉴 사진은 위키미디어 CC 이미지 |
+
+---
+
+## 6. ⏳ 세월과 칭호 규칙
+
+**세월 = 처음 인증한 가게의 업력(년)의 합.** 같은 가게는 한 번만 쌓입니다. 업력으로 도장 등급이 정해집니다.
+
+| 도장 등급 | 업력 | 색 |
+|---|---|---|
+| 🟢 보통 | 30~49년 | 청록 |
+| 🔴 붉은 | 50~99년 | 인주 빨강 |
+| 🟡 금빛 | 100년 이상 | 금색 |
+
+| 단계 | 칭호 | 필요한 세월 |
+|---|---|---|
+| 1 | 첫술 식객 | 0년 |
+| 2 | 골목 단골 | 100년 |
+| 3 | 국밥 순례자 | 200년 |
+| 4 | 시장통 어르신 | 300년 |
+| 5 | 가마솥 감별사 | 400년 |
+| 6 | 노포 길잡이 | 500년 |
+| 7 | 맛의 장인 | 600년 |
+| 8 | 세월 지킴이 | 700년 |
+| 9 | 미식 도인 | 800년 |
+| 10 | 전설의 식객 | 900년 |
+| 11 | **천년 미식가** | **1,000년** |
+
+**계산 예시** (시연 패스포트: 15곳, 세월 737년)
+
+| 가게 | 업력 | 누적 | 칭호 |
+|---|---|---|---|
+| 진미옥설농탕 | 45년 | 45 | 첫술 식객 |
+| 성천막국수 | 46년 | 91 | 첫술 식객 |
+| 청진옥 | 89년 | 180 | 골목 단골 |
+| … 15곳 합계 | | **737년** | **미식 도인**(다음 단계까지 63년) |
+
+---
+
+## 7. 🧾 방문 인증 규칙
+
+> 모든 기준값은 한 파일 `domain/rule/VerificationConfig.kt`에서만 읽습니다.
+
+| 구분 | 영수증 인증 | 가게 사진(간판·메뉴판) 인증 |
+|---|---|---|
+| 위치 사용 | **사용 안 함** | GPS 사용(가게 **30m 이내**, 정확도 **30m 이하**) |
+| 읽는 것 | 가게 이름 일치도 **0.70 이상**, 날짜·시간, 금액 | 가게 이름 일치도 **0.60 이상** 또는 전화번호 |
+| 시간 | 결제 **24시간 이내**(미래 10분까지 허용) | — |
+| 실패 | AI 촬영 도우미 안내(1.8초 안), 다시 찍기 | **3번 실패하면** "위치 확인 도장" 선택지(설정으로 끔 가능) |
+| 하루 한도 | 하루 **5곳** | |
+| 위치 측정 | | 최대 **10초**, 정확도 10m 이하면 일찍 종료 |
+| 이미지 | **파일로 저장하지 않음** | 인증샷은 기기 안에만 보관 |
+
+### 판정표
+
+| 상황 | 결과 |
+|---|---|
+| 영수증 가게 이름 일치 0.70↑ · 24시간 이내 · 하루 5곳 이내 | ✅ 정보 확인 화면 → "확정" 누르면 도장 |
+| 영수증 이름이 다르다 / 날짜를 못 읽음 | ❌ 실패 안내 + AI 촬영 도우미 → 다시 찍기 |
+| 영수증 없음 → 가게와 25m, 정확도 12m, 간판 이름 0.8 | ✅ 통과 |
+| 가게와 120m | ❌ "가게에서 120 m 떨어져 있어요" 큰 빨간 팝업 |
+| 간판 3번 실패 + 30m 이내 + 설정 켬 | ⚠️ "위치 확인 도장" 선택 가능 |
+| 오늘 이미 5곳 인증 | ⛔ "오늘은 더 인증할 수 없어요" |
+
+```mermaid
+stateDiagram-v2
+    [*] --> 안내
+    안내 --> 영수증촬영: 영수증 촬영하기
+    안내 --> 위치확인: 영수증이 없어요
+    영수증촬영 --> 글자인식
+    글자인식 --> 정보확인: 판정 통과
+    글자인식 --> 실패: 이름·날짜 불일치
+    실패 --> 영수증촬영: 다시 찍기(AI 안내)
+    정보확인 --> 완료: 인증 정보 확정하기
+    정보확인 --> 영수증촬영: 다시 촬영
+    위치확인 --> 가게사진: 30m 이내 · 위치 확인 완료
+    위치확인 --> 위치확인: 멀다 · 큰 팝업
+    가게사진 --> 완료: 이름/전화 일치
+    가게사진 --> 위치확인도장: 3번 실패 후 선택
+    위치확인도장 --> 완료
+    완료 --> [*]: 도장 · 세월 +N년 · 칭호
+```
+
+### 🎮 직접 해 보기
+브라우저에서 바로 눌러 볼 수 있는 **시뮬레이터 3종**(세월·칭호, 방문 인증 판정, AI 룰렛)이 들어 있는 발표자료를 내려받아 여세요(GitHub 화면에서는 스크립트가 실행되지 않습니다).
+
+👉 **[`노포패스포트_버전2_발표자료.html`](docs/v2/report/노포패스포트_버전2_발표자료.html)** — "Download raw file" 후 열기 · 서비스 기획 보고서에는 **월 운영비 산정기**도 있습니다 ([`서비스기획보고서.html`](docs/v2/report/노포패스포트_버전2_서비스기획보고서.html)).
+
+---
+
+## 8. 🤖 AI 기능
+
+Firebase AI Logic(Gemini)을 쓰며 **앱에는 Gemini 키가 없습니다.** 처음 쓸 때 전송 동의를 받습니다.
+
+| 기능 | 하는 일 | 속도 대책 |
+|---|---|---|
+| 🎰 **AI 노포 룰렛** | 지역·가격대·음식 종류·도보 거리로 후보를 좁혀 **3곳**을 고르고 AI가 추천 이유를 씁니다. **최대 30곳은 겹치지 않게** 추천 | 룰렛 화면을 열 때 AI 연결 예열, AI는 **4초까지만** 기다린 뒤 앱이 만든 이유로 대체 → 첫 응답 5초 안 |
+| 💬 **AI 노포 도우미** | 말로 찾기("비 오는 날 종로 국밥"), 천년 경로 짜기, 오늘의 코스 | 후보 가게 축소, 답변 3문장 제한, "생각 중" 표시 |
+| 🌐 **번역** | 가게 소개글·리뷰를 원하는 언어로 | 소개글 먼저, 리뷰는 4개씩 동시에 |
+| 📷 **AI 촬영 도우미** | 인증 실패 이유와 다시 찍는 방법 | 글자 줄만 전송(영수증 사진 안 보냄), 1.8초 안에 답이 없으면 기본 안내문 |
+
+```mermaid
+sequenceDiagram
+    participant U as 사용자
+    participant R as 룰렛 화면
+    participant P as RoulettePicker
+    participant A as Gemini (AI Logic)
+    U->>R: 룰렛 화면 열기
+    R->>A: 짧은 요청으로 연결 예열
+    U->>R: 룰렛 돌리기
+    R->>P: 조건(지역·음식·거리)으로 후보 선정, 이미 나온 곳 제외
+    R->>A: 후보 15곳에서 서로 다른 3곳과 이유 요청
+    alt 4초 안에 응답
+        A-->>R: 3곳 + 첫 번째 이유
+    else 늦거나 실패
+        P-->>R: 가중 무작위 3곳 + 기본 이유
+    end
+    R-->>U: 사진 릴(3.5초 이상) → 결과(AI 이유 → 추천 → 2곳 더)
+```
+
+<table>
+<tr>
+<td align="center"><img src="docs/v2/screens/23_roulette.png" width="230"><br><sub>코드로 그린 완전한 룰렛 판</sub></td>
+<td align="center"><img src="docs/v2/screens/56_roulette_result.png" width="230"><br><sub>이유 → 추천 → 2곳 더</sub></td>
+<td align="center"><img src="docs/v2/screens/26_ai_chat.png" width="230"><br><sub>AI 노포 도우미</sub></td>
+</tr>
+</table>
+
+---
+
+## 9. 🏗️ 구조
 
 ```mermaid
 flowchart TB
-    subgraph UI["feature/ — Compose 화면 (MVVM, 단방향 흐름)"]
-      Auth[auth] --- Home[home] --- Explore[explore] --- Map[map] --- Passport[passport] --- Store[store] --- Verify[verify] --- AI[ai] --- My[my / settings]
+    subgraph UI["화면 (Jetpack Compose · MVVM 단방향 흐름)"]
+        direction LR
+        H[홈] --- E[탐색] --- M[지도] --- C[컬렉션] --- Y[마이페이지]
+        V[방문 인증] --- AI[AI 룰렛·도우미]
     end
-    subgraph Core["core/"]
-      DS[designsystem/mock<br/>시안 좌표 MockStage] --- Nav[navigation<br/>NopoNavHost] --- Util[util / common<br/>AppError · 시간 · 거리]
+    subgraph DOM["domain — 순수 규칙 (테스트 먼저)"]
+        R1[VerificationConfig] --- R2[TitlePolicy·StampGradePolicy] --- R3[RoulettePicker·TasteRecommender]
     end
-    subgraph Domain["domain/ (순수 Kotlin, 테스트 우선)"]
-      Rules[rule: 칭호 · 하루 한도 · 룰렛 · 취향 추천]
-      Verifier[verify: 영수증 파서 · 사진 판정]
+    subgraph DATA["data — 저장·서버"]
+        DB[(Room: 노포·내 방문·대기열)] --- DS[(DataStore: 설정·취향)]
+        FS[(Firestore: users·visits·reviews…)] --- AU[Firebase Auth]
+        AIL[Firebase AI Logic · Gemini]
     end
-    subgraph Data["data/"]
-      Local[(Room · DataStore<br/>카탈로그 · 방문 · 설정)]
-      Remote[(Firebase Auth · Firestore<br/>· Firebase AI Logic)]
+    subgraph PLAT["platform — 기기 기능"]
+        CAM[CameraX] --- OCR[ML Kit 한국어 OCR] --- LOC[Fused Location] --- MAP[Naver Map SDK]
     end
-    subgraph Platform["platform/"]
-      Cam[CameraX] --- Ocr[ML Kit 한국어 OCR] --- Loc[Fused Location] --- Naver[네이버 지도 SDK] --- Cred[Credential Manager<br/>구글 로그인]
-    end
-    UI --> Domain
-    UI --> Core
-    UI --> Data
-    UI --> Platform
-    Data --> Domain
+    UI --> DOM
+    UI --> DATA
+    UI --> PLAT
+    DATA -. 수동 주입 AppContainer .- UI
 ```
 
-| 구분 | 사용 기술 |
+| 구분 | 기술 |
 |---|---|
-| 언어·UI | Kotlin, Jetpack Compose, MVVM + 단방향 흐름, **수동 주입(`AppContainer`)** |
-| 로컬 | Room(노포 카탈로그·방문 기록), DataStore(설정·저장하기·취향), WorkManager(동기화) |
-| 서버 | Firebase Authentication(이메일·구글), Cloud Firestore(방문·후기·프로필), Crashlytics, Firebase AI Logic(Gemini, 키는 앱에 없음) |
-| 지도·기기 | 네이버 지도 SDK 3.24.0(공식 MapView), CameraX, ML Kit 한국어 텍스트 인식 16.0.1(앱 포함), Fused Location, Credential Manager |
-| 화면 복제 | 시안 폭 760px 기준 **`MockStage`/`Modifier.at(x, y)`** 로 좌표를 그대로 옮기고 화면 폭에 비례해 dp로 변환(600dp 초과는 가운데 정렬) |
-| 글자 | 제목·가게 이름 나눔명조 ExtraBold, 글자 크기는 `snapTextPx` 단계표(18/20/22/24/26/28/30/34/40)로 통일, 시스템 글자 배율과 무관 |
-| 테스트 | JUnit 단위 테스트(도메인 규칙 우선), 린트, 릴리스(R8) 빌드 |
+| 앱 | Kotlin, Jetpack Compose, MVVM + 단방향 흐름, 수동 주입(`AppContainer`) |
+| 저장 | Room(노포·내 방문·전송 대기), DataStore(설정·취향), WorkManager(동기화) |
+| 서버 | Firebase Authentication · Cloud Firestore · Crashlytics · AI Logic(Gemini) |
+| 기기 | CameraX, ML Kit 한국어 텍스트 인식 16.0.1(앱 포함), Fused Location, 네이버 지도 SDK 3.24.0 |
+| 빌드 | 패키지 `com.nopo.cheonnyeon`, minSdk 26, 릴리스 R8, **디버그·릴리스 패키지명 동일** |
+
+```mermaid
+erDiagram
+    USER ||--o{ VISIT : 인증한다
+    USER ||--o{ REVIEW : 쓴다
+    STORE ||--o{ VISIT : 대상
+    STORE ||--o{ REVIEW : 대상
+    STORE ||--o| STORE_STATS : 집계
+    USER { string uid string nickname }
+    VISIT { string storeId int yearsAwarded string method int visitCount }
+    REVIEW { string storeId int rating string text }
+    STORE { string id string name int foundedYear double lat double lng }
+```
 
 ---
 
-## 6. 개인정보와 안전 규칙
+## 10. 🔒 개인정보와 보안 원칙
 
-- 🔒 **영수증 인증은 위치를 쓰지 않습니다.** 영수증 이미지는 파일로 저장하지 않고 메모리에서만 읽습니다.
-- 🔒 **위치 좌표와 영수증 내용은 서버에 저장하지 않고 로그에도 남기지 않습니다.** 가게 사진 인증 사진은 이 기기에만 남습니다.
-- 📷 방문 인증(영수증·가게 사진)은 **앱 안 카메라만** 사용(갤러리 선택 금지). 리뷰 사진만 예외: 카메라 또는 시스템 사진 선택기로 최대 3장, 줄여서 보관.
-- 🔑 키·비밀번호를 코드나 로그에 쓰지 않습니다. AI 호출 키는 앱에 없고 Firebase 프로젝트가 보관합니다.
-- ✅ AI 기능은 **동의 후** 가게 이름·리뷰 등 최소 정보만 전송합니다(위치 좌표·이메일은 보내지 않음).
-- ⚙️ 사용 데이터 수집은 **기본 켜짐**(디버그 빌드는 수집 안 함), 마케팅 수신은 **기본 꺼짐**. 권한 관리 화면에서 언제든 바꿀 수 있습니다.
-- 📦 디버그와 릴리스의 패키지명이 같습니다(`applicationIdSuffix` 금지).
-
-자세한 내용: [`docs/v2/v2-privacy-notice.md`](docs/v2/v2-privacy-notice.md)
-
----
-
-## 7. 데이터
-
-| 항목 | 내용 |
+| 원칙 | 내용 |
 |---|---|
-| 노포 카탈로그 | `app/src/main/assets/stores.json` — 1,277곳(백년가게 + 서울 오래가게), 생성: `python tools/build_catalog.py` |
-| 좌표 보강 | `python tools/geocode.py --provider naver\|kakao` (주소 없는 가게는 이름 검색) |
-| 공식 지정 보충 | `python tools/import_official_list.py --csv 파일.csv` → `build_catalog.py` |
-| 시연용 데이터 | 예시 리뷰·방문 기록(설정 > 앱 정보 5번 탭 > 개발자 도구, **시연용 패스포트 737년**), 기기 안에만 저장 |
-| 메뉴 사진 | 위키미디어 공용(CC0/CC BY), `assets/menu/credits.json`, 설정의 출처 목록 |
-| 원본 | `data/nopo_stores.csv`, 설명 `data/README.md` |
+| 📍 **영수증 인증은 위치를 쓰지 않는다** | 위치는 가게 사진 인증에서만 쓰고 지도에 표시만 합니다 |
+| 🧾 **영수증 이미지는 저장하지 않는다** | 메모리에서만 쓰고 파일로 남기지 않습니다 |
+| 🗄️ **좌표·영수증 내용은 서버에 저장하지 않는다** | 로그에도 남기지 않습니다 |
+| 🔑 **키는 코드에 쓰지 않는다** | Gemini 키는 앱에 없고 Firebase가 보관, 서명 키·`google-services.json`은 저장소에 없음 |
+| 🤖 **AI 전송은 동의 후** | 글·별점·음식 사진·메뉴·번역 글만, 위치·이메일은 보내지 않음 |
+| 📊 **사용 데이터 수집** | 기본 켜짐(디버그 빌드는 수집 안 함), 마케팅 알림은 기본 꺼짐 |
+| 📸 **카메라** | 방문 인증은 앱 안 카메라만(갤러리 금지). 리뷰 사진만 예외(최대 3장, 줄여서 문자열로 보관) |
+
+자세히: [개인정보 안내](docs/v2/v2-privacy-notice.md)
 
 ---
 
-## 8. 빌드·실행·테스트
+## 11. 🛠️ 빌드·실행·테스트
 
 ```bash
-./gradlew assembleDebug            # 디버그 빌드
-./gradlew assembleRelease          # 릴리스(R8) 빌드
-./gradlew testDebugUnitTest        # 단위 테스트
-./gradlew lintDebug                # 린트
-./gradlew installDebug             # 연결된 폰에 설치
-adb install -r app/build/outputs/apk/release/app-release.apk   # 릴리스 설치
-adb logcat -d -v time Nopo:D AndroidRuntime:E *:S               # 로그
-adb shell monkey -p com.nopo.cheonnyeon --throttle 100 -v 5000  # 무작위 조작
+# 빌드 (Windows PowerShell은 .\gradlew.bat)
+./gradlew assembleDebug          # 디버그 APK
+./gradlew assembleRelease        # 릴리스 APK(R8)
+./gradlew testDebugUnitTest      # 단위 테스트
+./gradlew lintDebug              # 린트
+./gradlew installDebug           # 연결된 폰에 설치
+adb logcat -d -v time Nopo:D AndroidRuntime:E *:S                    # 로그
+adb shell monkey -p com.nopo.cheonnyeon --throttle 100 -v 5000       # 무작위 조작
 ```
-Windows PowerShell에서는 `.\gradlew.bat` 을 사용합니다. 요구사항: Android 8.0(API 26) 이상, 네이버 지도 키·Firebase 설정 파일(`google-services.json`, 저장소에는 올리지 않음).
 
-📲 **APK 설치 안내**: [`docs/v2/v2-apk-install-guide.md`](docs/v2/v2-apk-install-guide.md) · 시연 시나리오: [`docs/v2/v2-demo-guide.md`](docs/v2/v2-demo-guide.md)
+```bash
+# 데이터
+python tools/build_catalog.py                  # data/nopo_stores.csv → stores.json
+python tools/geocode.py --provider naver       # 좌표 보강
+python tools/make_overview.py && python tools/make_flow.py   # 화면 모음·흐름도 다시 만들기
+```
+
+> 구글 로그인은 Firebase 콘솔 설정이 필요합니다 → [단계별 안내](docs/v2/google-login-setup.md)
 
 ---
 
-## 9. QA 현황
+## 12. 🗂️ 폴더 지도
+
+```text
+NopoCheonnyeon/
+├─ app/src/main/java/com/nopo/cheonnyeon/
+│  ├─ core/        designsystem(시안 복제 도구 MockKit·테마) · navigation · util
+│  ├─ domain/      model · rule(인증·칭호·룰렛 규칙) · verify · catalog
+│  ├─ data/        local(Room·DataStore) · remote(Firebase) · ai · visit · catalog
+│  ├─ feature/     home explore map passport my store verify ai auth settings help …
+│  └─ platform/    camera · ocr · location · map · permission · auth(Google)
+├─ app/src/main/assets/   stores.json(1,277곳) · menu/ · demo_reviews.json
+├─ app/src/test/          단위 테스트(@Test 331)
+├─ design/                redesign·redesign2(시안) · brand(아이콘·로고) · stitch
+├─ docs/                  기획안 · v2/(버전2 문서·캡처·보고서) · eval/(평가자료)
+├─ tools/                 데이터·이미지·문서 생성 스크립트
+└─ README.md
+```
+
+---
+
+## 13. 📚 문서와 산출물
+
+| 구분 | 파일 |
+|---|---|
+| 📘 **통합 개발 설계도** (기획→개발→QA 한 권) | [`노포패스포트_버전2_통합_개발설계도.md`](docs/v2/노포패스포트_버전2_통합_개발설계도.md) |
+| ✅ **QA 전체 목록** | [`노포패스포트_버전2_QA_전체목록.md`](docs/v2/노포패스포트_버전2_QA_전체목록.md) |
+| 🎞️ 발표자료(시뮬레이터 3종) | [`발표자료.html`](docs/v2/report/노포패스포트_버전2_발표자료.html) |
+| 📖 제작기(제작 과정·시뮬레이터 7종) | [`제작기.html`](docs/v2/report/노포패스포트_버전2_제작기.html) |
+| 📝 서비스 기획 보고서 | [`HTML`](docs/v2/report/노포패스포트_버전2_서비스기획보고서.html) · [`PDF`](docs/v2/report/노포패스포트_버전2_서비스기획보고서.pdf) |
+| 🛠️ 만들기 가이드 | [`HTML`](docs/v2/report/노포패스포트_버전2_만들기.html) · [`DOCX`](docs/v2/report/노포패스포트_버전2_만들기.docx) |
+| 📑 평가자료 | [`HTML`](docs/eval/노포패스포트_버전2_평가자료.html) · [`PDF`](docs/eval/노포패스포트_버전2_평가자료.pdf) |
+| 🎨 Figma 구조도(편집 가능한 레이어) | [열기](https://www.figma.com/design/IP2EihmKnZEYYoGUKrYeYG) |
+| 🧩 기획안 | [`docs/nopo-planning.html`](docs/nopo-planning.html) |
+| 문서 원본 | [PRD](docs/v2/v2-01-PRD.md) · [아키텍처](docs/v2/v2-02-architecture.md) · [스토리](docs/v2/v2-03-stories.md) · [개발·QA 체크리스트](docs/v2/v2-04-dev-qa-checklist.md) · [실기기 QA](docs/v2/v2-09-real-device-qa.md) · [백로그](docs/v2/v2-11-backlog.md) · [미구현 목록](docs/v2/v2-12-unimplemented.md) · [변경 기록](docs/v2/v2-00-changes.md) · [개발 현황](docs/v2/v2-dev-status.md) · [시연 안내](docs/v2/v2-demo-guide.md) |
+
+---
+
+## 14. 🧪 QA 현황
 
 | 항목 | 결과 |
 |---|---|
-| 단위 테스트 | ✅ 통과 (도메인 규칙·알림·카드·룰렛·취향 추천·여권 등) |
-| 린트·릴리스(R8) 빌드 | ✅ 통과 |
-| 실기기 버튼 점검(Galaxy S9+) | 탭 5개·가게 상세·로그인·설정·룰렛·방문 인증을 눌러 확인, **임의 조작(monkey) 3,000회** 중 앱 종료는 지도 로고 1건(수정 완료) |
-| 사용자 점검 반영 | 3차에 걸쳐 총 **24건** 수정 — 상세: [`docs/v2/v2-13-device-qa.md`](docs/v2/v2-13-device-qa.md) |
-| 콜드 스타트 | 디버그 약 3.4초(목표 2.5초), 릴리스 미측정 |
-| 미확인 | 폴드8 지도 탭(원인 미확인, 방어 처리만), 영수증 실촬영·오프라인 점검, 구글 로그인 실동작(Firebase 설정 대기) |
+| 단위 테스트 | `@Test` 331개(48개 파일) — 최종 점검 시 통과 |
+| 린트 · 릴리스(R8) 빌드 | 통과(이전 확인), 2.0.0 릴리스 APK 빌드 |
+| 실기기 | Galaxy S9+에서 화면별 눌러 보기·무작위 조작 3,000회 — 앱 꺼짐 1건(지도 로고) 수정 |
+| 사용자 점검 반영 | 16건 · 8건 · 룰렛 · 최종 6건 |
+| 미확인 | 폴드8 지도 탭, 처음 설치 권한 화면, 영수증 실촬영·오프라인, 접근성(48dp·TalkBack·큰 글자) |
+
+전체 목록: [QA 전체 목록](docs/v2/노포패스포트_버전2_QA_전체목록.md) · [실기기 버튼 점검 결과](docs/v2/v2-13-device-qa.md)
 
 ---
 
-## 10. 이번 버전(v0.3 최종) 변경점
+## 15. 📝 릴리스 노트 2.0.0
 
-- **화면**: 시안 28장 전체 복제 완료, 앱 아이콘·브랜드 적용, 글자 크기 단계표 통일.
-- **로그인**: 구글만 유지(카카오·네이버·휴대폰·게스트 삭제), 로그인 직후 화면 전환 지연 수정("로그인 중…" 유지).
-- **AI 룰렛 개편**: 완전한 원 룰렛(코드로 그림), 큰 사진 릴, 상단 분석 안내 팝업, 첫 응답 5초 안, 결과는 AI 이유 → 추천 3곳 → 최대 30곳 비중복.
-- **방문 인증 개선**: 영수증 정보 확인 단계, GPS 인증 실제 지도·팝업·10초 안내, 가게 사진 인증 카메라 확대, AI 안내 1.8초·다시 찍기 바로 촬영.
-- **탐색·알림·컬렉션**: "N년 전통" 통일, AI 원 버튼, 알림에서 목적지로 이동, 여권 책 기울임, 홈 칩↔탐색 연동.
-- **성능**: 번역(소개글 먼저·동시 번역), AI 도우미(후보 축소·답변 3문장), 룰렛 AI 연결 예열.
-- 변경 전체 목록: [`docs/v2/v2-00-changes.md`](docs/v2/v2-00-changes.md) · [`docs/v2/v2-dev-status.md`](docs/v2/v2-dev-status.md)
+- 🎨 시안 화면 전부를 앱으로 복제(1차 6 + 2차 28), 앱 이름 **노포 패스포트**·새 아이콘, 글자 크기 단계표 통일
+- 🔐 간편 로그인은 **구글만**(카카오·네이버·휴대폰 가입·게스트 둘러보기 제외), 온보딩 3단계 취향 저장
+- 🧾 영수증 **정보 확인 후 확정**, GPS 인증(실제 네이버 지도·큰 오류 팝업·10초 안내), 가게 사진 인증 화면 확대
+- 🎰 **AI 룰렛 개편**: 완전한 원 룰렛, 큰 사진 릴, 분석 안내, 첫 응답 5초, 결과 = AI 이유 → 3곳, 30곳 비중복
+- 💬 AI 도우미·번역·AI 촬영 도우미 속도 개선
+- 🔔 알림 항목 이동, 홈 알림 벨, 탐색 "N년 전통" 표기·AI 버튼, 지도 AI 버튼, 설정 통계 버튼 이동
+- 📖 컬렉션 여권 기울임, 권한 관리·도움말 센터, 사용 데이터 수집 기본 켜짐 안내
+- 🐞 지도 로고를 눌러 앱이 꺼지던 문제 수정 외 실기기 점검 다수 수정
 
 ---
 
-## 11. 문서 색인
+## 16. 🚧 한계와 계획
 
-| 문서 | 내용 |
+| 구분 | 내용 |
 |---|---|
-| [`docs/nopo-planning.html`](docs/nopo-planning.html) | 기획안(웹 문서) — 컨셉·규칙·화면 설계·데이터·기술 |
-| [`docs/v2/v2-01-PRD.md`](docs/v2/v2-01-PRD.md) | 제품 요구사항(PRD) — 최신 |
-| [`docs/v2/v2-02-architecture.md`](docs/v2/v2-02-architecture.md) | 구조·규칙·보안 |
-| [`docs/v2/v2-03-stories.md`](docs/v2/v2-03-stories.md) | 개발 스토리 |
-| [`docs/v2/v2-04-dev-qa-checklist.md`](docs/v2/v2-04-dev-qa-checklist.md) | 개발 QA 체크리스트 |
-| [`docs/v2/v2-13-device-qa.md`](docs/v2/v2-13-device-qa.md) | 실기기 점검·수정 기록 |
-| [`docs/v2/v2-00-changes.md`](docs/v2/v2-00-changes.md) | 시안 우선 변경 요약 |
-| [`docs/v2/v2-dev-status.md`](docs/v2/v2-dev-status.md) | 개발 현황·인수인계 |
-| [`docs/v2/v2-12-unimplemented.md`](docs/v2/v2-12-unimplemented.md) | 미구현·후속 목록 |
-| [`docs/v2/google-login-setup.md`](docs/v2/google-login-setup.md) | 구글 로그인 설정(비개발자용 순서) |
-| [`docs/v2/v2-privacy-notice.md`](docs/v2/v2-privacy-notice.md) | 개인정보 안내 |
-| [`docs/v2/screens_overview/`](docs/v2/screens_overview/) | 전체 화면 개요·흐름도 이미지 |
-| [`design/brand/`](design/brand/) | 앱 아이콘·로고 컨셉 |
-
-원본(v0.2) 문서는 `docs/nopo-*.md`에 그대로 있으며, **v2와 다르면 v2가 우선**합니다.
+| ⚠️ 사용자 설정 필요 | 구글 로그인(Firebase 콘솔 + SHA 지문 + 새 `google-services.json`) |
+| ⚠️ 미확인 | 폴드8 지도 탭(방어 코드만 적용), 릴리스 서명 키 SHA 등록 |
+| ⚠️ 임시 | 고객센터 이메일은 임시 주소 |
+| 🧩 준비 중 | 서울·친구 랭킹, 메뉴 가격대 필터(화면 선택만) |
+| 📄 사용 허가 | 서울관광재단 사진·글은 서면 허가 대기(공개 배포 전 필요) |
+| 🔭 계획 | 영수증 실촬영·오프라인 검증, 접근성(48dp·TalkBack), 서버 기반 랭킹, 릴리스 시작 속도 측정 |
 
 ---
 
-## 12. 폴더 지도
+## 17. 🙏 출처와 라이선스
 
-```
-NopoCheonnyeon/
-├─ app/src/main/java/com/nopo/cheonnyeon/
-│  ├─ app/            AppContainer(수동 주입), 앱 시작
-│  ├─ core/           designsystem(mock 시안 좌표 키트), navigation, common, util
-│  ├─ data/           local(Room·DataStore), remote(Firebase), catalog, visit, ai
-│  ├─ domain/         model, rule(칭호·룰렛·취향), verify(영수증 파서)
-│  ├─ feature/        auth · home · explore · map · passport · store · verify · ai · my · settings · permission · help · notifications
-│  └─ platform/       camera · ocr · location · map · auth(구글) · permission
-├─ app/src/main/assets/   stores.json, menu(사진·credits), demo_reviews.json
-├─ app/src/main/res/      drawable-nodpi(mk_·mk2_ 시안 조각), values(strings_v2.xml)
-├─ design/            redesign · redesign2 시안, brand(아이콘)
-├─ docs/              v2 문서(최신), screens·screens_overview(화면 이미지), 원본 문서
-├─ tools/             build_catalog · geocode · crop_mockups* · make_icon · make_overview · make_flow
-├─ data/              노포 원본 CSV
-└─ CLAUDE.md          작업 규칙
-```
+- **노포 데이터:** 중소벤처기업부·소상공인시장진흥공단 백년가게, 서울특별시 오래가게 공개 정보. 가게 사진은 백년가게 공식 페이지 사진을 불러옵니다. 서울관광재단 사진·글은 서면 허가 후 사용 예정입니다.
+- **메뉴 사진:** Wikimedia Commons(CC0 / CC BY), 저작자 표시는 앱 설정의 출처 목록과 `app/src/main/assets/menu/credits.json`에 있습니다.
+- **지도:** 네이버 지도 SDK · 네이버 클라우드 지오코딩
+- **글꼴:** 나눔명조 ExtraBold, Black Han Sans
+- **라이브러리:** Firebase, ML Kit, CameraX, Coil, Jetpack Compose 등 각 라이선스를 따릅니다.
 
----
-
-## 13. 한계와 로드맵
-
-**사용자 확인·결정이 필요한 항목**
-- [ ] **구글 로그인**: Firebase 콘솔에서 Google 사용 설정 + SHA 지문 등록 + 갱신한 `google-services.json` ([설정 순서](docs/v2/google-login-setup.md))
-- [ ] **릴리스 서명 키 SHA**: 스토어 배포 전 Firebase에 등록
-- [ ] **고객센터 이메일**: 현재 개발자 주소(`wow.sillyer@gmail.com`)를 임시 사용 → 운영 주소로 교체
-- [ ] **서울관광재단 비짓서울 사진**: 전화로 활용 가능 답변만 받았고 **서면 허가 대기**(공개 배포 전 확인)
-- [ ] 개인정보 처리방침에 사용 데이터 수집 기본 켜짐 문구 반영
-
-**알려진 한계**: 폴드8 지도 탭 실기기 미확인(원인 미확인, 8초 방어 처리) · 48dp 터치 영역·TalkBack·큰 글자 보강 · 일부 한글 문구가 아직 코드에 있음 · 서울·친구 랭킹과 메뉴 가격 자료는 데이터가 없어 준비 중 · 룰렛 가격대는 화면 선택만 하고 AI 질문에만 반영 · 콜드 스타트 릴리스 미측정.
-
----
-
-## 14. 라이선스·출처
-
-- **노포 데이터**: 중소벤처기업부·소상공인시장진흥공단 *백년가게* 정보, 서울특별시 *오래가게* 정보를 바탕으로 정리. 주소 좌표는 네이버 지도 지오코딩.
-- **가게 사진**: 백년가게 공식 페이지 사진을 불러와 표시. 서울 일부 사진은 **서울관광재단 비짓서울**(전화 답변 확인, **서면 허가 대기 중**).
-- **대표 메뉴 사진**: 위키미디어 공용 CC0 / CC BY — 작성자·라이선스는 `app/src/main/assets/menu/credits.json`과 앱 설정의 출처 목록.
-- **글꼴**: 나눔명조 ExtraBold, Black Han Sans (각 글꼴 라이선스를 따름).
-- **지도·AI**: 네이버 지도 SDK, Google ML Kit, Firebase / Gemini — 각 약관을 따름.
-- 앱 코드 라이선스는 저장소 소유자(`ohdangchan`)의 결정에 따릅니다.
-
-<p align="center"><sub>© 노포 패스포트 · 시간이 만든 맛을 여행하는 곳</sub></p>
+<p align="center"><sub>노포 패스포트 · 버전2 (2.0.0) · 세월을 맛보고, 추억을 모으다.</sub></p>
