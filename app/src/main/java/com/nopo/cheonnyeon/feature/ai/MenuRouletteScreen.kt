@@ -361,7 +361,7 @@ fun AiConsentDialog(onAgree: () -> Unit, onDismiss: () -> Unit) {
  * 가운데 틀과 레이저 선이 "이 사진들을 AI가 보고 있다"는 느낌을 준다.
  */
 @Composable
-private fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier) {
+internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier) {
     val c = NopoTheme.colors
     val density = androidx.compose.ui.platform.LocalDensity.current
     val itemW = 112.dp

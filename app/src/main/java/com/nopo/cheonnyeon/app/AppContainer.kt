@@ -59,6 +59,8 @@ class AppContainer(
     val reviewIntentStoreId = MutableStateFlow<String?>(null)
     /** 가게 카드의 평점(시연용 예시 리뷰 기준)과 마지막으로 안 내 위치 */
     val ratings = MutableStateFlow<Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>>(emptyMap())
+    /** 별도 화면(룰렛·랭킹)의 하단 탭이 메인 화면에 "이 탭으로 가 달라"고 알리는 값 */
+    val requestedTab = MutableStateFlow<Int?>(null)
     val lastFix = MutableStateFlow<com.nopo.cheonnyeon.platform.location.Fix?>(null)
     private val catalogSeeder = CatalogSeeder(appContext, database.storeDao(), settings, dispatchers)
 

@@ -103,7 +103,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 // 점
                 repeat(Pages.size) { i ->
                     val on = pager.currentPage == i
-                    Box(Modifier.at(341 + i * 31 + (if (on) 0 else 2), (if (on) 1405 else 1407) - rest).size(px(if (on) 18 else 14)).clip(CircleShape).background(if (on) MockColors.Lime else Color(0xFFCFCCBE)))
+                    Box(Modifier.at(341 + i * 31 + (if (on) 0 else 2), (if (on) 1405 else 1407) - rest).size(px(if (on) 18 else 14)).clip(CircleShape).background(if (on) MockColors.Lime2 else Color(0xFFCFCCBE)))
                 }
                 MockLimeBar("시작하기", 100, Modifier.at(40, 1450 - rest).size(px(682), px(100)), textPx = 32, onClick = onDone)
                 Box(Modifier.at(250, 1566 - rest).size(px(260), px(56)).clickable(role = Role.Button, onClick = onDone), contentAlignment = Alignment.Center) {

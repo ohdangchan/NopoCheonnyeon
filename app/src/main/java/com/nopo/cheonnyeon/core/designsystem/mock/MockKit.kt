@@ -88,6 +88,8 @@ object MockColors {
     val Ink2 = Color(0xFF4B5563)
     val Hint = Color(0xFF6B7280)
     val Lime = Color(0xFFBDF642)
+    /** 2차 시안(로그인·인증·룰렛)의 연두: 조금 더 노랗다 */
+    val Lime2 = Color(0xFFD6F44A)
     val LimeDeep = Color(0xFFA1E41E)
     val Chip = Color(0xFFEEECE1)
     val Line = Color(0xFFE6E0CC)
@@ -405,7 +407,7 @@ fun MockCheck(checked: Boolean, sizePx: Int, modifier: Modifier = Modifier, onCh
     val shape = RoundedCornerShape(px((sizePx * 0.25f).toInt()))
     Box(
         modifier.size(px(sizePx)).clip(shape)
-            .then(if (checked) Modifier.background(MockColors.Lime) else Modifier.border(1.5.dp, Color(0xFFB8B3A3), shape))
+            .then(if (checked) Modifier.background(MockColors.Lime2) else Modifier.border(1.5.dp, Color(0xFFB8B3A3), shape))
             .clickable(role = Role.Checkbox) { onChange(!checked) },
         contentAlignment = Alignment.Center,
     ) {
@@ -420,7 +422,7 @@ fun MockCheck(checked: Boolean, sizePx: Int, modifier: Modifier = Modifier, onCh
 @Composable
 fun MockLimeBar(text: String, heightPx: Int, modifier: Modifier = Modifier, textPx: Int = 28, enabled: Boolean = true, arrowCircle: Boolean = false, onClick: () -> Unit) {
     Box(
-        modifier.height(px(heightPx)).clip(RoundedCornerShape(50)).background(if (enabled) MockColors.Lime else Color(0xFFE2E8C4))
+        modifier.height(px(heightPx)).clip(RoundedCornerShape(50)).background(if (enabled) MockColors.Lime2 else Color(0xFFE2E8C4))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {

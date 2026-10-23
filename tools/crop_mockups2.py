@@ -2,7 +2,7 @@
 import os
 import sys
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mock2_lib as m
@@ -128,4 +128,44 @@ def build_verify():
     save(s11, "v11_ic_next", (445, 1580, 495, 1630))
 
 
+def build_roulette():
+    s14 = fix_corners(screen(14))
+    save(s14, "r_title", (20, 225, 500, 380))
+    save(s14, "r_note", (500, 250, 745, 400))
+    save(s14, "r_note2", (10, 960, 150, 1100))
+    save(s14, "r_note3", (590, 940, 745, 1060))
+    wheel = s14.crop((95, 490, 705, 1100)).convert("RGBA")
+    mask = Image.new("L", wheel.size, 0)
+    d = ImageDraw.Draw(mask)
+    d.ellipse((6, 24, 606, 624), fill=255)
+    d.rectangle((268, 0, 342, 80), fill=255)  # 위쪽 바늘
+    wheel.putalpha(mask)
+    wp = os.path.join(m.OUT, "mk2_r_wheel.webp")
+    wheel.save(wp, "WEBP", quality=92, method=6)
+    dice = s14.crop((262, 1102, 322, 1160)).convert("RGBA")
+    da = np.asarray(dice).copy()
+    dist = np.abs(da[:, :, :3].astype(int) - np.array([214, 244, 74])).sum(axis=2)
+    da[:, :, 3] = np.clip((dist - 40) * 6, 0, 255).astype(np.uint8)  # 연두 배경은 투명하게
+    Image.fromarray(da).save(os.path.join(m.OUT, "mk2_r_dice.webp"), "WEBP", quality=92, method=6)
+    save(s14, "r_chip_tab", (45, 1203, 372, 1250))
+    f = erase(s14.copy(), (45, 455, 725, 500))
+    f = erase(f, (418, 410, 535, 445))
+    save(f, "r_filter", (20, 395, 740, 512))
+    s6 = fix_corners(screen(6))
+    save(s6, "r6_title", (0, 205, 760, 490))
+    save(s6, "r6_char", (590, 1165, 742, 1348))
+    save(s6, "r6_ic_fork", (368, 232, 392, 256))
+    save(s6, "r6_deco", (500, 960, 740, 1130))
+
+
+def build_rank():
+    s13 = fix_corners(screen(13))
+    save(s13, "k_title", (0, 205, 760, 405))
+    save(s13, "k_ic_store", (460, 1043, 494, 1076))
+    save(s13, "k_ic_ticket", (580, 1043, 614, 1078))
+    save(s13, "k_crown", (262, 215, 322, 262))
+
+
+build_rank()
+build_roulette()
 build_verify()

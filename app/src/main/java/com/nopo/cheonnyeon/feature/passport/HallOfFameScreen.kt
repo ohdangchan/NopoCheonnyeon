@@ -53,6 +53,7 @@ data class HallUiState(
     val nickname: String = "",
     val myYears: Int = 0,
     val myRank: Int = 1,
+    val myStores: Int = 0,
     val topPercent: Int = 100,
     val byYears: List<DemoUser> = emptyList(),
     val byReviews: List<DemoUser> = emptyList(),
@@ -76,7 +77,7 @@ class HallOfFameViewModel(private val container: AppContainer) : ViewModel() {
             val stores = container.catalog.all().associateBy { it.id }
             _state.update {
                 it.copy(
-                    loading = false, demo = demo && users.isNotEmpty(), nickname = nick, myYears = years,
+                    loading = false, demo = demo && users.isNotEmpty(), nickname = nick, myYears = years, myStores = visits.size,
                     myRank = rank, topPercent = HallOfFameRule.topPercent(rank, users.size),
                     byYears = users.sortedByDescending { u -> u.years },
                     byReviews = users.sortedWith(compareByDescending<DemoUser> { u -> u.reviews }.thenByDescending { u -> u.years }),

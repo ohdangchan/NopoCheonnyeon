@@ -153,15 +153,18 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
         }
         composable(Routes.HALL) {
             val vm: com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.passport.HallOfFameViewModel(container) })
-            com.nopo.cheonnyeon.feature.passport.HallOfFameScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+            com.nopo.cheonnyeon.feature.passport.RankingScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) }, onTab = { t -> container.requestedTab.value = t; nav.popBackStack(Routes.HOME, false) })
         }
         composable(Routes.CHAT, arguments = listOf(navArgument("q") { type = NavType.StringType; defaultValue = "" })) { entry ->
             val vm: com.nopo.cheonnyeon.feature.ai.ChatViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.ai.ChatViewModel(container) })
             com.nopo.cheonnyeon.feature.ai.ChatScreen(vm, initialQuery = entry.arguments?.getString("q").orEmpty(), onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
         }
         composable(Routes.ROULETTE) {
-            val vm: com.nopo.cheonnyeon.feature.ai.MenuRouletteViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.ai.MenuRouletteViewModel(container) })
-            com.nopo.cheonnyeon.feature.ai.MenuRouletteScreen(vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+            val vm: com.nopo.cheonnyeon.feature.ai.NopoRouletteViewModel = viewModel(factory = factoryOf { com.nopo.cheonnyeon.feature.ai.NopoRouletteViewModel(container) })
+            com.nopo.cheonnyeon.feature.ai.NopoRouletteScreen(
+                vm, onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) },
+                onTab = { t -> container.requestedTab.value = t; nav.popBackStack(Routes.HOME, false) },
+            )
         }
         composable(Routes.DIAGNOSTICS) { DiagnosticsScreen() }
     }

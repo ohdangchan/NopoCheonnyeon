@@ -213,7 +213,7 @@ private fun IntroScreen(state: VerifyUiState, onStart: () -> Unit, onNoReceipt: 
             state.clockSkewMinutes?.let { MockText(stringResource(R.string.verify_clock_skew, it), 19, Modifier.at(30, 668).width(px(700)), color = Red, maxLines = 2) }
             MockPic(R.drawable.mk2_v9_steps, 723, 242, Modifier.at(22, 650))
             // 영수증 촬영하기
-            Box(Modifier.at(28, 905).size(px(707), px(92)).clip(RoundedCornerShape(px(30))).background(MockColors.Lime).clickable(role = Role.Button, onClick = onStart), contentAlignment = Alignment.Center) {
+            Box(Modifier.at(28, 905).size(px(707), px(92)).clip(RoundedCornerShape(px(30))).background(MockColors.Lime2).clickable(role = Role.Button, onClick = onStart), contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CameraGlyph(52)
                     Box(Modifier.width(px(26)))
@@ -285,8 +285,8 @@ private fun CameraScreen(
                 }
             }
             if (state.busy) {
-                Box(Modifier.align(Alignment.TopCenter).padding(top = px(110)).clip(RoundedCornerShape(50)).background(Color(0xCC2B2B14)).border(1.dp, MockColors.Lime, RoundedCornerShape(50)).padding(horizontal = px(26), vertical = px(12))) {
-                    MockText(if (state.scanPhase == ScanPhase.NONE) "촬영 중…" else "자동 인식 중…", 22, color = MockColors.Lime, weight = FontWeight.Medium)
+                Box(Modifier.align(Alignment.TopCenter).padding(top = px(110)).clip(RoundedCornerShape(50)).background(Color(0xCC2B2B14)).border(1.dp, MockColors.Lime2, RoundedCornerShape(50)).padding(horizontal = px(26), vertical = px(12))) {
+                    MockText(if (state.scanPhase == ScanPhase.NONE) "촬영 중…" else "자동 인식 중…", 22, color = MockColors.Lime2, weight = FontWeight.Medium)
                 }
             }
         }
@@ -294,7 +294,7 @@ private fun CameraScreen(
         Box(Modifier.fillMaxWidth().height(px(215)).clip(RoundedCornerShape(topStart = px(40), topEnd = px(40))).background(MockColors.Cream)) {
             Box(Modifier.align(Alignment.Center).size(px(126)).clip(CircleShape).background(MockColors.Navy).clickable(enabled = !state.busy && granted, role = Role.Button) { vm.captureReceipt(camera) }.desc("영수증 촬영"), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(px(108)).clip(CircleShape).background(MockColors.Cream), contentAlignment = Alignment.Center) {
-                    Box(Modifier.size(px(96)).clip(CircleShape).background(if (state.busy) Color(0xFFD5DDA0) else MockColors.Lime))
+                    Box(Modifier.size(px(96)).clip(CircleShape).background(if (state.busy) Color(0xFFD5DDA0) else MockColors.Lime2))
                 }
             }
             Box(Modifier.align(Alignment.CenterStart).padding(start = px(40)).clickable(enabled = !state.busy, role = Role.Button, onClick = onNoReceipt)) {
@@ -369,7 +369,7 @@ internal fun ConfirmScreen(state: VerifyUiState, onRetake: () -> Unit, onConfirm
             Box(Modifier.at(33, 1493).size(px(284), px(92)).clip(RoundedCornerShape(px(28))).border(2.dp, MockColors.Navy, RoundedCornerShape(px(28))).background(CardWhite).clickable(role = Role.Button, onClick = onRetake), contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) { CameraGlyph(40); Box(Modifier.width(px(12))); MockText("다시 촬영", 26, weight = FontWeight.ExtraBold) }
             }
-            Box(Modifier.at(335, 1493).size(px(397), px(92)).clip(RoundedCornerShape(px(28))).background(if (state.busy) Color(0xFFE2E8C4) else MockColors.Lime).clickable(enabled = !state.busy, role = Role.Button, onClick = onConfirm), contentAlignment = Alignment.Center) {
+            Box(Modifier.at(335, 1493).size(px(397), px(92)).clip(RoundedCornerShape(px(28))).background(if (state.busy) Color(0xFFE2E8C4) else MockColors.Lime2).clickable(enabled = !state.busy, role = Role.Button, onClick = onConfirm), contentAlignment = Alignment.Center) {
                 MockText(if (state.busy) "기록 중…" else "인증 정보 확정하기  →", 26, weight = FontWeight.ExtraBold)
             }
         }
@@ -394,7 +394,7 @@ private fun FailScreen(state: VerifyUiState, blocked: Boolean, onRetry: () -> Un
                 MockPic(R.drawable.mk2_v4_reasons, 715, 396, Modifier.at(25, 735))
             }
             val by = if (blocked && state.todayVisits.isNotEmpty()) 840 else 1148
-            Box(Modifier.at(25, by).size(px(710), px(92)).clip(RoundedCornerShape(px(32))).background(MockColors.Lime).clickable(role = Role.Button, onClick = onRetry), contentAlignment = Alignment.Center) {
+            Box(Modifier.at(25, by).size(px(710), px(92)).clip(RoundedCornerShape(px(32))).background(MockColors.Lime2).clickable(role = Role.Button, onClick = onRetry), contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (!blocked) { Box(Modifier.size(px(52))) { RetryGlyph() }; Box(Modifier.width(px(18))) }
                     MockText(if (blocked) "돌아가기" else "다시 인증하기", 31, weight = FontWeight.ExtraBold)
@@ -615,7 +615,7 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                 Box(Modifier.at(25, 1572).size(px(340), px(78)).clip(RoundedCornerShape(px(30))).border(1.dp, Hairline, RoundedCornerShape(px(30))).background(CardWhite).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_map, 40, 40); Box(Modifier.width(px(14))); MockText("내 여권 보기", 25, weight = FontWeight.ExtraBold) }
                 }
-                Box(Modifier.at(388, 1572).size(px(350), px(78)).clip(RoundedCornerShape(px(30))).background(MockColors.Lime).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.Center) {
+                Box(Modifier.at(388, 1572).size(px(350), px(78)).clip(RoundedCornerShape(px(30))).background(MockColors.Lime2).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.Center) {
                     Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_next, 40, 40); Box(Modifier.width(px(12))); MockText("다음 노포 찾기", 25, weight = FontWeight.ExtraBold) }
                     Box(Modifier.align(Alignment.CenterEnd).padding(end = px(22))) { ChevronRight(26) }
                 }

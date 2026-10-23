@@ -61,6 +61,10 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     val exploreVm: ExploreViewModel = viewModel(factory = factoryOf { ExploreViewModel(container) })
     val myVm: MyViewModel = viewModel(factory = factoryOf { MyViewModel(container) })
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    // 룰렛·랭킹 같은 별도 화면의 하단 탭에서 고른 탭으로 이동한다
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        container.requestedTab.collect { t -> if (t != null) { tab = t; settingsOpen = false; container.requestedTab.value = null } }
+    }
     androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsOpen) { settingsOpen = false }
     var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
@@ -108,29 +112,8 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 )
             }
         }
-        MockNavBar(tab) { tab = it }
+        com.nopo.cheonnyeon.feature.main.MockNavBar(tab) { tab = it }
     }
-    }
-}
-
-/** 시안의 하단 탭 줄: 화면마다 선택된 탭 모양이 다른 그림을 그대로 쓰고, 다섯 칸을 눌러 이동한다 */
-@Composable
-private fun MockNavBar(selected: Int, onSelect: (Int) -> Unit) {
-    val res = listOf(R.drawable.mk_nav_home, R.drawable.mk_nav_explore, R.drawable.mk_nav_map, R.drawable.mk_nav_collection, R.drawable.mk_nav_my)
-    val labels = listOf(R.string.tab_home, R.string.tab_explore, R.string.tab_map, R.string.tab_passport, R.string.tab_settings)
-    Column(Modifier.fillMaxWidth().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream).navigationBarsPadding()) {
-        androidx.compose.foundation.layout.Box {
-            com.nopo.cheonnyeon.core.designsystem.mock.MockPic(res[selected], 760, 98)
-            androidx.compose.foundation.layout.Row(Modifier.matchParentSize()) {
-                for (i in 0..4) {
-                    val label = stringResource(labels[i])
-                    androidx.compose.foundation.layout.Box(
-                        Modifier.weight(1f).fillMaxSize().clickable(role = androidx.compose.ui.semantics.Role.Tab) { onSelect(i) }
-                            .semantics { contentDescription = label },
-                    )
-                }
-            }
-        }
     }
 }
 
