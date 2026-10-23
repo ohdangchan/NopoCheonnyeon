@@ -115,6 +115,28 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
                 StoreReviewsSection(reviewsVm, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onVerify = { nav.navigate(Routes.verify(store.id)) })
             })
         }
+        if (BuildConfig.DEBUG) {
+            // 디버그 전용 미리보기: 가짜 값으로 인증 완료·정보 확인 화면을 그려 본다
+            composable("debug/done") {
+                val store = androidx.compose.runtime.produceState<com.nopo.cheonnyeon.domain.model.Store?>(null) { value = container.catalog.byId("BN-20250295902") }.value
+                if (store != null) com.nopo.cheonnyeon.feature.verify.DoneScreen(
+                    com.nopo.cheonnyeon.feature.verify.VerifyUiState(
+                        store = store, step = com.nopo.cheonnyeon.feature.verify.VerifyStep.DONE,
+                        award = com.nopo.cheonnyeon.data.visit.AwardResult(store.name, 46, com.nopo.cheonnyeon.domain.model.StampGrade.NORMAL, true, 468, com.nopo.cheonnyeon.domain.model.Title.entries[4], com.nopo.cheonnyeon.domain.model.VerifyMethod.RECEIPT, false),
+                        region = com.nopo.cheonnyeon.domain.rule.RegionProgress("서울", 3, 120),
+                    ), onReview = {}, onClose = { nav.popBackStack() },
+                )
+            }
+            composable("debug/confirm") {
+                val store = androidx.compose.runtime.produceState<com.nopo.cheonnyeon.domain.model.Store?>(null) { value = container.catalog.byId("BN-20250295902") }.value
+                if (store != null) com.nopo.cheonnyeon.feature.verify.ConfirmScreen(
+                    com.nopo.cheonnyeon.feature.verify.VerifyUiState(
+                        store = store,
+                        confirm = com.nopo.cheonnyeon.feature.verify.ReceiptInfo(store.name, java.time.LocalDateTime.now(), 47000L, store.address, "h", "12345678"),
+                    ), onRetake = { nav.popBackStack() }, onConfirm = { nav.popBackStack() },
+                )
+            }
+        }
         composable(Routes.VERIFY, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: VerifyViewModel = viewModel(factory = object : ViewModelProvider.Factory {

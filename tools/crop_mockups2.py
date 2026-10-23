@@ -85,4 +85,47 @@ def build():
     save(s, "su_naver_n", (572, 1534, 610, 1568))
 
 
-build()
+def build_verify():
+    # 공통 머리글(로고+부제)
+    s9 = fix_corners(screen(9))
+    save(s9, "v_hdr", (20, 88, 480, 205))
+    # 9: 영수증 인증 첫 화면
+    save(s9, "v9_hero", (0, 205, 760, 665))
+    save(s9, "v9_steps", (22, 650, 745, 892))
+    save(s9, "v9_tips", (20, 1105, 745, 1298))
+    save(s9, "v9_ic_cam", (258, 912, 310, 965))
+    # 10: 카메라 화면 장식(코너 틀)과 셔터
+    s10 = fix_corners(screen(10))
+    save(s10, "v10_hdr", (110, 90, 600, 235))
+    # 8: 정보 확인 행 라벨(아이콘+글자+AI 칩)
+    s8 = fix_corners(screen(8))
+    for i, (y0, y1) in enumerate(((795, 865), (895, 960), (990, 1060), (1085, 1190), (1195, 1300))):
+        save(s8, f"v8_row{i+1}", (40, y0, {0: 312, 1: 312, 2: 312, 3: 283, 4: 318}[i], y1))
+    save(s8, "v8_warn", (30, 1318, 735, 1475))
+    save(s8, "v8_ic_cam", (88, 1520, 140, 1572))
+    # 4: 실패 화면
+    s4 = fix_corners(screen(4))
+    save(s4, "v4_hero", (0, 205, 760, 625))
+    save(s4, "v4_reasons", (25, 722, 740, 1118))
+    save(s4, "v4_ic_retry", (258, 1155, 310, 1210))
+    save(s4, "v4_ic_cam", (98, 1472, 140, 1512))
+    save(s4, "v4_ic_head", (470, 1470, 510, 1515))
+    save(s4, "v4_tip", (25, 1335, 740, 1510))
+    # 5: 위치 확인 화면
+    s5 = fix_corners(screen(5))
+    save(s5, "v5_steps", (20, 395, 745, 535))
+    save(s5, "v5_map", (0, 545, 760, 925))
+    save(s5, "v5_ic_receipt", (48, 1100, 100, 1170))
+    save(s5, "v5_safe", (22, 1325, 742, 1505))
+    # 11: 방문 인증 완료
+    s11 = fix_corners(screen(11))
+    save(s11, "v11_title", (60, 205, 700, 410))
+    save(s11, "v11_ic_cal", (316, 988, 350, 1022))
+    save(s11, "v11_ic_pin", (318, 1028, 350, 1062))
+    save(s11, "v11_ic_star", (270, 1155, 335, 1230))
+    save(s11, "v11_ic_badge", (492, 1160, 575, 1250))
+    save(s11, "v11_ic_map", (100, 1580, 150, 1630))
+    save(s11, "v11_ic_next", (445, 1580, 495, 1630))
+
+
+build_verify()

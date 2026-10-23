@@ -60,9 +60,22 @@ data class VerifyUiState(
     val aiHint: String? = null,
     /** AI 안내를 받으려면 전송 동의가 필요함(처음 한 번) */
     val askAiConsent: Boolean = false,
+    /** 영수증 글자 확인을 마쳤고 사용자가 "인증 정보 확정하기"를 누르기를 기다리는 중 */
+    val confirm: ReceiptInfo? = null,
+    /** 인증을 마친 뒤 그 가게가 속한 시·도의 지역 스탬프 진행 */
+    val region: com.nopo.cheonnyeon.domain.rule.RegionProgress? = null,
+    /** 최근 인증한 노포(최신순, 최대 5곳) */
+    val recent: List<RecentVisit> = emptyList(),
 )
 
+data class RecentVisit(val store: Store, val years: Int, val at: Long)
+
+/** 확인 화면에 보여 줄 영수증에서 읽은 값(없으면 null) */
+data class ReceiptInfo(val storeName: String, val paidAt: java.time.LocalDateTime?, val amount: Long?, val address: String, val hash: String?, val approval: String?)
+
 enum class ScanPhase { NONE, LASER, HIGHLIGHT }
+
+private val APPROVAL_REGEX = Regex("승\\s*인\\s*번\\s*호\\s*[:：]?\\s*([0-9]{4,})")
 
 /** AI 촬영 도우미에 보낼 요청(동의를 기다리는 동안 들고 있는다) */
 private class HintRequest(val storeName: String, val lines: List<String>, val reason: String, val imageBase64: String?, val subject: String = "영수증")
@@ -96,6 +109,7 @@ class VerifyViewModel(
 
     init {
         com.nopo.cheonnyeon.core.common.Analytics.verifyStart()
+        loadRecent()
         viewModelScope.launch {
             runCatching { allowLocationOnly = container.settings.allowLocationOnly.first() }
         }
@@ -121,6 +135,18 @@ class VerifyViewModel(
         }
     }
 
+    /** 첫 화면과 완료 화면에 보여 줄 최근 인증 노포 */
+    private fun loadRecent() {
+        viewModelScope.launch {
+            runCatching {
+                val list = container.database.myVisitDao().observeAll().first()
+                    .filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedByDescending { it.lastVisitedAt }.take(5)
+                val rows = list.mapNotNull { v -> container.catalog.byId(v.storeId)?.let { RecentVisit(it, v.yearsAwarded, v.lastVisitedAt) } }
+                _state.update { it.copy(recent = rows) }
+            }
+        }
+    }
+
     private fun setStep(step: VerifyStep) {
         clearScan()
         saved[KEY_STEP] = step.name
@@ -136,6 +162,23 @@ class VerifyViewModel(
     fun goToPhoto() = setStep(VerifyStep.LOCATE)
     fun backToReceipt() = setStep(VerifyStep.RECEIPT)
     fun clearError() = _state.update { it.copy(error = null) }
+
+    /** 확인 화면에서 "인증 정보 확정하기" */
+    fun confirmReceipt() {
+        val s = _state.value
+        val info = s.confirm ?: return
+        val store = s.store ?: return
+        if (s.busy) return
+        _state.update { it.copy(busy = true) }
+        viewModelScope.launch {
+            finish(store, VerifyMethod.RECEIPT, photoVerified = true, hash = info.hash)
+            clearScan()
+            _state.update { it.copy(confirm = null) }
+        }
+    }
+
+    /** 확인 화면에서 "다시 촬영" */
+    fun retakeReceipt() { clearScan(); _state.update { it.copy(confirm = null, error = null) } }
 
     /** ① 영수증: 촬영 → (레이저 연출) 글자 인식 → (형광펜 연출) 판정 → 기록. 이미지는 메모리에서만 쓰고 파일로 저장하지 않는다. */
     fun captureReceipt(camera: CameraController) {
@@ -163,8 +206,16 @@ class VerifyViewModel(
                     if (r.error in HINT_ERRORS) requestHint(store.name, scan.lines, r.error, state.value.scanFrame?.let(::jpegBase64))
                 }
                 is AppResult.Success -> {
-                    finish(store, VerifyMethod.RECEIPT, photoVerified = true, hash = r.value.hash)
-                    clearScan()
+                    // 바로 도장을 찍지 않고, 읽은 정보를 보여 주고 사용자가 확정할 때 기록한다
+                    val joined = scan.lines.joinToString("\n")
+                    val parsed = com.nopo.cheonnyeon.domain.verify.ReceiptParser.parse(joined)
+                    val approval = APPROVAL_REGEX.find(joined)?.groupValues?.get(1)
+                    _state.update {
+                        it.copy(
+                            busy = false, scanPhase = ScanPhase.NONE,
+                            confirm = ReceiptInfo(store.name, parsed.paidAt, parsed.amount, store.address, r.value.hash, approval),
+                        )
+                    }
                 }
             }
         }
@@ -349,7 +400,12 @@ class VerifyViewModel(
         saved[KEY_STEP] = VerifyStep.DONE.name
         com.nopo.cheonnyeon.core.common.Analytics.verifyResult(method.name, "success")
         com.nopo.cheonnyeon.core.common.Analytics.stampAwarded(award.years, award.grade.name)
-        _state.update { it.copy(busy = false, error = null, award = award, step = VerifyStep.DONE) }
+        val region = runCatching {
+            val visited = container.database.myVisitDao().observeAll().first().map { it.storeId }.toSet()
+            com.nopo.cheonnyeon.domain.rule.RegionProgressRule.compute(container.catalog.all(), visited).firstOrNull { it.sido == store.sido }
+        }.getOrNull()
+        _state.update { it.copy(busy = false, error = null, award = award, step = VerifyStep.DONE, region = region) }
+        loadRecent()
     }
 
     /** 촬영 → 글자 줄 목록. 10초 제한, 이미지는 변환 직후 버린다. 실패하면 null */
