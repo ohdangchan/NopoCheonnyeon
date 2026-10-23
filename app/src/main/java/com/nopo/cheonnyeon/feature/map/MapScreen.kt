@@ -104,7 +104,7 @@ private const val BUBBLES = 6
 
 /** 시안 "지도"(5.webp) 복제: 머리글 + 검색창 + 지역 칩 + 실제 네이버 지도 + 하단 "지금 이 근처 노포" 카드. 비행기 버튼은 뺐다. */
 @Composable
-fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}, onBell: () -> Unit = {}) {
+fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}, onBell: () -> Unit = {}, onSearch: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val ratings by vm.ratings.collectAsStateWithLifecycle()
     val bookmarks by vm.bookmarks.collectAsStateWithLifecycle(initialValue = emptySet())
@@ -141,7 +141,7 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
         MockStage(originY = 84, heightPx = 336) {
             MockPic(R.drawable.mk_deco_map, 330, 140, Modifier.at(430, 140))
             MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
-            MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90))
+            MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = onSearch)
             MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
             // 검색창
             Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
