@@ -4,7 +4,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.draw.drawBehind
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -108,7 +107,7 @@ private suspend fun doGoogle(context: android.content.Context, vm: AuthViewModel
     }
 }
 
-/** 시안 28 "로그인": 이메일 로그인 + 구글로 시작하기 + 회원가입하기 + 게스트로 둘러보기 */
+/** 시안 28 "로그인": 이메일 로그인 + 구글로 시작하기 + 회원가입하기 (게스트 둘러보기는 뺐다) */
 @Composable
 fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, onDiagnostics: (() -> Unit)? = null) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -119,7 +118,6 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
     var showPw by rememberSaveable { mutableStateOf(false) }
     var keep by rememberSaveable { mutableStateOf(true) }
     var note by rememberSaveable { mutableStateOf<String?>(null) }
-    var guest by rememberSaveable { mutableStateOf(false) }
     val ready = AuthValidation.email(email.trim()) == null && password.isNotEmpty() && !state.busy
     val submit = { if (ready) vm.signIn(email.trim(), password) }
 
@@ -169,24 +167,11 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                         }
                     }
                     MockPic(R.drawable.mk2_n_login_foot, 760, 161, Modifier.at(0, 1490))
-                    Box(Modifier.at(260, 1540).size(px(240), px(56)).clickable(role = Role.Button) { guest = true }, contentAlignment = Alignment.Center) {
-                        androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(Modifier.drawBehind { drawLine(MockColors.Navy, androidx.compose.ui.geometry.Offset(0f, size.height), androidx.compose.ui.geometry.Offset(size.width, size.height), 1.5.dp.toPx()) }) {
-                                MockText("게스트로 둘러보기", 23, color = MockColors.Navy)
-                            }
-                            Box(Modifier.width(px(10))); ChevronRight(24)
-                        }
-                    }
                 }
                 androidx.compose.foundation.layout.Spacer(Modifier.navigationBarsPadding())
             }
         }
     }
-    if (guest) AlertDialog(
-        onDismissRequest = { guest = false }, title = { Text("게스트로 둘러보기") },
-        text = { Text("로그인하지 않고 둘러보는 기능은 준비 중이에요. 이메일이나 구글로 로그인해 주세요.") },
-        confirmButton = { TextButton({ guest = false }) { Text("확인") } },
-    )
 }
 
 private val TermsText = "노포 패스포트 이용약관(요약)\n\n1. 이 앱은 공개된 백년가게·오래가게 자료를 정리해 보여 주는 서비스예요.\n2. 방문 인증은 본인이 실제로 방문해 결제한 영수증으로만 할 수 있어요. 타인의 영수증·조작된 영수증을 쓰면 인증이 취소될 수 있어요.\n3. 리뷰와 닉네임은 다른 이용자에게 보여요. 욕설·광고 등 서비스 운영을 방해하는 글은 삭제될 수 있어요.\n4. 이 앱은 중소벤처기업부·서울특별시와 관련이 없어요."
