@@ -49,6 +49,27 @@ data class NoticeItem(val key: String, val title: String, val body: String, val 
  * 알림 목록. 서버 푸시 없이, 이 기기의 방문 기록에서 도장·칭호 소식을 만들고
  * 알림 설정(새 소식·오늘의 추천)에 따라 안내를 함께 보여 준다.
  */
+/** 알림 목록을 만드는 규칙 (순수 함수): 시험 가게 방문은 뺀다. 칭호가 오른 방문에만 칭호 알림이 붙고, 최신순으로 정렬한다. */
+fun buildNotices(
+    visits: List<com.nopo.cheonnyeon.data.local.MyVisitEntity>, storeNames: Map<String, String>, news: Boolean, reco: Boolean, nowMs: Long,
+): List<NoticeItem> {
+    val real = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedBy { it.firstVisitedAt }
+    val out = ArrayList<NoticeItem>()
+    if (news) {
+        var total = 0
+        real.forEach { v ->
+            val name = storeNames[v.storeId] ?: v.storeId
+            val before = total
+            total += v.yearsAwarded
+            out += NoticeItem("stamp-${v.storeId}", "도장을 찍었어요", "$name 방문 인증 완료 · 세월 +${v.yearsAwarded}년", v.firstVisitedAt, v.storeId, lime = true)
+            TitlePolicy.titleUp(before, total)?.let { out += NoticeItem("title-${it.name}", "새 칭호를 얻었어요", "누적 세월 ${total}년 · 새 칭호를 확인해 보세요", v.firstVisitedAt + 1) }
+        }
+    }
+    if (reco) out += NoticeItem("reco", "오늘의 추천", "홈 화면의 '오늘의 AI 추천'에서 오늘 가볼 노포를 확인해 보세요.", nowMs - 1)
+    out += NoticeItem("welcome", "노포 패스포트에 오신 걸 환영해요", "방문할수록 더 특별해지는 나만의 노포 여행 기록을 시작해 보세요.", 0L)
+    return out.sortedByDescending { it.at }
+}
+
 class NotificationsViewModel(private val container: AppContainer) : ViewModel() {
     val items: StateFlow<List<NoticeItem>> = combine(
         container.database.myVisitDao().observeAll(),
@@ -56,22 +77,8 @@ class NotificationsViewModel(private val container: AppContainer) : ViewModel() 
         container.settings.notifyNews,
         container.settings.notifyReco,
     ) { visits, _, news, reco ->
-        val stores = container.catalog.all().associateBy { it.id }
-        val real = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedBy { it.firstVisitedAt }
-        val out = ArrayList<NoticeItem>()
-        if (news) {
-            var total = 0
-            real.forEach { v ->
-                val name = stores[v.storeId]?.name ?: v.storeId
-                val before = total
-                total += v.yearsAwarded
-                out += NoticeItem("stamp-${v.storeId}", "도장을 찍었어요", "$name 방문 인증 완료 · 세월 +${v.yearsAwarded}년", v.firstVisitedAt, v.storeId, lime = true)
-                TitlePolicy.titleUp(before, total)?.let { out += NoticeItem("title-${it.name}", "새 칭호를 얻었어요", "누적 세월 ${total}년 · 새 칭호를 확인해 보세요", v.firstVisitedAt + 1) }
-            }
-        }
-        if (reco) out += NoticeItem("reco", "오늘의 추천", "홈 화면의 '오늘의 AI 추천'에서 오늘 가볼 노포를 확인해 보세요.", System.currentTimeMillis() - 1)
-        out += NoticeItem("welcome", "노포 패스포트에 오신 걸 환영해요", "방문할수록 더 특별해지는 나만의 노포 여행 기록을 시작해 보세요.", 0L)
-        out.sortedByDescending { it.at }
+        val names = container.catalog.all().associate { it.id to it.name }
+        buildNotices(visits, names, news, reco, System.currentTimeMillis())
     }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 }
 
