@@ -28,6 +28,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -88,7 +89,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
             VerifyStep.RECEIPT -> {
                 Text(stringResource(R.string.verify_receipt_title), style = NopoTheme.typography.titleMedium, color = c.ink)
                 Text(stringResource(R.string.verify_receipt_guide), style = NopoTheme.typography.bodyMedium, color = c.ink2)
-                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth()) {
+                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth().clipToBounds()) {
                     val frame = state.scanFrame
                     if (frame != null) {
                         // 찍은 영수증 위를 레이저가 훑고, 읽은 글자에 형광펜이 칠해진다
@@ -126,7 +127,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit) {
             VerifyStep.PHOTO -> {
                 Text(stringResource(R.string.verify_photo_title), style = NopoTheme.typography.titleMedium, color = c.ink)
                 Text(stringResource(R.string.verify_photo_guide), style = NopoTheme.typography.bodyMedium, color = c.ink2)
-                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth()) {
+                androidx.compose.foundation.layout.Box(Modifier.weight(1f).fillMaxWidth().clipToBounds()) {
                     val photoFrame = state.scanFrame
                     if (photoFrame != null) {
                         // 간판·메뉴판도 영수증과 같은 레이저 → 형광펜 연출
