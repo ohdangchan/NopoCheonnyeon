@@ -9,9 +9,10 @@ SRC = os.path.join(ROOT, "docs", "v2", "screens")
 OUT = os.path.join(ROOT, "docs", "v2", "screens_overview")
 FB = "C:/Windows/Fonts/NanumGothicBold.ttf"
 
-TW, TH = 330, 678
+S = 1.64   # 고해상도: 화면 한 장을 540x1110 으로 그린다
+TW, TH = int(330 * S), int(678 * S)
 CELL_W, CELL_H = 520, 1000
-PAD = 120
+PAD = int(120 * S)
 NAVY, LIME, GRAY = (6, 26, 49), (189, 246, 66), (110, 118, 130)
 
 # id: (파일, 라벨, 행, 열)
@@ -57,7 +58,7 @@ FLOWS = [
 
 
 def font(sz):
-    return ImageFont.truetype(FB, sz)
+    return ImageFont.truetype(FB, int(sz * S))
 
 
 def tag(d, cx, cy, label, sz=30):
@@ -75,14 +76,14 @@ def head_arrow(d, x, y, dx, dy, s=22):
 
 
 def render(title, ids, edges, path):
-    GAPX = 200
+    GAPX = int(200 * S)
     W = PAD * 2 + len(ids) * TW + (len(ids) - 1) * GAPX
     arcs = sum(1 for a, b, _ in edges if abs(ids.index(a) - ids.index(b)) > 1)
-    TOP = 260 + arcs * 70
-    H = TOP + TH + 180
+    TOP = int((260 + arcs * 70) * S)
+    H = TOP + TH + int(180 * S)
     im = Image.new("RGB", (W, H), (251, 246, 235))
     d = ImageDraw.Draw(im)
-    d.text((PAD, 60), "노포 패스포트 — " + title, font=font(70), fill=NAVY)
+    d.text((PAD, int(60 * S)), "노포 패스포트 — " + title, font=font(70), fill=NAVY)
     xs = {n: PAD + i * (TW + GAPX) for i, n in enumerate(ids)}
     y0 = TOP
     labels = []
@@ -93,20 +94,20 @@ def render(title, ids, edges, path):
             ya = y0 + TH // 2
             if ib > ia:
                 x0, x1 = xs[a] + TW + 8, xs[b] - 8
-                d.line([(x0, ya), (x1, ya)], fill=NAVY, width=8)
+                d.line([(x0, ya), (x1, ya)], fill=NAVY, width=int(8 * S))
                 head_arrow(d, x1, ya, 1, 0)
             else:
                 x0, x1 = xs[a] - 8, xs[b] + TW + 8
-                d.line([(x0, ya), (x1, ya)], fill=NAVY, width=8)
+                d.line([(x0, ya), (x1, ya)], fill=NAVY, width=int(8 * S))
                 head_arrow(d, x1, ya, -1, 0)
             if lab:
-                labels.append(((x0 + x1) / 2, ya - 70, lab))
+                labels.append(((x0 + x1) / 2, ya - int(70 * S), lab))
         else:
-            ybus = y0 - 50 - k * 70
+            ybus = y0 - int((50 + k * 70) * S)
             k += 1
             sx = xs[a] + TW // 2 + (40 if ib > ia else -40)
             ex = xs[b] + TW // 2
-            d.line([(sx, y0 - 8), (sx, ybus), (ex, ybus), (ex, y0 - 8)], fill=NAVY, width=8, joint="curve")
+            d.line([(sx, y0 - 8), (sx, ybus), (ex, ybus), (ex, y0 - 8)], fill=NAVY, width=int(8 * S), joint="curve")
             head_arrow(d, ex, y0 - 8, 0, 1)
             if lab:
                 labels.append(((sx + ex) / 2, ybus, lab))
@@ -114,11 +115,11 @@ def render(title, ids, edges, path):
         fn, label, _, _ = NODES[n]
         shot = Image.open(os.path.join(SRC, fn + ".png")).convert("RGB").resize((TW, TH), Image.LANCZOS)
         x = xs[n]
-        d.rounded_rectangle((x - 8, y0 - 8, x + TW + 8, y0 + TH + 8), 26, fill=(60, 66, 78))
+        d.rounded_rectangle((x - 8, y0 - 8, x + TW + 8, y0 + TH + 8), 40, fill=(60, 66, 78))
         im.paste(shot, (x, y0))
         f2 = font(38)
         w = d.textlength(label, font=f2)
-        d.text((x + (TW - w) / 2, y0 + TH + 22), label, font=f2, fill=NAVY)
+        d.text((x + (TW - w) / 2, y0 + TH + 30), label, font=f2, fill=NAVY)
     for cx, cy, lab in labels:
         tag(d, cx, cy, lab)
     im.save(path)

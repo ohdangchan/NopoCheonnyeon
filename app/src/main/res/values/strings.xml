@@ -448,7 +448,7 @@
     <string name="hall_stores_count">%1$d곳 탐방</string>
     <string name="hall_titles_note">칭호는 세월 100년마다 올라요: 첫술 식객 → 골목 단골 → 국밥 순례자 → 시장통 어르신 → 가마솥 감별사 → 노포 길잡이 → 맛의 장인 → 세월 지킴이 → 미식 도인 → 전설의 식객 → 천년 미식가(1,000년)</string>
     <string name="method_demo">시연용 예시</string>
-    <string name="settings_demo_passport_fill">시연용 패스포트 채우기(637년)</string>
+    <string name="settings_demo_passport_fill">시연용 패스포트 채우기(737년)</string>
     <string name="settings_demo_passport_clear">시연용 패스포트 지우기</string>
     <string name="settings_demo_passport_done">시연용 도장 %1$d개를 넣었어요</string>
     <string name="settings_demo_passport_cleared">시연용 도장을 지웠어요</string>
