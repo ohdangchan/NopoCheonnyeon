@@ -70,6 +70,11 @@ fun openAppSettings(context: Context) {
     }
 }
 
+/** 앨범(사진) 권한: 안드로이드 13 이상은 사진 권한, 그 아래는 저장소 읽기 */
+val AlbumPermission: String get() = if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+
+fun albumGranted(context: Context) = isGranted(context, AlbumPermission) || (Build.VERSION.SDK_INT >= 34 && isGranted(context, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"))
+
 /** 알림 권한: 안드로이드 13 이상에서만 따로 허용을 받는다 */
 val NotificationPermission: String? get() = if (Build.VERSION.SDK_INT >= 33) "android.permission.POST_NOTIFICATIONS" else null
 

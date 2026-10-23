@@ -27,11 +27,11 @@ fun PermissionIntroHost(container: AppContainer) {
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { finish() }
     PermissionIntroScreen(
         onAllowAll = {
-            val list = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA)
+            val list = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, AlbumPermission)
             NotificationPermission?.let { list += it }
             launcher.launch(list.toTypedArray())
         },
-        onAllowRequired = { launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA)) },
+        onAllowRequired = { launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, AlbumPermission)) },
         onLater = { finish() },
     )
 }

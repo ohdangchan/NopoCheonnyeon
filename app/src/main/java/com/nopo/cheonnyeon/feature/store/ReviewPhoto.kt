@@ -170,6 +170,10 @@ fun ReviewPhotoPicker(photos: List<String>, onChange: (List<String>) -> Unit, on
             onChange((latest + added).take(ReviewRules.MAX_PHOTOS))
         }
     }
+    // 앨범 권한을 먼저 물어본다. 허용하지 않아도 시스템 사진 선택기로 고를 수 있다.
+    val album = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
     Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         if (photos.isNotEmpty()) {
             Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
@@ -193,7 +197,10 @@ fun ReviewPhotoPicker(photos: List<String>, onChange: (List<String>) -> Unit, on
             NopoButton(stringResource(R.string.reviews_photo_camera), onCamera, style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f))
             NopoButton(
                 stringResource(R.string.reviews_photo_gallery),
-                { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                {
+                    if (com.nopo.cheonnyeon.feature.permission.albumGranted(context)) picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    else album.launch(com.nopo.cheonnyeon.feature.permission.AlbumPermission)
+                },
                 style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f),
             )
         }
