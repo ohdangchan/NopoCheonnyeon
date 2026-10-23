@@ -165,8 +165,7 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
             scaleX = 760f / 734f
             translationX = -14f * (760f / 734f) * u * density
         }) {
-            MockPic(R.drawable.mk_hdr_home, 760, 116, Modifier.at(0, 90))
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.brand_sub_home), 21, Modifier.at(46, 90 + 66), color = MockColors.Navy)
+            MockPic(R.drawable.mk_home_header, 760, 116, Modifier.at(0, 90))
             Box(Modifier.at(575, 92).size(px(80), px(70)).clickable(role = Role.Button, onClick = onSearch))
             Box(Modifier.at(660, 96).size(px(70), px(60)).clickable(role = Role.Button, onClick = onOpenMy))
             MockPic(R.drawable.mk_home_hero, 760, 373, Modifier.at(0, 205))

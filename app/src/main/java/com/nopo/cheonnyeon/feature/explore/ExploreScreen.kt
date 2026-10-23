@@ -143,8 +143,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
             Box {
                 MockStage(originY = 84, heightPx = 426) {
                     MockPic(R.drawable.mk_deco_explore, 330, 160, Modifier.at(430, 150))
-                    MockPic(R.drawable.mk_hdr_tab, 432, 122, Modifier.at(20, 84))
-                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.brand_sub_tab), 21, Modifier.at(158, 168), color = MockColors.Navy)
+                    MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
                     MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90))
                     MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
                     MockPic(R.drawable.mk_explore_title, 380, 111, Modifier.at(20, 225))
