@@ -90,7 +90,9 @@ object PassportShareCard {
     /** 카드를 캐시 폴더에 저장하고 공유 시트를 연다. 실패하면 false. */
     fun share(context: Context, d: ShareCardData): Boolean = runCatching {
         val dir = File(context.cacheDir, "share").apply { mkdirs() }
-        val file = File(dir, "passport.png")
+        // 시스템 공유 시트가 같은 주소의 미리보기를 캐시해 옛 그림을 보여 주므로 매번 새 이름으로 저장하고 옛 파일은 지운다
+        dir.listFiles()?.forEach { it.delete() }
+        val file = File(dir, "passport-${System.currentTimeMillis()}.png")
         val bmp = render(context, d)
         file.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
         bmp.recycle()

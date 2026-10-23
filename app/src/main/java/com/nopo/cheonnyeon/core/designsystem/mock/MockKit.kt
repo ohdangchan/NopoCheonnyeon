@@ -51,6 +51,8 @@ import kotlin.math.sin
  * 디자인 시안(design/redesign) 복제용 도구 모음.
  * 시안의 폰 화면은 가로 760px 이다. 모든 크기·위치는 시안 픽셀(px)로 적고, 실제 화면 폭에 맞춰 dp 로 바꾼다.
  */
+const val MOCK_MAX_WIDTH_DP = 600
+
 val LocalMockU = compositionLocalOf { 0.47f }
 
 /** 기준 y 좌표: [MockStage] 안에서 Modifier.at(x, y) 의 y 에서 이 값을 뺀다 */
@@ -58,7 +60,8 @@ val LocalMockOriginY = compositionLocalOf { 0 }
 
 @Composable
 fun ProvideMockScale(content: @Composable () -> Unit) {
-    val w = LocalConfiguration.current.screenWidthDp
+    // 태블릿·폴더블 펼침처럼 넓은 화면에서는 폭을 MAX_WIDTH_DP 로 묶는다 (MainActivity 가 같은 폭으로 가운데에 놓는다)
+    val w = minOf(LocalConfiguration.current.screenWidthDp, MOCK_MAX_WIDTH_DP)
     CompositionLocalProvider(LocalMockU provides (w / 760f), content = content)
 }
 
