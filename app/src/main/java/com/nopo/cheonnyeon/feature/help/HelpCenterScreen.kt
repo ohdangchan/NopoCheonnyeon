@@ -134,7 +134,7 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
             Column(
                 Modifier.at(22, 940).size(px(716), px(listH)).clip(RoundedCornerShape(px(20))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(20))).padding(horizontal = px(18), vertical = px(10)),
             ) {
-                if (shown.isEmpty()) MockText("찾는 질문이 없어요. 아래 이메일로 문의해 주세요.", 22, Modifier.padding(px(20)), color = Gray)
+                if (shown.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_01), 22, Modifier.padding(px(20)), color = Gray)
                 shown.forEachIndexed { i, f ->
                     val isOpen = open == i
                     Row(Modifier.fillMaxWidth().height(px(66)).clickable(role = Role.Button) { open = if (isOpen) -1 else i }, verticalAlignment = Alignment.CenterVertically) {
@@ -153,8 +153,8 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
             ) {
                 Box(Modifier.padding(start = px(26)).size(px(60))) { EnvelopeGlyph() }
                 Column(Modifier.weight(1f).padding(start = px(22))) {
-                    MockText("이메일 문의", 27, weight = FontWeight.ExtraBold)
-                    MockText("답변까지 1~2일 소요됩니다.", 20, color = Gray)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_02), 27, weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_03), 20, color = Gray)
                 }
                 ChevronRight(28); Box(Modifier.width(px(24)))
             }

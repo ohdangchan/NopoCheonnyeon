@@ -100,7 +100,7 @@ internal fun GpsVerifyScreen(vm: VerifyViewModel, state: VerifyUiState, location
                 }
                 Box(Modifier.at(452, 602).size(px(122), px(72)).clip(RoundedCornerShape(px(14))).background(MockColors.Navy), contentAlignment = Alignment.Center) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        MockText("현재 위치", 19, color = Color.White); MockText(dText, 21, color = Color.White, weight = FontWeight.Bold)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.gps_01), 19, color = Color.White); MockText(dText, 21, color = Color.White, weight = FontWeight.Bold)
                     }
                 }
                 // 상태 카드
@@ -155,7 +155,7 @@ private fun GpsButtons(vm: VerifyViewModel, state: VerifyUiState, granted: Boole
                     .clickable(enabled = ok, role = Role.Button, onClick = vm::startPhotoStep),
                 contentAlignment = Alignment.Center,
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) { PinIcon(34); Box(Modifier.width(px(12))); MockText("방문 인증 시작", 28, weight = FontWeight.ExtraBold) }
+                Row(verticalAlignment = Alignment.CenterVertically) { PinIcon(34); Box(Modifier.width(px(12))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.gps_02), 28, weight = FontWeight.ExtraBold) }
             }
     }
 }

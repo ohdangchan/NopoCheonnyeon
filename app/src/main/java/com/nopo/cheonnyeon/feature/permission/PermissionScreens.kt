@@ -234,7 +234,7 @@ fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (In
             val aOn = states.getOrElse(6) { false }
             Box(Modifier.at(12, ay).size(px(736), px(130)).clip(RoundedCornerShape(px(22))).background(Color(0xFFFCFAF4)).border(1.dp, Color(0xFFEFE9D8), RoundedCornerShape(px(22))))
             Box(Modifier.at(40, ay + 30).size(px(70)).clip(CircleShape).background(Color(0xFFE2F77A)), contentAlignment = Alignment.Center) { AlbumGlyph() }
-            MockText("사진 앨범", 28, Modifier.at(142, ay + 20), weight = FontWeight.ExtraBold, font = com.nopo.cheonnyeon.core.designsystem.mock.MockSans)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.perm_01), 28, Modifier.at(142, ay + 20), weight = FontWeight.ExtraBold, font = com.nopo.cheonnyeon.core.designsystem.mock.MockSans)
             MockText("리뷰에 음식 사진을 올릴 때\n앨범에서 고를 수 있어요.", 20, Modifier.at(142, ay + 62).size(px(360), px(60)), color = Color(0xFF4B5563), maxLines = 2, lineHeightPx = 28)
             MockText(if (aOn) "허용됨" else "허용 안 됨", 22, Modifier.at(486, ay + 38).size(px(118), px(40)), color = if (aOn) Color(0xFF3F8F0A) else Color(0xFF4B5563), weight = FontWeight.Medium, align = TextAlign.End)
             Box(Modifier.at(612, ay + 36)) { ToggleSwitch(aOn) }

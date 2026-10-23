@@ -180,9 +180,9 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit, onReview: () -> Unit 
     if (guide) {
         AlertDialog(
             onDismissRequest = { guide = false },
-            title = { Text("촬영 가이드") },
+            title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_01)) },
             text = { Text("• 영수증 전체가 한 장에 들어오게 찍어 주세요.\n• 식당명, 날짜·시간, 금액이 잘 보여야 해요.\n• 흔들림 없이 밝은 곳에서 찍으면 더 정확해요.\n• 영수증은 방문한 당일 결제한 것만 인정돼요.") },
-            confirmButton = { TextButton({ guide = false }) { Text("확인") } },
+            confirmButton = { TextButton({ guide = false }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
         )
     }
     state.aiHint?.let { tip ->
@@ -217,23 +217,23 @@ private fun IntroScreen(state: VerifyUiState, onStart: () -> Unit, onNoReceipt: 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     CameraGlyph(52)
                     Box(Modifier.width(px(26)))
-                    MockText("영수증 촬영하기", 30, weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_03), 30, weight = FontWeight.ExtraBold)
                 }
                 Box(Modifier.align(Alignment.CenterEnd).padding(end = px(30))) { ChevronRight(28) }
             }
             // 영수증이 없을 때: 가게 사진·위치로 인증 (앱 안 카메라만 쓰므로 앨범 대신)
             Box(Modifier.at(28, 1010).size(px(707), px(86)).clip(RoundedCornerShape(px(28))).background(Color(0xFFF1EDE0)).clickable(role = Role.Button, onClick = onNoReceipt), contentAlignment = Alignment.Center) {
-                MockText("영수증이 없어요 · 가게 사진으로 인증", 26, weight = FontWeight.ExtraBold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_04), 26, weight = FontWeight.ExtraBold)
                 Box(Modifier.align(Alignment.CenterEnd).padding(end = px(30))) { ChevronRight(26) }
             }
             MockPic(R.drawable.mk2_v9_tips, 725, 193, Modifier.at(20, 1105))
-            MockText("최근 인증한 노포", 28, Modifier.at(30, 1316), weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_05), 28, Modifier.at(30, 1316), weight = FontWeight.ExtraBold)
             Box(Modifier.at(580, 1312).size(px(160), px(50)).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.CenterEnd) {
-                Row(verticalAlignment = Alignment.CenterVertically) { MockText("전체보기", 21, color = Gray); Box(Modifier.width(px(8))); ChevronRight(24) }
+                Row(verticalAlignment = Alignment.CenterVertically) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_06), 21, color = Gray); Box(Modifier.width(px(8))); ChevronRight(24) }
             }
             val r = state.recent.firstOrNull()
             Box(Modifier.at(28, 1370).size(px(707), px(150)).clip(RoundedCornerShape(px(24))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(24)))) {
-                if (r == null) MockText("아직 인증한 노포가 없어요.", 23, Modifier.align(Alignment.Center), color = Hint)
+                if (r == null) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_07), 23, Modifier.align(Alignment.Center), color = Hint)
                 else {
                     Box(Modifier.padding(start = px(16), top = px(14)).size(px(165), px(122)).clip(RoundedCornerShape(px(16)))) { StorePhoto(r.store, Modifier.fillMaxSize()) }
                     MockText(r.store.name, 29, Modifier.padding(start = px(205), top = px(16)).width(px(330)), font = MockSerif, weight = FontWeight.ExtraBold)
@@ -245,7 +245,7 @@ private fun IntroScreen(state: VerifyUiState, onStart: () -> Unit, onNoReceipt: 
                         }
                     }
                     Box(Modifier.align(Alignment.CenterEnd).padding(end = px(24)).clip(RoundedCornerShape(50)).background(Color(0xFFE7F5A8)).padding(horizontal = px(18), vertical = px(8))) {
-                        MockText("✔ 인증 완료", 19, weight = FontWeight.Bold)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_08), 19, weight = FontWeight.Bold)
                     }
                 }
             }
@@ -305,7 +305,7 @@ private fun CameraScreen(
             Box(Modifier.align(Alignment.CenterStart).padding(start = px(40)).clickable(enabled = !state.busy, role = Role.Button, onClick = onNoReceipt)) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(Modifier.size(px(88)).clip(RoundedCornerShape(px(22))).background(Color(0xFFF1EDE0)).border(2.dp, MockColors.Navy, RoundedCornerShape(px(22))), contentAlignment = Alignment.Center) { PinIcon(44) }
-                    MockText("가게 사진", 21, color = Gray)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_09), 21, color = Gray)
                 }
             }
         }
@@ -340,12 +340,12 @@ internal fun ConfirmScreen(state: VerifyUiState, onRetake: () -> Unit, onConfirm
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         MockStage(originY = 84, heightPx = 1530) {
             Box(Modifier.at(20, 100).size(px(70)).clickable(role = Role.Button, onClick = onRetake).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
-            MockText("영수증 정보 확인", 33, Modifier.at(0, 100).fillMaxWidth(), font = MockSerif, weight = FontWeight.ExtraBold, align = TextAlign.Center)
-            MockText("인식한 정보를 확인하고, 맞는지 확인해주세요.", 21, Modifier.at(0, 160).fillMaxWidth(), color = Gray, align = TextAlign.Center)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_10), 33, Modifier.at(0, 100).fillMaxWidth(), font = MockSerif, weight = FontWeight.ExtraBold, align = TextAlign.Center)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_11), 21, Modifier.at(0, 160).fillMaxWidth(), color = Gray, align = TextAlign.Center)
             Box(Modifier.at(20, 208).size(px(725), px(547)).clip(RoundedCornerShape(px(28))).background(Color(0xFF2B1B10))) {
                 state.scanFrame?.let { f -> androidx.compose.foundation.Image(f.asImageBitmap(), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop) }
                 Box(Modifier.align(Alignment.BottomEnd).padding(end = px(18), bottom = px(18)).clip(RoundedCornerShape(px(26))).background(Color(0xCC1B1B1B)).clickable(role = Role.Button, onClick = onRetake).padding(horizontal = px(26), vertical = px(16))) {
-                    MockText("↻ 다시 촬영", 22, color = Color.White, weight = FontWeight.Medium)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_12), 22, color = Color.White, weight = FontWeight.Medium)
                 }
             }
             Box(Modifier.at(20, 775).size(px(725), px(530)).clip(RoundedCornerShape(px(28))).background(CardWhite))
@@ -372,7 +372,7 @@ internal fun ConfirmScreen(state: VerifyUiState, onRetake: () -> Unit, onConfirm
             MockPic(R.drawable.mk2_v8_warn, 705, 157, Modifier.at(30, 1318))
             state.error?.let { MockText(it.message(LocalContext.current), 20, Modifier.at(40, 1480).width(px(690)), color = Red) }
             Box(Modifier.at(33, 1493).size(px(284), px(92)).clip(RoundedCornerShape(px(28))).border(2.dp, MockColors.Navy, RoundedCornerShape(px(28))).background(CardWhite).clickable(role = Role.Button, onClick = onRetake), contentAlignment = Alignment.Center) {
-                Row(verticalAlignment = Alignment.CenterVertically) { CameraGlyph(40); Box(Modifier.width(px(12))); MockText("다시 촬영", 26, weight = FontWeight.ExtraBold) }
+                Row(verticalAlignment = Alignment.CenterVertically) { CameraGlyph(40); Box(Modifier.width(px(12))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_13), 26, weight = FontWeight.ExtraBold) }
             }
             Box(Modifier.at(335, 1493).size(px(397), px(92)).clip(RoundedCornerShape(px(28))).background(if (state.busy) Color(0xFFE2E8C4) else MockColors.Lime2).clickable(enabled = !state.busy, role = Role.Button, onClick = onConfirm), contentAlignment = Alignment.Center) {
                 MockText(if (state.busy) "기록 중…" else "인증 정보 확정하기  →", 26, weight = FontWeight.ExtraBold)
@@ -408,10 +408,10 @@ private fun FailScreen(state: VerifyUiState, blocked: Boolean, onRetry: () -> Un
             if (!blocked) {
                 Row(Modifier.at(25, by + 112), horizontalArrangement = Arrangement.spacedBy(px(14))) {
                     Box(Modifier.size(px(348), px(78)).clip(RoundedCornerShape(px(24))).border(1.dp, Hairline, RoundedCornerShape(px(24))).background(CardWhite).clickable(role = Role.Button, onClick = onGuide), contentAlignment = Alignment.Center) {
-                        Row(verticalAlignment = Alignment.CenterVertically) { CameraGlyph(38); Box(Modifier.width(px(12))); MockText("촬영 가이드 보기", 24, weight = FontWeight.Medium) }
+                        Row(verticalAlignment = Alignment.CenterVertically) { CameraGlyph(38); Box(Modifier.width(px(12))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_14), 24, weight = FontWeight.Medium) }
                     }
                     Box(Modifier.size(px(348), px(78)).clip(RoundedCornerShape(px(24))).border(1.dp, Hairline, RoundedCornerShape(px(24))).background(CardWhite).clickable(role = Role.Button, onClick = onSupport), contentAlignment = Alignment.Center) {
-                        MockText("🎧 고객센터 문의", 24, weight = FontWeight.Medium)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_15), 24, weight = FontWeight.Medium)
                     }
                 }
                 MockPic(R.drawable.mk2_v4_tip, 715, 175, Modifier.at(25, by + 205))
@@ -436,7 +436,7 @@ private fun StepScreen(
         MockStage(originY = 84, heightPx = 1560) {
             VerifyHeader(onClose)
             Box(Modifier.at(18, 228).size(px(70)).clickable(role = Role.Button, onClick = vm::backToReceipt).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
-            MockText("방문 인증하기", 42, Modifier.at(92, 226), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_09), 42, Modifier.at(92, 226), font = MockSerif, weight = FontWeight.ExtraBold)
             MockText(if (photo) "가게 간판이나 메뉴판을 찍어 방문을 인증해요." else "가게 앞에서 현재 위치를 확인해요.", 22, Modifier.at(94, 290).width(px(620)), color = Gray, maxLines = 2, lineHeightPx = 32)
             MockPic(R.drawable.mk2_v5_steps, 725, 140, Modifier.at(20, 395))
             // 지도(위치 확인) 또는 카메라(가게 사진)
@@ -538,7 +538,7 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                 Box(Modifier.at(30, 410).size(px(335), px(405)).rotate(-5f).shadow(8.dp, RoundedCornerShape(px(6))).background(Color.White)) {
                     Box(Modifier.padding(px(14)).fillMaxWidth().height(px(300)).clip(RoundedCornerShape(px(4)))) { StorePhoto(store, Modifier.fillMaxSize()) }
                     MockText(store.name, 28, Modifier.align(Alignment.BottomStart).padding(start = px(22), bottom = px(52)).width(px(290)), font = MockSerif, weight = FontWeight.ExtraBold)
-                    MockText("오래된 맛, 좋은 기억", 19, Modifier.align(Alignment.BottomStart).padding(start = px(22), bottom = px(20)), color = Hint)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_16), 19, Modifier.align(Alignment.BottomStart).padding(start = px(22), bottom = px(20)), color = Hint)
                 }
                 // 도장
                 Box(Modifier.at(385, 425).size(px(330)).graphicsLayer { scaleX = pop; scaleY = pop; alpha = if (pop > 1.5f) 0.0f else 1f }) {
@@ -568,17 +568,17 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
 
                 // 획득 카드
                 Box(Modifier.at(15, 1105).size(px(727), px(228)).clip(RoundedCornerShape(px(26))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(26)))) {
-                    MockText("이번 방문으로 획득했어요!", 25, Modifier.padding(start = px(22), top = px(12)), weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_17), 25, Modifier.padding(start = px(22), top = px(12)), weight = FontWeight.ExtraBold)
                     // 1: 스탬프
                     Box(Modifier.padding(start = px(25), top = px(60)).size(px(100)).clip(CircleShape).border(2.dp, Red, CircleShape), contentAlignment = Alignment.Center) { MockText(store.name.take(2), 22, color = Red, font = MockSerif, weight = FontWeight.ExtraBold) }
                     MockText("+1", 27, Modifier.padding(start = px(138), top = px(66)), weight = FontWeight.ExtraBold)
-                    MockText("스탬프 획득", 21, Modifier.padding(start = px(138), top = px(104)), weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_18), 21, Modifier.padding(start = px(138), top = px(104)), weight = FontWeight.ExtraBold)
                     MockText("노포 여권에\n스탬프가 추가되었어요.", 18, Modifier.padding(start = px(25), top = px(170)).width(px(220)), color = Gray, maxLines = 2, lineHeightPx = 24)
                     Box(Modifier.padding(start = px(255), top = px(60)).size(1.dp, px(155)).background(Hairline))
                     // 2: 칭호
                     MockPic(R.drawable.mk2_v11_ic_star, 65, 75, Modifier.padding(start = px(268), top = px(66)))
                     MockText(stringResource(title.labelRes()), if (stringResource(title.labelRes()).length > 6) 21 else 25, Modifier.padding(start = px(338), top = px(66)).width(px(150)), weight = FontWeight.ExtraBold, maxLines = 2, lineHeightPx = 28)
-                    MockText("칭호 획득", 21, Modifier.padding(start = px(338), top = px(110)), weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_19), 21, Modifier.padding(start = px(338), top = px(110)), weight = FontWeight.ExtraBold)
                     MockText(
                         if (award.titleUp != null) "새 칭호를 얻었어요!" else if (nextYears != null) "다음 칭호까지\n${nextYears}년 남았어요." else "최고 칭호예요!",
                         18, Modifier.padding(start = px(268), top = px(170)).width(px(200)), color = Gray, maxLines = 2, lineHeightPx = 24,
@@ -598,9 +598,9 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                 }
 
                 // 내 노포 패스포트
-                MockText("내 노포 패스포트", 29, Modifier.at(25, 1355), font = MockSerif, weight = FontWeight.ExtraBold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_20), 29, Modifier.at(25, 1355), font = MockSerif, weight = FontWeight.ExtraBold)
                 Box(Modifier.at(580, 1352).size(px(160), px(50)).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.CenterEnd) {
-                    Row(verticalAlignment = Alignment.CenterVertically) { MockText("전체 보기", 21); Box(Modifier.width(px(8))); ChevronRight(24) }
+                    Row(verticalAlignment = Alignment.CenterVertically) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_21), 21); Box(Modifier.width(px(8))); ChevronRight(24) }
                 }
                 Box(Modifier.at(15, 1402).size(px(727), px(150)).clip(RoundedCornerShape(px(20))).background(Color(0xFFF5EEDB)))
                 val recent = state.recent.take(4)
@@ -619,10 +619,10 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                 }
                 // 버튼
                 Box(Modifier.at(25, 1572).size(px(340), px(78)).clip(RoundedCornerShape(px(30))).border(1.dp, Hairline, RoundedCornerShape(px(30))).background(CardWhite).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.Center) {
-                    Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_map, 40, 40); Box(Modifier.width(px(14))); MockText("내 여권 보기", 25, weight = FontWeight.ExtraBold) }
+                    Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_map, 40, 40); Box(Modifier.width(px(14))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_22), 25, weight = FontWeight.ExtraBold) }
                 }
                 Box(Modifier.at(388, 1572).size(px(350), px(78)).clip(RoundedCornerShape(px(30))).background(MockColors.Lime2).clickable(role = Role.Button, onClick = onClose), contentAlignment = Alignment.Center) {
-                    Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_next, 40, 40); Box(Modifier.width(px(12))); MockText("다음 노포 찾기", 25, weight = FontWeight.ExtraBold) }
+                    Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_v11_ic_next, 40, 40); Box(Modifier.width(px(12))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_23), 25, weight = FontWeight.ExtraBold) }
                     Box(Modifier.align(Alignment.CenterEnd).padding(end = px(22))) { ChevronRight(26) }
                 }
                 Box(Modifier.at(25, 1660).size(px(700), px(40)), contentAlignment = Alignment.Center) {

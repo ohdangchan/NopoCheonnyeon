@@ -199,15 +199,15 @@ private fun PreferencePage(
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref2_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(2f / 3f, "2 / 3")
-            MockText("어떤 노포 여행을", 54, Modifier.at(38, 288), font = MockSerif, weight = FontWeight.ExtraBold)
-            MockText("좋아하세요?", 54, Modifier.at(38, 358), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_01), 54, Modifier.at(38, 288), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_02), 54, Modifier.at(38, 358), font = MockSerif, weight = FontWeight.ExtraBold)
             Underline(38, 436, 285)
-            MockText("좋아하는 지역과 음식 취향을 선택하면", 24, Modifier.at(40, 478), color = Ink2)
-            MockText("당신만의 노포를 더 잘 추천해드려요.", 24, Modifier.at(40, 516), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_03), 24, Modifier.at(40, 478), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_04), 24, Modifier.at(40, 516), color = Ink2)
 
             SectionHead({ PinGlyph() }, 572, "어떤 지역을 좋아하세요?", "여러 지역을 선택할 수 있어요.")
             Box(Modifier.at(580, 596).size(px(152), px(52)).clip(RoundedCornerShape(50)).border(1.dp, Hairline, RoundedCornerShape(50)).background(CardWhite), contentAlignment = Alignment.Center) {
-                MockText("인기 지역 순 ⌄", 21, color = MockColors.Navy)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_05), 21, color = MockColors.Navy)
             }
             TasteRecommender.REGIONS.forEachIndexed { i, r ->
                 val sel = r.key in regions
@@ -242,7 +242,7 @@ private fun PreferencePage(
             }
             BigLimeButton("이 취향으로 추천받기", 1440, onNext)
             Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
-                MockText("나중에 하기", 27, color = Gray, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }
     }
@@ -262,14 +262,14 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref3_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(1f, "3 / 3")
-            MockText("준비가 끝났어요!", 58, Modifier.at(38, 296), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_07), 58, Modifier.at(38, 296), font = MockSerif, weight = FontWeight.ExtraBold)
             Underline(38, 380, 330)
-            MockText("선택한 지역과 음식 취향을 바탕으로", 25, Modifier.at(40, 426), color = Ink2)
-            MockText("당신만을 위한 노포를 추천해드릴게요.", 25, Modifier.at(40, 466), color = Ink2)
-            MockText("이제, 특별한 노포 여행이 시작됩니다.", 25, Modifier.at(40, 506), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_08), 25, Modifier.at(40, 426), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_09), 25, Modifier.at(40, 466), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_10), 25, Modifier.at(40, 506), color = Ink2)
 
             SectionHead({ PinGlyph() }, 572, "선택한 지역", "이런 지역의 노포를 찾아드릴게요.")
-            if (picked.isEmpty()) MockText("고른 지역이 없어요. 전국에서 골라 드릴게요.", 22, Modifier.at(40, 700), color = Gray)
+            if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
             picked.forEachIndexed { i, r ->
                 Row(
                     Modifier.at(33 + i * 355, 664).size(px(342), px(154)).clip(RoundedCornerShape(px(22))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(22))).background(CardWhite).padding(px(8)),
@@ -284,7 +284,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             }
 
             SectionHead({ ForkGlyph() }, 836, "선택한 음식 취향", "이런 음식을 중심으로 추천해드릴게요.")
-            if (pickedFoods.isEmpty()) MockText("고른 음식이 없어요. 다양한 음식으로 골라 드릴게요.", 22, Modifier.at(40, 940), color = Gray)
+            if (pickedFoods.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_12), 22, Modifier.at(40, 940), color = Gray)
             pickedFoods.forEachIndexed { i, f ->
                 Box(Modifier.at(28 + i * 180, 930).size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(20))).background(CardWhite)) {
                     Box(Modifier.padding(start = px(6), top = px(8)).size(px(160), px(96)).clip(RoundedCornerShape(px(14)))) { MockPic(FoodRes.getValue(f.key), 164, 98) }
@@ -318,7 +318,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             }
             BigLimeButton("노포 추천 받기", 1440, onStart)
             Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
-                MockText("나중에 하기", 27, color = Gray, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }
     }

@@ -12,6 +12,9 @@ FILES = {
     "home/HomeScreen.kt": "home", "explore/ExploreScreen.kt": "explore", "map/MapScreen.kt": "map",
     "passport/PassportScreen.kt": "col", "passport/PassportBook.kt": "book", "store/StoreDetailScreen.kt": "det",
     "my/MyScreen.kt": "my", "notifications/NotificationsScreen.kt": "notice",
+    "verify/MockVerifyScreen.kt": "ver", "verify/GpsVerifyScreen.kt": "gps", "permission/PermissionScreens.kt": "perm",
+    "auth/MockAuthScreens.kt": "auth2", "auth/OnboardingScreen.kt": "onb", "ai/NopoRouletteScreen.kt": "rou",
+    "store/ReviewWriteScreen.kt": "rev", "help/HelpCenterScreen.kt": "help", "settings/MockSettingsScreen.kt": "set2",
 }
 CALLS = r"(?:MockText|GrayPill|LimePill|Pill|Text)"
 PAT = re.compile(r"(" + CALLS + r')\("([^"$\\\n]*[가-힣][^"$\\\n]*)"')

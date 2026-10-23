@@ -78,7 +78,7 @@ private fun SocialNotReadyDialog(provider: String?, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         title = { Text("${provider}로 시작하기") },
         text = { Text("${provider} 간편 로그인은 준비 중이에요. 지금은 이메일로 가입하고 로그인해 주세요.") },
-        confirmButton = { TextButton(onDismiss) { Text("확인") } },
+        confirmButton = { TextButton(onDismiss) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
     )
 }
 
@@ -134,10 +134,10 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                     Box(Modifier.at(632, 985).size(px(110), px(72)).clickable(role = Role.Button) { showPw = !showPw }.semantics { contentDescription = "비밀번호 보기" })
 
                     MockCheck(keep, 34, Modifier.at(42, 1074)) { keep = it; vm.setKeepLogin(it) }
-                    MockText("로그인 상태 유지", 23, Modifier.at(90, 1076), color = MockColors.Navy)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_01), 23, Modifier.at(90, 1076), color = MockColors.Navy)
                     Box(Modifier.at(500, 1066).size(px(222), px(52)).clickable(role = Role.Button, onClick = onReset), contentAlignment = Alignment.CenterEnd) {
                         androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-                            MockText("비밀번호 찾기", 23, weight = FontWeight.Medium); Box(Modifier.width(px(8))); ChevronRight(26)
+                            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_02), 23, weight = FontWeight.Medium); Box(Modifier.width(px(8))); ChevronRight(26)
                         }
                     }
                     MockLimeBar(if (state.busy) "로그인 중…" else "로그인  ›", 96, Modifier.at(40, 1130).size(px(682), px(96)), textPx = 32, enabled = ready, onClick = submit)
@@ -146,7 +146,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
 
                     Box(Modifier.at(45, 1270).size(px(290), 1.dp).background(Hairline))
                     Box(Modifier.at(425, 1270).size(px(292), 1.dp).background(Hairline))
-                    MockText("또는", 21, Modifier.at(340, 1258).width(px(80)), color = HintGray, align = TextAlign.Center)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_03), 21, Modifier.at(340, 1258).width(px(80)), color = HintGray, align = TextAlign.Center)
 
                     // 구글로 시작하기 (시안의 "간편하게 시작하기 / 휴대폰으로 시작하기" 자리)
                     Box(
@@ -155,7 +155,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                         contentAlignment = Alignment.Center,
                     ) {
                         androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-                            MockPic(R.drawable.mk2_lg_ic_google, 46, 46); Box(Modifier.width(px(22))); MockText("구글로 시작하기", 27, weight = FontWeight.ExtraBold)
+                            MockPic(R.drawable.mk2_lg_ic_google, 46, 46); Box(Modifier.width(px(22))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_04), 27, weight = FontWeight.ExtraBold)
                         }
                     }
                     Box(
@@ -163,7 +163,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                         contentAlignment = Alignment.Center,
                     ) {
                         androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-                            MockPic(R.drawable.mk2_n_login_user, 47, 47); Box(Modifier.width(px(20))); MockText("회원가입하기", 27, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(28)
+                            MockPic(R.drawable.mk2_n_login_user, 47, 47); Box(Modifier.width(px(20))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_05), 27, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(28)
                         }
                     }
                     MockPic(R.drawable.mk2_n_login_foot, 760, 161, Modifier.at(0, 1490))
@@ -242,7 +242,7 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
 
                     // 약관
                     MockCheck(allAgreed, 34, Modifier.at(46, 1119)) { v -> age = v; terms = v; privacy = v; marketing = v }
-                    MockText("전체 동의하기", 25, Modifier.at(104, 1120), weight = FontWeight.ExtraBold)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_06), 25, Modifier.at(104, 1120), weight = FontWeight.ExtraBold)
                     Box(Modifier.at(40, 1166).size(px(680), 1.dp).background(Hairline))
                     data class Row(val y: Int, val label: String, val checked: Boolean, val onChange: (Boolean) -> Unit, val detail: String?)
                     listOf(
@@ -261,7 +261,7 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                     // 간편 가입
                     Box(Modifier.at(40, 1487).size(px(180), 1.dp).background(Hairline))
                     Box(Modifier.at(540, 1487).size(px(180), 1.dp).background(Hairline))
-                    MockText("또는 간편하게 시작하기", 20, Modifier.at(224, 1474).width(px(314)), color = HintGray, align = TextAlign.Center)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.auth2_07), 20, Modifier.at(224, 1474).width(px(314)), color = HintGray, align = TextAlign.Center)
                     Box(Modifier.at(278, 1520).size(1.dp, px(80)).background(Hairline))
                     Box(Modifier.at(485, 1520).size(1.dp, px(80)).background(Hairline))
                     val cx = listOf(188, 381, 590)
@@ -285,7 +285,7 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
         AlertDialog(
             onDismissRequest = { dialog = null },
             text = { Text(if (d == "privacy") androidx.compose.ui.res.stringResource(R.string.privacy_policy_full) else d, modifier = Modifier.verticalScroll(rememberScrollState())) },
-            confirmButton = { TextButton({ dialog = null }) { Text("확인") } },
+            confirmButton = { TextButton({ dialog = null }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
         )
     }
 }

@@ -120,7 +120,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
             MockStage(originY = 84, heightPx = 1470) {
                 MockPic(R.drawable.mk2_n_rev_head, 760, 346, Modifier.at(0, 84))
                 Box(Modifier.at(15, 218).size(px(60), px(52)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "뒤로" })
-                MockText("방문 후기를 남겨보세요", 50, Modifier.at(28, 275), font = MockSerif, weight = FontWeight.ExtraBold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_01), 50, Modifier.at(28, 275), font = MockSerif, weight = FontWeight.ExtraBold)
                 // 가게 카드
                 Box(Modifier.at(18, 430).size(px(724), px(228)).clip(RoundedCornerShape(px(22))).background(CardWhite).clickable(role = Role.Button, onClick = onOpenStore)) {
                     Box(Modifier.size(px(330), px(228)).clip(RoundedCornerShape(topStart = px(22), bottomStart = px(22)))) { StorePhoto(store, Modifier.fillMaxSize()) }
@@ -142,13 +142,13 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
                         MockPic(R.drawable.mk2_n_rev_ic_person, 32, 40)
                         Box(Modifier.width(px(8)))
                         // "몇 명 방문" 이 아니라 "몇 명 방문 인증"
-                        MockText("%,d명 방문 인증".format(state.stats?.visitors ?: 0), 20, color = Gray)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_02).format(state.stats?.visitors ?: 0), 20, color = Gray)
                     }
                 }
 
                 // 별점
-                MockText("이 식당은 어땠나요?", 28, Modifier.at(25, 678), weight = FontWeight.ExtraBold)
-                Box(Modifier.at(540, 676).clip(RoundedCornerShape(50)).background(Color(0xFFEFEBDD)).padding(horizontal = px(20), vertical = px(6))) { MockText("별점을 선택해 주세요", 19, color = Gray) }
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_03), 28, Modifier.at(25, 678), weight = FontWeight.ExtraBold)
+                Box(Modifier.at(540, 676).clip(RoundedCornerShape(50)).background(Color(0xFFEFEBDD)).padding(horizontal = px(20), vertical = px(6))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_04), 19, color = Gray) }
                 Row(Modifier.at(22, 722), horizontalArrangement = Arrangement.spacedBy(px(14))) {
                     (1..5).forEach { i ->
                         Box(Modifier.size(px(66)).clickable(role = Role.Button) { rating = i }.semantics { contentDescription = "${i}점" }, contentAlignment = Alignment.Center) {
@@ -162,7 +162,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
                 }
 
                 // 글
-                MockText("어떤 점이 좋았나요?", 28, Modifier.at(25, 818), weight = FontWeight.ExtraBold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_05), 28, Modifier.at(25, 818), weight = FontWeight.ExtraBold)
                 Box(Modifier.at(22, 862).size(px(716), px(138)).clip(RoundedCornerShape(px(18))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(18)))) {
                     androidx.compose.foundation.text.BasicTextField(
                         value = text, onValueChange = { text = it.take(ReviewRules.TEXT_MAX) },
@@ -175,7 +175,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
 
                 // 사진
                 Row(Modifier.at(25, 1022), verticalAlignment = Alignment.Bottom) {
-                    MockText("사진을 추가해보세요", 28, weight = FontWeight.ExtraBold); MockText(" (선택)", 21, color = Gray)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_06), 28, weight = FontWeight.ExtraBold); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_07), 21, color = Gray)
                 }
                 MockText("최대 ${ReviewRules.MAX_PHOTOS}장까지 등록 가능", 19, Modifier.at(520, 1030).width(px(220)), color = Gray, align = TextAlign.End)
                 Box(
@@ -183,7 +183,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
                     contentAlignment = Alignment.Center,
                 ) {
                     Canvas(Modifier.fillMaxSize()) { drawRoundRect(Color(0xFFCFC8B0), cornerRadius = androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()), style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 7f)))) }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) { PlusImageGlyph(); MockText("사진 추가", 20, color = Gray) }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) { PlusImageGlyph(); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_08), 20, color = Gray) }
                 }
                 photos.forEachIndexed { i, p ->
                     Box(Modifier.at(186 + i * 185, 1068).size(px(172), px(150)).clip(RoundedCornerShape(px(14)))) {
@@ -193,11 +193,11 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
                         }
                     }
                 }
-                if (failed) MockText("일부 사진을 불러오지 못했어요.", 18, Modifier.at(25, 1222), color = MockColors.Stamp)
+                if (failed) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_09), 18, Modifier.at(25, 1222), color = MockColors.Stamp)
 
                 // 칩
                 Row(Modifier.at(25, 1236), verticalAlignment = Alignment.Bottom) {
-                    MockText("이런 점이 특히 좋았어요!", 28, weight = FontWeight.ExtraBold); MockText(" (중복 선택 가능)", 19, color = Gray)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_10), 28, weight = FontWeight.ExtraBold); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_11), 19, color = Gray)
                 }
                 Row(Modifier.at(18, 1286), horizontalArrangement = Arrangement.spacedBy(px(10))) {
                     Tags.forEach { t ->
@@ -229,16 +229,16 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
     }
     if (capturing) ReviewPhotoCapture(onCaptured = { photos = (photos + it).take(ReviewRules.MAX_PHOTOS); vm.draftPhotos = photos; capturing = false }, onDismiss = { capturing = false })
     if (pickMenu) AlertDialog(
-        onDismissRequest = { pickMenu = false }, title = { Text("사진 추가") },
-        text = { Text("카메라로 찍거나 앨범에서 고를 수 있어요.") },
+        onDismissRequest = { pickMenu = false }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_08)) },
+        text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_12)) },
         confirmButton = {
             TextButton({
                 pickMenu = false
                 if (com.nopo.cheonnyeon.feature.permission.albumGranted(context)) picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 else album.launch(com.nopo.cheonnyeon.feature.permission.AlbumPermission)
-            }) { Text("앨범에서 고르기") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_13)) }
         },
-        dismissButton = { TextButton({ pickMenu = false; capturing = true }) { Text("카메라로 찍기") } },
+        dismissButton = { TextButton({ pickMenu = false; capturing = true }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rev_14)) } },
     )
 }
 

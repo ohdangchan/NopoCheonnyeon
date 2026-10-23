@@ -243,7 +243,7 @@ private fun IdleView(vm: NopoRouletteViewModel, state: NopoRouletteState, onBack
             MockPic(R.drawable.mk2_r_title, 480, 155, Modifier.at(20, 225))
             MockPic(R.drawable.mk2_r_note, 245, 150, Modifier.at(500, 250))
             MockPic(R.drawable.mk2_r_filter, 720, 117, Modifier.at(20, 395))
-            MockText("음식 종류", 21, Modifier.at(448, 418), color = MockColors.Navy, weight = FontWeight.Medium)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_01), 21, Modifier.at(448, 418), color = MockColors.Navy, weight = FontWeight.Medium)
             val labels = listOf(
                 state.filter.sido?.let { "$it 전체" } ?: "전국",
                 state.price,
@@ -258,12 +258,12 @@ private fun IdleView(vm: NopoRouletteViewModel, state: NopoRouletteState, onBack
                     DropdownMenu(expanded = menu == i + 1, onDismissRequest = { menu = 0 }) {
                         when (i) {
                             0 -> {
-                                DropdownMenuItem(text = { Text("전국") }, onClick = { vm.setSido(null); menu = 0 })
+                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_02)) }, onClick = { vm.setSido(null); menu = 0 })
                                 state.regions.forEach { r -> DropdownMenuItem(text = { Text(r) }, onClick = { vm.setSido(r); menu = 0 }) }
                             }
                             1 -> PriceOptions.forEach { p -> DropdownMenuItem(text = { Text(p) }, onClick = { vm.setPrice(p); menu = 0 }) }
                             2 -> {
-                                DropdownMenuItem(text = { Text("아무거나") }, onClick = { vm.setCuisine(null); menu = 0 })
+                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_03)) }, onClick = { vm.setCuisine(null); menu = 0 })
                                 RoulettePicker.CUISINES.forEach { c -> DropdownMenuItem(text = { Text(c) }, onClick = { vm.setCuisine(c); menu = 0 }) }
                             }
                             else -> WalkOptions.forEach { w -> DropdownMenuItem(text = { Text(walkLabel(w)) }, onClick = { vm.setWalk(w); menu = 0 }) }
@@ -279,7 +279,7 @@ private fun IdleView(vm: NopoRouletteViewModel, state: NopoRouletteState, onBack
                 Box(Modifier.at(118, 600).size(px(524), px(390)).clip(RoundedCornerShape(px(36))).background(Color(0xE6FCF7EB)).padding(px(10))) {
                     if (state.reel.isNotEmpty()) PhotoReel(state.reel, true, Modifier.fillMaxSize())
                     else Box(Modifier.fillMaxSize().background(MockColors.Navy, RoundedCornerShape(px(26))), contentAlignment = Alignment.Center) {
-                        MockText("AI가 노포를 고르는 중…", 26, color = Color.White)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_04), 26, color = Color.White)
                     }
                 }
             }
@@ -378,7 +378,7 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
                     Modifier.padding(start = px(16), top = px(16)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).padding(horizontal = px(22), vertical = px(8)),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    MockText("♛", 24); Box(Modifier.width(px(10))); MockText("오늘의 추천 맛집", 23, weight = FontWeight.ExtraBold)
+                    MockText("♛", 24); Box(Modifier.width(px(10))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_05), 23, weight = FontWeight.ExtraBold)
                 }
                 Box(
                     Modifier.align(Alignment.TopEnd).padding(top = px(14), end = px(14)).size(px(56)).clickable(role = Role.Button) { vm.toggleBookmark(store.id) }.semantics { contentDescription = "저장하기" },
@@ -412,25 +412,25 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
             // 추천 이유
             Box(Modifier.at(22, 1178).size(px(716), px(172)).clip(RoundedCornerShape(px(26))).background(Color(0xFFF7F1E1)))
             MockPic(R.drawable.mk2_r6_char, 152, 183, Modifier.at(590, 1167))
-            MockText("✦ AI가 추천한 이유", 27, Modifier.at(48, 1190), weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_06), 27, Modifier.at(48, 1190), weight = FontWeight.ExtraBold)
             MockText(state.reason, 20, Modifier.at(48, 1236).width(px(520)), color = MockColors.Navy, maxLines = 4, lineHeightPx = 28)
             state.notice?.let { MockText(it, 18, Modifier.at(48, 1352).width(px(660)), color = MockColors.Stamp, maxLines = 1) }
             // 버튼
             Box(Modifier.at(30, 1372).size(px(702), px(82)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).clickable(role = Role.Button) { onOpenStore(store.id) }, contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    PinIcon(30, color = MockColors.Navy); Box(Modifier.width(px(14))); MockText("가보러 가기", 30, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(26)
+                    PinIcon(30, color = MockColors.Navy); Box(Modifier.width(px(14))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_07), 30, weight = FontWeight.ExtraBold); Box(Modifier.width(px(12))); ChevronRight(26)
                 }
             }
             Box(
                 Modifier.at(30, 1470).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) { vm.spin() },
                 contentAlignment = Alignment.Center,
-            ) { MockText("↻  다시 돌리기", 26, weight = FontWeight.ExtraBold) }
+            ) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_08), 26, weight = FontWeight.ExtraBold) }
             Box(
                 Modifier.at(386, 1470).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) {
                     runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://map.naver.com/p/search/" + Uri.encode(store.name))).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                 },
                 contentAlignment = Alignment.Center,
-            ) { MockText("지도에서 보기", 26, weight = FontWeight.ExtraBold) }
+            ) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_09), 26, weight = FontWeight.ExtraBold) }
         }
     }
 }

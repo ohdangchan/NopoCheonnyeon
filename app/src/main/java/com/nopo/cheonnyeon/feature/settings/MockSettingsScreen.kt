@@ -89,7 +89,7 @@ fun MockSettingsScreen(
             }
             MockText(nickname.ifBlank { "노포여행자" }, 34, Modifier.at(198, 375).width(px(480)), font = MockSerif, weight = FontWeight.ExtraBold)
             MockText(myVm.email ?: "", 23, Modifier.at(198, 424).width(px(480)), color = Color(0xFF4B5563))
-            MockText("좋은 맛집이, 좋은 하루를 만듭니다.", 20, Modifier.at(198, 462).width(px(480)), color = Color(0xFF4B5563))
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_01), 20, Modifier.at(198, 462).width(px(480)), color = Color(0xFF4B5563))
             val stats = listOf(real.size, saved.size, reviews?.size ?: 0, titles)
             val xs = listOf(118, 293, 468, 643)
             val labels = listOf("방문한 노포", "저장한 맛집", "작성한 리뷰", "획득한 칭호")
@@ -99,7 +99,7 @@ fun MockSettingsScreen(
             }
             // 메뉴 일곱 줄
             MockPic(R.drawable.mk2_a_list, 736, 697, Modifier.at(12, 608))
-            MockText("한국어", 22, Modifier.at(586, 1047).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_02), 22, Modifier.at(586, 1047).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
             val granted = androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
                 androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
             MockText(if (granted) "허용됨" else "허용 안 됨", 22, Modifier.at(586, 1147).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
@@ -117,14 +117,14 @@ fun MockSettingsScreen(
         }
     }
     if (dialog == 1) AlertDialog(
-        onDismissRequest = { dialog = 0 }, title = { Text("연결된 계정") },
+        onDismissRequest = { dialog = 0 }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_03)) },
         text = { Text("현재 이메일 계정으로 로그인되어 있어요.\n${myVm.email ?: ""}\n\n구글·카카오·네이버 계정 연동은 준비 중이에요.") },
-        confirmButton = { TextButton({ dialog = 0 }) { Text("확인") } },
+        confirmButton = { TextButton({ dialog = 0 }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
     )
     if (dialog == 2) AlertDialog(
-        onDismissRequest = { dialog = 0 }, title = { Text("언어 설정") },
-        text = { Text("지금은 한국어만 지원해요. 다른 언어는 준비 중이에요.") },
-        confirmButton = { TextButton({ dialog = 0 }) { Text("확인") } },
+        onDismissRequest = { dialog = 0 }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_04)) },
+        text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_05)) },
+        confirmButton = { TextButton({ dialog = 0 }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
     )
     if (support) SupportDialog(myVm.email) { support = false }
 }
