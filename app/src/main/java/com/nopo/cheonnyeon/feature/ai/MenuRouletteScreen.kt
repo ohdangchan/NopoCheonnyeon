@@ -361,10 +361,17 @@ fun AiConsentDialog(onAgree: () -> Unit, onDismiss: () -> Unit) {
  * 가운데 틀과 레이저 선이 "이 사진들을 AI가 보고 있다"는 느낌을 준다.
  */
 @Composable
-internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier) {
+internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier, rows: Int = 2, frame: Boolean = true) {
+    androidx.compose.foundation.layout.BoxWithConstraints(modifier) {
+        val itemW = if (rows <= 2) 112.dp else ((maxHeight - 16.dp - 8.dp * (rows - 1)) / rows)
+        PhotoReelBody(photos, spinning, itemW, rows, frame, Modifier.fillMaxSize())
+    }
+}
+
+@Composable
+private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: androidx.compose.ui.unit.Dp, rows: Int, frame: Boolean, modifier: Modifier) {
     val c = NopoTheme.colors
     val density = androidx.compose.ui.platform.LocalDensity.current
-    val itemW = 112.dp
     val gap = 8.dp
     val unit = with(density) { (itemW + gap).toPx() }
     var pos by androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
@@ -389,7 +396,7 @@ internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier 
     fun rowPhotos(shift: Int) = List(photos.size * reps) { photos[(it + shift) % photos.size] }
     Box(modifier.clip(NopoTheme.shapes.md).background(c.sign)) {
         Column(Modifier.fillMaxSize().padding(vertical = NopoTheme.spacing.sm), verticalArrangement = Arrangement.spacedBy(gap)) {
-            listOf(0 to -1, photos.size / 2 to 1).forEach { (shift, dir) ->
+            List(rows) { i -> (i * photos.size / rows) to (if (i % 2 == 0) -1 else 1) }.forEach { (shift, dir) ->
                 Box(Modifier.fillMaxWidth().height(itemW).clip(NopoTheme.shapes.md)) {
                     val x = if (dir < 0) -(pos % loop) else -loop + ((pos * 0.85f) % loop)
                     Row(
@@ -410,8 +417,8 @@ internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier 
         Canvas(Modifier.fillMaxSize()) {
             val fw = itemW.toPx() + 28.dp.toPx()
             val left = (size.width - fw) / 2
-            drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), androidx.compose.ui.geometry.Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(3.dp.toPx()))
-            if (spinning) {
+            if (frame) drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), androidx.compose.ui.geometry.Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(3.dp.toPx()))
+            if (frame && spinning) {
                 val y = 6.dp.toPx() + (size.height - 12.dp.toPx()) * scan
                 drawLine(c.laser, androidx.compose.ui.geometry.Offset(left, y), androidx.compose.ui.geometry.Offset(left + fw, y), 3.dp.toPx())
             }

@@ -187,6 +187,11 @@ class AiRepository(private val client: GeminiClient) {
         ).asSuccess()
     }
 
+    /** 처음 AI 호출이 느린 것을 줄이려고, 룰렛 화면을 열 때 사용자 정보 없는 짧은 요청을 미리 보내 연결을 데워 둔다 */
+    suspend fun warmUp() {
+        client.generateJson(listOf(GeminiPart.Text("ok 라고만 답해.")), HINT_SCHEMA, temperature = 0.0)
+    }
+
     /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
     suspend fun translate(texts: List<String>, language: String): AppResult<List<String>> {
         if (texts.isEmpty()) return emptyList<String>().asSuccess()
