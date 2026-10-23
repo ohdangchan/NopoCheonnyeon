@@ -29,3 +29,6 @@ app/src/main/assets/places/
 ex_copy/
 
 tools/_vs_cache/
+
+# 참고용 외부 자료(저장소에는 올리지 않음)
+ex_copy/
