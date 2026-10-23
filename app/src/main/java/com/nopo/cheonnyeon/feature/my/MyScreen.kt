@@ -54,6 +54,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -411,10 +412,10 @@ private fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
     val news by vm.settings.notifyNews.collectAsStateWithLifecycle(initialValue = true)
     val reco by vm.settings.notifyReco.collectAsStateWithLifecycle(initialValue = true)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
-        SubHeader("알림 설정", onBack)
+        SubHeader(stringResource(R.string.my_notify_settings), onBack)
         Column(Modifier.padding(horizontal = px(20)), verticalArrangement = Arrangement.spacedBy(px(16))) {
-            ToggleRow("새로운 노포 소식", "새 소식과 칭호·도장 알림을 알림 목록에 모아 보여 줘요.", news) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
-            ToggleRow("오늘의 추천", "매일 바뀌는 AI 추천 노포를 알림 목록에 보여 줘요.", reco) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
+            ToggleRow(stringResource(R.string.my_t11), stringResource(R.string.my_b12), news) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
+            ToggleRow(stringResource(R.string.my_t13), stringResource(R.string.my_b14), reco) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
             MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_10), 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
         }
     }
@@ -431,12 +432,12 @@ private fun AppPrefsScreen(vm: MyViewModel, onBack: () -> Unit) {
     val loc by s.allowLocationOnly.collectAsStateWithLifecycle(initialValue = false)
     val demo by s.demoData.collectAsStateWithLifecycle(initialValue = true)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
-        SubHeader("앱 환경 설정", onBack)
+        SubHeader(stringResource(R.string.my_app_prefs), onBack)
         Column(Modifier.padding(horizontal = px(20)).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(px(16))) {
-            ToggleRow("AI 기능 사용", "AI 추천·룰렛·리뷰 분석에 가게 이름 등을 Google AI에 보내는 것에 동의해요.", ai) { v -> vm.viewModelScope.launch { s.setAiConsent(v) } }
-            ToggleRow("음식점만 보기", "지도·검색에서 음식점이 아닌 곳을 숨겨요.", food) { v -> vm.viewModelScope.launch { s.setFoodOnly(v) } }
-            ToggleRow("위치만으로 방문 인증", "영수증 글자를 읽지 못했을 때 위치만으로 인증하는 것을 허용해요.", loc) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
-            ToggleRow("예시 리뷰·평점 보기", "다른 사람의 리뷰가 아직 적어서 보여 주는 시연용 예시를 함께 보여 줘요.", demo) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
+            ToggleRow(stringResource(R.string.my_t15), stringResource(R.string.my_b16), ai) { v -> vm.viewModelScope.launch { s.setAiConsent(v) } }
+            ToggleRow(stringResource(R.string.my_t17), stringResource(R.string.my_b18), food) { v -> vm.viewModelScope.launch { s.setFoodOnly(v) } }
+            ToggleRow(stringResource(R.string.my_t19), stringResource(R.string.my_b20), loc) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
+            ToggleRow(stringResource(R.string.my_t21), stringResource(R.string.my_b22), demo) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
             Column(Modifier.fillMaxWidth().padding(px(8)), verticalArrangement = Arrangement.spacedBy(px(6))) {
                 MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_11), 21, color = MockColors.Hint)
                 MockText("앱 버전 ${BuildConfig.VERSION_NAME}", 21, color = MockColors.Hint)
