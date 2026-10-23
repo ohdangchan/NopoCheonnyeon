@@ -32,6 +32,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,7 +56,7 @@ import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 @Composable
 fun MockSettingsScreen(
     myVm: MyViewModel, passportVm: PassportViewModel,
-    onNotify: () -> Unit, onLegacy: () -> Unit, onPermissions: () -> Unit, onHelp: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit,
+    onNotify: () -> Unit, onLegacy: () -> Unit, onPermissions: () -> Unit, onHelp: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit, onStat: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
     val state by passportVm.state.collectAsStateWithLifecycle()
@@ -87,7 +89,7 @@ fun MockSettingsScreen(
                     drawCircle(MockColors.Navy, w * 0.34f, Offset(w * 0.5f, w * 1.0f))
                 }
             }
-            MockText(nickname.ifBlank { "노포여행자" }, 34, Modifier.at(198, 375).width(px(480)), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(nickname.ifBlank { "노포여행자" }, 34, Modifier.at(198, 375).width(px(480)), font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold)
             MockText(myVm.email ?: "", 23, Modifier.at(198, 424).width(px(480)), color = Color(0xFF4B5563))
             MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_01), 20, Modifier.at(198, 462).width(px(480)), color = Color(0xFF4B5563))
             val stats = listOf(real.size, saved.size, reviews?.size ?: 0, titles)
@@ -96,6 +98,7 @@ fun MockSettingsScreen(
             stats.forEachIndexed { i, n ->
                 MockText("$n", 30, Modifier.at(xs[i] - 60, 506).width(px(120)), font = MockSerif, weight = FontWeight.ExtraBold, align = TextAlign.Center)
                 MockText(labels[i], 20, Modifier.at(xs[i] - 75, 548).width(px(150)), color = Color(0xFF4B5563), align = TextAlign.Center)
+                Box(Modifier.at(xs[i] - 85, 498).size(px(170), px(84)).clickable(role = Role.Button) { onStat(i) }.semantics { contentDescription = labels[i] })
             }
             // 메뉴 일곱 줄
             MockPic(R.drawable.mk2_a_list, 736, 697, Modifier.at(12, 608))

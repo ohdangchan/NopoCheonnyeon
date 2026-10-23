@@ -142,12 +142,22 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
 fun PassportScreen(
     vm: PassportViewModel, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit,
     onOpenRoulette: () -> Unit = {}, onBell: () -> Unit = {}, onSearch: () -> Unit = {},
+    request: String? = null, onRequestHandled: () -> Unit = {},
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val bookmarks by vm.bookmarks.collectAsStateWithLifecycle(initialValue = emptySet())
     var detail by rememberSaveable { mutableStateOf<String?>(null) }
     var all by rememberSaveable { mutableStateOf(false) }
     var dex by rememberSaveable { mutableStateOf(false) }
+    var startReviews by rememberSaveable { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(request) {
+        when (request) {
+            "visited" -> { all = true; startReviews = false }
+            "reviews" -> { all = true; startReviews = true; vm.loadReviews() }
+            "titles" -> { all = true; dex = true }
+        }
+        if (request != null) onRequestHandled()
+    }
 
     val real = remember(state.stamps) { state.stamps.filter { !it.isTest && it.store != null } }
     val visited = remember(real) { real.sortedByDescending { it.visit.lastVisitedAt } }
@@ -158,7 +168,7 @@ fun PassportScreen(
     val stats = BookStats(visited = real.size, goal = goal, titles = title.ordinal + 1)
 
     if (all) {
-        PassportAll(vm, state, visited, bookmarks, onBack = { all = false }, onOpenStore = onOpenStore, onOpenProfile = onOpenProfile, onOpenHall = onOpenHall, onOpenDex = { dex = true })
+        PassportAll(vm, state, visited, bookmarks, onBack = { all = false }, onOpenStore = onOpenStore, onOpenProfile = onOpenProfile, onOpenHall = onOpenHall, onOpenDex = { dex = true }, startReviews = startReviews)
     } else {
         Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
             MockStage(originY = 84, heightPx = 1490) {
@@ -281,11 +291,11 @@ private fun VisitedCard(s: PassportStamp, bookmarked: Boolean, width: androidx.c
 @Composable
 private fun PassportAll(
     vm: PassportViewModel, state: PassportUiState, visited: List<PassportStamp>, bookmarks: Set<String>,
-    onBack: () -> Unit, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit, onOpenDex: () -> Unit,
+    onBack: () -> Unit, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit, onOpenDex: () -> Unit, startReviews: Boolean = false,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
-    var reviewsMode by rememberSaveable { mutableStateOf(false) }
+    var reviewsMode by rememberSaveable { mutableStateOf(startReviews) }
     var shareFailed by rememberSaveable { mutableStateOf(false) }
     val myReviews by vm.reviews.collectAsStateWithLifecycle()
     val c = com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme.colors
@@ -295,7 +305,7 @@ private fun PassportAll(
 
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_05), 30, font = MockSerif, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_05), 32, font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold) }
             Box(Modifier.weight(1f))
             MockText("내가 방문한 노포 ${visited.size}곳", 22, color = MockColors.Ink2)
         }

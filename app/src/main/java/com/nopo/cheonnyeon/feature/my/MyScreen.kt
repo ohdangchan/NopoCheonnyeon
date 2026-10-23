@@ -152,7 +152,7 @@ private enum class Sub { NONE, SAVED, NOTIFY, PREFS }
 fun MyScreen(
     vm: MyViewModel, passportVm: PassportViewModel,
     onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenCollection: () -> Unit, onOpenSettings: () -> Unit,
-    onBell: () -> Unit = {}, onSearch: () -> Unit = {},
+    onBell: () -> Unit = {}, onSearch: () -> Unit = {}, openSaved: Boolean = false, onSavedHandled: () -> Unit = {},
 ) {
     val state by passportVm.state.collectAsStateWithLifecycle()
     val saved by vm.saved.collectAsStateWithLifecycle()
@@ -169,6 +169,7 @@ fun MyScreen(
     val goal = com.nopo.cheonnyeon.domain.rule.CollectionRules.goal(real.size)
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> if (uri != null) vm.setPhoto(uri) }
     BackHandler(enabled = sub != Sub.NONE) { sub = Sub.NONE }
+    androidx.compose.runtime.LaunchedEffect(openSaved) { if (openSaved) { sub = Sub.SAVED; onSavedHandled() } }
 
     when (sub) {
         Sub.SAVED -> { SavedScreen(vm, saved, bookmarks, onBack = { sub = Sub.NONE }, onOpenStore = onOpenStore); return }
@@ -195,7 +196,7 @@ fun MyScreen(
             }
             Box(Modifier.at(150, 360).size(px(54)).clip(CircleShape).background(Color(0xFF3A3F47)).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, contentAlignment = Alignment.Center) { CameraIcon() }
             Row(Modifier.at(222, 268).clickable(role = Role.Button) { editOpen = true }, verticalAlignment = Alignment.CenterVertically) {
-                MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = MockSerif, weight = FontWeight.ExtraBold)
+                MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold)
                 ChevronRight(30)
             }
             MockPic(R.drawable.mk_my_tagline, 248, 64, Modifier.at(226, 338))
@@ -366,7 +367,7 @@ internal fun SupportDialog(email: String?, onDismiss: () -> Unit) {
 @Composable
 private fun SubHeader(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ $title", 32, font = MockSerif, weight = FontWeight.ExtraBold) }
+        Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ $title", 34, font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold) }
     }
 }
 

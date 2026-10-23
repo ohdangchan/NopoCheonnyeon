@@ -142,7 +142,6 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
         MockStage(originY = 84, heightPx = 336) {
             MockPic(R.drawable.mk_deco_map, 330, 140, Modifier.at(430, 140))
             MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
-            MockPic(R.drawable.mk_ic_search, 54, 52, Modifier.at(604, 90), onClick = onSearch)
             MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
             // 검색창
             Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
@@ -163,7 +162,9 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                 Modifier.at(662, 261).size(px(76), px(76)).clip(CircleShape).background(MockColors.Card).border(1.dp, MockColors.CardLine, CircleShape)
                     .semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(state.filter.query) },
                 contentAlignment = Alignment.Center,
-            ) { AiSparkIcon(44) }
+            ) {
+                Box(Modifier.size(px(52)).clip(androidx.compose.foundation.shape.CircleShape).background(MockColors.Lime2), contentAlignment = Alignment.Center) { MockText("AI", 24, weight = androidx.compose.ui.text.font.FontWeight.ExtraBold, color = MockColors.Navy) }
+            }
             // 지역 칩
             Row(Modifier.at(20, 349).fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(px(13))) {
                 MapChip("전체", sigungu == null, 76) { sigungu = null }

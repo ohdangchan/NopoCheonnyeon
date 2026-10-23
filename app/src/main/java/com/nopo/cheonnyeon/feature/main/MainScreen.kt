@@ -14,6 +14,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.launch
@@ -60,6 +61,8 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     val exploreVm: ExploreViewModel = viewModel(factory = factoryOf { ExploreViewModel(container) })
     val myVm: MyViewModel = viewModel(factory = factoryOf { MyViewModel(container) })
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    var collectionRequest by remember { mutableStateOf<String?>(null) }
+    var mySavedRequest by remember { mutableStateOf(false) }
     var settingsSub by rememberSaveable { mutableIntStateOf(0) }
     // 룰렛·랭킹 같은 별도 화면의 하단 탭에서 고른 탭으로 이동한다
     androidx.compose.runtime.LaunchedEffect(Unit) {
@@ -99,19 +102,28 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 }, onOpenChat = onOpenChat, onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 })
+                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 }, onOpenChat = onOpenChat, onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 }, onBell = onOpenNotifications)
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED && !mapPermLater) {
                     if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.PERMANENTLY_DENIED) {
                         com.nopo.cheonnyeon.feature.permission.PermissionOffScreen(onOpenSettings = locationPermission.openSettings, onLater = { mapPermLater = true })
                     } else com.nopo.cheonnyeon.feature.permission.LocationPermissionScreen(onAllow = locationPermission.request, onLater = { mapPermLater = true })
                 } else MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
-                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 })
+                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 }, request = collectionRequest, onRequestHandled = { collectionRequest = null })
                 else -> when (settingsSub) {
-                    0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 })
+                    0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 }, openSaved = mySavedRequest, onSavedHandled = { mySavedRequest = false })
                         else com.nopo.cheonnyeon.feature.settings.MockSettingsScreen(
                             myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onHelp = { settingsSub = 5 }, onLogout = { logoutAsk = true },
                             onBell = onOpenNotifications, onBack = { settingsOpen = false },
+                            onStat = { i ->
+                                settingsOpen = false; settingsSub = 0
+                                when (i) {
+                                    0 -> { collectionRequest = "visited"; tab = 3 }
+                                    1 -> { mySavedRequest = true; tab = 4 }
+                                    2 -> { collectionRequest = "reviews"; tab = 3 }
+                                    else -> { collectionRequest = "titles"; tab = 3 }
+                                }
+                            },
                         )
                     2 -> com.nopo.cheonnyeon.feature.my.NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
                     3 -> com.nopo.cheonnyeon.feature.permission.PermissionManageHost(container, onBack = { settingsSub = 0 }, onNotificationScreen = { settingsSub = 4 })

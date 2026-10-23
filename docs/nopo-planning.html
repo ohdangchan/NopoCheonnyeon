@@ -192,10 +192,11 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
       <text x="50" y="58" text-anchor="middle" font-size="32" style="font-family:var(--display);fill:currentColor">千年</text>
       <text x="50" y="76" text-anchor="middle" font-size="9" style="fill:currentColor;letter-spacing:.2em">美食家</text>
     </svg>
-    <div class="meta">기획안 v0.4 · 2026.10.17 · ANDROID · KOTLIN · APK</div>
-    <h1>노포 천년 미식가</h1>
+    <div class="meta">기획안 v0.5 최종 · 2026.10.23 · ANDROID · KOTLIN · APK</div>
+    <h1>노포 패스포트 <small style="font-size:.45em;font-weight:400">(구 노포 천년 미식가)</small></h1>
     <p class="lead">내가 먹어 온 노포의 세월을 모아 천 년을 채우는 안드로이드 미식 패스포트. 이번 버전은 APK를 폰에 설치했을 때 모든 기능이 버그 없이 도는 것을 최우선으로 다시 설계했습니다.</p>
     <ul class="nav">
+      <li><a href="#v05">v0.5 최종</a></li>
       <li><a href="#v04">v0.4 변경</a></li>
       <li><a href="#concept">컨셉</a></li>
       <li><a href="#users">사용자</a></li>
@@ -255,6 +256,31 @@ code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--
   </div>
   <figcaption>v0.4의 흐름입니다. 처음부터 계정으로 로그인하고, 인증한 가게에만 평점을 남기며, 다른 미식가의 칭호와 다녀온 노포를 볼 수 있습니다.</figcaption>
 </figure>
+
+<!-- 00. v0.5 최종 -->
+<section id="v05">
+  <p class="label">Final · v0.5 (2026-10-23)</p>
+  <h2>최종 개발 상태: 기획이 앱이 되었습니다</h2>
+  <p>v0.4의 목표(폰에 설치해 모든 기능이 버그 없이 도는 APK)를 이어, 마지막 주에는 <b>시안 그대로의 화면</b>과 <b>AI 기능의 속도·완성도</b>, <b>방문 인증의 사용성</b>을 끌어올렸습니다. 아래가 본문과 다르면 이 절이 맞습니다.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>영역</th><th>이전(v0.4)</th><th>최종(v0.5)</th></tr></thead>
+      <tbody>
+        <tr><td><b>앱 이름·화면</b></td><td>노포 천년 미식가, 시스템 기본 화면</td><td><b>노포 패스포트</b>, 시안(design/redesign·redesign2 28장)을 좌표 그대로 복제, 앱 아이콘·브랜드 적용, 글자 크기 단계표 통일</td></tr>
+        <tr><td><b>로그인</b></td><td>이메일 + 게스트 둘러보기</td><td><b>이메일 + 구글만</b>. 카카오·네이버·휴대폰 가입·게스트 삭제. 처음 실행은 온보딩 3단계(취향 고르기)</td></tr>
+        <tr><td><b>홈·탐색</b></td><td>목록 중심</td><td>오늘의 AI 추천(취향 반영), 내 주변 칩 → 탐색 칩 연동, 카드는 "N년 전통" 통일, 검색창 AI 원 버튼</td></tr>
+        <tr><td><b>방문 인증</b></td><td>영수증 → 즉시 도장 / 30m 사진</td><td>영수증 <b>정보 확인 → 확정</b>, 영수증 없음: <b>GPS(실제 지도·거리·10초 안내) → 가게 사진(확대 카메라·연두 스캔선)</b>, 실패 시 AI 촬영 도우미 2초 안</td></tr>
+        <tr><td><b>컬렉션</b></td><td>패스포트 목록</td><td>밀어서 넘기는 <b>여권 책</b>(배경 사진과 같은 각도), 칭호 도감, 명예의 전당, 시연 패스포트 737년</td></tr>
+        <tr><td><b>AI</b></td><td>메뉴 룰렛, 챗봇</td><td><b>AI 노포 룰렛</b>: 완전한 원 판, 큰 사진 릴, 분석 안내 팝업, 첫 응답 5초 안, 결과 AI 이유 → 3곳 → 최대 30곳 비중복 · AI 노포 도우미 속도 개선 · 소개글 먼저 번역</td></tr>
+        <tr><td><b>알림·권한·도움말</b></td><td>알림 목록만</td><td>알림을 누르면 가게·컬렉션·홈·마이로 이동, 권한 관리, 도움말 센터(이메일 문의)</td></tr>
+        <tr><td><b>개인정보</b></td><td>분석 동의 기본 꺼짐</td><td>사용 데이터 수집 기본 켜짐(디버그 제외), 마케팅 기본 꺼짐. 영수증 미저장·위치 미저장 원칙은 그대로</td></tr>
+        <tr><td><b>검증</b></td><td>단위 테스트 293개</td><td>단위 테스트·린트·릴리스(R8) 빌드 통과, 실기기(S9+) 점검과 사용자 점검 24건 반영, 임의 조작 3,000회</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>화면 이미지와 흐름도는 <code>docs/v2/screens</code>, <code>docs/v2/screens_overview</code>에 있고, 저장소 첫 화면(README)에서 한눈에 볼 수 있습니다. 최신 요구사항은 <code>docs/v2/v2-01-PRD.md</code>, 구조는 <code>v2-02-architecture.md</code>입니다.</p>
+  <p><b>아직 남은 것</b> — 구글 로그인 Firebase 설정(사용자), 릴리스 서명 키 SHA 등록, 고객센터 운영 주소, 서울관광재단 비짓서울 사진의 <b>서면 허가</b>, 폴드8 지도 탭 실기기 확인, 48dp 터치 영역·TalkBack.</p>
+</section>
 
 <!-- 0. v0.4 변경 -->
 <section id="v04">

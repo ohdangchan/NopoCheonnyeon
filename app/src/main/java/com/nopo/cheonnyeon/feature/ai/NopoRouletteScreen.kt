@@ -271,6 +271,7 @@ private fun IdleView(vm: NopoRouletteViewModel, state: NopoRouletteState, onBack
     val spinning = state.phase == RoulettePhase.SPINNING
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 1580) {
+            MockPic(R.drawable.mk2_v_hdr, 460, 117, Modifier.at(20, 88))
             Box(Modifier.at(652, 98).size(px(76)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "닫기" }, contentAlignment = Alignment.Center) { CloseGlyph() }
             if (spinning) {
                 // 돌리는 동안 위에 뜨는 안내 팝업
@@ -383,16 +384,19 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
     val pager = rememberPagerState { photoCount }
     val others = state.picks.drop(1)
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState())) {
-        MockStage(originY = 84, heightPx = 1900) {
+        MockStage(originY = 84, heightPx = 2300) {
+            MockPic(R.drawable.mk2_v_hdr, 460, 117, Modifier.at(20, 88))
             Box(Modifier.at(652, 98).size(px(76)).clickable(role = Role.Button, onClick = onClose).semantics { contentDescription = "닫기" }, contentAlignment = Alignment.Center) { CloseGlyph() }
             // 가장 위: AI가 추천한 이유
-            Box(Modifier.at(22, 90).size(px(716), px(236)).clip(RoundedCornerShape(px(26))).background(Color(0xFFF7F1E1)))
-            MockPic(R.drawable.mk2_r6_char, 114, 137, Modifier.at(610, 100))
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_06), 29, Modifier.at(48, 108), weight = FontWeight.ExtraBold)
-            MockText(state.reason, 22, Modifier.at(48, 158).width(px(540)), color = MockColors.Navy, maxLines = 5, lineHeightPx = 31)
+            Box(Modifier.at(22, 215).size(px(716), px(236)).clip(RoundedCornerShape(px(26))).background(Color(0xFFF7F1E1)))
+            MockPic(R.drawable.mk2_r6_char, 114, 137, Modifier.at(610, 225))
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_06), 29, Modifier.at(48, 233), weight = FontWeight.ExtraBold)
+            MockText(state.reason, 22, Modifier.at(48, 283).width(px(540)), color = MockColors.Navy, maxLines = 5, lineHeightPx = 31)
 
+            // 원래 있던 "오늘의 추천이 정해졌어요!" 부분은 그대로 두고 이유 카드 밑에 놓는다
+            Box(Modifier.at(0, 455).size(px(760), px(250)).clip(androidx.compose.ui.graphics.RectangleShape)) { MockPic(R.drawable.mk2_r6_title, 760, 285) }
             // 오늘의 추천 사진 카드
-            Box(Modifier.at(22, 346).size(px(716), px(296)).clip(RoundedCornerShape(topStart = px(36), topEnd = px(36)))) {
+            Box(Modifier.at(22, 710).size(px(716), px(296)).clip(RoundedCornerShape(topStart = px(36), topEnd = px(36)))) {
                 HorizontalPager(pager, Modifier.fillMaxSize()) { page -> StorePhoto(store, Modifier.fillMaxSize(), index = page) }
                 Row(
                     Modifier.padding(start = px(16), top = px(16)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).padding(horizontal = px(22), vertical = px(8)),
@@ -409,15 +413,15 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
                 }
             }
             // 가게 정보 카드
-            Box(Modifier.at(22, 633).size(px(716), px(250)).clip(RoundedCornerShape(bottomStart = px(30), bottomEnd = px(30))).background(Color(0xFFFCFAF4)))
-            MockText(store.name, 40, Modifier.at(50, 653).width(px(520)), font = MockSerif, weight = FontWeight.ExtraBold)
-            MockText(card.oneLiner, 22, Modifier.at(50, 714).width(px(560)), color = Color(0xFF4B5563))
-            Row(Modifier.at(50, 761), horizontalArrangement = Arrangement.spacedBy(px(12))) {
+            Box(Modifier.at(22, 997).size(px(716), px(250)).clip(RoundedCornerShape(bottomStart = px(30), bottomEnd = px(30))).background(Color(0xFFFCFAF4)))
+            MockText(store.name, 40, Modifier.at(50, 1017).width(px(520)), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(card.oneLiner, 22, Modifier.at(50, 1078).width(px(560)), color = Color(0xFF4B5563))
+            Row(Modifier.at(50, 1125), horizontalArrangement = Arrangement.spacedBy(px(12))) {
                 listOfNotNull(RoulettePicker.cuisineOf(store), store.foundedYear?.let { "${it / 10 * 10}년대" }, store.sigungu.takeIf { it.isNotBlank() }, "노포").forEach { t ->
                     Box(Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFEFEBDD)).padding(horizontal = px(20), vertical = px(7))) { MockText(t, 21, color = Color(0xFF4B5563)) }
                 }
             }
-            Row(Modifier.at(50, 823), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.at(50, 1187), verticalAlignment = Alignment.CenterVertically) {
                 RatingText(card.rating?.average, card.rating?.count, 27, showCount = true)
                 card.distanceLabel?.let {
                     if (card.rating != null) Box(Modifier.padding(horizontal = px(22)).width(1.dp).height(px(34)).background(Color(0xFFDDD8C6)))
@@ -425,15 +429,15 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
                 }
             }
             Box(
-                Modifier.at(655, 653).size(px(62)).clip(CircleShape).background(Color.White).border(1.dp, Color(0xFFE2DDCB), CircleShape)
+                Modifier.at(655, 1017).size(px(62)).clip(CircleShape).background(Color.White).border(1.dp, Color(0xFFE2DDCB), CircleShape)
                     .clickable(role = Role.Button) { vm.toggleBookmark(store.id) }.semantics { contentDescription = "저장하기" },
                 contentAlignment = Alignment.Center,
             ) { BookmarkIcon(32, color = MockColors.Navy, filled = card.bookmarked) }
 
             // 추천 밑으로 나머지 2곳(모두 3곳)
-            MockText("함께 가 볼 만한 노포 ${others.size}곳", 26, Modifier.at(30, 910), weight = FontWeight.ExtraBold)
+            MockText("함께 가 볼 만한 노포 ${others.size}곳", 26, Modifier.at(30, 1274), weight = FontWeight.ExtraBold)
             others.forEachIndexed { i, o ->
-                val y = 958 + i * 190
+                val y = 958 + 364 + i * 190
                 Box(
                     Modifier.at(22, y).size(px(716), px(172)).clip(RoundedCornerShape(px(24))).background(Color(0xFFFCFAF4)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(px(24)))
                         .clickable(role = Role.Button) { onOpenStore(o.store.id) },
@@ -447,20 +451,20 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
                     }
                 }
             }
-            state.notice?.let { MockText(it, 18, Modifier.at(30, 1345).width(px(700)), color = MockColors.Stamp, maxLines = 2) }
-            MockText("지금까지 ${state.shownIds.size}곳 / 최대 30곳을 겹치지 않게 추천해요", 19, Modifier.at(30, 1380), color = Color(0xFF8A7F66))
+            state.notice?.let { MockText(it, 18, Modifier.at(30, 1709).width(px(700)), color = MockColors.Stamp, maxLines = 2) }
+            MockText("지금까지 ${state.shownIds.size}곳 / 최대 30곳을 겹치지 않게 추천해요", 19, Modifier.at(30, 1744), color = Color(0xFF8A7F66))
             // 버튼
-            Box(Modifier.at(30, 1430).size(px(702), px(82)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).clickable(role = Role.Button) { onOpenStore(store.id) }, contentAlignment = Alignment.Center) {
+            Box(Modifier.at(30, 1794).size(px(702), px(82)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).clickable(role = Role.Button) { onOpenStore(store.id) }, contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     PinIcon(30, color = MockColors.Navy); Box(Modifier.width(px(14))); MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_07), 30, weight = FontWeight.ExtraBold)
                 }
             }
             Box(
-                Modifier.at(30, 1530).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) { vm.spin() },
+                Modifier.at(30, 1894).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) { vm.spin() },
                 contentAlignment = Alignment.Center,
             ) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.rou_08), 26, weight = FontWeight.ExtraBold) }
             Box(
-                Modifier.at(386, 1530).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) {
+                Modifier.at(386, 1894).size(px(346), px(76)).clip(RoundedCornerShape(50)).border(1.dp, Color(0xFFE2DDCB), RoundedCornerShape(50)).background(Color(0xFFFCFAF4)).clickable(role = Role.Button) {
                     runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://map.naver.com/p/search/" + Uri.encode(store.name))).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                 },
                 contentAlignment = Alignment.Center,

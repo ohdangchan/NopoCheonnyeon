@@ -3,6 +3,22 @@
 
 # 노포 천년 미식가 — 아키텍처 설계서 v0.4
 
+## ★ v0.3 최종 반영 (2026-10-23 밤) — 구조 변경 사항
+- **화면 복제 방식**: `core/designsystem/mock` — 시안 폭 760px 좌표(`MockStage`·`Modifier.at`), 글자는 `snapTextPx` 단계표, 시안 조각은 `res/drawable-nodpi/mk_*·mk2_*` (생성 도구 `tools/crop_mockups*.py`, 아이콘 `tools/make_icon.py`).
+- **로그인 게이트**: `AuthRepository.sessionState`(프로필 확인 5초 제한) + `AuthViewModel.settle()`로 로그인 직후 화면 전환까지 busy 유지. 구글은 Credential Manager(`platform/auth/GoogleSignIn`).
+- **AI**: `GeminiClient`(Firebase AI Logic, 호출 시간 로그) · `AiRepository.warmUp()`(룰렛 열 때 연결 예열) · 룰렛 AI는 4초 제한 후 `fallbackReason` · 촬영 도우미 1.8초 제한 · 번역은 `StoreTranslator`가 소개글(2개)을 먼저, 나머지를 4개씩 동시 번역.
+- **룰렛**: `feature/ai/RouletteWheel.kt`(Canvas로 그린 완전한 판) + `PhotoReel(rows, frame)`, 상태 `picks`·`shownIds`(30곳 비중복).
+- **인증**: `VerifyViewModel`에 `myLat/myLng`(지도 표시 전용, 저장·전송 안 함), GPS 화면의 `VerifyMap`(네이버 지도 마커 2개), 가게 사진 단계 레이아웃 재구성, `ReceiptScanOverlay` 연두 스캔선.
+- **탭 연동**: `AppContainer.requestedTab`·`requestedExploreChip`(홈 칩 → 탐색), 알림 `onOpenTab`.
+- **위치 제한**: `VerificationConfig.LOCATION_TIMEOUT_MS = 10초`.
+- 변경 없음: 수동 주입, Room·DataStore·WorkManager, 영수증 위치 미사용·이미지 미저장 규칙, 패키지명 동일 규칙.
+
+**남은 사용자 확인·결정 (아직 유효)**
+- 구글 로그인: Firebase 콘솔 Google 사용 설정 + SHA 지문 + 새 `google-services.json` (`google-login-setup.md`)
+- 릴리스 서명 키 SHA 등록, 고객센터 이메일 운영 주소 교체(지금은 `wow.sillyer@gmail.com` 임시)
+- 서울관광재단 비짓서울 사진·이야기 글: 전화 답변만 있고 **서면 허가 대기**
+- 폴드8 지도 탭은 실기기 미확인(테스트 가게 제외 + 8초 안에 지도가 안 뜨면 목록으로 대체하는 방어만 적용)
+
 관련 문서: `nopo-01-PRD.md`(요구사항), `nopo-03-stories.md`(구현 단위), `nopo-06-spike-plan.md`(1일차 기능 검증), `nopo-07-firebase-setup.md`(서버 설정)
 
 > **⚠ 2026-10-20 현황 주의**: 이 문서는 설계 기준이며 구현과 다른 곳이 있다 — Room은 `fallbackToDestructiveMigration` 사용 중(6.1), 실제 보안 규칙(`firebase/firestore.rules`)은 닉네임 변경 허용(6.3), 릴리스 abi는 `arm64-v8a`만(7.3), R8은 `-dontoptimize`(7.4), 패키지 `feature/stamp`·`feature/review`·`platform/haptics`·`data/sync`·`domain/repository`는 만들어지지 않았다. 자세한 목록은 `docs/nopo-11-backlog.md` C-01.

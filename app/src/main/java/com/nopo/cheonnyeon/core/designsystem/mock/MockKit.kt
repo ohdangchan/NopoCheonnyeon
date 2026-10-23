@@ -101,6 +101,9 @@ object MockColors {
 val MockSerif = FontFamily(Font(R.font.nanum_myeongjo_extrabold, FontWeight.ExtraBold), Font(R.font.nanum_myeongjo_extrabold, FontWeight.Bold))
 val MockSans = FontFamily.Default
 
+/** 로고 글자와 비슷한 굵은 디스플레이 글자체(제목·닉네임용) */
+val MockBrush = FontFamily(Font(R.font.black_han_sans, FontWeight.ExtraBold), Font(R.font.black_han_sans, FontWeight.Bold), Font(R.font.black_han_sans, FontWeight.Normal))
+
 /** [MockStage] 안에서 시안 좌표(x, y)에 놓는다. */
 @Composable
 fun Modifier.at(x: Int, y: Int): Modifier = this.offset(px(x), px(y - LocalMockOriginY.current))

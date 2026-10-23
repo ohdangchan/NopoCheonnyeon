@@ -153,7 +153,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
  * "오늘의 AI 추천" 카드와 가게 카드는 실제 가게로 채운다.
  */
 @Composable
-fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit, onOpenChat: (String) -> Unit, onPickChip: (Int) -> Unit = {}) {
+fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit, onOpenChat: (String) -> Unit, onPickChip: (Int) -> Unit = {}, onBell: () -> Unit = {}) {
     val ui by vm.state.collectAsStateWithLifecycle()
     val tourPrompt = androidx.compose.ui.res.stringResource(R.string.home_tour_prompt)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
@@ -167,7 +167,7 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
         }) {
             MockPic(R.drawable.mk_home_header, 760, 116, Modifier.at(0, 90))
             Box(Modifier.at(575, 92).size(px(80), px(70)).clickable(role = Role.Button, onClick = onSearch))
-            Box(Modifier.at(660, 96).size(px(70), px(60)).clickable(role = Role.Button, onClick = onOpenMy))
+            MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(672, 100), onClick = onBell)
             MockPic(R.drawable.mk_home_hero, 760, 373, Modifier.at(0, 205))
 
             // 오늘의 AI 추천 카드
