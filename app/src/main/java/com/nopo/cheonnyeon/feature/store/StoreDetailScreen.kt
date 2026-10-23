@@ -335,7 +335,8 @@ private fun MenuCard(store: Store, menu: String, index: Int, years: Int) {
             val menuUrl = MenuPhotos.urlFor(menu)
             if (menuUrl != null) {
                 coil3.compose.AsyncImage(menuUrl, contentDescription = menu, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
-                val credit = MenuPhotos.credit(LocalContext.current, menu)
+                val appContext = LocalContext.current
+                val credit = androidx.compose.runtime.remember(menu) { MenuPhotos.credit(appContext, menu) }
                 if (credit != null) MockText(credit, 14, Modifier.align(Alignment.BottomEnd).padding(end = px(8), bottom = px(6)), color = Color(0xCCFFFFFF))
             } else {
                 val photoIndex = if (store.photoUrls.isEmpty()) 0 else index % store.photoUrls.size
