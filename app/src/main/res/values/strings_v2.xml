@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 시안 복제 화면(v2)의 문구. 코드의 직접 문구를 tools/extract_strings.py 로 옮긴 것 -->
+<resources>
+    <string name="book_01">수집한 칭호</string>
+    <string name="book_02"> 개</string>
+    <string name="col_01">다음 칭호까지</string>
+    <string name="col_02">오늘 뭐 먹지?</string>
+    <string name="col_03">AI 룰렛으로</string>
+    <string name="col_04">골라보기 →</string>
+    <string name="col_05">‹ 컬렉션</string>
+    <string name="col_06">방문한 노포</string>
+    <string name="col_07">내가 쓴 리뷰</string>
+    <string name="col_08">칭호 도감</string>
+    <string name="col_09">명예의 전당</string>
+    <string name="col_10">내 프로필</string>
+    <string name="col_11">공유 카드</string>
+    <string name="det_01">노포 패스포트</string>
+    <string name="det_02">현재 위치에서</string>
+    <string name="det_03">시간이 만든 맛을 여행하는 곳</string>
+    <string name="det_04">대표 메뉴 정보를 준비 중이에요.</string>
+    <string name="det_05">영업시간</string>
+    <string name="det_06">주소</string>
+    <string name="det_07">전화번호</string>
+    <string name="det_08">가보기</string>
+    <string name="det_09">방문 인증하기</string>
+    <string name="det_10">대표 메뉴</string>
+    <string name="explore_01">지역, 식당명, 메뉴로 검색해보세요.</string>
+    <string name="explore_02">전체 지역</string>
+    <string name="explore_03">조건에 맞는 노포가 없어요.</string>
+    <string name="home_01">오늘의 AI 추천</string>
+    <string name="home_02">노포 AI 투어 코스</string>
+    <string name="home_03">지역별로 엄선한 노포 코스를 따라 특별한 미식 여행을 떠나보세요.</string>
+    <string name="map_01">지역, 식당명으로 검색해보세요</string>
+    <string name="map_02">더보기</string>
+    <string name="my_01">아직 방문한 노포가 없어요. 첫 도장을 찍어 보세요!</string>
+    <string name="my_02">프로필 편집</string>
+    <string name="my_03">닉네임</string>
+    <string name="my_04">프로필 사진 바꾸기</string>
+    <string name="my_05">저장</string>
+    <string name="my_06">닫기</string>
+    <string name="my_07">고객센터</string>
+    <string name="my_08">궁금한 점이나 불편한 점을 메일로 보내 주세요. 가능한 빨리 답장드릴게요.</string>
+    <string name="my_09">메일 보내기</string>
+    <string name="my_10">알림은 앱 안의 알림 목록(오른쪽 위 종 모양)에서 확인할 수 있어요.</string>
+    <string name="my_11">언어 한국어 · 지도 네이버 지도</string>
+    <string name="notice_01">‹ 알림</string>
+</resources>

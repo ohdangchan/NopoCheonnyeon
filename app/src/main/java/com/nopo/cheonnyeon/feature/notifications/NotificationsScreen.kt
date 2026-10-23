@@ -80,7 +80,7 @@ fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenSt
     val items by vm.items.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ 알림", 34, font = MockSerif, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.notice_01), 34, font = MockSerif, weight = FontWeight.ExtraBold) }
         }
         LazyColumn(contentPadding = PaddingValues(px(20)), verticalArrangement = Arrangement.spacedBy(px(14))) {
             items(items, key = { it.key }) { n ->

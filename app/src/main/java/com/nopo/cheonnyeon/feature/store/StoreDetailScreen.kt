@@ -127,7 +127,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 Box(Modifier.at(0, 250).fillMaxWidth().height(px(420)).background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xCC000000)))))
                 // 상단 줄
                 Box(Modifier.at(20, 72).size(px(64), px(64)).clickable(role = Role.Button, onClick = onBack), contentAlignment = Alignment.Center) { BackChevron() }
-                MockText("노포 패스포트", 23, Modifier.at(88, 88), color = Color.White, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_01), 23, Modifier.at(88, 88), color = Color.White, weight = FontWeight.Medium)
                 if (!store.isTest) {
                     Box(Modifier.at(600, 72).size(px(64), px(64)).clickable(role = Role.Button, onClick = vm::toggleBookmark), contentAlignment = Alignment.Center) {
                         BookmarkIcon(40, filled = saved)
@@ -164,7 +164,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                     }
                     Column {
                         MockText(km?.let { StoreCards.formatDistance(it) } ?: "-", 30, color = Color.White, weight = FontWeight.Bold)
-                        MockText("현재 위치에서", 19, color = Color(0xCCFFFFFF))
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_02), 19, color = Color(0xCCFFFFFF))
                     }
                 }
                 if (photoCount > 1) {
@@ -175,7 +175,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 // 시트
                 Box(Modifier.at(0, 640).fillMaxWidth().height(px(900)).clip(RoundedCornerShape(topStart = px(40), topEnd = px(40))).background(MockColors.Cream))
                 MockPic(R.drawable.mk_det_card, 732, 232, Modifier.at(14, 640))
-                MockText("시간이 만든 맛을 여행하는 곳", 22, Modifier.at(189, 672), color = MockColors.Ink2)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_03), 22, Modifier.at(189, 672), color = MockColors.Ink2)
                 MockText(
                     store.foundedYear?.let { "${it}년부터, ${state.years}년 전통" } ?: "${state.years}년 전통",
                     33, Modifier.at(189, 710).width(px(390)), font = MockSerif, weight = FontWeight.ExtraBold,
@@ -187,7 +187,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 if (menus.size > 3) MockPic(R.drawable.mk_det_menu_all, 155, 30, Modifier.at(590, 900), onClick = { allMenu = true })
                 if (menus.isEmpty()) {
                     Box(Modifier.at(18, 950).size(px(724), px(120)).mockMenuCard(), contentAlignment = Alignment.Center) {
-                        MockText("대표 메뉴 정보를 준비 중이에요.", 24, color = MockColors.Hint)
+                        MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_04), 24, color = MockColors.Hint)
                     }
                 } else {
                     LazyRow(
@@ -215,17 +215,17 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                     }
                 }
                 MockPic(R.drawable.mk_det_ic_clock, 34, 34, Modifier.at(36, 1414))
-                MockText("영업시간", 17, Modifier.at(80, 1418), color = MockColors.Hint)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_05), 17, Modifier.at(80, 1418), color = MockColors.Hint)
                 MockText(store.hours?.takeIf { it.isNotBlank() } ?: "정보 없음", 21, Modifier.at(80, 1446).width(px(160)), weight = FontWeight.Bold, maxLines = 2, lineHeightPx = 26)
                 Box(Modifier.at(250, 1404).size(px(280), px(100)).clickable(enabled = store.lat != null && store.lng != null, role = Role.Button) { openDirections(context, store) })
                 MockPic(R.drawable.mk_det_ic_pin, 32, 34, Modifier.at(270, 1416))
-                MockText("주소", 17, Modifier.at(316, 1418), color = MockColors.Hint)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_06), 17, Modifier.at(316, 1418), color = MockColors.Hint)
                 MockText(store.address.ifBlank { "정보 없음" }, 20, Modifier.at(316, 1446).width(px(180)), weight = FontWeight.Bold, maxLines = 2, lineHeightPx = 25)
                 ChevronRight(26, Modifier.at(498, 1452))
                 val phone = store.phone?.takeIf { it.isNotBlank() }
                 Box(Modifier.at(532, 1404).size(px(206), px(100)).clickable(enabled = phone != null, role = Role.Button) { phone?.let { dial(context, it) } })
                 MockPic(R.drawable.mk_det_ic_phone, 34, 32, Modifier.at(552, 1416))
-                MockText("전화번호", 17, Modifier.at(596, 1418), color = MockColors.Hint)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_07), 17, Modifier.at(596, 1418), color = MockColors.Hint)
                 MockText(phone?.let { formatPhone(it) } ?: "정보 없음", 18, Modifier.at(594, 1450).width(px(120)), weight = FontWeight.Bold, maxLines = 1)
                 if (phone != null) ChevronRight(24, Modifier.at(712, 1452))
             }
@@ -260,7 +260,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
             ) {
                 MockPic(R.drawable.mk_det_ic_go, 50, 40)
                 Box(Modifier.width(px(10)))
-                MockText("가보기", 25, weight = FontWeight.Bold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_08), 25, weight = FontWeight.Bold)
             }
             Row(
                 Modifier.weight(1.4f).height(px(76)).clip(RoundedCornerShape(px(18))).background(MockColors.Lime).clickable(role = Role.Button, onClick = onVerify),
@@ -268,7 +268,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
             ) {
                 MockPic(R.drawable.mk_det_ic_stamp, 46, 52)
                 Box(Modifier.width(px(12)))
-                MockText("방문 인증하기", 26, weight = FontWeight.ExtraBold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_09), 26, weight = FontWeight.ExtraBold)
             }
         }
     }
@@ -341,7 +341,7 @@ private fun MenuCard(store: Store, menu: String, index: Int, years: Int) {
                 val photoIndex = if (store.photoUrls.isEmpty()) 0 else index % store.photoUrls.size
                 StorePhoto(store, Modifier.fillMaxSize(), index = photoIndex)
             }
-            if (index == 0) Box(Modifier.padding(start = px(15), top = px(15))) { Pill("대표 메뉴") }
+            if (index == 0) Box(Modifier.padding(start = px(15), top = px(15))) { Pill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_10)) }
         }
         Column(Modifier.padding(horizontal = px(16)).padding(top = px(8)), verticalArrangement = Arrangement.spacedBy(px(4))) {
             MockText(menu, 27, font = MockSerif, weight = FontWeight.ExtraBold)

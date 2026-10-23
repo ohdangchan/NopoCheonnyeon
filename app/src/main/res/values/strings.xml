@@ -191,7 +191,7 @@
     <string name="cd_diag_photo">%1$s 공식 사진</string>
 
     <!-- 계정 (E4) -->
-    <string name="auth_login_title">미식 장부로 돌아오셨나요?</string>
+    <string name="auth_login_title">노포 패스포트로 돌아오셨나요?</string>
     <string name="auth_login_subtitle">가입한 이메일로 로그인하면 쌓은 세월과 도장이 그대로 돌아와요.</string>
     <string name="auth_login_action">로그인</string>
     <string name="auth_working">잠시만요…</string>
@@ -208,7 +208,7 @@
     <string name="auth_to_reset">비밀번호를 잊으셨나요?</string>
     <string name="auth_to_login">이미 계정이 있어요 · 로그인</string>
     <string name="auth_offline_note">인터넷이 불안정해도 앱에 들어 있는 노포 목록은 볼 수 있어요.</string>
-    <string name="auth_sign_up_title">새 식객으로 등록해요</string>
+    <string name="auth_sign_up_title">새 여행자로 등록해요</string>
     <string name="auth_sign_up_subtitle">닉네임은 리뷰와 패스포트에 보여요.</string>
     <string name="auth_sign_up_action">시작하기</string>
     <string name="auth_privacy_note">위치 좌표와 영수증 내용은 서버에 저장하지 않아요.</string>

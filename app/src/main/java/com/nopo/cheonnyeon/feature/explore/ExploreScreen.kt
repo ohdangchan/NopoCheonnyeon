@@ -147,7 +147,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                     Box(Modifier.at(25, 343).size(px(713), px(75)).clip(RoundedCornerShape(px(38))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(38))))
                     MockPic(R.drawable.mk_explore_ic_search, 46, 38, Modifier.at(46, 362))
                     Box(Modifier.at(105, 352).size(px(540), px(56)), contentAlignment = Alignment.CenterStart) {
-                        if (query.isEmpty()) MockText("지역, 식당명, 메뉴로 검색해보세요.", 24, color = MockColors.Hint)
+                        if (query.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_01), 24, color = MockColors.Hint)
                         BasicTextField(
                             value = query, onValueChange = { vm.query.value = it }, singleLine = true,
                             textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(24), color = MockColors.Navy),
@@ -175,7 +175,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                                 ChevronDown(20)
                             }
                             DropdownMenu(expanded = regionMenu, onDismissRequest = { regionMenu = false }) {
-                                DropdownMenuItem(text = { Text("전체 지역") }, onClick = { vm.region.value = null; regionMenu = false })
+                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_02)) }, onClick = { vm.region.value = null; regionMenu = false })
                                 regions.forEach { r -> DropdownMenuItem(text = { Text(r) }, onClick = { vm.region.value = r; vm.chip.value = 0; regionMenu = false }) }
                             }
                         }
@@ -184,7 +184,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
             }
         }
         if (cards.isEmpty()) {
-            item(span = { GridItemSpan(2) }) { Box(Modifier.padding(px(40))) { MockText("조건에 맞는 노포가 없어요.", 24, color = MockColors.Hint) } }
+            item(span = { GridItemSpan(2) }) { Box(Modifier.padding(px(40))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_03), 24, color = MockColors.Hint) } }
         }
         itemsIndexed(cards, key = { _, c -> c.store.id }) { i, c ->
             val left = i % 2 == 0

@@ -175,7 +175,7 @@ fun PassportScreen(
                         .clickable(role = Role.Button) { dex = true },
                 )
                 MockPic(R.drawable.mk_col_ic_flag, 52, 54, Modifier.at(30, 966))
-                MockText("다음 칭호까지", 22, Modifier.at(98, 975), color = MockColors.Navy, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_01), 22, Modifier.at(98, 975), color = MockColors.Navy, weight = FontWeight.Medium)
                 MockText(
                     if (nextTitle != null) "'${stringResource(nextTitle.labelRes())}'까지 ${nextTitle.requiredYears - state.totalYears}년 남았어요!" else "최고 칭호에 올랐어요!",
                     25, Modifier.at(98, 1010).width(px(385)), weight = FontWeight.Bold,
@@ -203,9 +203,9 @@ fun PassportScreen(
                 Box(Modifier.at(534, 1002).size(px(62), px(62)).clip(CircleShape).background(MockColors.Lime), contentAlignment = Alignment.Center) {
                     com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon(40)
                 }
-                MockText("오늘 뭐 먹지?", 21, Modifier.at(608, 990), weight = FontWeight.Bold)
-                MockText("AI 룰렛으로", 19, Modifier.at(608, 1022), color = MockColors.Ink2)
-                MockText("골라보기 →", 19, Modifier.at(608, 1048), color = MockColors.Ink2)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_02), 21, Modifier.at(608, 990), weight = FontWeight.Bold)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_03), 19, Modifier.at(608, 1022), color = MockColors.Ink2)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_04), 19, Modifier.at(608, 1048), color = MockColors.Ink2)
 
                 // 내가 방문한 노포
                 MockPic(R.drawable.mk_col_title_visited, 296, 60, Modifier.at(14, 1110))
@@ -294,17 +294,17 @@ private fun PassportAll(
 
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ 컬렉션", 30, font = MockSerif, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_05), 30, font = MockSerif, weight = FontWeight.ExtraBold) }
             Box(Modifier.weight(1f))
             MockText("내가 방문한 노포 ${visited.size}곳", 22, color = MockColors.Ink2)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20)).horizontalScrollCompat(), horizontalArrangement = Arrangement.spacedBy(px(12))) {
-            GrayPill("방문한 노포", 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = false }
-            GrayPill("내가 쓴 리뷰", 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
-            GrayPill("칭호 도감", 22, textColor = MockColors.Navy, onClick = onOpenDex)
-            GrayPill("명예의 전당", 22, textColor = MockColors.Navy, onClick = onOpenHall)
-            vm.myUid?.let { uid -> GrayPill("내 프로필", 22, textColor = MockColors.Navy) { onOpenProfile(uid) } }
-            if (visited.isNotEmpty()) GrayPill("공유 카드", 22, textColor = MockColors.Navy) {
+            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = false }
+            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_07), 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
+            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_08), 22, textColor = MockColors.Navy, onClick = onOpenDex)
+            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_09), 22, textColor = MockColors.Navy, onClick = onOpenHall)
+            vm.myUid?.let { uid -> GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_10), 22, textColor = MockColors.Navy) { onOpenProfile(uid) } }
+            if (visited.isNotEmpty()) GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_11), 22, textColor = MockColors.Navy) {
                 scope.launch {
                     val data = com.nopo.cheonnyeon.platform.share.ShareCardData(
                         nickname = vm.nickname().ifBlank { "-" },

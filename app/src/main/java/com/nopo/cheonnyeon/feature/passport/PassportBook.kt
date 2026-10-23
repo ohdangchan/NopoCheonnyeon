@@ -211,8 +211,8 @@ private fun Page0(stats: BookStats, page: BookPage?, onStamp: (PassportStamp) ->
         }
         MockPic(R.drawable.mk_col_ic_plane, 60, 45, Modifier.offset(px(54), px(22)))
         MockPic(R.drawable.mk_col_ic_seal, 47, 42, Modifier.offset(px(210), px(24)))
-        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText("방문한 노포", 21, color = MockColors.Navy, weight = FontWeight.Medium) }
-        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText("수집한 칭호", 21, color = MockColors.Navy, weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_01), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
         Box(Modifier.offset(px(11), px(100)).size(px(148), px(64)), contentAlignment = Alignment.Center) {
             androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.Bottom) {
                 MockText("${stats.visited}", 56, font = MockSerif, weight = FontWeight.ExtraBold)
@@ -222,7 +222,7 @@ private fun Page0(stats: BookStats, page: BookPage?, onStamp: (PassportStamp) ->
         Box(Modifier.offset(px(159), px(100)).size(px(148), px(64)), contentAlignment = Alignment.Center) {
             androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.Bottom) {
                 MockText("${stats.titles}", 56, font = MockSerif, weight = FontWeight.ExtraBold)
-                MockText(" 개", 28, color = MockColors.Ink2, font = MockSerif)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_02), 28, color = MockColors.Ink2, font = MockSerif)
             }
         }
         page?.slots?.forEachIndexed { i, s -> SlotAt(s, ColX[i % 3], 245 + (i / 3) * 118, 96, onStamp) }

@@ -185,7 +185,7 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
                     }
                 }
             }
-            Box(Modifier.at(38, 566)) { LimePill("오늘의 AI 추천", 21, padX = 22, padY = 9) }
+            Box(Modifier.at(38, 566)) { LimePill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_01), 21, padX = 22, padY = 9) }
 
             // 지금 가장 핫한 노포
             MockPic(R.drawable.mk_home_title_hot, 276, 50, Modifier.at(24, 850))
@@ -212,9 +212,9 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
 
             // 노포 AI 투어 코스 배너
             MockPic(R.drawable.mk_home_banner, 706, 112, Modifier.at(28, 1388), onClick = { onOpenChat(tourPrompt) })
-            Box(Modifier.at(113, 1405).width(px(270))) { MockText("노포 AI 투어 코스", 23, weight = FontWeight.Bold, font = MockSerif) }
+            Box(Modifier.at(113, 1405).width(px(270))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_02), 23, weight = FontWeight.Bold, font = MockSerif) }
             Box(Modifier.at(113, 1443).width(px(300))) {
-                MockText("지역별로 엄선한 노포 코스를 따라 특별한 미식 여행을 떠나보세요.", 17, color = MockColors.Ink2, maxLines = 2, lineHeightPx = 25)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_03), 17, color = MockColors.Ink2, maxLines = 2, lineHeightPx = 25)
             }
         }
         Box(Modifier.height(px(40)))

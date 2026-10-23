@@ -147,7 +147,7 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
             Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
             MockPic(R.drawable.mk_map_ic_search, 36, 36, Modifier.at(44, 280))
             Box(Modifier.at(100, 270).size(px(535), px(56)), contentAlignment = Alignment.CenterStart) {
-                if (state.filter.query.isEmpty()) MockText("지역, 식당명으로 검색해보세요", 24, color = MockColors.Hint)
+                if (state.filter.query.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.map_01), 24, color = MockColors.Hint)
                 BasicTextField(
                     value = state.filter.query, onValueChange = vm::setQuery, singleLine = true,
                     textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(24), color = MockColors.Navy),
@@ -171,7 +171,7 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                     Row(
                         Modifier.height(px(54)).clip(RoundedCornerShape(50)).background(MockColors.Chip).clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
                         verticalAlignment = Alignment.CenterVertically,
-                    ) { MockText("더보기", 22, weight = FontWeight.Medium); Box(Modifier.width(px(10))); ChevronDown(20) }
+                    ) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.map_02), 22, weight = FontWeight.Medium); Box(Modifier.width(px(10))); ChevronDown(20) }
                     DropdownMenu(expanded = regionMenu, onDismissRequest = { regionMenu = false }) {
                         chipNames.forEach { n -> DropdownMenuItem(text = { Text(n) }, onClick = { regionMenu = false; focusOn(n) }) }
                     }

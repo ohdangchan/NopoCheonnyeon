@@ -206,12 +206,12 @@ fun MyScreen(
                 MockText("${real.size}", 52, font = MockSerif, weight = FontWeight.ExtraBold)
                 MockText(" / $goal", 28, color = MockColors.Ink2, font = MockSerif)
             }
-            MockText("방문한 노포", 22, Modifier.at(197, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 22, Modifier.at(197, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
             Row(Modifier.at(398, 517), verticalAlignment = Alignment.Bottom) {
                 MockText("${title.ordinal + 1}", 52, font = MockSerif, weight = FontWeight.ExtraBold)
-                MockText(" 개", 26, color = MockColors.Ink2, font = MockSerif)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_02), 26, color = MockColors.Ink2, font = MockSerif)
             }
-            MockText("수집한 칭호", 22, Modifier.at(398, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_01), 22, Modifier.at(398, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
 
             // 메뉴 카드 6장
             Card(R.drawable.mk_my_card_saved, 12, 655, 362, 207) { sub = Sub.SAVED }
@@ -228,7 +228,7 @@ fun MyScreen(
             MockPic(R.drawable.mk_my_all, 108, 46, Modifier.at(640, 1300), onClick = onOpenCollection)
             if (visited.isEmpty()) {
                 Box(Modifier.at(15, 1360).size(px(730), px(150)).clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18))), contentAlignment = Alignment.Center) {
-                    MockText("아직 방문한 노포가 없어요. 첫 도장을 찍어 보세요!", 22, color = MockColors.Hint)
+                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_01), 22, color = MockColors.Hint)
                 }
             } else {
                 LazyRow(Modifier.at(0, 1352).fillMaxWidth().height(px(172)), contentPadding = PaddingValues(horizontal = px(15)), horizontalArrangement = Arrangement.spacedBy(px(12))) {
@@ -305,14 +305,14 @@ private fun EditProfileDialog(vm: MyViewModel, current: String, onDismiss: () ->
     val invalid = AuthValidation.nickname(nick)
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text("프로필 편집") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_02)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = nick, onValueChange = { nick = it; error = null }, singleLine = true, label = { Text("닉네임") },
+                    value = nick, onValueChange = { nick = it; error = null }, singleLine = true, label = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_03)) },
                     supportingText = { Text(error ?: stringResourceSafe(R.string.auth_nickname_hint)) }, isError = error != null,
                 )
-                TextButton(onClick = { onPickPhoto() }) { Text("프로필 사진 바꾸기") }
+                TextButton(onClick = { onPickPhoto() }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_04)) }
             }
         },
         confirmButton = {
@@ -327,9 +327,9 @@ private fun EditProfileDialog(vm: MyViewModel, current: String, onDismiss: () ->
                         if (r is AppResult.Success) { onSaved(); onDismiss() } else error = r.errorOrNull?.message(context)
                     }
                 },
-            ) { Text("저장") }
+            ) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_05)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text("닫기") } },
+        dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_06)) } },
     )
 }
 
@@ -341,10 +341,10 @@ private fun SupportDialog(email: String?, onDismiss: () -> Unit) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("고객센터") },
+        title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_07)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("궁금한 점이나 불편한 점을 메일로 보내 주세요. 가능한 빨리 답장드릴게요.")
+                Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_08))
                 Text(SUPPORT_EMAIL, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
                 if (!email.isNullOrBlank()) Text("내 계정: $email", style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
             }
@@ -355,9 +355,9 @@ private fun SupportDialog(email: String?, onDismiss: () -> Unit) {
                     .putExtra(Intent.EXTRA_SUBJECT, "[노포 패스포트] 문의").putExtra(Intent.EXTRA_TEXT, "\n\n---\n앱 버전 ${BuildConfig.VERSION_NAME}" + (if (!email.isNullOrBlank()) "\n계정 $email" else ""))
                 try { context.startActivity(send.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: android.content.ActivityNotFoundException) { }
                 onDismiss()
-            }) { Text("메일 보내기") }
+            }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_09)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("닫기") } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_06)) } },
     )
 }
 
@@ -415,7 +415,7 @@ private fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
         Column(Modifier.padding(horizontal = px(20)), verticalArrangement = Arrangement.spacedBy(px(16))) {
             ToggleRow("새로운 노포 소식", "새 소식과 칭호·도장 알림을 알림 목록에 모아 보여 줘요.", news) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
             ToggleRow("오늘의 추천", "매일 바뀌는 AI 추천 노포를 알림 목록에 보여 줘요.", reco) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
-            MockText("알림은 앱 안의 알림 목록(오른쪽 위 종 모양)에서 확인할 수 있어요.", 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
+            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_10), 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
         }
     }
 }
@@ -438,7 +438,7 @@ private fun AppPrefsScreen(vm: MyViewModel, onBack: () -> Unit) {
             ToggleRow("위치만으로 방문 인증", "영수증 글자를 읽지 못했을 때 위치만으로 인증하는 것을 허용해요.", loc) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
             ToggleRow("예시 리뷰·평점 보기", "다른 사람의 리뷰가 아직 적어서 보여 주는 시연용 예시를 함께 보여 줘요.", demo) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
             Column(Modifier.fillMaxWidth().padding(px(8)), verticalArrangement = Arrangement.spacedBy(px(6))) {
-                MockText("언어 한국어 · 지도 네이버 지도", 21, color = MockColors.Hint)
+                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_11), 21, color = MockColors.Hint)
                 MockText("앱 버전 ${BuildConfig.VERSION_NAME}", 21, color = MockColors.Hint)
             }
         }
