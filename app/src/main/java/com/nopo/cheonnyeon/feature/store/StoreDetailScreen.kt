@@ -226,7 +226,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                 Box(Modifier.at(532, 1404).size(px(206), px(100)).clickable(enabled = phone != null, role = Role.Button) { phone?.let { dial(context, it) } })
                 MockPic(R.drawable.mk_det_ic_phone, 34, 32, Modifier.at(552, 1416))
                 MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.det_07), 17, Modifier.at(596, 1418), color = MockColors.Hint)
-                MockText(phone?.let { formatPhone(it) } ?: "정보 없음", 18, Modifier.at(594, 1450).width(px(120)), weight = FontWeight.Bold, maxLines = 1)
+                MockText(phone?.let { formatPhone(it) } ?: "정보 없음", 18, Modifier.at(594, 1442).width(px(116)), weight = FontWeight.Bold, maxLines = 2, lineHeightPx = 24)
                 if (phone != null) ChevronRight(24, Modifier.at(712, 1452))
             }
             // 시안 아래로 이어지는 기존 기능들
@@ -337,7 +337,7 @@ private fun MenuCard(store: Store, menu: String, index: Int, years: Int) {
                 coil3.compose.AsyncImage(menuUrl, contentDescription = menu, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
                 val appContext = LocalContext.current
                 val credit = androidx.compose.runtime.remember(menu) { MenuPhotos.credit(appContext, menu) }
-                if (credit != null) MockText(credit, 14, Modifier.align(Alignment.BottomEnd).padding(end = px(8), bottom = px(6)), color = Color(0xCCFFFFFF))
+                if (credit != null) Box(Modifier.align(Alignment.BottomEnd).padding(end = px(8), bottom = px(6)).clip(RoundedCornerShape(50)).background(Color(0x99000000)).padding(horizontal = px(10), vertical = px(2))) { MockText(credit, 15, color = Color.White) }
             } else {
                 val photoIndex = if (store.photoUrls.isEmpty()) 0 else index % store.photoUrls.size
                 StorePhoto(store, Modifier.fillMaxSize(), index = photoIndex)
@@ -355,6 +355,7 @@ private fun formatPhone(raw: String): String {
     val d = raw.filter { it.isDigit() }
     return when {
         d.startsWith("02") && d.length >= 9 -> "02-${d.substring(2, d.length - 4)}-${d.takeLast(4)}"
+        d.length == 12 -> "${d.substring(0, 4)}-${d.substring(4, 8)}-${d.substring(8)}"
         d.length == 11 -> "${d.substring(0, 3)}-${d.substring(3, 7)}-${d.substring(7)}"
         d.length == 10 -> "${d.substring(0, 3)}-${d.substring(3, 6)}-${d.substring(6)}"
         d.length == 8 -> "${d.substring(0, 4)}-${d.substring(4)}"

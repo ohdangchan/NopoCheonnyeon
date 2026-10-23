@@ -2,7 +2,7 @@
 <!-- 시안 복제 화면(v2)의 문구. 코드의 직접 문구를 tools/extract_strings.py 로 옮긴 것 -->
 <resources>
     <string name="book_01">수집한 칭호</string>
-    <string name="book_02"> 개</string>
+    <string name="book_02">&#160;개</string>
     <string name="col_01">다음 칭호까지</string>
     <string name="col_02">오늘 뭐 먹지?</string>
     <string name="col_03">AI 룰렛으로</string>

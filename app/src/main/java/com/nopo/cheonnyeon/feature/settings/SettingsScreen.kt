@@ -105,6 +105,20 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
                     Text(purpose, color = c.ink2, style = NopoTheme.typography.bodySmall)
                 }
             }
+            // 대표 메뉴 사진 출처 (위키미디어 공용, CC0·CC BY): 작성자·라이선스·원본 링크
+            Text("대표 메뉴 사진 출처 (크기를 줄이고 잘라서 사용했어요)", color = c.ink, style = NopoTheme.typography.titleSmall)
+            com.nopo.cheonnyeon.feature.store.MenuPhotos.credits(context).values.forEach { cr ->
+                Column(
+                    Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) {
+                        runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(cr.page)).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                    }.padding(NopoTheme.spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs),
+                ) {
+                    Text(cr.title, color = c.ink, style = NopoTheme.typography.labelLarge)
+                    Text(listOf(cr.artist, cr.license).filter { it.isNotBlank() }.joinToString(" · "), color = c.primary, style = NopoTheme.typography.labelMedium)
+                    Text("Wikimedia Commons", color = c.ink2, style = NopoTheme.typography.bodySmall)
+                }
+            }
             Text(stringResource(R.string.settings_licenses_body), color = c.ink2, style = NopoTheme.typography.bodySmall)
         }
         NopoButton(

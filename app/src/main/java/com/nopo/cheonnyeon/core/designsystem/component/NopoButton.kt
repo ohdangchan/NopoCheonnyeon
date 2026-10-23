@@ -48,7 +48,7 @@ fun NopoButton(
         modifier = modifier
             .heightIn(min = size.height)
             .defaultMinSize(minWidth = 88.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp),
+        shape = NopoTheme.shapes.card,
         colors = ButtonDefaults.buttonColors(
             containerColor = container,
             contentColor = content,

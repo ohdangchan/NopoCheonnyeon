@@ -16,6 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "app", "src", "main", "assets", "menu")
 UA = "NopoPassportDev/1.0 (wow.sillyer@gmail.com)"
 API = "https://commons.wikimedia.org/w/api.php"
+LICENSE_URLS = {"CC0": "https://creativecommons.org/publicdomain/zero/1.0/", "CC BY 2.0": "https://creativecommons.org/licenses/by/2.0/"}
 
 # 이름(앞 열쇠) → 공용 파일 이름
 PHOTOS = {
@@ -52,11 +53,11 @@ def main():
         ii = page["imageinfo"][0]
         meta = ii["extmetadata"]
         lic = meta.get("LicenseShortName", {}).get("value", "")
-        artist = re.sub(r"<[^>]+>", "", meta.get("Artist", {}).get("value", "")).strip()
+        artist = re.sub(r"^by\s+", "", re.sub(r"<[^>]+>", "", meta.get("Artist", {}).get("value", "")).strip())
         time.sleep(1)
         img = Image.open(io.BytesIO(get(ii["thumburl"]))).convert("RGB")
         img.save(os.path.join(OUT, key + ".webp"), "WEBP", quality=78, method=6)
-        credits[key] = {"title": fname, "license": lic, "artist": artist, "page": ii["descriptionurl"]}
+        credits[key] = {"title": fname, "license": lic, "license_url": LICENSE_URLS.get(lic, ""), "artist": artist, "page": ii["descriptionurl"]}
         print(key, lic, artist[:40], img.size)
         time.sleep(1)
     with open(os.path.join(OUT, "credits.json"), "w", encoding="utf-8") as f:
