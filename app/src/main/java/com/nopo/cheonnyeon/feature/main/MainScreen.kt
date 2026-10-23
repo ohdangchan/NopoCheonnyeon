@@ -61,11 +61,14 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     val exploreVm: ExploreViewModel = viewModel(factory = factoryOf { ExploreViewModel(container) })
     val myVm: MyViewModel = viewModel(factory = factoryOf { MyViewModel(container) })
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
+    var settingsSub by rememberSaveable { mutableIntStateOf(0) }
     // 룰렛·랭킹 같은 별도 화면의 하단 탭에서 고른 탭으로 이동한다
     androidx.compose.runtime.LaunchedEffect(Unit) {
-        container.requestedTab.collect { t -> if (t != null) { tab = t; settingsOpen = false; container.requestedTab.value = null } }
+        container.requestedTab.collect { t -> if (t != null) { tab = t; settingsOpen = false; settingsSub = 0; container.requestedTab.value = null } }
     }
-    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsOpen) { settingsOpen = false }
+    var logoutAsk by androidx.compose.runtime.remember { mutableStateOf(false) }
+    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsSub != 0) { settingsSub = 0 }
+    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsOpen && settingsSub == 0) { settingsOpen = false }
     var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
@@ -99,19 +102,28 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 })
-                else -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 }) else SettingsScreen(
-                    container,
-                    signOutButton = { SignOutButton(container) },
-                    devTools = {
-                        TestStoreButton(container)
-                        TestDataDeleteButton(container)
-                        if (BuildConfig.DEBUG) DebugVisitButton(container)
-                        StampPreviewButtons()
-                    },
-                    onDiagnostics = onDiagnostics,
-                )
+                else -> when (settingsSub) {
+                    0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 })
+                        else com.nopo.cheonnyeon.feature.settings.MockSettingsScreen(
+                            myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onLogout = { logoutAsk = true },
+                            onBell = onOpenNotifications, onBack = { settingsOpen = false },
+                        )
+                    2 -> com.nopo.cheonnyeon.feature.my.NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
+                    else -> SettingsScreen(
+                        container,
+                        signOutButton = { SignOutButton(container) },
+                        devTools = {
+                            TestStoreButton(container)
+                            TestDataDeleteButton(container)
+                            if (BuildConfig.DEBUG) DebugVisitButton(container)
+                            StampPreviewButtons()
+                        },
+                        onDiagnostics = onDiagnostics,
+                    )
+                }
             }
         }
+        SignOutAsk(container, logoutAsk) { logoutAsk = false }
         com.nopo.cheonnyeon.feature.main.MockNavBar(tab) { tab = it }
     }
     }
@@ -253,5 +265,29 @@ private fun StampPreviewButtons() {
         0 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.NORMAL, 38, null) { preview = null }
         1 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.RED, 72, null) { preview = null }
         2 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.GOLD, 126, com.nopo.cheonnyeon.domain.model.Title.ELDER) { preview = null }
+    }
+}
+
+/** 설정의 "로그아웃" 줄: 올라가지 않은 기록이 있으면 경고하고, 없으면 바로 로그아웃한다 (FR-AUTH-05) */
+@Composable
+private fun SignOutAsk(container: AppContainer, ask: Boolean, onDone: () -> Unit) {
+    val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
+    var unsynced by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
+    androidx.compose.runtime.LaunchedEffect(ask) {
+        if (ask && pending <= 0) { onDone(); container.signOut() }
+        if (ask && pending > 0) {
+            unsynced = container.database.myVisitDao().observeAll().first()
+                .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
+                .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+        }
+    }
+    if (ask && pending > 0) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = onDone,
+            title = { Text(stringResource(R.string.signout_warn_title)) },
+            text = { Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", "))) },
+            confirmButton = { androidx.compose.material3.TextButton({ onDone(); container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
+            dismissButton = { androidx.compose.material3.TextButton(onDone) { Text(stringResource(R.string.detail_back)) } },
+        )
     }
 }

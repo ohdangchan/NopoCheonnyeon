@@ -166,6 +166,22 @@ def build_rank():
     save(s13, "k_crown", (262, 215, 322, 262))
 
 
+def build_account():
+    s12 = fix_corners(screen(12))
+    save(s12, "a_title", (20, 225, 430, 330))
+    c = erase(s12.copy(), (30, 356, 175, 500))
+    c = erase(c, (190, 372, 520, 490))
+    c = erase(c, (30, 505, 745, 580))
+    save(c, "a_profile", (12, 338, 748, 600))
+    l = s12.copy()
+    l = erase(l, (600, 1050, 690, 1095))   # 한국어
+    l = erase(l, (600, 1150, 690, 1195))   # 허용됨
+    save(l, "a_list", (12, 608, 748, 1305))
+    save(s12, "a_logout", (12, 1325, 748, 1415))
+    save(s12, "a_delete", (12, 1432, 748, 1522))
+
+
+build_account()
 build_rank()
 build_roulette()
 build_verify()

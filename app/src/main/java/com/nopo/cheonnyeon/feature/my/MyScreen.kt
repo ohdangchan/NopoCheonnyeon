@@ -339,7 +339,7 @@ private fun EditProfileDialog(vm: MyViewModel, current: String, onDismiss: () ->
 private fun stringResourceSafe(id: Int): String = androidx.compose.ui.res.stringResource(id)
 
 @Composable
-private fun SupportDialog(email: String?, onDismiss: () -> Unit) {
+internal fun SupportDialog(email: String?, onDismiss: () -> Unit) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -409,7 +409,7 @@ private fun ToggleRow(title: String, body: String, checked: Boolean, onChange: (
 
 /** 알림 설정 */
 @Composable
-private fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
+internal fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
     val news by vm.settings.notifyNews.collectAsStateWithLifecycle(initialValue = true)
     val reco by vm.settings.notifyReco.collectAsStateWithLifecycle(initialValue = true)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
