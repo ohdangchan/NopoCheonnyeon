@@ -60,7 +60,7 @@ fun PermissionManageHost(container: AppContainer, onBack: () -> Unit, onNotifica
     val loc = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     val cam = rememberPermission(Manifest.permission.CAMERA)
     val marketing by container.settings.marketing.collectAsStateWithLifecycle(initialValue = false)
-    val analytics by container.settings.analyticsOn.collectAsStateWithLifecycle(initialValue = false)
+    val analytics by container.settings.analyticsOn.collectAsStateWithLifecycle(initialValue = true)
     var share by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) { container.auth.currentUid?.let { uid -> container.profiles.profile(uid).valueOrNull?.let { share = it.visibility != "PRIVATE" } } }
     val states = remember(tick, loc.status, cam.status, marketing, analytics, share) {

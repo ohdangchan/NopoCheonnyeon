@@ -96,7 +96,7 @@ class SettingsStore(private val context: Context) {
     /** 권한 관리 화면의 선택 항목 (마케팅 수신·방문 기록 공유·사용 데이터 수집) */
     val marketing: Flow<Boolean> = context.dataStore.data.map { it[marketingKey] ?: false }
     val shareVisits: Flow<Boolean> = context.dataStore.data.map { it[shareVisitsKey] ?: true }
-    val analyticsOn: Flow<Boolean> = context.dataStore.data.map { it[analyticsKey] ?: false }
+    val analyticsOn: Flow<Boolean> = context.dataStore.data.map { it[analyticsKey] ?: true }
     suspend fun setMarketing(v: Boolean) { context.dataStore.edit { it[marketingKey] = v } }
     suspend fun setShareVisits(v: Boolean) { context.dataStore.edit { it[shareVisitsKey] = v } }
     suspend fun setAnalyticsOn(v: Boolean) { context.dataStore.edit { it[analyticsKey] = v } }
