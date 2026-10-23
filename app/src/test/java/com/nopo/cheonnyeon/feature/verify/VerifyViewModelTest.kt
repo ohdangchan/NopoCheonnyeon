@@ -132,6 +132,25 @@ class VerifyViewModelTest {
         assertTrue(state.withinRange)
     }
 
+    @Test fun `완료 단계는 복원하면 처음 단계로 돌아간다`() {
+        val saved = SavedStateHandle(mapOf("step" to "DONE"))
+        assertEquals(VerifyStep.RECEIPT, newVm(coordStore, saved = saved).state.value.step)
+    }
+
+    @Test fun `확인 대기 없이 확정해도 아무 일도 없다`() {
+        val vm = newVm(coordStore)
+        vm.confirmReceipt()
+        assertNull(vm.state.value.award)
+        assertFalse(vm.state.value.busy)
+    }
+
+    @Test fun `다시 촬영하면 확인 대기와 오류가 지워진다`() {
+        val vm = newVm(coordStore)
+        vm.retakeReceipt()
+        assertNull(vm.state.value.confirm)
+        assertNull(vm.state.value.error)
+    }
+
     @Test fun `단계를 바꾸면 SavedStateHandle에도 남는다`() {
         val saved = SavedStateHandle()
         val vm = newVm(coordStore, saved = saved)

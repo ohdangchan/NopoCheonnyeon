@@ -96,7 +96,8 @@ class VerifyViewModel(
     private val location by lazy { FusedLocationAdapter(container.appContext) }
     private val _state = MutableStateFlow(
         VerifyUiState(
-            step = saved.get<String>(KEY_STEP)?.let(VerifyStep::valueOf) ?: VerifyStep.RECEIPT,
+            // 인증 완료(DONE)는 결과값이 저장되지 않으므로 복원하면 처음 단계로 돌아간다
+            step = saved.get<String>(KEY_STEP)?.let(VerifyStep::valueOf)?.takeIf { it != VerifyStep.DONE } ?: VerifyStep.RECEIPT,
             failedPhotoAttempts = saved.get<Int>(KEY_ATTEMPTS) ?: 0,
             withinRange = saved.get<Boolean>(KEY_IN_RANGE) ?: false,
         ),

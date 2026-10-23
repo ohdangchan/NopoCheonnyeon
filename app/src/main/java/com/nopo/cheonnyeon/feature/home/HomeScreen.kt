@@ -74,14 +74,27 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
     private val aiPick = MutableStateFlow<Pair<String, String>?>(null)
     private val year = LocalDate.now(SeoulZone).year
 
-    val state: StateFlow<HomeUiState> = combine(stores, aiPick, container.ratings, container.lastFix, container.settings.bookmarks) { all, ai, ratings, fix, saved ->
+    private val taste = combine(container.settings.prefRegions, container.settings.prefFoods) { r, f -> r to f }
+
+    val state: StateFlow<HomeUiState> = combine(combine(stores, aiPick, container.ratings, container.lastFix, container.settings.bookmarks) { a, b, c, d, e -> listOf(a, b, c, d, e) }, taste) { arr, tp ->
+        @Suppress("UNCHECKED_CAST")
+        val all = arr[0] as List<Store>
+        @Suppress("UNCHECKED_CAST")
+        val ai = arr[1] as Pair<String, String>?
+        @Suppress("UNCHECKED_CAST")
+        val ratings = arr[2] as Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>
+        val fix = arr[3] as com.nopo.cheonnyeon.platform.location.Fix?
+        @Suppress("UNCHECKED_CAST")
+        val saved = arr[4] as Set<String>
         if (all.isEmpty()) return@combine HomeUiState()
         val today = LocalDate.now(SeoulZone).toEpochDay()
         val withPhoto = all.filter { it.photoUrls.isNotEmpty() }
         val rated = withPhoto.filter { ratings[it.id] != null }
         val fallback = (if (fix != null && rated.isNotEmpty()) rated.filter { it.lat != null && it.lng != null }.minByOrNull { com.nopo.cheonnyeon.core.util.GeoDistance.meters(fix.lat, fix.lng, it.lat!!, it.lng!!) } else null)
             ?: (rated.ifEmpty { withPhoto }).let { list -> list.getOrNull((today % list.size.coerceAtLeast(1)).toInt()) }
-        val pickStore = ai?.let { (id, _) -> all.firstOrNull { it.id == id } } ?: fallback
+        // 처음 설치 때 고른 취향이 있으면 AI 결과가 없을 때 그 취향에 맞는 노포를 먼저 보여 준다
+        val tasteStore = if (tp.first.isNotEmpty() || tp.second.isNotEmpty()) com.nopo.cheonnyeon.domain.rule.TasteRecommender.recommend(all, tp.first, tp.second, ratings.mapValues { it.value.average }) else null
+        val pickStore = ai?.let { (id, _) -> all.firstOrNull { it.id == id } } ?: tasteStore ?: fallback
         val hotIds = ratings.entries.filter { it.value.count >= 8 }.sortedWith(compareByDescending<Map.Entry<String, com.nopo.cheonnyeon.data.remote.StoreRating>> { it.value.average }.thenByDescending { it.value.count }).map { it.key }
         val byId = all.associateBy { it.id }
         val hot = (hotIds.mapNotNull { byId[it] }.filter { it.photoUrls.isNotEmpty() && it.id != pickStore?.id }.take(10)

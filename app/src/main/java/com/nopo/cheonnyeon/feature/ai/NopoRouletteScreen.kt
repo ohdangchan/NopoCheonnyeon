@@ -128,6 +128,7 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
         if (_state.value.phase == RoulettePhase.SPINNING) return
         _state.update { it.copy(phase = RoulettePhase.SPINNING, notice = null) }
         viewModelScope.launch {
+          try {
             val started = android.os.SystemClock.elapsedRealtime()
             val filter = _state.value.filter
             val fix = container.lastFix.value
@@ -167,6 +168,12 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
             if (wait > 0) delay(wait)
             val card = StoreCards.of(chosen, year, container.ratings.value, fix, container.settings.bookmarks.first())
             _state.update { it.copy(phase = RoulettePhase.RESULT, pick = card, reason = reason, segment = RoulettePicker.wheelSegment(chosen), notice = notice, last = card) }
+          } catch (e: kotlinx.coroutines.CancellationException) {
+              throw e
+          } catch (_: Exception) {
+              // 어떤 이유로든 실패하면 돌리는 중 상태에 갇히지 않게 처음 화면으로 돌아간다
+              _state.update { it.copy(phase = RoulettePhase.IDLE, notice = "룰렛을 돌리지 못했어요. 다시 시도해 주세요.") }
+          }
         }
     }
 
@@ -175,7 +182,7 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
         val candidates = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(80).shuffled().take(25).map { s ->
             ChatCandidate(
                 s, YearsCalculator.yearsAtVisit(s.foundedYear?.takeIf { it <= year }, year),
-                fix?.let { com.nopo.cheonnyeon.core.util.GeoDistance.meters(it.lat, it.lng, s.lat!!, s.lng!!) / 1000.0 }, false,
+                if (fix != null && s.lat != null && s.lng != null) com.nopo.cheonnyeon.core.util.GeoDistance.meters(fix.lat, fix.lng, s.lat, s.lng) / 1000.0 else null, false,
             )
         }
         val info = ChatContextInfo(
