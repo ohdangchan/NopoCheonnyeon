@@ -52,9 +52,8 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     androidx.compose.runtime.LaunchedEffect(locationPermission.status) {
         if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) container.refreshLocation()
     }
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) locationPermission.request()
-    }
+    val introDone by container.settings.permIntroDone.collectAsStateWithLifecycle(initialValue = null as Boolean?)
+    var mapPermLater by rememberSaveable { mutableStateOf(false) }
     val mapVm: MapViewModel = viewModel(factory = factoryOf { MapViewModel(container) })
     val passportVm: PassportViewModel = viewModel(factory = factoryOf { PassportViewModel(container) })
     val homeVm: HomeViewModel = viewModel(factory = factoryOf { HomeViewModel(container) })
@@ -83,7 +82,9 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
         )
     }
     com.nopo.cheonnyeon.core.designsystem.mock.ProvideMockScale {
-    Column(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) {
+    if (introDone == null) { androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) }
+    else if (introDone == false) com.nopo.cheonnyeon.feature.permission.PermissionIntroHost(container)
+    else Column(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) {
         com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(
             visible = !online, pendingCount = pending,
             modifier = Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { showQueue = true },
@@ -100,15 +101,21 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
             when (tab) {
                 0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { tab = 4 }, onOpenChat = onOpenChat)
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
-                2 -> MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
+                2 -> if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED && !mapPermLater) {
+                    if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.PERMANENTLY_DENIED) {
+                        com.nopo.cheonnyeon.feature.permission.PermissionOffScreen(onOpenSettings = locationPermission.openSettings, onLater = { mapPermLater = true })
+                    } else com.nopo.cheonnyeon.feature.permission.LocationPermissionScreen(onAllow = locationPermission.request, onLater = { mapPermLater = true })
+                } else MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 })
                 else -> when (settingsSub) {
                     0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 })
                         else com.nopo.cheonnyeon.feature.settings.MockSettingsScreen(
-                            myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onLogout = { logoutAsk = true },
+                            myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onLogout = { logoutAsk = true },
                             onBell = onOpenNotifications, onBack = { settingsOpen = false },
                         )
                     2 -> com.nopo.cheonnyeon.feature.my.NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
+                    3 -> com.nopo.cheonnyeon.feature.permission.PermissionManageHost(container, onBack = { settingsSub = 0 }, onNotificationScreen = { settingsSub = 4 })
+                    4 -> com.nopo.cheonnyeon.feature.permission.NotificationPermissionHost(onDone = { settingsSub = 3 })
                     else -> SettingsScreen(
                         container,
                         signOutButton = { SignOutButton(container) },

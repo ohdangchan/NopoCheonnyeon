@@ -12,8 +12,11 @@ import com.nopo.cheonnyeon.BuildConfig
 object Analytics {
     private var client: FirebaseAnalytics? = null
 
+    /** 권한 관리의 "앱 사용 데이터 수집" 선택을 따른다 (디버그 빌드는 항상 끔) */
+    fun setCollection(on: Boolean) { runCatching { client?.setAnalyticsCollectionEnabled(on && !BuildConfig.DEBUG) } }
+
     fun init(context: Context) {
-        client = runCatching { FirebaseAnalytics.getInstance(context).also { it.setAnalyticsCollectionEnabled(!BuildConfig.DEBUG) } }.getOrNull()
+        client = runCatching { FirebaseAnalytics.getInstance(context).also { it.setAnalyticsCollectionEnabled(false) } }.getOrNull()
     }
 
     private fun log(name: String, vararg params: Pair<String, Any>) {

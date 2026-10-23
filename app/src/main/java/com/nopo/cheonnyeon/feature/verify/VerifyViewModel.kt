@@ -64,6 +64,8 @@ data class VerifyUiState(
     val confirm: ReceiptInfo? = null,
     /** 인증을 마친 뒤 그 가게가 속한 시·도의 지역 스탬프 진행 */
     val region: com.nopo.cheonnyeon.domain.rule.RegionProgress? = null,
+    /** 마지막으로 잰 가게까지의 거리(미터). 아직 안 쟀으면 null */
+    val distanceM: Int? = null,
     /** 최근 인증한 노포(최신순, 최대 5곳) */
     val recent: List<RecentVisit> = emptyList(),
 )
@@ -160,6 +162,11 @@ class VerifyViewModel(
     }
 
     fun goToPhoto() = setStep(VerifyStep.LOCATE)
+
+    /** 위치 확인을 마친 뒤 "방문 인증 시작" */
+    fun startPhotoStep() { if (_state.value.withinRange) setStep(VerifyStep.PHOTO) }
+
+    val ratings by lazy { container.ratings }
     fun backToReceipt() = setStep(VerifyStep.RECEIPT)
     fun clearError() = _state.update { it.copy(error = null) }
 
@@ -323,11 +330,11 @@ class VerifyViewModel(
                     saved[KEY_IN_RANGE] = inRange
                     _state.update {
                         it.copy(
-                            busy = false, error = err, withinRange = inRange,
+                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(),
                             errorMeters = if (err == AppError.E_ACCURACY) fix.accuracyM.toInt() else distance.toInt(),
                         )
                     }
-                    if (err == null) setStep(VerifyStep.PHOTO)
+                    // 위치가 확인되면 "방문 인증 시작"을 눌러 다음 단계(가게 사진)로 간다
                 }
             }
         }

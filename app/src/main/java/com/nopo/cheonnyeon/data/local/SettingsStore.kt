@@ -24,6 +24,10 @@ class SettingsStore(private val context: Context) {
     private val demoDataKey = booleanPreferencesKey("demo_data")
     private val aiConsentKey = booleanPreferencesKey("ai_consent")
     private val bookmarksKey = stringSetPreferencesKey("bookmarks")
+    private val permIntroKey = booleanPreferencesKey("perm_intro_done")
+    private val marketingKey = booleanPreferencesKey("pref_marketing")
+    private val shareVisitsKey = booleanPreferencesKey("pref_share_visits")
+    private val analyticsKey = booleanPreferencesKey("pref_analytics")
     private val keepLoginKey = booleanPreferencesKey("keep_login")
     private val notifyNewsKey = booleanPreferencesKey("notify_news")
     private val notifyRecoKey = booleanPreferencesKey("notify_reco")
@@ -85,6 +89,17 @@ class SettingsStore(private val context: Context) {
     val notifyReco: Flow<Boolean> = context.dataStore.data.map { it[notifyRecoKey] ?: true }
     suspend fun setNotifyNews(v: Boolean) { context.dataStore.edit { it[notifyNewsKey] = v } }
     suspend fun setNotifyReco(v: Boolean) { context.dataStore.edit { it[notifyRecoKey] = v } }
+
+    /** 처음 권한 안내 화면을 이미 봤는지 */
+    val permIntroDone: Flow<Boolean> = context.dataStore.data.map { it[permIntroKey] ?: false }
+    suspend fun setPermIntroDone() { context.dataStore.edit { it[permIntroKey] = true } }
+    /** 권한 관리 화면의 선택 항목 (마케팅 수신·방문 기록 공유·사용 데이터 수집) */
+    val marketing: Flow<Boolean> = context.dataStore.data.map { it[marketingKey] ?: false }
+    val shareVisits: Flow<Boolean> = context.dataStore.data.map { it[shareVisitsKey] ?: true }
+    val analyticsOn: Flow<Boolean> = context.dataStore.data.map { it[analyticsKey] ?: false }
+    suspend fun setMarketing(v: Boolean) { context.dataStore.edit { it[marketingKey] = v } }
+    suspend fun setShareVisits(v: Boolean) { context.dataStore.edit { it[shareVisitsKey] = v } }
+    suspend fun setAnalyticsOn(v: Boolean) { context.dataStore.edit { it[analyticsKey] = v } }
 
     val keepLogin: Flow<Boolean> = context.dataStore.data.map { it[keepLoginKey] ?: true }
     suspend fun setKeepLogin(v: Boolean) { context.dataStore.edit { it[keepLoginKey] = v } }

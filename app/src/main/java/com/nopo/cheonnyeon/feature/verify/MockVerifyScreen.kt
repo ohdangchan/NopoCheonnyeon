@@ -261,6 +261,11 @@ private fun CameraScreen(
     permission: com.nopo.cheonnyeon.platform.permission.PermissionHandle, onBack: () -> Unit, onNoReceipt: () -> Unit, onFailed: () -> Unit,
 ) {
     val granted = permission.status == PermissionStatus.GRANTED
+    if (!granted) {
+        if (permission.status == PermissionStatus.PERMANENTLY_DENIED) com.nopo.cheonnyeon.feature.permission.PermissionOffScreen(onOpenSettings = permission.openSettings, onLater = onBack)
+        else com.nopo.cheonnyeon.feature.permission.CameraPermissionScreen(onAllow = permission.request, onLater = onBack)
+        return
+    }
     LaunchedEffect(state.error, state.busy, state.scanFrame) { if (state.error != null && !state.busy) onFailed() }
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(px(150))) {
@@ -424,6 +429,7 @@ private fun StepScreen(
 ) {
     val context = LocalContext.current
     val photo = state.step == VerifyStep.PHOTO
+    if (!photo) { GpsVerifyScreen(vm, state, locationPermission); return }
     val locGranted = locationPermission.status == PermissionStatus.GRANTED
     val camGranted = cameraPermission.status == PermissionStatus.GRANTED
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).navigationBarsPadding()) {

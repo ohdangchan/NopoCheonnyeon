@@ -54,7 +54,7 @@ import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 @Composable
 fun MockSettingsScreen(
     myVm: MyViewModel, passportVm: PassportViewModel,
-    onNotify: () -> Unit, onLegacy: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit,
+    onNotify: () -> Unit, onLegacy: () -> Unit, onPermissions: () -> Unit, onLogout: () -> Unit, onBell: () -> Unit, onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val state by passportVm.state.collectAsStateWithLifecycle()
@@ -105,7 +105,7 @@ fun MockSettingsScreen(
             MockText(if (granted) "허용됨" else "허용 안 됨", 22, Modifier.at(586, 1147).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
             val actions: List<() -> Unit> = listOf(
                 onLegacy, { dialog = 1 }, onNotify, onLegacy, { dialog = 2 },
-                { context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) },
+                onPermissions,
                 { support = true },
             )
             actions.forEachIndexed { i, a -> Box(Modifier.at(12, 608 + i * 99).size(px(736), px(99)).clickable(role = Role.Button, onClick = a)) }

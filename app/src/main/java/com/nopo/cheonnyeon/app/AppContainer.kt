@@ -100,6 +100,10 @@ class AppContainer(
         }
     }
 
+    init {
+        scope.launch { settings.analyticsOn.collect { com.nopo.cheonnyeon.core.common.Analytics.setCollection(it) } }
+    }
+
     /** 앱을 켤 때 올라가지 못한 기록이 있으면 다시 보낸다 */
     fun syncPending() = syncScheduler.enqueue()
 

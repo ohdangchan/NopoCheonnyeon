@@ -181,6 +181,37 @@ def build_account():
     save(s12, "a_delete", (12, 1432, 748, 1522))
 
 
+def build_perm():
+    import glob
+    # 15 카메라 / 16 알림 / 17 꺼짐 안내 / 20 위치: 머리글부터 아래 버튼까지 한 장으로 자른다
+    for n, name, y1 in ((15, "p_cam", 1472), (16, "p_notif", 1482), (17, "p_off", 1508), (20, "p_loc", 1510)):
+        s = fix_corners(screen(n))
+        save(s, name, (0, 88, 760, y1))
+    # 19 처음 권한 안내(전체 화면, 테두리 없음)
+    f = glob.glob(os.path.join(m.SRC, "19-*.webp"))[0]
+    im = Image.open(f).convert("RGB")
+    im = im.resize((760, round(im.height * 760 / im.width)), Image.LANCZOS)
+    save(im, "p_intro", (0, 62, 760, 1350))
+    # 18 권한 관리
+    s = fix_corners(screen(18))
+    save(s, "pm_head", (0, 88, 760, 556))
+    for i in range(6):
+        y0 = int(558 + i * 139.6)
+        r = s.copy()
+        col = tuple(int(v) for v in np.median(np.asarray(r.crop((470, y0 + 6, 480, y0 + 12))).reshape(-1, 3), axis=0))
+        r = erase(r, (492, y0 + 12, 722, y0 + 118), color=col)
+        save(r, f"pm_row{i+1}", (12, y0, 748, y0 + 130))
+    save(s, "pm_info", (12, 1410, 748, 1508))
+    # 21 GPS 방문 인증
+    s = fix_corners(screen(21))
+    save(s, "g_head", (0, 205, 760, 365))
+    save(s, "g_map", (15, 378, 748, 822))
+    save(s, "g_steps", (30, 1170, 735, 1352))
+    save(s, "g_info", (15, 1405, 748, 1508))
+    save(s, "g_ic_pin", (289, 863, 343, 917))
+
+
+build_perm()
 build_account()
 build_rank()
 build_roulette()
