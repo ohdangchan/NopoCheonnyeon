@@ -118,7 +118,7 @@ fun MockSettingsScreen(
     }
     if (dialog == 1) AlertDialog(
         onDismissRequest = { dialog = 0 }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_03)) },
-        text = { Text("현재 이메일 계정으로 로그인되어 있어요.\n${myVm.email ?: ""}\n\n구글·카카오·네이버 계정 연동은 준비 중이에요.") },
+        text = { Text("현재 이메일 계정으로 로그인되어 있어요.\n${myVm.email ?: ""}") },
         confirmButton = { TextButton({ dialog = 0 }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
     )
     if (dialog == 2) AlertDialog(

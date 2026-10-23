@@ -55,6 +55,20 @@ def erase(im, box, color=None, pad=None):
     return Image.fromarray(a.clip(0, 255).astype(np.uint8))
 
 
+def erase_flat(im, box, pad=6, feather=22):
+    """box 를 왼쪽 가장자리 색(가로로 같은 색, 세로로 섞음)으로 메우고, 위·아래·오른쪽 가장자리는 서서히 섞어 경계가 안 보이게 한다."""
+    x0, y0, x1, y1 = box
+    a = np.asarray(im).astype(np.float32)
+    h, w = y1 - y0, x1 - x0
+    left = a[y0:y1, x0 - pad:x0].mean(axis=1)
+    fill = np.repeat(left[:, None, :], w, axis=1)
+    ty = np.minimum(np.arange(h)[:, None], np.arange(h)[::-1][:, None]) / feather
+    tx = (np.arange(w)[::-1][None, :]) / feather
+    m = np.clip(np.minimum(ty, tx), 0, 1)[:, :, None]
+    a[y0:y1, x0:x1] = a[y0:y1, x0:x1] * (1 - m) + fill * m
+    return Image.fromarray(a.clip(0, 255).astype(np.uint8))
+
+
 def build():
     # ---- 3: 온보딩 ----
     s = screen(3)
@@ -243,9 +257,9 @@ def build_new():
     s = fix_corners(screen(26))
     save(s, "n_intro1", (0, 84, 760, 1651))
     # 25 / 24 취향 선택: 머리글 그림은 글자를 지우고 앱이 글자를 그린다
-    for n, name in ((25, "n_pref2_head"), (24, "n_pref3_head")):
+    for n, name, x1 in ((25, "n_pref2_head", 500), (24, "n_pref3_head", 530)):
         s = fix_corners(screen(n))
-        s = erase(s, (30, 232, 470, 570), pad=6)
+        s = erase_flat(s, (30, 228, x1, 570), pad=6)
         save(s, name, (0, 84, 760, 590))
     s = fix_corners(screen(25))
     foot = erase(s.copy(), (270, 1548, 480, 1610), pad=6)
