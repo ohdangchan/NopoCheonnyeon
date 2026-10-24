@@ -208,7 +208,7 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
     /** AI에게 후보(15곳)에서 서로 다른 세 곳을 골라 달라고 한다. (id, 이유) 목록, 첫 번째가 오늘의 추천 */
     private suspend fun askAi(list: List<Store>, f: RouletteFilter): List<Pair<String, String>>? {
         val fix = container.lastFix.value
-        val candidates = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(60).shuffled().take(15).map { s ->
+        val candidates = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(60).shuffled().take(10).map { s ->
             ChatCandidate(
                 s, YearsCalculator.yearsAtVisit(s.foundedYear?.takeIf { it <= year }, year),
                 if (fix != null && s.lat != null && s.lng != null) com.nopo.cheonnyeon.core.util.GeoDistance.meters(fix.lat, fix.lng, s.lat, s.lng) / 1000.0 else null, false,
