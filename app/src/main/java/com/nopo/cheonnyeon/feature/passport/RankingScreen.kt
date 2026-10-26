@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -168,7 +169,7 @@ private fun Avatar(name: String, sizePx: Int, tint: Color) {
 private val Tints = listOf(Color(0xFF6B7B93), Color(0xFFB07A2B), Color(0xFF8A5A3B), Color(0xFF4A7A5A), Color(0xFF7A5A8A))
 
 @Composable
-private fun androidx.compose.foundation.layout.BoxScope.Podium(row: RankRow, x: Int, y: Int, w: Int, h: Int, bg: Brush, medal: Color, place: Int) {
+private fun BoxScope.Podium(row: RankRow, x: Int, y: Int, w: Int, h: Int, bg: Brush, medal: Color, place: Int) {
     val years = row.user.years
     Box(Modifier.at(x, y).size(px(w), px(h)).clip(RoundedCornerShape(topStart = px(w / 2), topEnd = px(w / 2), bottomStart = px(26), bottomEnd = px(26))).background(bg))
     // 메달
@@ -178,7 +179,7 @@ private fun androidx.compose.foundation.layout.BoxScope.Podium(row: RankRow, x: 
     val ny = y + 62 + av + 14
     MockText(row.user.nickname, 25, Modifier.at(x, ny).width(px(w)), weight = FontWeight.ExtraBold, align = TextAlign.Center)
     Box(Modifier.at(x + 18, ny + 44).size(px(w - 36), px(44)).clip(RoundedCornerShape(50)).background(medal.copy(alpha = 0.22f)), contentAlignment = Alignment.Center) {
-        MockText(androidx.compose.ui.res.stringResource(TitlePolicy.titleFor(years).labelRes()), 20, weight = FontWeight.ExtraBold, maxLines = 1)
+        MockText(stringResource(TitlePolicy.titleFor(years).labelRes()), 20, weight = FontWeight.ExtraBold, maxLines = 1)
     }
     val cy = ny + 106
     MockText("${row.user.stores}곳", 22, Modifier.at(x + 14, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold, align = TextAlign.Center)
@@ -199,7 +200,7 @@ private fun RankLine(r: RankRow) {
                 MockText(r.user.nickname + if (r.me) " (나)" else "", 25, Modifier.weight(1f, fill = false), weight = FontWeight.ExtraBold)
                 Box(Modifier.width(px(12)))
                 Box(Modifier.clip(RoundedCornerShape(50)).background(tint.copy(alpha = 0.18f)).padding(horizontal = px(14), vertical = px(3))) {
-                    MockText(androidx.compose.ui.res.stringResource(TitlePolicy.titleFor(r.user.years).labelRes()), 17, weight = FontWeight.Medium)
+                    MockText(stringResource(TitlePolicy.titleFor(r.user.years).labelRes()), 17, weight = FontWeight.Medium)
                 }
             }
             MockText("세월 ${r.user.years}년 · 리뷰 ${r.user.reviews}개", 18, color = Gray)

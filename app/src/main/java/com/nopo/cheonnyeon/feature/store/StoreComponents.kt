@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import coil3.compose.SubcomposeAsyncImage
@@ -21,18 +22,21 @@ import com.nopo.cheonnyeon.domain.model.Store
 fun ProgramBadges(store: Store, modifier: Modifier = Modifier) {
     val c = NopoTheme.colors
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
-        if ("BAEKNYEON" in store.programs) Badge(stringResource(R.string.badge_baeknyeon), c.brassSoft, if (c.isDark) c.brass else c.onBrass)
+        if ("BAEKNYEON" in store.programs) Badge(stringResource(R.string.badge_baeknyeon), c.brassSoft,
+            if (c.isDark) c.brass else c.onBrass)
         if ("ORAE" in store.programs) Badge(stringResource(R.string.badge_orae), c.tealSoft, if (c.isDark) c.ink else c.sign)
     }
 }
 
 @Composable
-private fun Badge(text: String, bg: androidx.compose.ui.graphics.Color, fg: androidx.compose.ui.graphics.Color) {
+private fun Badge(text: String, bg: Color, fg: Color) {
     Text(
         text,
         style = NopoTheme.typography.labelMedium,
         color = fg,
-        modifier = Modifier.background(bg, NopoTheme.shapes.sm).padding(horizontal = NopoTheme.spacing.sm, vertical = NopoTheme.spacing.xxs),
+        modifier = Modifier
+            .background(bg, NopoTheme.shapes.sm)
+            .padding(horizontal = NopoTheme.spacing.sm, vertical = NopoTheme.spacing.xxs),
     )
 }
 

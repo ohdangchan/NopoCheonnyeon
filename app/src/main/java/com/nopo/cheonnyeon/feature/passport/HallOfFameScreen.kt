@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FilterChip
@@ -24,12 +24,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+import com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface
 import com.nopo.cheonnyeon.core.designsystem.component.StarRating
 import com.nopo.cheonnyeon.core.designsystem.component.TitleBadge
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
@@ -196,7 +199,7 @@ private fun UserRow(rank: Int, u: DemoUser, byReviews: Boolean) {
 private fun StoreRow(rank: Int, s: HallStore, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(s.store.id) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(s.store.id) }.padding(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
     ) {
         Text(rank.toString(), style = NopoTheme.typography.titleLarge, color = c.ink2)
@@ -213,10 +216,10 @@ private fun StoreRow(rank: Int, s: HallStore, onOpenStore: (String) -> Unit) {
 
 private val previewUsers = listOf(DemoUser("노포탐험가", 1474, 40, 22), DemoUser("국밥순례자", 1200, 33, 18), DemoUser("골목식객", 980, 28, 9))
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun HallOfFamePreview() {
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+    PreviewSurface {
         MyCard(HallUiState(loading = false, demo = true, nickname = "nptNew1", myYears = 668, myRank = 19, topPercent = 16))
         Podium(previewUsers, byReviews = false)
         UserRow(4, previewUsers[2], byReviews = true)

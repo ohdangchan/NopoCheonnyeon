@@ -2,17 +2,18 @@ package com.nopo.cheonnyeon.feature.help
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.Canvas
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -27,21 +28,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nopo.cheonnyeon.BuildConfig
-import com.nopo.cheonnyeon.R
+import com.nopo.cheonnyeon.core.designsystem.mock.at
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronDown
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronRight
 import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
@@ -50,9 +56,9 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
 import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
-import com.nopo.cheonnyeon.core.designsystem.mock.at
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.feature.my.SUPPORT_EMAIL
+import com.nopo.cheonnyeon.R
 
 private val Hairline = Color(0xFFE2DDCB)
 private val Gray = Color(0xFF4B5563)
@@ -99,7 +105,7 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
     var cat by rememberSaveable { mutableIntStateOf(-1) }
     var open by rememberSaveable { mutableIntStateOf(0) }
     var all by rememberSaveable { mutableStateOf(false) }
-    androidx.activity.compose.BackHandler(onBack = onBack)
+    BackHandler(onBack = onBack)
     val filtered = Faqs.filter { f -> (cat < 0 || f.cat == cat) && (query.isBlank() || f.q.contains(query.trim()) || f.a.contains(query.trim())) }
     val shown = if (all || query.isNotBlank() || cat >= 0) filtered else filtered.take(5)
     val extra = if (open in shown.indices) 90 else 0
@@ -134,7 +140,7 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
             Column(
                 Modifier.at(22, 940).size(px(716), px(listH)).clip(RoundedCornerShape(px(20))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(20))).padding(horizontal = px(18), vertical = px(10)),
             ) {
-                if (shown.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_01), 22, Modifier.padding(px(20)), color = Gray)
+                if (shown.isEmpty()) MockText(stringResource(com.nopo.cheonnyeon.R.string.help_01), 22, Modifier.padding(px(20)), color = Gray)
                 shown.forEachIndexed { i, f ->
                     val isOpen = open == i
                     Row(Modifier.fillMaxWidth().height(px(66)).clickable(role = Role.Button) { open = if (isOpen) -1 else i }, verticalAlignment = Alignment.CenterVertically) {
@@ -153,8 +159,8 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
             ) {
                 Box(Modifier.padding(start = px(26)).size(px(60))) { EnvelopeGlyph() }
                 Column(Modifier.weight(1f).padding(start = px(22))) {
-                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_02), 27, weight = FontWeight.ExtraBold)
-                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.help_03), 20, color = Gray)
+                    MockText(stringResource(com.nopo.cheonnyeon.R.string.help_02), 27, weight = FontWeight.ExtraBold)
+                    MockText(stringResource(com.nopo.cheonnyeon.R.string.help_03), 20, color = Gray)
                 }
                 ChevronRight(28); Box(Modifier.width(px(24)))
             }
@@ -166,9 +172,9 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
 private fun EnvelopeGlyph() {
     Canvas(Modifier.size(px(60))) {
         val w = size.width
-        val st = Stroke(w * 0.07f, cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round)
-        drawRoundRect(MockColors.Navy, Offset(w * 0.04f, w * 0.16f), androidx.compose.ui.geometry.Size(w * 0.92f, w * 0.68f), androidx.compose.ui.geometry.CornerRadius(w * 0.08f), style = st)
-        val p = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.08f, w * 0.24f); lineTo(w * 0.5f, w * 0.56f); lineTo(w * 0.92f, w * 0.24f) }
+        val st = Stroke(w * 0.07f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        drawRoundRect(MockColors.Navy, Offset(w * 0.04f, w * 0.16f), Size(w * 0.92f, w * 0.68f), CornerRadius(w * 0.08f), style = st)
+        val p = Path().apply { moveTo(w * 0.08f, w * 0.24f); lineTo(w * 0.5f, w * 0.56f); lineTo(w * 0.92f, w * 0.24f) }
         drawPath(p, MockColors.Navy, style = st)
     }
 }

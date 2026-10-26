@@ -1,28 +1,30 @@
 package com.nopo.cheonnyeon.feature.ai
 
+import android.graphics.BitmapFactory
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -35,12 +37,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,9 +66,12 @@ import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.data.ai.TasteInput
 import com.nopo.cheonnyeon.data.ai.TasteReview
+import com.nopo.cheonnyeon.data.remote.ReviewItem
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.MenuPick
 import com.nopo.cheonnyeon.domain.rule.MenuRoulette
+import com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -119,16 +133,16 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
 
     /** 리뷰 사진 문자열 → Coil 모델(시연용 "asset:" 경로는 주소, 실제 사진은 바이트) */
     private fun photoModel(p: String): Any? =
-        if (p.startsWith("asset:")) "file:///android_asset/" + p.removePrefix("asset:") else com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec.decode(p)
+        if (p.startsWith("asset:")) "file:///android_asset/" + p.removePrefix("asset:") else ReviewPhotoCodec.decode(p)
 
     /** 내 리뷰(서버·시험용 가게·시연용) 전부 */
-    private suspend fun collectMyReviews(): List<com.nopo.cheonnyeon.data.remote.ReviewItem> {
+    private suspend fun collectMyReviews(): List<ReviewItem> {
         val nick = container.auth.currentNickname().orEmpty()
-        val items = ArrayList<com.nopo.cheonnyeon.data.remote.ReviewItem>()
+        val items = ArrayList<ReviewItem>()
         container.auth.currentUid?.let { uid -> items += container.reviews.byUser(uid).valueOrNull.orEmpty() }
         container.catalog.all().filter { it.isTest }.forEach { t ->
             container.settings.testReviews(t.id).forEach { r ->
-                items += com.nopo.cheonnyeon.data.remote.ReviewItem(r.id, t.id, t.name, "", nick, "", r.rating, r.text, 1, r.at, photos = r.photos)
+                items += ReviewItem(r.id, t.id, t.name, "", nick, "", r.rating, r.text, 1, r.at, photos = r.photos)
             }
         }
         if (container.settings.demoData.first() && container.database.myVisitDao().demoVisitCount() > 0) {
@@ -138,10 +152,10 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
     }
 
     /** 시연용 사진(자산)도 AI에 보낼 수 있게 줄여서 base64 WebP로 */
-    private suspend fun assetBase64(path: String): String? = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    private suspend fun assetBase64(path: String): String? = kotlinx.coroutines.withContext(Dispatchers.IO) {
         runCatching {
-            container.appContext.assets.open(path).use { android.graphics.BitmapFactory.decodeStream(it) }
-                ?.let { com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec.encode(it, 0) }
+            container.appContext.assets.open(path).use { BitmapFactory.decodeStream(it) }
+                ?.let { ReviewPhotoCodec.encode(it, 0) }
         }.getOrNull()
     }
 
@@ -362,16 +376,16 @@ fun AiConsentDialog(onAgree: () -> Unit, onDismiss: () -> Unit) {
  */
 @Composable
 internal fun PhotoReel(photos: List<Any>, spinning: Boolean, modifier: Modifier = Modifier, rows: Int = 2, frame: Boolean = true) {
-    androidx.compose.foundation.layout.BoxWithConstraints(modifier) {
+    BoxWithConstraints(modifier) {
         val itemW = if (rows <= 2) 112.dp else ((maxHeight - 16.dp - 8.dp * (rows - 1)) / rows)
         PhotoReelBody(photos, spinning, itemW, rows, frame, Modifier.fillMaxSize())
     }
 }
 
 @Composable
-private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: androidx.compose.ui.unit.Dp, rows: Int, frame: Boolean, modifier: Modifier) {
+private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: Dp, rows: Int, frame: Boolean, modifier: Modifier) {
     val c = NopoTheme.colors
-    val density = androidx.compose.ui.platform.LocalDensity.current
+    val density = LocalDensity.current
     val gap = 8.dp
     val unit = with(density) { (itemW + gap).toPx() }
     var pos by androidx.compose.runtime.remember { androidx.compose.runtime.mutableFloatStateOf(0f) }
@@ -389,7 +403,7 @@ private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: androidx.
         }
     }
     val sweep = androidx.compose.animation.core.rememberInfiniteTransition(label = "sweep")
-    val scan by sweep.animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(tween(900, easing = LinearEasing), androidx.compose.animation.core.RepeatMode.Reverse), label = "scan")
+    val scan by sweep.animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(tween(900, easing = LinearEasing), RepeatMode.Reverse), label = "scan")
     // 한 줄은 사진을 여러 번 이어 붙여 끊김 없이 돈다
     val reps = maxOf(2, kotlin.math.ceil(14f / photos.size).toInt() + 1)
     val loop = unit * photos.size
@@ -400,12 +414,12 @@ private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: androidx.
                 Box(Modifier.fillMaxWidth().height(itemW).clip(NopoTheme.shapes.md)) {
                     val x = if (dir < 0) -(pos % loop) else -loop + ((pos * 0.85f) % loop)
                     Row(
-                        Modifier.wrapContentWidth(Alignment.Start, unbounded = true).offset { androidx.compose.ui.unit.IntOffset(x.toInt(), 0) },
+                        Modifier.wrapContentWidth(Alignment.Start, unbounded = true).offset { IntOffset(x.toInt(), 0) },
                         horizontalArrangement = Arrangement.spacedBy(gap),
                     ) {
                         rowPhotos(shift).forEach { m ->
                             coil3.compose.AsyncImage(
-                                model = m, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                                model = m, contentDescription = null, contentScale = ContentScale.Crop,
                                 modifier = Modifier.size(itemW).clip(NopoTheme.shapes.sm),
                             )
                         }
@@ -417,14 +431,14 @@ private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: androidx.
         Canvas(Modifier.fillMaxSize()) {
             val fw = itemW.toPx() + 28.dp.toPx()
             val left = (size.width - fw) / 2
-            if (frame) drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), androidx.compose.ui.geometry.Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()), style = androidx.compose.ui.graphics.drawscope.Stroke(3.dp.toPx()))
+            if (frame) drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), CornerRadius(14.dp.toPx()), style = Stroke(3.dp.toPx()))
             if (frame && spinning) {
                 val y = 6.dp.toPx() + (size.height - 12.dp.toPx()) * scan
-                drawLine(c.laser, androidx.compose.ui.geometry.Offset(left, y), androidx.compose.ui.geometry.Offset(left + fw, y), 3.dp.toPx())
+                drawLine(c.laser, Offset(left, y), Offset(left + fw, y), 3.dp.toPx())
             }
             // 양쪽 가장자리를 어둡게
-            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(c.sign, androidx.compose.ui.graphics.Color.Transparent), 0f, 90.dp.toPx()), size = Size(90.dp.toPx(), size.height))
-            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(androidx.compose.ui.graphics.Color.Transparent, c.sign), size.width - 90.dp.toPx(), size.width), androidx.compose.ui.geometry.Offset(size.width - 90.dp.toPx(), 0f), Size(90.dp.toPx(), size.height))
+            drawRect(Brush.horizontalGradient(listOf(c.sign, Color.Transparent), 0f, 90.dp.toPx()), size = Size(90.dp.toPx(), size.height))
+            drawRect(Brush.horizontalGradient(listOf(Color.Transparent, c.sign), size.width - 90.dp.toPx(), size.width), Offset(size.width - 90.dp.toPx(), 0f), Size(90.dp.toPx(), size.height))
         }
     }
 }

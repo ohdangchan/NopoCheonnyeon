@@ -6,7 +6,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.nopo.cheonnyeon.BuildConfig
 
 /**
- * PRD 11장 사용 기록(선택). 기능 사용 횟수와 오류 코드만 보내고 닉네임·이메일·위치·영수증·가게 이름은 보내지 않는다.
+ * PRD 11장 사용 기록(선택). 기능 사용 횟수와 오류 코드만 보내고
+ * 닉네임·이메일·위치·영수증·가게 이름은 보내지 않는다.
  * 디버그 빌드에서는 수집하지 않고, Firebase가 없는 환경에서는 아무것도 하지 않는다.
  */
 object Analytics {
@@ -32,7 +33,8 @@ object Analytics {
     fun signUp() = log("sign_up")
     fun login() = log("login")
     fun verifyStart() = log("verify_start")
-    fun verifyResult(method: String, result: String, code: String = "") = log("verify_result", "method" to method, "result" to result, "code" to code)
+    fun verifyResult(method: String, result: String, code: String = "") =
+        log("verify_result", "method" to method, "result" to result, "code" to code)
     fun stampAwarded(years: Int, grade: String) = log("stamp_awarded", "years" to years, "grade" to grade)
     fun reviewSaved(hasText: Boolean) = log("review_saved", "has_text" to hasText)
     fun profileOpen() = log("profile_open")

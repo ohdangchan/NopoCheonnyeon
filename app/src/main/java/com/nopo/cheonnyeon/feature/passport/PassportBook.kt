@@ -7,21 +7,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -208,25 +212,25 @@ private fun Page0(stats: BookStats, page: BookPage?, onStamp: (PassportStamp) ->
         // 숫자 상자 (점선 테두리)
         Canvas(Modifier.offset(px(11), px(0)).size(px(297), px(172))) {
             drawRoundRect(
-                color = Color(0xFFCFC5AE), cornerRadius = androidx.compose.ui.geometry.CornerRadius(14.dp.toPx()),
+                color = Color(0xFFCFC5AE), cornerRadius = CornerRadius(14.dp.toPx()),
                 style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f))),
             )
             drawLine(Color(0xFFD8CEB7), Offset(size.width * 0.5f, 18.dp.toPx()), Offset(size.width * 0.5f, size.height - 18.dp.toPx()), strokeWidth = 1.dp.toPx())
         }
         MockPic(R.drawable.mk_col_ic_plane, 60, 45, Modifier.offset(px(54), px(22)))
         MockPic(R.drawable.mk_col_ic_seal, 47, 42, Modifier.offset(px(210), px(24)))
-        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
-        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_01), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(stringResource(R.string.col_06), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(stringResource(R.string.book_01), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
         Box(Modifier.offset(px(11), px(100)).size(px(148), px(64)), contentAlignment = Alignment.Center) {
-            androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.Bottom) {
+            Row(verticalAlignment = Alignment.Bottom) {
                 MockText("${stats.visited}", 56, font = MockSerif, weight = FontWeight.ExtraBold)
                 MockText(" / ${stats.goal}", 30, color = MockColors.Ink2, font = MockSerif)
             }
         }
         Box(Modifier.offset(px(159), px(100)).size(px(148), px(64)), contentAlignment = Alignment.Center) {
-            androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.Bottom) {
+            Row(verticalAlignment = Alignment.Bottom) {
                 MockText("${stats.titles}", 56, font = MockSerif, weight = FontWeight.ExtraBold)
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_02), 28, color = MockColors.Ink2, font = MockSerif)
+                MockText(stringResource(R.string.book_02), 28, color = MockColors.Ink2, font = MockSerif)
             }
         }
         page?.slots?.forEachIndexed { i, s -> SlotAt(s, ColX[i % 3], 245 + (i / 3) * 118, 96, onStamp) }
@@ -259,7 +263,7 @@ private fun RegionStampView(r: RegionProgress) {
                 drawCircle(Color(0xFFC4BAA2), radius = w / 2 - 2.dp.toPx(), style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f, 7f))))
             }
         }
-        androidx.compose.foundation.layout.Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (r.stamped) {
                 MockText(r.sido, if (r.sido.length > 3) 19 else 24, color = color, font = MockSerif, weight = FontWeight.ExtraBold)
                 MockText("${r.visited}곳", 17, color = color, weight = FontWeight.Medium)
@@ -287,7 +291,7 @@ private fun StoreStampView(s: PassportStamp, onClick: () -> Unit) {
             drawCircle(color, radius = w / 2 - 2.dp.toPx(), style = Stroke(2.6.dp.toPx()))
             drawCircle(color, radius = w / 2 - 7.dp.toPx(), style = Stroke(1.dp.toPx()))
         }
-        androidx.compose.foundation.layout.Column(Modifier.size(px(62)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center) {
+        Column(Modifier.size(px(62)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             MockText(s.store?.name ?: s.visit.storeId, 15, color = color, font = MockSerif, weight = FontWeight.ExtraBold, maxLines = 3, align = TextAlign.Center, lineHeightPx = 17)
             MockText("${s.visit.yearsAwarded}년", 15, color = color, weight = FontWeight.Bold)
         }

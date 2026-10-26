@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,10 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.EmptyState
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
+import com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+import com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.feature.store.ProgramBadges
@@ -47,7 +50,7 @@ fun StoreSheet(
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
     ) {
         Row(
-            Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onOpen),
+            Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).clickable(role = Role.Button, onClick = onOpen),
             horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -85,7 +88,8 @@ fun StoreListScreen(state: MapUiState, onSort: (ListSort) -> Unit, onOpenStore: 
             horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            FilterChip(state.sort == ListSort.NEAREST, { onSort(ListSort.NEAREST) }, label = { Text(stringResource(R.string.list_sort_nearest)) })
+            FilterChip(state.sort == ListSort.NEAREST, { onSort(ListSort.NEAREST) },
+                label = { Text(stringResource(R.string.list_sort_nearest)) })
             FilterChip(state.sort == ListSort.YEARS, { onSort(ListSort.YEARS) }, label = { Text(stringResource(R.string.list_sort_years)) })
         }
         Text(
@@ -101,7 +105,8 @@ fun StoreListScreen(state: MapUiState, onSort: (ListSort) -> Unit, onOpenStore: 
             )
             return@Column
         }
-        LazyColumn(contentPadding = androidx.compose.foundation.layout.PaddingValues(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        LazyColumn(contentPadding = PaddingValues(NopoTheme.spacing.md),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             items(state.sorted, key = { it.id }) { s -> StoreRow(s, state, onOpenStore) }
         }
     }
@@ -111,7 +116,8 @@ fun StoreListScreen(state: MapUiState, onSort: (ListSort) -> Unit, onOpenStore: 
 private fun StoreRow(s: Store, state: MapUiState, onOpen: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).background(c.surface).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpen(s.id) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().clip(NopoTheme.shapes.md).background(c.surface)
+            .clickable(role = Role.Button) { onOpen(s.id) }.padding(NopoTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -135,18 +141,19 @@ private fun StoreRow(s: Store, state: MapUiState, onOpen: (String) -> Unit) {
 
 private val previewStore = Store(id = "P-1", name = "노포천년식당", programs = listOf("백년가게"), sido = "서울", sigungu = "송파구", foundedYear = 1980)
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun StoreSheetPreview() {
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+    PreviewSurface {
         StoreSheet(previewStore, years = 46, distanceM = 320.0, visited = false, onOpen = {})
         StoreSheet(previewStore, years = 46, distanceM = null, visited = true, onOpen = {})
     }
 }
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun StoreListPreview() {
     val stores = listOf(previewStore, previewStore.copy(id = "P-2", name = "오래된국수집", foundedYear = 1950))
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface { StoreListScreen(MapUiState(loading = false, filtered = stores), onSort = {}, onOpenStore = {}) }
+    PreviewSurface { StoreListScreen(MapUiState(loading = false,
+        filtered = stores), onSort = {}, onOpenStore = {}) }
 }

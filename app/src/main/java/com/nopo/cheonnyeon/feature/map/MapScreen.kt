@@ -2,19 +2,32 @@ package com.nopo.cheonnyeon.feature.map
 
 import android.Manifest
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -27,11 +40,23 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.platform.LocalContext
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -40,40 +65,6 @@ import com.naver.maps.map.NaverMapSdk
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.MarkerIcons
 import com.nopo.cheonnyeon.R
-import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
-import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonSize
-import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
-import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
-import com.nopo.cheonnyeon.core.util.GeoDistance
-import com.nopo.cheonnyeon.domain.catalog.Program
-import com.nopo.cheonnyeon.domain.model.StampGrade
-import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.BookmarkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronDown
 import com.nopo.cheonnyeon.core.designsystem.mock.LocalMockU
@@ -86,16 +77,23 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
-import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
 import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
+import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
+import com.nopo.cheonnyeon.core.util.GeoDistance
+import com.nopo.cheonnyeon.data.remote.StoreRating
 import com.nopo.cheonnyeon.domain.catalog.StoreFilters
+import com.nopo.cheonnyeon.domain.model.StampGrade
+import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
 import com.nopo.cheonnyeon.feature.common.StoreCardData
 import com.nopo.cheonnyeon.feature.common.StoreCards
+import com.nopo.cheonnyeon.feature.diagnostics.DiagLast
 import com.nopo.cheonnyeon.feature.store.StorePhoto
 import com.nopo.cheonnyeon.platform.map.NaverMapView
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
+import kotlinx.coroutines.delay
 
 private val CITY_HALL = LatLng(37.5665, 126.9780)
 private const val MIN_ZOOM_FOR_MARKERS = 9.0
@@ -105,7 +103,8 @@ private const val BUBBLES = 6
 
 /** 시안 "지도"(5.webp) 복제: 머리글 + 검색창 + 지역 칩 + 실제 네이버 지도 + 하단 "지금 이 근처 노포" 카드. 비행기 버튼은 뺐다. */
 @Composable
-fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}, onBell: () -> Unit = {}, onSearch: () -> Unit = {}) {
+fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (String) -> Unit = {}, onBell: () -> Unit = {},
+    onSearch: () -> Unit = {}) {
     val state by vm.state.collectAsStateWithLifecycle()
     val ratings by vm.ratings.collectAsStateWithLifecycle()
     val bookmarks by vm.bookmarks.collectAsStateWithLifecycle(initialValue = emptySet())
@@ -114,21 +113,24 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
     var regionMenu by remember { mutableStateOf(false) }
     var focusTick by rememberSaveable { mutableIntStateOf(0) }
     var focusTarget by remember { mutableStateOf<LatLng?>(null) }
-    val focus = androidx.compose.ui.platform.LocalFocusManager.current
+    val focus = LocalFocusManager.current
 
     LaunchedEffect(permission.status) {
         if (permission.status == PermissionStatus.GRANTED && state.fix == null) vm.findMe()
     }
 
-    val shown = remember(state, sigungu) { if (sigungu == null) state else state.copy(filtered = state.filtered.filter { it.sigungu == sigungu }) }
+    val shown = remember(state,
+        sigungu) { if (sigungu == null) state else state.copy(filtered = state.filtered.filter { it.sigungu == sigungu }) }
     val chipNames = remember(state.filtered) {
-        state.filtered.filter { it.sigungu.isNotBlank() }.groupingBy { it.sigungu }.eachCount().entries.sortedByDescending { it.value }.map { it.key }
+        state.filtered.filter { it.sigungu.isNotBlank() }.groupingBy { it.sigungu }.eachCount()
+            .entries.sortedByDescending { it.value }.map { it.key }
     }
     val year = state.currentYear
     val nearCards = remember(shown, state.fix, ratings, bookmarks) {
         val base = shown.filtered.filter { it.lat != null && it.lng != null && !it.isTest }
         val from = state.fix
-        val sorted = if (from != null) StoreFilters.sortByDistance(base, from.lat, from.lng) else StoreFilters.sortByDistance(base, CITY_HALL.latitude, CITY_HALL.longitude)
+        val sorted = if (from != null) StoreFilters.sortByDistance(base, from.lat,
+            from.lng) else StoreFilters.sortByDistance(base, CITY_HALL.latitude, CITY_HALL.longitude)
         val withPhoto = sorted.filter { it.photoUrls.isNotEmpty() }
         (withPhoto.ifEmpty { sorted }).take(12).map { StoreCards.of(it, year, ratings, from, bookmarks) }
     }
@@ -144,10 +146,12 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
             MockPic(R.drawable.mk_hdr_logo, 432, 122, Modifier.at(20, 84))
             MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
             // 검색창
-            Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
+            Box(Modifier.at(22, 263).size(px(623), px(70)).clip(RoundedCornerShape(px(35))).background(MockColors.Card)
+                .border(1.dp, MockColors.CardLine, RoundedCornerShape(px(35))))
             MockPic(R.drawable.mk_map_ic_search, 36, 36, Modifier.at(44, 280))
             Box(Modifier.at(100, 270).size(px(535), px(56)), contentAlignment = Alignment.CenterStart) {
-                if (state.filter.query.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.map_01), 24, color = MockColors.Hint)
+                if (state.filter.query.isEmpty()) MockText(stringResource(R.string.map_01),
+                    24, color = MockColors.Hint)
                 BasicTextField(
                     value = state.filter.query, onValueChange = vm::setQuery, singleLine = true,
                     textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(24), color = MockColors.Navy),
@@ -159,21 +163,27 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
             }
             // 오른쪽 동그라미: 시안의 필터 아이콘 자리에 AI 아이콘
             Box(
-                Modifier.at(662, 261).size(px(76), px(76)).clip(CircleShape).background(MockColors.Card).border(1.dp, MockColors.CardLine, CircleShape)
+                Modifier.at(662, 261).size(px(76), px(76)).clip(CircleShape).background(MockColors.Card)
+                    .border(1.dp, MockColors.CardLine, CircleShape)
                     .semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(state.filter.query) },
                 contentAlignment = Alignment.Center,
             ) {
-                Box(Modifier.size(px(52)).clip(androidx.compose.foundation.shape.CircleShape).background(MockColors.Lime2), contentAlignment = Alignment.Center) { MockText("AI", 24, weight = androidx.compose.ui.text.font.FontWeight.ExtraBold, color = MockColors.Navy) }
+                Box(Modifier.size(px(52)).clip(CircleShape).background(MockColors.Lime2),
+                    contentAlignment = Alignment.Center) { MockText("AI", 24,
+                    weight = FontWeight.ExtraBold, color = MockColors.Navy) }
             }
             // 지역 칩
-            Row(Modifier.at(20, 349).fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(px(13))) {
+            Row(Modifier.at(20, 349).fillMaxWidth().horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(px(13))) {
                 MapChip("전체", sigungu == null, 76) { sigungu = null }
                 chipNames.take(5).forEach { n -> MapChip(n, sigungu == n, 94) { focusOn(n) } }
                 Box {
                     Row(
-                        Modifier.height(px(54)).clip(RoundedCornerShape(50)).background(MockColors.Chip).clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
+                        Modifier.height(px(54)).clip(RoundedCornerShape(50)).background(MockColors.Chip)
+                            .clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
                         verticalAlignment = Alignment.CenterVertically,
-                    ) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.map_02), 22, weight = FontWeight.Medium); Box(Modifier.width(px(10))); ChevronDown(20) }
+                    ) { MockText(stringResource(R.string.map_02), 22,
+                        weight = FontWeight.Medium); Box(Modifier.width(px(10))); ChevronDown(20) }
                     DropdownMenu(expanded = regionMenu, onDismissRequest = { regionMenu = false }) {
                         chipNames.forEach { n -> DropdownMenuItem(text = { Text(n) }, onClick = { regionMenu = false; focusOn(n) }) }
                     }
@@ -187,7 +197,8 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                     if (state.mapFailed) {
                         Text(
                             stringResource(R.string.map_failed_fallback), style = NopoTheme.typography.labelMedium, color = NopoTheme.colors.ink,
-                            modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.stampSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
+                            modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.stampSoft)
+                                .padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
                         )
                     }
                     StoreListScreen(shown, vm::setSort, onOpenStore)
@@ -204,16 +215,20 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
         }
 
         // 하단 "지금 이 근처 노포"
-        Box(Modifier.fillMaxWidth().height(px(435)).clip(RoundedCornerShape(topStart = px(34), topEnd = px(34))).background(MockColors.Card)) {
-            Box(Modifier.align(Alignment.TopCenter).padding(top = px(16)).size(px(60), px(7)).clip(RoundedCornerShape(50)).background(Color(0xFFCFCBBB)))
+        Box(Modifier.fillMaxWidth().height(px(435)).clip(RoundedCornerShape(topStart = px(34), topEnd = px(34)))
+            .background(MockColors.Card)) {
+            Box(Modifier.align(Alignment.TopCenter).padding(top = px(16)).size(px(60), px(7)).clip(RoundedCornerShape(50))
+                .background(Color(0xFFCFCBBB)))
             MockPic(R.drawable.mk_map_title_near, 252, 52, Modifier.padding(start = px(18), top = px(23)))
-            MockPic(R.drawable.mk_map_more, 95, 48, Modifier.align(Alignment.TopEnd).padding(end = px(15), top = px(27)), onClick = vm::toggleListMode)
+            MockPic(R.drawable.mk_map_more, 95, 48, Modifier.align(Alignment.TopEnd).padding(end = px(15), top = px(27)),
+                onClick = vm::toggleListMode)
             LazyRow(
                 Modifier.padding(top = px(87)).fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = px(22)),
                 horizontalArrangement = Arrangement.spacedBy(px(16)),
             ) {
-                items(nearCards, key = { it.store.id }) { c -> NearCard(c, onOpen = { onOpenStore(c.store.id) }, onBookmark = { vm.toggleBookmark(c.store.id) }) }
+                items(nearCards, key = { it.store.id }) { c -> NearCard(c, onOpen = { onOpenStore(c.store.id) },
+                    onBookmark = { vm.toggleBookmark(c.store.id) }) }
             }
         }
     }
@@ -222,7 +237,8 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
 @Composable
 private fun MapChip(label: String, selected: Boolean, widthPx: Int, onClick: () -> Unit) {
     Box(
-        Modifier.height(px(54)).widthIn(min = px(widthPx)).clip(RoundedCornerShape(50)).background(if (selected) MockColors.Lime else MockColors.Chip)
+        Modifier.height(px(54)).widthIn(min = px(widthPx)).clip(RoundedCornerShape(50))
+            .background(if (selected) MockColors.Lime else MockColors.Chip)
             .clickable(role = Role.Button, onClick = onClick).padding(horizontal = px(16)),
         contentAlignment = Alignment.Center,
     ) { MockText(label, 22, weight = if (selected) FontWeight.Bold else FontWeight.Medium) }
@@ -230,14 +246,17 @@ private fun MapChip(label: String, selected: Boolean, widthPx: Int, onClick: () 
 
 @Composable
 private fun NearCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Unit) {
-    Column(Modifier.width(px(281)).height(px(343)).clip(RoundedCornerShape(px(16))).background(MockColors.Cream).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16))).clickable(role = Role.Button, onClick = onOpen)) {
+    Column(Modifier.width(px(281)).height(px(343)).clip(RoundedCornerShape(px(16))).background(MockColors.Cream)
+        .border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16))).clickable(role = Role.Button, onClick = onOpen)) {
         Box(Modifier.fillMaxWidth().height(px(156))) {
             StorePhoto(c.store, Modifier.fillMaxSize())
-            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(40)).saveDescription().clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
+            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(40)).saveDescription()
+                .clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
                 BookmarkIcon(32, filled = c.bookmarked)
             }
             Box(
-                Modifier.align(Alignment.BottomStart).padding(start = px(16), bottom = px(14)).clip(RoundedCornerShape(50)).background(Color(0x66000000))
+                Modifier.align(Alignment.BottomStart).padding(start = px(16), bottom = px(14)).clip(RoundedCornerShape(50))
+                    .background(Color(0x66000000))
                     .border(1.dp, Color.White, RoundedCornerShape(50)).padding(horizontal = px(14), vertical = px(4)),
             ) { MockText(c.tag, 19, color = Color.White, weight = FontWeight.Medium) }
         }
@@ -258,18 +277,18 @@ private fun NearCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Uni
 
 @Composable
 private fun MapContent(
-    state: MapUiState, vm: MapViewModel, ratings: Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>, onOpenStore: (String) -> Unit,
+    state: MapUiState, vm: MapViewModel, ratings: Map<String, StoreRating>, onOpenStore: (String) -> Unit,
     focusTarget: LatLng?, focusTick: Int, onLocate: () -> Unit,
 ) {
     val context = LocalContext.current
     val c = NopoTheme.colors
     val u = LocalMockU.current
-    val density = androidx.compose.ui.platform.LocalDensity.current.density
+    val density = LocalDensity.current.density
     val bubbleW = (u * 190 * density).toInt()
     val bubbleH = bubbleW * BubbleIcons.H / BubbleIcons.W
     var naverMap by remember { mutableStateOf<NaverMap?>(null) }
     // 지도가 8초 안에 준비되지 않으면(그림이 안 뜨는 기기) 목록으로 바꿔 빈 화면을 막는다
-    LaunchedEffect(Unit) { kotlinx.coroutines.delay(8_000); if (naverMap == null) vm.onMapFailed() }
+    LaunchedEffect(Unit) { delay(8_000); if (naverMap == null) vm.onMapFailed() }
     var cameraTick by remember { mutableIntStateOf(0) }
     var authError by rememberSaveable { mutableStateOf<String?>(null) }
     var zoomedOut by remember { mutableStateOf(false) }
@@ -278,7 +297,7 @@ private fun MapContent(
 
     DisposableEffect(Unit) {
         val sdk = NaverMapSdk.getInstance(context)
-        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> vm.onMapFailed(); authError = e.errorCode; com.nopo.cheonnyeon.feature.diagnostics.DiagLast.mapAuthError = e.errorCode }
+        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> vm.onMapFailed(); authError = e.errorCode; DiagLast.mapAuthError = e.errorCode }
         onDispose { sdk.onAuthFailedListener = null }
     }
 
@@ -397,7 +416,8 @@ private fun MapContent(
         }
         Box(
             Modifier.align(Alignment.BottomEnd).padding(end = px(16), bottom = if (state.selected != null) 220.dp else px(40)).size(px(80))
-                .shadow(6.dp, CircleShape).clip(CircleShape).background(Color.White).clickable(enabled = !state.locating, role = Role.Button, onClick = onLocate),
+                .shadow(6.dp, CircleShape).clip(CircleShape).background(Color.White)
+                .clickable(enabled = !state.locating, role = Role.Button, onClick = onLocate),
             contentAlignment = Alignment.Center,
         ) { MockPic(R.drawable.mk_map_ic_locate, 80, 80) }
         state.selected?.let { s ->

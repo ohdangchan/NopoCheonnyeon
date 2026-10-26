@@ -1,47 +1,43 @@
 package com.nopo.cheonnyeon.feature.store
 
 import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.produceState
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
-import com.nopo.cheonnyeon.domain.rule.ReviewRules
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.compose.SubcomposeAsyncImage
@@ -49,12 +45,17 @@ import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
+import com.nopo.cheonnyeon.domain.rule.ReviewRules
+import com.nopo.cheonnyeon.feature.permission.AlbumPermission
+import com.nopo.cheonnyeon.feature.permission.albumGranted
 import com.nopo.cheonnyeon.platform.camera.CameraPreview
 import com.nopo.cheonnyeon.platform.camera.ReviewPhotoCodec
 import com.nopo.cheonnyeon.platform.camera.rememberCameraController
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 const val ASSET_PREFIX = "asset:"
 
@@ -102,7 +103,8 @@ fun ReviewPhotoCapture(onCaptured: (String) -> Unit, onDismiss: () -> Unit) {
     val scope = rememberCoroutineScope()
     var busy by remember { mutableStateOf(false) }
     var failed by remember { mutableStateOf(false) }
-    Dialog(onDismissRequest = { if (!busy) onDismiss() }, properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
+    Dialog(onDismissRequest = { if (!busy) onDismiss() },
+        properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnClickOutside = false)) {
         Column(
             Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding().padding(NopoTheme.spacing.lg),
             verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
@@ -128,14 +130,16 @@ fun ReviewPhotoCapture(onCaptured: (String) -> Unit, onDismiss: () -> Unit) {
                 )
             } else {
                 Text(stringResource(R.string.perm_camera_needed), color = c.ink)
+                val permanentlyDenied = permission.status == PermissionStatus.PERMANENTLY_DENIED
                 NopoButton(
-                    stringResource(if (permission.status == PermissionStatus.PERMANENTLY_DENIED) R.string.perm_open_settings else R.string.perm_request),
-                    { if (permission.status == PermissionStatus.PERMANENTLY_DENIED) permission.openSettings() else permission.request() },
+                    stringResource(if (permanentlyDenied) R.string.perm_open_settings else R.string.perm_request),
+                    { if (permanentlyDenied) permission.openSettings() else permission.request() },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 Box(Modifier.weight(1f))
             }
-            NopoButton(stringResource(R.string.detail_back), onDismiss, style = NopoButtonStyle.Outline, enabled = !busy, modifier = Modifier.fillMaxWidth())
+            NopoButton(stringResource(R.string.detail_back), onDismiss, style = NopoButtonStyle.Outline, enabled = !busy,
+                modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -182,7 +186,8 @@ fun ReviewPhotoPicker(photos: List<String>, onChange: (List<String>) -> Unit, on
                     Box(Modifier.size(84.dp)) {
                         ReviewPhotoImage(p, Modifier.fillMaxSize().clip(NopoTheme.shapes.sm))
                         Box(
-                            Modifier.align(Alignment.TopEnd).padding(2.dp).size(26.dp).background(Color.Black.copy(alpha = 0.6f), CircleShape)
+                            Modifier.align(Alignment.TopEnd).padding(2.dp).size(26.dp)
+                                .background(Color.Black.copy(alpha = 0.6f), CircleShape)
                                 .clickable(enabled = enabled, role = Role.Button) { onChange(photos.filterIndexed { k, _ -> k != i }) }
                                 .semantics { contentDescription = removeLabel },
                             contentAlignment = Alignment.Center,
@@ -191,15 +196,17 @@ fun ReviewPhotoPicker(photos: List<String>, onChange: (List<String>) -> Unit, on
                 }
             }
         }
-        Text(stringResource(R.string.reviews_photo_count, photos.size, ReviewRules.MAX_PHOTOS), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        Text(stringResource(R.string.reviews_photo_count, photos.size, ReviewRules.MAX_PHOTOS),
+            style = NopoTheme.typography.bodySmall, color = c.ink2)
         val full = photos.size >= ReviewRules.MAX_PHOTOS
         Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
-            NopoButton(stringResource(R.string.reviews_photo_camera), onCamera, style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f))
+            NopoButton(stringResource(R.string.reviews_photo_camera), onCamera, style = NopoButtonStyle.Outline,
+                enabled = enabled && !full, modifier = Modifier.weight(1f))
             NopoButton(
                 stringResource(R.string.reviews_photo_gallery),
                 {
-                    if (com.nopo.cheonnyeon.feature.permission.albumGranted(context)) picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    else album.launch(com.nopo.cheonnyeon.feature.permission.AlbumPermission)
+                    if (albumGranted(context)) picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    else album.launch(AlbumPermission)
                 },
                 style = NopoButtonStyle.Outline, enabled = enabled && !full, modifier = Modifier.weight(1f),
             )

@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.diagnostics
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import com.nopo.cheonnyeon.platform.ocr.MlKitKoreanRecognizer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.Instant
 
 /**
  * 디버그 전용: 앱에 넣어 둔 샘플 영수증·간판 이미지를 실제 ML Kit로 읽고 파서·판정까지 돌려 본다.
@@ -57,16 +59,16 @@ fun DiagnosticsSampleOcr(modifier: Modifier = Modifier) {
     }
 }
 
-private suspend fun readAsset(context: android.content.Context, name: String): List<String> {
+private suspend fun readAsset(context: Context, name: String): List<String> {
     val bitmap = context.assets.open(name).use { BitmapFactory.decodeStream(it) }
     return MlKitKoreanRecognizer().use { it.read(bitmap).lines }.also { bitmap.recycle() }
 }
 
-private suspend fun runReceipt(context: android.content.Context, store: Store): String = try {
+private suspend fun runReceipt(context: Context, store: Store): String = try {
     val lines = readAsset(context, "test_receipt.png")
     val parsed = ReceiptParser.parse(lines.joinToString("\n"))
     // 샘플 영수증의 결제 시각은 고정이라, 판정은 결제 1시간 뒤를 현재로 삼아 24시간 규칙을 건너뛴다
-    val now = parsed.paidAt?.plusHours(1)?.atZone(SeoulZone)?.toInstant() ?: java.time.Instant.now()
+    val now = parsed.paidAt?.plusHours(1)?.atZone(SeoulZone)?.toInstant() ?: Instant.now()
     val match = ReceiptMatcher.match(parsed, store, now)
     "줄 ${lines.size}개\n상호 ${parsed.name}\n전화 ${parsed.phone}\n사업자 ${parsed.businessNo}\n결제 ${parsed.paidAt}\n금액 ${parsed.amount}\n판정 " +
         if (match is AppResult.Success) "통과(전화일치=${match.value.byPhone}, 상호유사도=${"%.2f".format(match.value.nameSimilarity)})" else "실패 ${match.errorOrNull?.code}"
@@ -74,7 +76,7 @@ private suspend fun runReceipt(context: android.content.Context, store: Store): 
     "오류 ${e.javaClass.simpleName}"
 }
 
-private suspend fun runSign(context: android.content.Context, store: Store): String = try {
+private suspend fun runSign(context: Context, store: Store): String = try {
     val lines = readAsset(context, "test_sign.png")
     val r = PhotoMatcher.matchText(lines, store)
     "줄 ${lines.size}개: ${lines.take(6)}\n판정 " + if (r is AppResult.Success) "통과(유사도 ${"%.2f".format(r.value)})" else "실패 ${r.errorOrNull?.code}"

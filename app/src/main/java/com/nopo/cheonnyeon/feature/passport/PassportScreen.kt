@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.passport
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items as gridItems
 import androidx.compose.foundation.lazy.items
@@ -33,6 +33,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,15 +43,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -60,10 +64,13 @@ import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.designsystem.component.StampSize
 import com.nopo.cheonnyeon.core.designsystem.component.StampView
+import com.nopo.cheonnyeon.core.designsystem.component.StarRating
 import com.nopo.cheonnyeon.core.designsystem.component.labelRes
+import com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.BookmarkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronRight
 import com.nopo.cheonnyeon.core.designsystem.mock.GrayPill
+import com.nopo.cheonnyeon.core.designsystem.mock.MockBrush
 import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
@@ -71,20 +78,31 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
-import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
+import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.data.local.MyVisitEntity
+import com.nopo.cheonnyeon.data.remote.ReviewItem
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.model.Title
+import com.nopo.cheonnyeon.domain.rule.CollectionRules
+import com.nopo.cheonnyeon.domain.rule.RegionProgress
+import com.nopo.cheonnyeon.domain.rule.RegionProgressRule
 import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
+import com.nopo.cheonnyeon.feature.store.ReviewPhotoRow
 import com.nopo.cheonnyeon.feature.store.StorePhoto
+import com.nopo.cheonnyeon.platform.share.PassportShareCard
+import com.nopo.cheonnyeon.platform.share.ShareCardColors
+import com.nopo.cheonnyeon.platform.share.ShareCardData
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.Instant
 
 data class PassportStamp(val visit: MyVisitEntity, val store: Store?) {
@@ -95,14 +113,14 @@ data class PassportUiState(
     val loading: Boolean = true,
     val stamps: List<PassportStamp> = emptyList(),
     val totalYears: Int = 0,
-    val regions: List<com.nopo.cheonnyeon.domain.rule.RegionProgress> = emptyList(),
+    val regions: List<RegionProgress> = emptyList(),
 )
 
 class PassportViewModel(private val container: AppContainer) : ViewModel() {
-    private val _reviews = kotlinx.coroutines.flow.MutableStateFlow<List<com.nopo.cheonnyeon.data.remote.ReviewItem>?>(null)
+    private val _reviews = MutableStateFlow<List<ReviewItem>?>(null)
 
     /** 내가 남긴 리뷰 (null = 아직 안 불러옴). 온라인에서만 불러온다 */
-    val reviews: StateFlow<List<com.nopo.cheonnyeon.data.remote.ReviewItem>?> = _reviews
+    val reviews: StateFlow<List<ReviewItem>?> = _reviews
 
     val bookmarks = container.settings.bookmarks
     fun toggleBookmark(id: String) { viewModelScope.launch { container.settings.toggleBookmark(id) } }
@@ -132,7 +150,7 @@ class PassportViewModel(private val container: AppContainer) : ViewModel() {
             loading = false,
             stamps = visits.map { PassportStamp(it, stores[it.storeId]) },
             totalYears = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded },
-            regions = com.nopo.cheonnyeon.domain.rule.RegionProgressRule.compute(stores.values.toList(), visits.map { it.storeId }.toSet()),
+            regions = RegionProgressRule.compute(stores.values.toList(), visits.map { it.storeId }.toSet()),
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, PassportUiState())
 }
@@ -150,7 +168,7 @@ fun PassportScreen(
     var all by rememberSaveable { mutableStateOf(false) }
     var dex by rememberSaveable { mutableStateOf(false) }
     var startReviews by rememberSaveable { mutableStateOf(false) }
-    androidx.compose.runtime.LaunchedEffect(request) {
+    LaunchedEffect(request) {
         when (request) {
             "visited" -> { all = true; startReviews = false }
             "reviews" -> { all = true; startReviews = true; vm.loadReviews() }
@@ -164,7 +182,7 @@ fun PassportScreen(
     val title = TitlePolicy.titleFor(state.totalYears)
     val nextTitle = Title.entries.firstOrNull { it.requiredYears > state.totalYears }
     val pages = remember(state.regions, state.stamps) { buildPages(state.regions, state.stamps) }
-    val goal = com.nopo.cheonnyeon.domain.rule.CollectionRules.goal(real.size)
+    val goal = CollectionRules.goal(real.size)
     val stats = BookStats(visited = real.size, goal = goal, titles = title.ordinal + 1)
 
     if (all) {
@@ -186,7 +204,7 @@ fun PassportScreen(
                         .clickable(role = Role.Button) { dex = true },
                 )
                 MockPic(R.drawable.mk_col_ic_flag, 52, 54, Modifier.at(30, 966))
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_01), 22, Modifier.at(98, 975), color = MockColors.Navy, weight = FontWeight.Medium)
+                MockText(stringResource(R.string.col_01), 22, Modifier.at(98, 975), color = MockColors.Navy, weight = FontWeight.Medium)
                 MockText(
                     if (nextTitle != null) "'${stringResource(nextTitle.labelRes())}'까지 ${nextTitle.requiredYears - state.totalYears}년 남았어요!" else "최고 칭호에 올랐어요!",
                     25, Modifier.at(98, 1010).width(px(385)), weight = FontWeight.Bold,
@@ -207,16 +225,16 @@ fun PassportScreen(
                 )
                 Canvas(Modifier.at(522, 959).size(px(217), px(130))) {
                     drawRoundRect(
-                        Color(0xFFC9C2AB), cornerRadius = androidx.compose.ui.geometry.CornerRadius(20.dp.toPx()),
+                        Color(0xFFC9C2AB), cornerRadius = CornerRadius(20.dp.toPx()),
                         style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 7f))),
                     )
                 }
                 Box(Modifier.at(534, 1002).size(px(62), px(62)).clip(CircleShape).background(MockColors.Lime), contentAlignment = Alignment.Center) {
-                    com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon(40)
+                    AiSparkIcon(40)
                 }
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_02), 21, Modifier.at(608, 990), weight = FontWeight.Bold)
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_03), 19, Modifier.at(608, 1022), color = MockColors.Ink2)
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_04), 19, Modifier.at(608, 1048), color = MockColors.Ink2)
+                MockText(stringResource(R.string.col_02), 21, Modifier.at(608, 990), weight = FontWeight.Bold)
+                MockText(stringResource(R.string.col_03), 19, Modifier.at(608, 1022), color = MockColors.Ink2)
+                MockText(stringResource(R.string.col_04), 19, Modifier.at(608, 1048), color = MockColors.Ink2)
 
                 // 내가 방문한 노포
                 MockPic(R.drawable.mk_col_title_visited, 296, 60, Modifier.at(14, 1110))
@@ -256,7 +274,7 @@ fun PassportScreen(
 
 /** 시안의 "내가 방문한 노포" 카드: 사진 + 왼쪽 아래 붉은 VISITED 도장 + 북마크, 아래에 상호·지역 */
 @Composable
-private fun VisitedCard(s: PassportStamp, bookmarked: Boolean, width: androidx.compose.ui.unit.Dp, onOpen: () -> Unit, onBookmark: () -> Unit) {
+private fun VisitedCard(s: PassportStamp, bookmarked: Boolean, width: Dp, onOpen: () -> Unit, onBookmark: () -> Unit) {
     val store = s.store ?: return
     val date = Instant.ofEpochMilli(s.visit.lastVisitedAt).atZone(SeoulZone).toLocalDate()
     Column(
@@ -293,41 +311,41 @@ private fun PassportAll(
     vm: PassportViewModel, state: PassportUiState, visited: List<PassportStamp>, bookmarks: Set<String>,
     onBack: () -> Unit, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onOpenHall: () -> Unit, onOpenDex: () -> Unit, startReviews: Boolean = false,
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     var reviewsMode by rememberSaveable { mutableStateOf(startReviews) }
     var shareFailed by rememberSaveable { mutableStateOf(false) }
     val myReviews by vm.reviews.collectAsStateWithLifecycle()
-    val c = com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme.colors
+    val c = NopoTheme.colors
     val title = TitlePolicy.titleFor(state.totalYears)
     val titleName = stringResource(title.labelRes())
-    androidx.activity.compose.BackHandler(onBack = onBack)
+    BackHandler(onBack = onBack)
 
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_05), 32, font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(stringResource(R.string.col_05), 32, font = MockBrush, weight = FontWeight.ExtraBold) }
             Box(Modifier.weight(1f))
             MockText("내가 방문한 노포 ${visited.size}곳", 22, color = MockColors.Ink2)
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20)).horizontalScrollCompat(), horizontalArrangement = Arrangement.spacedBy(px(12))) {
-            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = false }
-            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_07), 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
-            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_08), 22, textColor = MockColors.Navy, onClick = onOpenDex)
-            GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_09), 22, textColor = MockColors.Navy, onClick = onOpenHall)
-            vm.myUid?.let { uid -> GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_10), 22, textColor = MockColors.Navy) { onOpenProfile(uid) } }
-            if (visited.isNotEmpty()) GrayPill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_11), 22, textColor = MockColors.Navy) {
+            GrayPill(stringResource(R.string.col_06), 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = false }
+            GrayPill(stringResource(R.string.col_07), 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
+            GrayPill(stringResource(R.string.col_08), 22, textColor = MockColors.Navy, onClick = onOpenDex)
+            GrayPill(stringResource(R.string.col_09), 22, textColor = MockColors.Navy, onClick = onOpenHall)
+            vm.myUid?.let { uid -> GrayPill(stringResource(R.string.col_10), 22, textColor = MockColors.Navy) { onOpenProfile(uid) } }
+            if (visited.isNotEmpty()) GrayPill(stringResource(R.string.col_11), 22, textColor = MockColors.Navy) {
                 scope.launch {
-                    val data = com.nopo.cheonnyeon.platform.share.ShareCardData(
+                    val data = ShareCardData(
                         nickname = vm.nickname().ifBlank { "-" },
                         titleName = titleName,
                         totalYears = state.totalYears,
                         stampCount = visited.size,
                         recent = visited.take(3).map { (it.store?.name ?: it.visit.storeId) to it.visit.yearsAwarded },
-                        colors = com.nopo.cheonnyeon.platform.share.ShareCardColors(
+                        colors = ShareCardColors(
                             c.paper.toArgb(), c.surface.toArgb(), c.primary.toArgb(), c.stamp.toArgb(), c.brass.toArgb(), c.ink.toArgb(), c.ink2.toArgb(),
                         ),
                     )
-                    shareFailed = !com.nopo.cheonnyeon.platform.share.PassportShareCard.share(context, data)
+                    shareFailed = !PassportShareCard.share(context, data)
                 }
             }
         }
@@ -347,9 +365,9 @@ private fun PassportAll(
                             verticalArrangement = Arrangement.spacedBy(px(8)),
                         ) {
                             MockText(r.storeName, 26, font = MockSerif, weight = FontWeight.ExtraBold)
-                            com.nopo.cheonnyeon.core.designsystem.component.StarRating(r.rating.toFloat())
+                            StarRating(r.rating.toFloat())
                             if (r.text.isNotBlank()) MockText(r.text, 22, maxLines = 6)
-                            if (r.photos.isNotEmpty()) com.nopo.cheonnyeon.feature.store.ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
+                            if (r.photos.isNotEmpty()) ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
                         }
                     }
                 }
@@ -390,13 +408,13 @@ private fun StampDetail(stamp: PassportStamp, onDismiss: () -> Unit, onOpenStore
         dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.passport_close)) } },
         title = { Text(stamp.store?.name ?: v.storeId) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme.spacing.sm)) {
+            Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                 StampView(v.yearsAwarded, StampGradePolicy.gradeFor(v.yearsAwarded), size = StampSize.Grid)
-                val proof = java.io.File(androidx.compose.ui.platform.LocalContext.current.filesDir, "proofs/" + v.storeId + ".jpg")
+                val proof = File(LocalContext.current.filesDir, "proofs/" + v.storeId + ".jpg")
                 if (proof.exists()) {
                     coil3.compose.AsyncImage(
                         model = proof, contentDescription = stringResource(R.string.stamp_proof_photo),
-                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxWidth().height(160.dp),
                     )
                 }
@@ -404,7 +422,7 @@ private fun StampDetail(stamp: PassportStamp, onDismiss: () -> Unit, onOpenStore
                 Text(stringResource(R.string.stamp_years, v.yearsAwarded))
                 Text(stringResource(R.string.stamp_method, stringResource(method)))
                 Text(stringResource(R.string.stamp_visit_count, v.visitCount))
-                if (stamp.isTest) Text(stringResource(R.string.stamp_is_test), color = com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme.colors.ink2)
+                if (stamp.isTest) Text(stringResource(R.string.stamp_is_test), color = NopoTheme.colors.ink2)
             }
         },
     )

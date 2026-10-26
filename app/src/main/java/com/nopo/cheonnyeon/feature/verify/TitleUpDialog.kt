@@ -1,5 +1,10 @@
 package com.nopo.cheonnyeon.feature.verify
 
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
@@ -31,11 +36,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
@@ -46,11 +50,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
+import com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+import com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface
 import com.nopo.cheonnyeon.core.designsystem.component.TitleBadge
 import com.nopo.cheonnyeon.core.designsystem.component.YearsGauge
-import com.nopo.cheonnyeon.core.designsystem.component.labelRes
 import com.nopo.cheonnyeon.core.designsystem.component.drawConfetti
 import com.nopo.cheonnyeon.core.designsystem.component.drawFireworks
+import com.nopo.cheonnyeon.core.designsystem.component.labelRes
 import com.nopo.cheonnyeon.core.designsystem.component.star
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.Title
@@ -61,7 +67,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
 /**
  * 칭호 승급 연출 (FR-STP-06, S-705): 어두운 무대에 빛줄기가 돌고, 배지가 뒤집히며 튀어나오고,
@@ -72,9 +77,7 @@ import kotlin.random.Random
 fun TitleUpDialog(title: Title, totalYears: Int, preview: Boolean = false, onDismiss: () -> Unit) {
     val c = NopoTheme.colors
     val context = LocalContext.current
-    val animate = remember {
-        android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f
-    }
+    val animate = remember { animationsEnabled(context) }
     val name = stringResource(title.labelRes())
     val previous = Title.entries.getOrNull(title.ordinal - 1)
     val previousName = previous?.let { stringResource(it.labelRes()) }
@@ -108,9 +111,15 @@ fun TitleUpDialog(title: Title, totalYears: Int, preview: Boolean = false, onDis
     }
 
     val infinite = rememberInfiniteTransition(label = "stage")
-    val spin by infinite.animateFloat(0f, 360f, infiniteRepeatable(tween(16000, easing = LinearEasing), RepeatMode.Restart), label = "rays")
-    val glow by infinite.animateFloat(0.55f, 1f, infiniteRepeatable(tween(1100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "glow")
-    val twinkle by infinite.animateFloat(0f, 1f, infiniteRepeatable(tween(1500, easing = LinearEasing), RepeatMode.Restart), label = "twinkle")
+    val spin by infinite.animateFloat(
+        0f, 360f, infiniteRepeatable(tween(16000, easing = LinearEasing), RepeatMode.Restart), label = "rays",
+    )
+    val glow by infinite.animateFloat(
+        0.55f, 1f, infiniteRepeatable(tween(1100, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "glow",
+    )
+    val twinkle by infinite.animateFloat(
+        0f, 1f, infiniteRepeatable(tween(1500, easing = LinearEasing), RepeatMode.Restart), label = "twinkle",
+    )
 
     val confettiColors = listOf(c.brass, c.stamp, c.primary, Color.White, c.tealSoft, c.brassSoft)
 
@@ -132,7 +141,10 @@ fun TitleUpDialog(title: Title, totalYears: Int, preview: Boolean = false, onDis
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(Modifier.fillMaxWidth().weight(0.68f), contentAlignment = Alignment.Center) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.lg)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.lg),
+                    ) {
                         Text(
                             stringResource(R.string.title_up_headline),
                             style = NopoTheme.typography.titleLarge, color = Color.White, textAlign = TextAlign.Center,
@@ -155,11 +167,17 @@ fun TitleUpDialog(title: Title, totalYears: Int, preview: Boolean = false, onDis
                         if (previousName != null) {
                             Text(
                                 stringResource(R.string.title_up_from_to, previousName, name),
-                                style = NopoTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.8f), textAlign = TextAlign.Center,
+                                style = NopoTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.8f),
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier.graphicsLayer { alpha = if (typed >= name.length) 1f else 0f },
                             )
                         }
-                        if (preview) Text(stringResource(R.string.title_up_preview), style = NopoTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f))
+                        if (preview) {
+                            Text(
+                                stringResource(R.string.title_up_preview),
+                                style = NopoTheme.typography.bodySmall, color = Color.White.copy(alpha = 0.7f),
+                            )
+                        }
                     }
                 }
                 Column(
@@ -183,7 +201,7 @@ private fun DrawScope.drawRays(center: Offset, spin: Float, color: Color, streng
         for (i in 0 until rays) {
             val a = (i * 2 * PI / rays).toFloat()
             val half = (PI / rays * 0.55f).toFloat()
-            val path = androidx.compose.ui.graphics.Path().apply {
+            val path = Path().apply {
                 moveTo(center.x, center.y)
                 lineTo(center.x + cos(a - half) * len, center.y + sin(a - half) * len)
                 lineTo(center.x + cos(a + half) * len, center.y + sin(a + half) * len)
@@ -198,7 +216,8 @@ private fun DrawScope.drawRays(center: Offset, spin: Float, color: Color, streng
 private fun DrawScope.drawGlow(center: Offset, color: Color, strength: Float) {
     if (strength <= 0f) return
     val r = 150.dp.toPx()
-    drawCircle(Brush.radialGradient(listOf(color.copy(alpha = 0.55f * strength), Color.Transparent), center, r * 1.6f), r * 1.6f, center)
+    val brush = Brush.radialGradient(listOf(color.copy(alpha = 0.55f * strength), Color.Transparent), center, r * 1.6f)
+    drawCircle(brush, r * 1.6f, center)
 }
 
 /** 배지 주변에서 반짝이는 별 */
@@ -210,28 +229,29 @@ private fun DrawScope.drawTwinkles(center: Offset, phase: Float, color: Color) {
         val p = (phase + i / n.toFloat()) % 1f
         val s = sin(p * PI).toFloat().coerceIn(0f, 1f)
         if (s <= 0.03f) continue
-        star(Offset(center.x + cos(ang) * dist, center.y + sin(ang) * dist), (4f + (i % 3) * 2f).dp.toPx() * s, color.copy(alpha = s))
+        val at = Offset(center.x + cos(ang) * dist, center.y + sin(ang) * dist)
+        star(at, (4f + (i % 3) * 2f).dp.toPx() * s, color.copy(alpha = s))
     }
 }
 
 /** 축하 진동: 높은 칭호일수록 길고 여러 번 */
 @Suppress("DEPRECATION")
-private fun vibrateCelebrate(context: android.content.Context, tier: Int) {
+private fun vibrateCelebrate(context: Context, tier: Int) {
     runCatching {
-        val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            (context.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE) as android.os.VibratorManager).defaultVibrator
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            (context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         } else {
-            context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as android.os.Vibrator
+            context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         }
         val pulses = 2 + tier / 3
         val pattern = LongArray(pulses * 2) { if (it % 2 == 0) 70L else 90L }
         pattern[0] = 0L
-        vibrator.vibrate(android.os.VibrationEffect.createWaveform(pattern, -1))
+        vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
     }
 }
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun TitleUpDialogPreview() {
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface { TitleUpDialog(Title.ELDER, totalYears = 312) {} }
+    PreviewSurface { TitleUpDialog(Title.ELDER, totalYears = 312) {} }
 }

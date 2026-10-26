@@ -1,57 +1,87 @@
 package com.nopo.cheonnyeon.feature.main
 
+import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.flow.first
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.nopo.cheonnyeon.BuildConfig
-import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.BuildConfig
 import com.nopo.cheonnyeon.core.common.factoryOf
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
+import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
+import com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner
+import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
+import com.nopo.cheonnyeon.core.designsystem.mock.ProvideMockScale
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
-import com.nopo.cheonnyeon.feature.map.MapScreen
-import com.nopo.cheonnyeon.feature.settings.SettingsScreen
-import com.nopo.cheonnyeon.feature.passport.PassportScreen
-import com.nopo.cheonnyeon.feature.passport.PassportViewModel
-import com.nopo.cheonnyeon.feature.map.MapViewModel
+import com.nopo.cheonnyeon.domain.model.StampGrade
+import com.nopo.cheonnyeon.domain.model.Store
+import com.nopo.cheonnyeon.domain.model.Title
+import com.nopo.cheonnyeon.domain.model.VerifyMethod
 import com.nopo.cheonnyeon.feature.explore.ExploreScreen
 import com.nopo.cheonnyeon.feature.explore.ExploreViewModel
+import com.nopo.cheonnyeon.feature.help.HelpCenterScreen
 import com.nopo.cheonnyeon.feature.home.HomeScreen
 import com.nopo.cheonnyeon.feature.home.HomeViewModel
+import com.nopo.cheonnyeon.feature.map.MapScreen
+import com.nopo.cheonnyeon.feature.map.MapViewModel
 import com.nopo.cheonnyeon.feature.my.MyScreen
 import com.nopo.cheonnyeon.feature.my.MyViewModel
+import com.nopo.cheonnyeon.feature.my.NotifySettingsScreen
+import com.nopo.cheonnyeon.feature.passport.PassportScreen
+import com.nopo.cheonnyeon.feature.passport.PassportViewModel
+import com.nopo.cheonnyeon.feature.permission.LocationPermissionScreen
+import com.nopo.cheonnyeon.feature.permission.NotificationPermissionHost
+import com.nopo.cheonnyeon.feature.permission.PermissionIntroHost
+import com.nopo.cheonnyeon.feature.permission.PermissionManageHost
+import com.nopo.cheonnyeon.feature.permission.PermissionOffScreen
+import com.nopo.cheonnyeon.feature.settings.MockSettingsScreen
+import com.nopo.cheonnyeon.feature.settings.SettingsScreen
+import com.nopo.cheonnyeon.feature.verify.StampPreviewDialog
+import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
+import com.nopo.cheonnyeon.platform.permission.PermissionStatus
+import com.nopo.cheonnyeon.platform.permission.rememberPermission
+import com.nopo.cheonnyeon.R
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 /** 로그인 뒤 첫 화면: 아래 탭 5개 (홈 / 탐색 / 지도 / 컬렉션 / 마이). 컬렉션은 패스포트, 마이는 설정 화면이다. */
 @Composable
-fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenProfile: (String) -> Unit, onDiagnostics: () -> Unit, onOpenHall: () -> Unit, onOpenRoulette: () -> Unit, onOpenChat: (String) -> Unit = {}, onOpenNotifications: () -> Unit = {}) {
+fun MainScreen(
+    container: AppContainer,
+    onOpenStore: (String) -> Unit,
+    onOpenProfile: (String) -> Unit,
+    onDiagnostics: () -> Unit,
+    onOpenHall: () -> Unit,
+    onOpenRoulette: () -> Unit,
+    onOpenChat: (String) -> Unit = {},
+    onOpenNotifications: () -> Unit = {},
+) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
-    val locationPermission = com.nopo.cheonnyeon.platform.permission.rememberPermission(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-    androidx.compose.runtime.LaunchedEffect(locationPermission.status) {
-        if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) container.refreshLocation()
+    val locationPermission = rememberPermission(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+    LaunchedEffect(locationPermission.status) {
+        if (locationPermission.status == PermissionStatus.GRANTED) container.refreshLocation()
     }
     val introDone by container.settings.permIntroDone.collectAsStateWithLifecycle(initialValue = null as Boolean?)
     var mapPermLater by rememberSaveable { mutableStateOf(false) }
@@ -65,32 +95,32 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
     var mySavedRequest by remember { mutableStateOf(false) }
     var settingsSub by rememberSaveable { mutableIntStateOf(0) }
     // 룰렛·랭킹 같은 별도 화면의 하단 탭에서 고른 탭으로 이동한다
-    androidx.compose.runtime.LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         container.requestedTab.collect { t -> if (t != null) { tab = t; settingsOpen = false; settingsSub = 0; container.requestedTab.value = null } }
     }
-    var logoutAsk by androidx.compose.runtime.remember { mutableStateOf(false) }
-    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsSub != 0) { settingsSub = 0 }
-    androidx.activity.compose.BackHandler(enabled = tab == 4 && settingsOpen && settingsSub == 0) { settingsOpen = false }
-    var showQueue by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf(false) }
+    var logoutAsk by remember { mutableStateOf(false) }
+    BackHandler(enabled = tab == 4 && settingsSub != 0) { settingsSub = 0 }
+    BackHandler(enabled = tab == 4 && settingsOpen && settingsSub == 0) { settingsOpen = false }
+    var showQueue by rememberSaveable { mutableStateOf(false) }
     val online by container.connectivity.online.collectAsStateWithLifecycle(initialValue = true)
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
-    androidx.compose.runtime.LaunchedEffect(online) { if (online) container.syncScheduler.enqueue() }
+    LaunchedEffect(online) { if (online) container.syncScheduler.enqueue() }
     val duplicateNotices by container.visits.duplicateNotices.collectAsStateWithLifecycle()
     if (duplicateNotices.isNotEmpty()) {
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = container.visits::dismissDuplicateNotice,
-            title = { Text(stringResource(com.nopo.cheonnyeon.R.string.dup_notice_title)) },
-            text = { Text(stringResource(com.nopo.cheonnyeon.R.string.dup_notice_body, duplicateNotices.joinToString(", "))) },
-            confirmButton = { androidx.compose.material3.TextButton(container.visits::dismissDuplicateNotice) { Text(stringResource(com.nopo.cheonnyeon.R.string.verify_done_close)) } },
+            title = { Text(stringResource(R.string.dup_notice_title)) },
+            text = { Text(stringResource(R.string.dup_notice_body, duplicateNotices.joinToString(", "))) },
+            confirmButton = { TextButton(container.visits::dismissDuplicateNotice) { Text(stringResource(R.string.verify_done_close)) } },
         )
     }
-    com.nopo.cheonnyeon.core.designsystem.mock.ProvideMockScale {
-    if (introDone == null) { androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) }
-    else if (introDone == false) com.nopo.cheonnyeon.feature.permission.PermissionIntroHost(container)
-    else Column(Modifier.fillMaxSize().background(com.nopo.cheonnyeon.core.designsystem.mock.MockColors.Cream)) {
-        com.nopo.cheonnyeon.core.designsystem.component.OfflineBanner(
+    ProvideMockScale {
+    if (introDone == null) { Box(Modifier.fillMaxSize().background(MockColors.Cream)) }
+    else if (introDone == false) PermissionIntroHost(container)
+    else Column(Modifier.fillMaxSize().background(MockColors.Cream)) {
+        OfflineBanner(
             visible = !online, pendingCount = pending,
-            modifier = Modifier.fillMaxWidth().clickable(role = androidx.compose.ui.semantics.Role.Button) { showQueue = true },
+            modifier = Modifier.fillMaxWidth().clickable(role = Role.Button) { showQueue = true },
         )
         if (showQueue) PendingQueueDialog(container, onDismiss = { showQueue = false })
         val restoring by container.restoring.collectAsStateWithLifecycle()
@@ -104,15 +134,15 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
             when (tab) {
                 0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 }, onOpenChat = onOpenChat, onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 }, onBell = onOpenNotifications)
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
-                2 -> if (locationPermission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED && !mapPermLater) {
-                    if (locationPermission.status == com.nopo.cheonnyeon.platform.permission.PermissionStatus.PERMANENTLY_DENIED) {
-                        com.nopo.cheonnyeon.feature.permission.PermissionOffScreen(onOpenSettings = locationPermission.openSettings, onLater = { mapPermLater = true })
-                    } else com.nopo.cheonnyeon.feature.permission.LocationPermissionScreen(onAllow = locationPermission.request, onLater = { mapPermLater = true })
+                2 -> if (locationPermission.status != PermissionStatus.GRANTED && !mapPermLater) {
+                    if (locationPermission.status == PermissionStatus.PERMANENTLY_DENIED) {
+                        PermissionOffScreen(onOpenSettings = locationPermission.openSettings, onLater = { mapPermLater = true })
+                    } else LocationPermissionScreen(onAllow = locationPermission.request, onLater = { mapPermLater = true })
                 } else MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
                 3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 }, request = collectionRequest, onRequestHandled = { collectionRequest = null })
                 else -> when (settingsSub) {
                     0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 }, openSaved = mySavedRequest, onSavedHandled = { mySavedRequest = false })
-                        else com.nopo.cheonnyeon.feature.settings.MockSettingsScreen(
+                        else MockSettingsScreen(
                             myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onHelp = { settingsSub = 5 }, onLogout = { logoutAsk = true },
                             onBell = onOpenNotifications, onBack = { settingsOpen = false },
                             onStat = { i ->
@@ -125,10 +155,10 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
                                 }
                             },
                         )
-                    2 -> com.nopo.cheonnyeon.feature.my.NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
-                    3 -> com.nopo.cheonnyeon.feature.permission.PermissionManageHost(container, onBack = { settingsSub = 0 }, onNotificationScreen = { settingsSub = 4 })
-                    4 -> com.nopo.cheonnyeon.feature.permission.NotificationPermissionHost(onDone = { settingsSub = 3 })
-                    5 -> com.nopo.cheonnyeon.feature.help.HelpCenterScreen(myVm.email, onBack = { settingsSub = 0 })
+                    2 -> NotifySettingsScreen(myVm, onBack = { settingsSub = 0 })
+                    3 -> PermissionManageHost(container, onBack = { settingsSub = 0 }, onNotificationScreen = { settingsSub = 4 })
+                    4 -> NotificationPermissionHost(onDone = { settingsSub = 3 })
+                    5 -> HelpCenterScreen(myVm.email, onBack = { settingsSub = 0 })
                     else -> SettingsScreen(
                         container,
                         signOutButton = { SignOutButton(container) },
@@ -144,39 +174,27 @@ fun MainScreen(container: AppContainer, onOpenStore: (String) -> Unit, onOpenPro
             }
         }
         SignOutAsk(container, logoutAsk) { logoutAsk = false }
-        com.nopo.cheonnyeon.feature.main.MockNavBar(tab) { tab = it }
+        MockNavBar(tab) { tab = it }
     }
-    }
-}
-
-@Composable
-private fun TabPlaceholder(textRes: Int, extra: @Composable () -> Unit = {}) {
-    Column(
-        Modifier.fillMaxSize().padding(NopoTheme.spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.lg, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(stringResource(textRes), color = NopoTheme.colors.ink, style = NopoTheme.typography.titleMedium)
-        extra()
     }
 }
 
 /** 현재 위치에 시험용 가게를 만든다 (디버그 전용). 위치 권한이 있어야 한다. */
 @Composable
 private fun TestStoreButton(container: AppContainer) {
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
-    val permission = com.nopo.cheonnyeon.platform.permission.rememberPermission(
-        android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION,
+    val scope = rememberCoroutineScope()
+    val permission = rememberPermission(
+        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
     )
-    var message by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Int?>(null) }
+    var message by remember { mutableStateOf<Int?>(null) }
     NopoButton(stringResource(R.string.test_store_create), {
-        if (permission.status != com.nopo.cheonnyeon.platform.permission.PermissionStatus.GRANTED) {
+        if (permission.status != PermissionStatus.GRANTED) {
             permission.request()
         } else {
             message = R.string.test_store_working
             scope.launch {
                 val fix = try {
-                    com.nopo.cheonnyeon.platform.location.FusedLocationAdapter(container.appContext).bestFix(timeoutMs = 10_000L)
+                    FusedLocationAdapter(container.appContext).bestFix(timeoutMs = 10_000L)
                 } catch (_: Exception) {
                     null
                 }
@@ -192,29 +210,33 @@ private fun TestStoreButton(container: AppContainer) {
     message?.let { Text(stringResource(it), color = NopoTheme.colors.ink2) }
 }
 
+/** 아직 서버에 올라가지 않은 방문 기록의 가게 이름들(시험용 가게 제외) */
+private suspend fun unsyncedVisitNames(container: AppContainer): List<String> =
+    container.database.myVisitDao().observeAll().first()
+        .filter { !it.synced && !it.storeId.startsWith(Store.TEST_PREFIX) }
+        .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+
 /** 올라가지 않은 기록 목록과 "지금 올리기" (시안 offline_queue) */
 @Composable
 private fun PendingQueueDialog(container: AppContainer, onDismiss: () -> Unit) {
-    var names by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        names = container.database.myVisitDao().observeAll().first()
-            .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
-            .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+    var names by remember { mutableStateOf<List<String>>(emptyList()) }
+    LaunchedEffect(Unit) {
+        names = unsyncedVisitNames(container)
     }
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.queue_title)) },
         text = { Text(if (names.isEmpty()) stringResource(R.string.queue_empty) else stringResource(R.string.queue_body, names.joinToString(", "))) },
-        confirmButton = { androidx.compose.material3.TextButton({ container.syncScheduler.enqueue(); onDismiss() }) { Text(stringResource(R.string.queue_sync_now)) } },
-        dismissButton = { androidx.compose.material3.TextButton(onDismiss) { Text(stringResource(R.string.detail_back)) } },
+        confirmButton = { TextButton({ container.syncScheduler.enqueue(); onDismiss() }) { Text(stringResource(R.string.queue_sync_now)) } },
+        dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.detail_back)) } },
     )
 }
 
 /** 테스트 가게와 테스트 도장을 모두 지운다 (FR-TST-03). 서버 기록은 건드리지 않는다. */
 @Composable
 private fun TestDataDeleteButton(container: AppContainer) {
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
-    var done by androidx.compose.runtime.remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    var done by remember { mutableStateOf(false) }
     NopoButton(stringResource(R.string.test_store_delete), {
         scope.launch {
             container.visits.clearTestData()
@@ -222,7 +244,7 @@ private fun TestDataDeleteButton(container: AppContainer) {
             container.catalog.deleteTestStores()
             done = true
         }
-    }, style = com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle.Outline)
+    }, style = NopoButtonStyle.Outline)
     if (done) Text(stringResource(R.string.test_store_deleted), color = NopoTheme.colors.ink2)
 }
 
@@ -230,25 +252,23 @@ private fun TestDataDeleteButton(container: AppContainer) {
 @Composable
 private fun SignOutButton(container: AppContainer) {
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
-    var confirm by androidx.compose.runtime.remember { mutableStateOf(false) }
-    var unsynced by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
-    androidx.compose.runtime.LaunchedEffect(confirm) {
+    var confirm by remember { mutableStateOf(false) }
+    var unsynced by remember { mutableStateOf<List<String>>(emptyList()) }
+    LaunchedEffect(confirm) {
         if (confirm) {
-            unsynced = container.database.myVisitDao().observeAll().first()
-                .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
-                .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+            unsynced = unsyncedVisitNames(container)
         }
     }
     NopoButton(stringResource(R.string.auth_sign_out), { if (pending > 0) confirm = true else container.signOut() })
     if (confirm) {
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = { confirm = false },
             title = { Text(stringResource(R.string.signout_warn_title)) },
             text = {
                 Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", ")))
             },
-            confirmButton = { androidx.compose.material3.TextButton({ confirm = false; container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
-            dismissButton = { androidx.compose.material3.TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
+            confirmButton = { TextButton({ confirm = false; container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
+            dismissButton = { TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
         )
     }
 }
@@ -256,8 +276,8 @@ private fun SignOutButton(container: AppContainer) {
 /** 디버그 전용: 영수증·위치 없이 가게 하나에 방문 기록을 만든다. 동기화·리뷰·프로필·복원 같은 서버 흐름을 시험할 때 쓴다. */
 @Composable
 private fun DebugVisitButton(container: AppContainer) {
-    val scope = androidx.compose.runtime.rememberCoroutineScope()
-    var message by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+    var message by remember { mutableStateOf<String?>(null) }
     NopoButton("가상 방문 기록 (디버그, 서버 동기화 시험)", {
         scope.launch {
             val visited = container.visits.visitRefs().map { it.storeId }.toSet()
@@ -265,7 +285,7 @@ private fun DebugVisitButton(container: AppContainer) {
             if (store == null) {
                 message = "기록할 가게가 없어요"
             } else {
-                container.visits.record(store, com.nopo.cheonnyeon.domain.model.VerifyMethod.RECEIPT, true, null)
+                container.visits.record(store, VerifyMethod.RECEIPT, true, null)
                 container.syncScheduler.enqueue()
                 message = "가상 방문 기록: " + store.name
             }
@@ -277,14 +297,14 @@ private fun DebugVisitButton(container: AppContainer) {
 /** 개발자 도구: 인증 없이 도장 찍기·폭죽·칭호 승급 연출을 미리 본다 */
 @Composable
 private fun StampPreviewButtons() {
-    var preview by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<Int?>(null) }
+    var preview by remember { mutableStateOf<Int?>(null) }
     NopoButton(stringResource(R.string.dev_stamp_normal), { preview = 0 })
     NopoButton(stringResource(R.string.dev_stamp_red), { preview = 1 })
     NopoButton(stringResource(R.string.dev_stamp_gold), { preview = 2 })
     when (preview) {
-        0 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.NORMAL, 38, null) { preview = null }
-        1 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.RED, 72, null) { preview = null }
-        2 -> com.nopo.cheonnyeon.feature.verify.StampPreviewDialog(com.nopo.cheonnyeon.domain.model.StampGrade.GOLD, 126, com.nopo.cheonnyeon.domain.model.Title.ELDER) { preview = null }
+        0 -> StampPreviewDialog(StampGrade.NORMAL, 38, null) { preview = null }
+        1 -> StampPreviewDialog(StampGrade.RED, 72, null) { preview = null }
+        2 -> StampPreviewDialog(StampGrade.GOLD, 126, Title.ELDER) { preview = null }
     }
 }
 
@@ -292,22 +312,20 @@ private fun StampPreviewButtons() {
 @Composable
 private fun SignOutAsk(container: AppContainer, ask: Boolean, onDone: () -> Unit) {
     val pending by container.visits.pendingCount.collectAsStateWithLifecycle(initialValue = 0)
-    var unsynced by androidx.compose.runtime.remember { mutableStateOf<List<String>>(emptyList()) }
-    androidx.compose.runtime.LaunchedEffect(ask) {
+    var unsynced by remember { mutableStateOf<List<String>>(emptyList()) }
+    LaunchedEffect(ask) {
         if (ask && pending <= 0) { onDone(); container.signOut() }
         if (ask && pending > 0) {
-            unsynced = container.database.myVisitDao().observeAll().first()
-                .filter { !it.synced && !it.storeId.startsWith(com.nopo.cheonnyeon.domain.model.Store.TEST_PREFIX) }
-                .map { container.catalog.byId(it.storeId)?.name ?: it.storeId }
+            unsynced = unsyncedVisitNames(container)
         }
     }
     if (ask && pending > 0) {
-        androidx.compose.material3.AlertDialog(
+        AlertDialog(
             onDismissRequest = onDone,
             title = { Text(stringResource(R.string.signout_warn_title)) },
             text = { Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", "))) },
-            confirmButton = { androidx.compose.material3.TextButton({ onDone(); container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
-            dismissButton = { androidx.compose.material3.TextButton(onDone) { Text(stringResource(R.string.detail_back)) } },
+            confirmButton = { TextButton({ onDone(); container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
+            dismissButton = { TextButton(onDone) { Text(stringResource(R.string.detail_back)) } },
         )
     }
 }

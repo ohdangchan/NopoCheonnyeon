@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,32 +21,47 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.core.common.Analytics
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
+import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.common.message
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
+import com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+import com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface
 import com.nopo.cheonnyeon.core.designsystem.component.StarRating
 import com.nopo.cheonnyeon.core.designsystem.component.StarRatingInput
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
+import com.nopo.cheonnyeon.data.ai.InsightReview
+import com.nopo.cheonnyeon.data.ai.LoyaltyAnalysis
+import com.nopo.cheonnyeon.data.ai.StoreInsight
+import com.nopo.cheonnyeon.data.ai.StoreTranslation
+import com.nopo.cheonnyeon.data.local.MyVisitEntity
+import com.nopo.cheonnyeon.data.local.TestReview
+import com.nopo.cheonnyeon.data.remote.DemoReviews
 import com.nopo.cheonnyeon.data.remote.ReviewItem
 import com.nopo.cheonnyeon.data.remote.ReviewPage
 import com.nopo.cheonnyeon.data.remote.ReviewSummary
+import com.nopo.cheonnyeon.data.remote.StoreStats
 import com.nopo.cheonnyeon.domain.model.Store
+import com.nopo.cheonnyeon.domain.rule.LoyaltyInput
 import com.nopo.cheonnyeon.domain.rule.ReviewCheck
 import com.nopo.cheonnyeon.domain.rule.ReviewInvalid
 import com.nopo.cheonnyeon.domain.rule.ReviewRules
+import com.nopo.cheonnyeon.domain.rule.RevisitStats
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
+import com.nopo.cheonnyeon.feature.ai.AiConsentDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -73,17 +88,17 @@ data class ReviewsUiState(
     val error: AppError? = null,
     val saving: Boolean = false,
     val reported: Boolean = false,
-    val stats: com.nopo.cheonnyeon.data.remote.StoreStats? = null,
+    val stats: StoreStats? = null,
     /** 시연용 예시 리뷰(실제 리뷰 뒤에 표시) */
     val demoItems: List<ReviewItem> = emptyList(),
     /** 시험용 가게: 리뷰가 서버가 아니라 이 기기에만 저장된다 */
     val localOnly: Boolean = false,
     /** AI 리뷰 분석 */
-    val insight: com.nopo.cheonnyeon.data.ai.StoreInsight? = null,
+    val insight: StoreInsight? = null,
     val insightLoading: Boolean = false,
     val insightError: AppError? = null,
     /** 단골 충성도 점수(AI) */
-    val loyalty: com.nopo.cheonnyeon.data.ai.LoyaltyAnalysis? = null,
+    val loyalty: LoyaltyAnalysis? = null,
     val loyaltyLoading: Boolean = false,
     val loyaltyError: AppError? = null,
 )
@@ -132,13 +147,15 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val demoOn = container.settings.demoData.first()
             val demo = if (demoOn) {
                 // 시연용 패스포트로 이 가게에 남긴 내 리뷰가 있으면 맨 앞에 둔다
-                val mineDemo = if (container.database.myVisitDao().demoVisitCount() > 0) container.demoReviews.myReviews(container.auth.currentNickname().orEmpty(), store.id) else emptyList()
+                val mineDemo = if (container.database.myVisitDao()
+                    .demoVisitCount() > 0) container.demoReviews.myReviews(container.auth.currentNickname()
+                    .orEmpty(), store.id) else emptyList()
                 mineDemo + container.demoReviews.forStore(store.id)
             } else emptyList()
             _state.update {
                 it.copy(
                     loading = false,
-                    summary = com.nopo.cheonnyeon.data.remote.DemoReviews.merge(summary.valueOrNull, demo),
+                    summary = DemoReviews.merge(summary.valueOrNull, demo),
                     demoItems = demo,
                     items = page.valueOrNull?.items.orEmpty(),
                     hasMore = page.valueOrNull?.hasMore ?: false,
@@ -157,8 +174,8 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         val demo = if (container.settings.demoData.first()) container.demoReviews.forStore(store.id) else emptyList()
         val visited = container.database.myVisitDao().byStore(store.id) != null
         val own = if (visited) loadTestReviews() else emptyList()
-        val summary = if (own.isEmpty()) com.nopo.cheonnyeon.data.remote.DemoReviews.merge(null, demo)
-        else com.nopo.cheonnyeon.data.remote.DemoReviews.merge(ReviewSummary(own.size, own.sumOf { it.rating }.toDouble() / own.size), demo)
+        val summary = if (own.isEmpty()) DemoReviews.merge(null, demo)
+        else DemoReviews.merge(ReviewSummary(own.size, own.sumOf { it.rating }.toDouble() / own.size), demo)
         _state.update {
             it.copy(
                 loading = false, summary = summary, demoItems = demo, items = own, mine = own, hasMore = false, localOnly = true,
@@ -170,9 +187,10 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     }
 
     /** 오늘(서울 날짜) 실제로 인증한 기록이 있는가. 시연용 도장(DEMO)은 인증으로 치지 않는다 */
-    private fun isVerifiedToday(visit: com.nopo.cheonnyeon.data.local.MyVisitEntity?): Boolean =
-        visit != null && visit.method != com.nopo.cheonnyeon.data.remote.DemoReviews.METHOD_DEMO &&
-            java.time.Instant.ofEpochMilli(visit.lastVisitedAt).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate() == java.time.LocalDate.now(com.nopo.cheonnyeon.core.common.SeoulZone)
+    private fun isVerifiedToday(visit: MyVisitEntity?): Boolean =
+        visit != null && visit.method != DemoReviews.METHOD_DEMO &&
+            java.time.Instant.ofEpochMilli(visit.lastVisitedAt).atZone(SeoulZone)
+                .toLocalDate() == java.time.LocalDate.now(SeoulZone)
 
     /** "리뷰 남기기": 아직 오늘 인증하지 않았으면 인증 화면으로 보내고, 인증에 성공하면 편집기가 열리게 표시해 둔다 */
     fun requestVerifyForReview() { container.reviewIntentStoreId.value = store.id }
@@ -190,7 +208,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
     }
 
     val aiAvailable: Boolean get() = container.ai.available
-    val translation: StateFlow<com.nopo.cheonnyeon.data.ai.StoreTranslation?> get() = container.translator.state
+    val translation: StateFlow<StoreTranslation?> get() = container.translator.state
     /** 보이는 리뷰 글을 번역 대상으로 등록한다 */
     fun registerForTranslation(texts: List<String>) = container.translator.addSources(store.id, texts)
     val aiConsent get() = container.settings.aiConsent
@@ -202,7 +220,8 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         if (s.insightLoading) return
         _state.update { it.copy(insightLoading = true, insightError = null) }
         viewModelScope.launch {
-            val reviews = (s.items + s.demoItems).filter { it.uid != myUid || it.demo }.map { com.nopo.cheonnyeon.data.ai.InsightReview(it.rating, it.text) }
+            val reviews = (s.items + s.demoItems).filter { it.uid != myUid || it.demo }
+                .map { InsightReview(it.rating, it.text) }
             when (val r = container.ai.analyzeStore(store.id, store.name, store.menuItems, reviews)) {
                 is AppResult.Success -> _state.update { it.copy(insightLoading = false, insight = r.value) }
                 is AppResult.Failure -> _state.update { it.copy(insightLoading = false, insightError = r.error) }
@@ -219,7 +238,7 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val all = s.items + s.demoItems
             val visitCounts = all.map { it.visitCount }
             val stats = s.stats
-            val input = com.nopo.cheonnyeon.domain.rule.LoyaltyInput(
+            val input = LoyaltyInput(
                 visitors = stats?.visitors ?: all.size,
                 revisitors = stats?.revisitors ?: all.count { it.visitCount >= 2 },
                 avgVisitCount = if (visitCounts.isEmpty()) 1.0 else visitCounts.average(),
@@ -227,7 +246,8 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             )
             // 비교 대상: 시연용 예시 데이터에 있는 다른 가게들(리뷰 5개 이상)
             val peers = container.demoReviews.load().byStore.filter { (id, list) -> id != store.id && list.size >= 5 }.map { (_, list) ->
-                com.nopo.cheonnyeon.domain.rule.LoyaltyInput(list.size, list.count { it.visitCount >= 2 }, list.map { it.visitCount }.average(), list.size)
+                LoyaltyInput(list.size, list.count { it.visitCount >= 2 },
+                    list.map { it.visitCount }.average(), list.size)
             }
             val avg = s.summary?.average
             when (val r = container.ai.loyalty(store.name, input, peers, avg)) {
@@ -260,11 +280,12 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
         if (_state.value.saving) return
         if (store.isTest) {
             viewModelScope.launch {
-                val check = com.nopo.cheonnyeon.domain.rule.ReviewRules.validate(rating, text)
+                val check = ReviewRules.validate(rating, text)
                 if (check is ReviewCheck.Valid) {
                     val now = container.clock.now().toEpochMilli()
-                    container.settings.saveTestReview(store.id, com.nopo.cheonnyeon.data.local.TestReview(reviewId ?: "local_$now", check.rating, now, check.text, photos))
-                    com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(check.text.isNotBlank())
+                    container.settings.saveTestReview(store.id,
+                        TestReview(reviewId ?: "local_$now", check.rating, now, check.text, photos))
+                    Analytics.reviewSaved(check.text.isNotBlank())
                     onDone(); refresh()
                 }
             }
@@ -275,10 +296,11 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
             val visit = container.database.myVisitDao().byStore(store.id)
             val total = container.database.myVisitDao().observeTotalYears().first()
             val result = container.reviews.save(
-                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total).name, reviewId = reviewId, photos = photos,
+                store.id, store.name, rating, text, visit?.visitCount ?: 1, TitlePolicy.titleFor(total)
+                    .name, reviewId = reviewId, photos = photos,
             )
             _state.update { it.copy(saving = false, error = result.errorOrNull) }
-            if (result is AppResult.Success) { com.nopo.cheonnyeon.core.common.Analytics.reviewSaved(text.isNotBlank()); onDone(); refresh() }
+            if (result is AppResult.Success) { Analytics.reviewSaved(text.isNotBlank()); onDone(); refresh() }
         }
     }
 
@@ -298,11 +320,12 @@ class ReviewsViewModel(private val container: AppContainer, private val store: S
 }
 
 /** 시연용 예시 리뷰어를 방문자로, 단골 2회 이상을 재방문자로 세어 서버 집계에 더한다 */
-internal fun mergeDemoStats(server: com.nopo.cheonnyeon.data.remote.StoreStats?, demo: List<ReviewItem>): com.nopo.cheonnyeon.data.remote.StoreStats? {
+internal fun mergeDemoStats(server: StoreStats?,
+    demo: List<ReviewItem>): StoreStats? {
     if (demo.isEmpty()) return server
-    val people = demo.filter { it.uid == com.nopo.cheonnyeon.data.remote.DemoReviews.DEMO_UID }
+    val people = demo.filter { it.uid == DemoReviews.DEMO_UID }
     if (people.isEmpty()) return server
-    return com.nopo.cheonnyeon.data.remote.StoreStats(
+    return StoreStats(
         visitors = (server?.visitors ?: 0) + people.size,
         revisitors = (server?.revisitors ?: 0) + people.count { it.visitCount >= 2 },
     )
@@ -335,14 +358,16 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit, o
             } else {
                 Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                     StarRating(s.average.toFloat())
-                    Text(stringResource(R.string.reviews_summary, s.average, s.count), style = NopoTheme.typography.bodyMedium, color = c.ink)
+                    Text(stringResource(R.string.reviews_summary, s.average, s.count),
+                        style = NopoTheme.typography.bodyMedium, color = c.ink)
                 }
             }
         }
         state.stats?.takeIf { it.visitors > 0 }?.let { st ->
-            val pct = com.nopo.cheonnyeon.domain.rule.RevisitStats.percent(st.visitors, st.revisitors)
+            val pct = RevisitStats.percent(st.visitors, st.revisitors)
             Text(
-                if (pct != null) stringResource(R.string.revisit_line_percent, st.visitors, st.revisitors, pct) else stringResource(R.string.revisit_line, st.visitors, st.revisitors),
+                if (pct != null) stringResource(R.string.revisit_line_percent, st.visitors, st.revisitors,
+                    pct) else stringResource(R.string.revisit_line, st.visitors, st.revisitors),
                 style = NopoTheme.typography.bodyMedium, color = c.ink,
             )
         }
@@ -359,25 +384,30 @@ fun StoreReviewsSection(vm: ReviewsViewModel, onOpenProfile: (String) -> Unit, o
             modifier = Modifier.fillMaxWidth(),
         )
         if (!canWriteNow) Text(stringResource(R.string.reviews_verify_first), style = NopoTheme.typography.bodySmall, color = c.ink2)
-        if (state.eligibility == ReviewEligibility.SYNCING) Text(AppError.E_VISIT_SYNCING.message(LocalContext.current), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        if (state.eligibility == ReviewEligibility.SYNCING) Text(AppError.E_VISIT_SYNCING.message(LocalContext.current),
+            style = NopoTheme.typography.bodySmall, color = c.ink2)
 
         if (state.localOnly) Text(stringResource(R.string.reviews_test_store), style = NopoTheme.typography.bodySmall, color = c.ink2)
         val translation by vm.translation.collectAsStateWithLifecycle()
-        androidx.compose.runtime.LaunchedEffect(state.items, state.demoItems) { vm.registerForTranslation((state.items + state.demoItems).map { it.text }) }
+        LaunchedEffect(state.items,
+            state.demoItems) { vm.registerForTranslation((state.items + state.demoItems).map { it.text }) }
         val tr = translation?.takeIf { it.storeId == vm.storeId }
         fun ReviewItem.shown() = if (tr == null || text.isBlank()) this else copy(text = tr.pick(text.trim()))
         state.items.forEach { r0 ->
             val r = r0.shown()
             val own = r.uid == myUid
-            ReviewCard(r, onOpenProfile, onReport = if (!own) ({ reportTarget = r.id }) else null, onEdit = if (own) ({ editId = r.id; editing = true }) else null)
+            ReviewCard(r, onOpenProfile, onReport = if (!own) ({ reportTarget = r.id }) else null,
+                onEdit = if (own) ({ editId = r.id; editing = true }) else null)
         }
         state.demoItems.forEach { r -> ReviewCard(r.shown(), onOpenProfile, onReport = null, onEdit = null) }
         if (state.reported) Text(stringResource(R.string.reviews_reported), style = NopoTheme.typography.bodySmall, color = c.primary)
-        if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        if (state.hasMore) NopoButton(stringResource(R.string.reviews_more), vm::loadMore, style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth())
     }
 
     reportTarget?.let { id ->
-        val reasons = listOf(R.string.report_reason_abuse, R.string.report_reason_ad, R.string.report_reason_false, R.string.report_reason_other)
+        val reasons = listOf(R.string.report_reason_abuse, R.string.report_reason_ad, R.string.report_reason_false,
+            R.string.report_reason_other)
         AlertDialog(
             onDismissRequest = { reportTarget = null },
             title = { Text(stringResource(R.string.reviews_report_title)) },
@@ -415,11 +445,17 @@ private fun ReviewCard(r: ReviewItem, onOpenProfile: (String) -> Unit, onReport:
         Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
-        Row(Modifier.heightIn(min = NopoTheme.spacing.minTouch).then(if (r.demo) Modifier else Modifier.clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenProfile(r.uid) }), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Row(
+            Modifier.heightIn(min = NopoTheme.spacing.minTouch)
+                .then(if (r.demo) Modifier else Modifier.clickable(role = Role.Button) { onOpenProfile(r.uid) }),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
+        ) {
             Text(r.nickname, style = NopoTheme.typography.titleSmall, color = c.ink)
             Text(stringResource(R.string.reviews_visit_count, r.visitCount), style = NopoTheme.typography.bodySmall, color = c.ink2)
             Text(
-                java.time.Instant.ofEpochMilli(r.updatedAtMillis).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate().toString(),
+                java.time.Instant.ofEpochMilli(r.updatedAtMillis).atZone(SeoulZone)
+                    .toLocalDate().toString(),
                 style = NopoTheme.typography.bodySmall, color = c.ink2,
             )
         }
@@ -487,15 +523,22 @@ private fun ReviewEditor(
             }
         },
     )
-    if (capturing) ReviewPhotoCapture(onCaptured = { photos = (photos + it).take(ReviewRules.MAX_PHOTOS); onPhotosChanged(photos); capturing = false }, onDismiss = { capturing = false })
+    if (capturing) ReviewPhotoCapture(onCaptured = { photos = (photos + it)
+        .take(ReviewRules.MAX_PHOTOS); onPhotosChanged(photos); capturing = false }, onDismiss = { capturing = false })
 }
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun ReviewCardPreview() {
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
-        ReviewCard(ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 4, "수육이 부드럽고 공기밥이 푸짐해요.", 2, 0L), onOpenProfile = {}, onReport = {})
-        ReviewCard(ReviewItem("R2", "BN-1", "노포천년식당", "demo", "골목식객", "REGULAR", 5, "예시 리뷰입니다.", 1, 0L, demo = true), onOpenProfile = {}, onReport = null)
+    PreviewSurface {
+        ReviewCard(
+            ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 4, "수육이 부드럽고 공기밥이 푸짐해요.", 2, 0L),
+            onOpenProfile = {}, onReport = {},
+        )
+        ReviewCard(
+            ReviewItem("R2", "BN-1", "노포천년식당", "demo", "골목식객", "REGULAR", 5, "예시 리뷰입니다.", 1, 0L, demo = true),
+            onOpenProfile = {}, onReport = null,
+        )
     }
 }
 
@@ -534,7 +577,8 @@ private fun AiInsightSection(vm: ReviewsViewModel, state: ReviewsUiState) {
             }
             if (ins.menus.isNotEmpty()) {
                 Text(stringResource(R.string.insight_menus), style = NopoTheme.typography.labelMedium, color = c.ink2)
-                ins.menus.forEach { m -> Text("• ${m.menu}" + if (m.reason.isNotBlank()) " — ${m.reason}" else "", style = NopoTheme.typography.bodyMedium, color = c.ink) }
+                ins.menus.forEach { m -> Text("• ${m.menu}" + if (m.reason.isNotBlank()) " — ${m.reason}" else "",
+                    style = NopoTheme.typography.bodyMedium, color = c.ink) }
             }
             if (ins.weaknesses.isNotEmpty()) {
                 Text(stringResource(R.string.insight_weaknesses), style = NopoTheme.typography.labelMedium, color = c.ink2)
@@ -547,7 +591,8 @@ private fun AiInsightSection(vm: ReviewsViewModel, state: ReviewsUiState) {
             Text(stringResource(R.string.insight_disclaimer), style = NopoTheme.typography.bodySmall, color = c.ink2)
         }
     }
-    if (askConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyze() }, onDismiss = { askConsent = false })
+    if (askConsent) AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyze() },
+        onDismiss = { askConsent = false })
 }
 
 /** 단골 충성도 점수(100점 만점): 재방문율을 다른 가게와 견준 AI 평가 */
@@ -569,19 +614,25 @@ private fun LoyaltySection(vm: ReviewsViewModel, state: ReviewsUiState) {
     }
     state.loyaltyError?.let { Text(it.message(LocalContext.current), color = c.stamp) }
     result?.let { r ->
-        Column(Modifier.fillMaxWidth().background(c.brassSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+        Column(Modifier.fillMaxWidth().background(c.brassSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
             Text(stringResource(R.string.loyalty_title), style = NopoTheme.typography.titleSmall, color = c.primary)
-            Row(verticalAlignment = androidx.compose.ui.Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+            Row(verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                 Text(stringResource(R.string.loyalty_score, r.score), style = NopoTheme.typography.displayMedium, color = c.stamp)
                 if (r.label.isNotBlank()) Text(r.label, style = NopoTheme.typography.titleMedium, color = c.ink)
             }
-            androidx.compose.material3.LinearProgressIndicator(progress = { r.score / 100f }, modifier = Modifier.fillMaxWidth(), color = c.stamp, trackColor = c.surface)
-            Text(stringResource(R.string.loyalty_compare, r.peerCount, r.topPercent), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            LinearProgressIndicator(progress = { r.score / 100f },
+                modifier = Modifier.fillMaxWidth(), color = c.stamp, trackColor = c.surface)
+            Text(stringResource(R.string.loyalty_compare, r.peerCount, r.topPercent),
+                style = NopoTheme.typography.bodySmall, color = c.ink2)
             Text(r.summary, style = NopoTheme.typography.bodyMedium, color = c.ink)
             r.reasons.forEach { Text("• $it", style = NopoTheme.typography.bodyMedium, color = c.ink) }
-            Text(stringResource(R.string.loyalty_basis, r.input.visitors, r.input.revisitors, (r.input.rate * 100).toInt(), r.baseline), style = NopoTheme.typography.bodySmall, color = c.ink2)
+            Text(stringResource(R.string.loyalty_basis, r.input.visitors, r.input.revisitors, (r.input.rate * 100).toInt(),
+                r.baseline), style = NopoTheme.typography.bodySmall, color = c.ink2)
             Text(stringResource(R.string.loyalty_disclaimer), style = NopoTheme.typography.bodySmall, color = c.ink2)
         }
     }
-    if (askConsent) com.nopo.cheonnyeon.feature.ai.AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyzeLoyalty() }, onDismiss = { askConsent = false })
+    if (askConsent) AiConsentDialog(onAgree = { vm.agreeAi(); askConsent = false; vm.analyzeLoyalty() },
+        onDismiss = { askConsent = false })
 }

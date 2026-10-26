@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.verify
 
+import android.graphics.Bitmap
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -40,8 +41,7 @@ private val LimeScan = MockColors.Lime2
  * 글자 인식이 끝나면 인식한 글자 줄마다 형광펜이 차례로 칠해진다. 장면은 메모리에서만 쓰고 저장하지 않는다.
  */
 @Composable
-fun ReceiptScanView(frame: android.graphics.Bitmap, boxes: List<OcrBox>, phase: ScanPhase, modifier: Modifier = Modifier) {
-    val c = NopoTheme.colors
+fun ReceiptScanView(frame: Bitmap, boxes: List<OcrBox>, phase: ScanPhase, modifier: Modifier = Modifier) {
     val bitmap = remember(frame) { frame.asImageBitmap() }
     Box(modifier.background(Color.Black), contentAlignment = Alignment.Center) {
         Image(bitmap, stringResource(R.string.cd_receipt_scan), Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
@@ -57,7 +57,13 @@ fun ReceiptScanView(frame: android.graphics.Bitmap, boxes: List<OcrBox>, phase: 
             // 영수증 가장자리 모서리 표시
             val len = 28.dp.toPx()
             val stroke = 3.dp.toPx()
-            listOf(Offset(left, top) to (1f to 1f), Offset(left + w, top) to (-1f to 1f), Offset(left, top + h) to (1f to -1f), Offset(left + w, top + h) to (-1f to -1f)).forEach { (p, d) ->
+            val corners = listOf(
+                Offset(left, top) to (1f to 1f),
+                Offset(left + w, top) to (-1f to 1f),
+                Offset(left, top + h) to (1f to -1f),
+                Offset(left + w, top + h) to (-1f to -1f),
+            )
+            corners.forEach { (p, d) ->
                 drawLine(LimeScan, p, Offset(p.x + d.first * len, p.y), stroke)
                 drawLine(LimeScan, p, Offset(p.x, p.y + d.second * len), stroke)
             }
@@ -70,8 +76,9 @@ fun ReceiptScanView(frame: android.graphics.Bitmap, boxes: List<OcrBox>, phase: 
 /** 영수증 위아래를 오가는 빨간 레이저 선과 번지는 빛 */
 @Composable
 private fun LaserSweep(aspect: Float) {
-    val c = NopoTheme.colors
-    val t by rememberInfiniteTransition(label = "laser").animateFloat(0f, 1f, infiniteRepeatable(tween(950, easing = LinearEasing), RepeatMode.Reverse), label = "y")
+    val t by rememberInfiniteTransition(label = "laser").animateFloat(
+        0f, 1f, infiniteRepeatable(tween(950, easing = LinearEasing), RepeatMode.Reverse), label = "y",
+    )
     Canvas(Modifier.fillMaxSize()) {
         // aspect = 가로/세로 → Fit 영역 계산
         val h = minOf(size.height, size.width / aspect)
@@ -96,7 +103,7 @@ private fun LaserSweep(aspect: Float) {
 
 /** 인식된 글자 줄마다 형광펜이 왼쪽에서 오른쪽으로 칠해진다(위 줄부터 차례로) */
 @Composable
-private fun Highlights(frame: android.graphics.Bitmap, boxes: List<OcrBox>, animate: Boolean) {
+private fun Highlights(frame: Bitmap, boxes: List<OcrBox>, animate: Boolean) {
     val c = NopoTheme.colors
     val progress = remember(boxes) { Animatable(if (animate) 0f else 1f) }
     LaunchedEffect(boxes, animate) { if (animate) progress.animateTo(1f, tween(1400, easing = LinearEasing)) }

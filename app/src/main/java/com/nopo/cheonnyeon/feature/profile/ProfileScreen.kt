@@ -4,12 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,20 +21,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.semantics.Role
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.core.common.Analytics
 import com.nopo.cheonnyeon.core.common.AppError
-import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.common.message
+import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.designsystem.component.EmptyState
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
+import com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+import com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface
 import com.nopo.cheonnyeon.core.designsystem.component.StampSize
 import com.nopo.cheonnyeon.core.designsystem.component.StampView
 import com.nopo.cheonnyeon.core.designsystem.component.StarRating
@@ -48,12 +49,14 @@ import com.nopo.cheonnyeon.data.remote.VisitedStore
 import com.nopo.cheonnyeon.domain.model.Title
 import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
+import com.nopo.cheonnyeon.feature.store.ReviewPhotoRow
+import com.nopo.cheonnyeon.R
+import java.time.Instant
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 
 data class ProfileUiState(
     val loading: Boolean = true,
@@ -69,7 +72,7 @@ class ProfileViewModel(private val container: AppContainer, private val uid: Str
     private val _state = MutableStateFlow(ProfileUiState())
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
-    init { com.nopo.cheonnyeon.core.common.Analytics.profileOpen(); load() }
+    init { Analytics.profileOpen(); load() }
 
     fun load() {
         _state.update { it.copy(loading = true, error = null) }
@@ -165,7 +168,7 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
 private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -185,7 +188,7 @@ private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
 private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Column(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = androidx.compose.ui.semantics.Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
         Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)
@@ -194,14 +197,14 @@ private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
             Text(dateOf(r.updatedAtMillis), color = c.ink2, style = NopoTheme.typography.bodySmall)
         }
         if (r.text.isNotBlank()) Text(r.text, color = c.ink, style = NopoTheme.typography.bodyMedium)
-        if (r.photos.isNotEmpty()) com.nopo.cheonnyeon.feature.store.ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
+        if (r.photos.isNotEmpty()) ReviewPhotoRow(r.photos, Modifier.fillMaxWidth())
     }
 }
 
-@com.nopo.cheonnyeon.core.designsystem.component.NopoPreviews
+@NopoPreviews
 @Composable
 private fun ProfileCardsPreview() {
-    com.nopo.cheonnyeon.core.designsystem.component.PreviewSurface {
+    PreviewSurface {
         VisitCard(VisitedStore("BN-1", "노포천년식당", "송파구", 46, 3), onOpenStore = {})
         ReviewCard(
             ReviewItem("R1", "BN-1", "노포천년식당", "u1", "국밥순례자", "ELDER", 5, "국물이 진하고 40년 넘은 맛이 그대로예요.", 3, 0L),

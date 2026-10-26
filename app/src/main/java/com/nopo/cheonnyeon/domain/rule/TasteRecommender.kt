@@ -2,8 +2,16 @@ package com.nopo.cheonnyeon.domain.rule
 
 import com.nopo.cheonnyeon.domain.model.Store
 
-data class TasteRegion(val key: String, val label: String, val desc: String, val sigungu: List<String> = emptyList(), val sidoPrefix: String? = null)
+/** 처음 설치 때 고르는 지역 한 곳. 서울은 구([sigungu]), 그 밖은 시·도 앞글자([sidoPrefix])로 가게를 찾는다 */
+data class TasteRegion(
+    val key: String,
+    val label: String,
+    val desc: String,
+    val sigungu: List<String> = emptyList(),
+    val sidoPrefix: String? = null,
+)
 
+/** 처음 설치 때 고르는 음식 한 가지. 가게 이름·분류·메뉴에 [words] 중 하나가 들어 있으면 맞는 가게다 */
 data class TasteFood(val key: String, val label: String, val desc: String, val words: List<String>)
 
 /** 처음 설치 때 고르는 좋아하는 지역·음식, 그리고 그 취향에 맞는 노포 하나 고르기 (순수 규칙) */
@@ -27,8 +35,11 @@ object TasteRecommender {
         TasteFood("jeon", "전·한식", "정겨운 우리 맛", listOf("전", "부침", "한식", "백반", "정식", "비빔밥", "보리밥")),
     )
 
-    fun inRegion(s: Store, r: TasteRegion): Boolean =
-        (r.sigungu.isNotEmpty() && r.sigungu.any { s.sigungu == it || s.sigungu.startsWith(it) }) || (r.sidoPrefix != null && s.sido.startsWith(r.sidoPrefix))
+    fun inRegion(s: Store, r: TasteRegion): Boolean {
+        val bySigungu = r.sigungu.isNotEmpty() && r.sigungu.any { s.sigungu == it || s.sigungu.startsWith(it) }
+        val bySido = r.sidoPrefix != null && s.sido.startsWith(r.sidoPrefix)
+        return bySigungu || bySido
+    }
 
     fun matchesFood(s: Store, f: TasteFood): Boolean {
         val text = listOf(s.name, s.categoryGroup, s.menuItems.joinToString(" ")).joinToString(" ")
@@ -36,12 +47,19 @@ object TasteRecommender {
     }
 
     /** 취향에 맞는 노포 하나(평점·사진·업력 순). 조건이 너무 좁으면 음식, 그다음 지역 조건을 풀고, 그래도 없으면 null */
-    fun recommend(stores: List<Store>, regionKeys: Set<String>, foodKeys: Set<String>, ratings: Map<String, Double> = emptyMap()): Store? {
+    fun recommend(
+        stores: List<Store>,
+        regionKeys: Set<String>,
+        foodKeys: Set<String>,
+        ratings: Map<String, Double> = emptyMap(),
+    ): Store? {
         val base = stores.filter { it.isFood && !it.isTest && it.lat != null && it.lng != null }
         val regions = REGIONS.filter { it.key in regionKeys }
         val foods = FOODS.filter { it.key in foodKeys }
         fun pick(list: List<Store>) = list.sortedWith(
-            compareByDescending<Store> { it.photoUrls.isNotEmpty() }.thenByDescending { ratings[it.id] ?: 0.0 }.thenBy { it.foundedYear ?: Int.MAX_VALUE },
+            compareByDescending<Store> { it.photoUrls.isNotEmpty() }
+                .thenByDescending { ratings[it.id] ?: 0.0 }
+                .thenBy { it.foundedYear ?: Int.MAX_VALUE },
         ).firstOrNull()
         val byRegion = if (regions.isEmpty()) base else base.filter { s -> regions.any { inRegion(s, it) } }
         val both = if (foods.isEmpty()) byRegion else byRegion.filter { s -> foods.any { matchesFood(s, it) } }

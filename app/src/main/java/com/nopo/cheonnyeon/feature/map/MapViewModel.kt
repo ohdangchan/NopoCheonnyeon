@@ -12,6 +12,7 @@ import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.YearsCalculator
 import com.nopo.cheonnyeon.platform.location.Fix
 import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -93,7 +94,7 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
                 var list = container.catalog.all()
                 var tries = 0
                 while (list.isEmpty() && tries++ < 40) {
-                    kotlinx.coroutines.delay(250)
+                    delay(250)
                     list = container.catalog.all()
                 }
                 // 개발용 테스트 가게는 지도·목록에 넣지 않는다
@@ -105,7 +106,8 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
 
     fun setQuery(q: String) = local.update { it.copy(filter = it.filter.copy(query = q), selectedId = null) }
     fun toggleFood() = local.update { it.copy(filter = it.filter.copy(foodOnly = !it.filter.foodOnly), selectedId = null) }
-    fun toggleProgram(p: Program) = local.update { it.copy(filter = it.filter.copy(program = if (it.filter.program == p) null else p), selectedId = null) }
+    fun toggleProgram(p: Program) = local.update { it.copy(filter = it.filter.copy(program = if (it.filter.program == p) null else p),
+        selectedId = null) }
     fun toggleUnvisited() = local.update { it.copy(filter = it.filter.copy(unvisitedOnly = !it.filter.unvisitedOnly), selectedId = null) }
     fun select(id: String?) = local.update { it.copy(selectedId = id) }
     /** 지도 SDK 인증 오류: 목록으로 전환해 앱을 계속 쓸 수 있게 한다 */
@@ -122,10 +124,12 @@ class MapViewModel(private val container: AppContainer) : ViewModel() {
         local.update { it.copy(locating = true, recenter = if (it.fix != null) it.recenter + 1 else it.recenter) }
         viewModelScope.launch {
             val quick = try { location.quickFix() } catch (_: Exception) { null }
-            local.update { it.copy(locating = false, fix = quick ?: it.fix, recenter = if (quick != null) it.recenter + 1 else it.recenter) }
+            local.update { it.copy(locating = false, fix = quick ?: it.fix,
+                recenter = if (quick != null) it.recenter + 1 else it.recenter) }
             val fine = try { location.bestFix(timeoutMs = 8_000L, earlyStopM = 30.0) } catch (_: Exception) { null }
             (fine ?: quick)?.let { runCatching { container.lastFix.value = it } }
-            if (fine != null) local.update { it.copy(fix = fine, recenter = if (quick == null && it.fix == null) it.recenter + 1 else it.recenter) }
+            if (fine != null) local.update { it.copy(fix = fine,
+                recenter = if (quick == null && it.fix == null) it.recenter + 1 else it.recenter) }
         }
     }
 }

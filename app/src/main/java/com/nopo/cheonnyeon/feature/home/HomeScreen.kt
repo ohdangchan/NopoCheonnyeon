@@ -23,7 +23,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -33,11 +36,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.core.common.AppResult
 import com.nopo.cheonnyeon.core.common.SeoulZone
+import com.nopo.cheonnyeon.core.designsystem.mock.GrayPill
 import com.nopo.cheonnyeon.core.designsystem.mock.HeartIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.LimeArrowButton
 import com.nopo.cheonnyeon.core.designsystem.mock.LimePill
-import com.nopo.cheonnyeon.core.designsystem.mock.GrayPill
+import com.nopo.cheonnyeon.core.designsystem.mock.LocalMockU
 import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
@@ -49,18 +54,22 @@ import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
 import com.nopo.cheonnyeon.core.designsystem.mock.mockCardBox
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.data.ai.ChatContextInfo
+import com.nopo.cheonnyeon.data.remote.StoreRating
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.ChatCandidates
+import com.nopo.cheonnyeon.domain.rule.TasteRecommender
 import com.nopo.cheonnyeon.feature.common.StoreCardData
 import com.nopo.cheonnyeon.feature.common.StoreCards
 import com.nopo.cheonnyeon.feature.store.StorePhoto
+import com.nopo.cheonnyeon.platform.location.Fix
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -78,32 +87,38 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
 
     private val taste = combine(container.settings.prefRegions, container.settings.prefFoods) { r, f -> r to f }
 
-    val state: StateFlow<HomeUiState> = combine(combine(stores, aiPick, container.ratings, container.lastFix, container.settings.bookmarks) { a, b, c, d, e -> listOf(a, b, c, d, e) }, taste) { arr, tp ->
+    val state: StateFlow<HomeUiState> = combine(combine(stores, aiPick, container.ratings, container.lastFix,
+        container.settings.bookmarks) { a, b, c, d, e -> listOf(a, b, c, d, e) }, taste) { arr, tp ->
         @Suppress("UNCHECKED_CAST")
         val all = arr[0] as List<Store>
         @Suppress("UNCHECKED_CAST")
         val ai = arr[1] as Pair<String, String>?
         @Suppress("UNCHECKED_CAST")
-        val ratings = arr[2] as Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>
-        val fix = arr[3] as com.nopo.cheonnyeon.platform.location.Fix?
+        val ratings = arr[2] as Map<String, StoreRating>
+        val fix = arr[3] as Fix?
         @Suppress("UNCHECKED_CAST")
         val saved = arr[4] as Set<String>
         if (all.isEmpty()) return@combine HomeUiState()
         val today = LocalDate.now(SeoulZone).toEpochDay()
         val withPhoto = all.filter { it.photoUrls.isNotEmpty() }
         val rated = withPhoto.filter { ratings[it.id] != null }
-        val fallback = (if (fix != null && rated.isNotEmpty()) rated.filter { it.lat != null && it.lng != null }.minByOrNull { com.nopo.cheonnyeon.core.util.GeoDistance.meters(fix.lat, fix.lng, it.lat!!, it.lng!!) } else null)
+        val fallback = (if (fix != null && rated.isNotEmpty()) rated.filter { it.lat != null && it.lng != null }
+            .minByOrNull { GeoDistance.meters(fix.lat, fix.lng, it.lat!!, it.lng!!) } else null)
             ?: (rated.ifEmpty { withPhoto }).let { list -> list.getOrNull((today % list.size.coerceAtLeast(1)).toInt()) }
         // 처음 설치 때 고른 취향이 있으면 AI 결과가 없을 때 그 취향에 맞는 노포를 먼저 보여 준다
-        val tasteStore = if (tp.first.isNotEmpty() || tp.second.isNotEmpty()) com.nopo.cheonnyeon.domain.rule.TasteRecommender.recommend(all, tp.first, tp.second, ratings.mapValues { it.value.average }) else null
+        val tasteStore = if (tp.first.isNotEmpty() || tp.second.isNotEmpty()) TasteRecommender.recommend(all,
+            tp.first, tp.second, ratings.mapValues { it.value.average }) else null
         val pickStore = ai?.let { (id, _) -> all.firstOrNull { it.id == id } } ?: tasteStore ?: fallback
-        val hotIds = ratings.entries.filter { it.value.count >= 8 }.sortedWith(compareByDescending<Map.Entry<String, com.nopo.cheonnyeon.data.remote.StoreRating>> { it.value.average }.thenByDescending { it.value.count }).map { it.key }
+        val hotIds = ratings.entries.filter { it.value.count >= 8 }
+            .sortedWith(compareByDescending<Map.Entry<String,
+            StoreRating>> { it.value.average }.thenByDescending { it.value.count }).map { it.key }
         val byId = all.associateBy { it.id }
         val hot = (hotIds.mapNotNull { byId[it] }.filter { it.photoUrls.isNotEmpty() && it.id != pickStore?.id }.take(10)
             .ifEmpty { withPhoto.sortedByDescending { it.foundedYear?.let { y -> year - y } ?: 0 }.take(10) })
             .map { StoreCards.of(it, year, ratings, fix, saved) }
         val near = fix?.let { f ->
-            all.filter { it.lat != null && it.lng != null }.minByOrNull { com.nopo.cheonnyeon.core.util.GeoDistance.meters(f.lat, f.lng, it.lat!!, it.lng!!) }
+            all.filter { it.lat != null && it.lng != null }
+                .minByOrNull { GeoDistance.meters(f.lat, f.lng, it.lat!!, it.lng!!) }
         }
         HomeUiState(
             pick = pickStore?.let { StoreCards.of(it, year, ratings, fix, saved) },
@@ -135,7 +150,7 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             nowText = today.toString(), locationText = fix?.let { "사용자 위치 기준 가까운 순" } ?: "위치 모름", totalYears = visits.sumOf { it.yearsAwarded }, candidates = candidates,
         )
         val reply = container.ai.chat(emptyList(), "오늘 가볼 만한 노포를 딱 한 곳만 골라 줘. 이유는 한 문장으로.", info)
-        if (reply is com.nopo.cheonnyeon.core.common.AppResult.Success) {
+        if (reply is AppResult.Success) {
             reply.value.picks.firstOrNull()?.let { pair ->
                 cache = today to pair
                 aiPick.value = pair
@@ -153,15 +168,16 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
  * "오늘의 AI 추천" 카드와 가게 카드는 실제 가게로 채운다.
  */
 @Composable
-fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit, onOpenChat: (String) -> Unit, onPickChip: (Int) -> Unit = {}, onBell: () -> Unit = {}) {
+fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () -> Unit, onOpenMy: () -> Unit,
+    onOpenChat: (String) -> Unit, onPickChip: (Int) -> Unit = {}, onBell: () -> Unit = {}) {
     val ui by vm.state.collectAsStateWithLifecycle()
-    val tourPrompt = androidx.compose.ui.res.stringResource(R.string.home_tour_prompt)
+    val tourPrompt = stringResource(R.string.home_tour_prompt)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
         // 시안 3번 폰은 화면 폭이 738px(왼쪽 12px은 테두리)라서 가로로 3% 늘려 화면에 꼭 맞춘다
-        val u = com.nopo.cheonnyeon.core.designsystem.mock.LocalMockU.current
-        val density = androidx.compose.ui.platform.LocalDensity.current.density
+        val u = LocalMockU.current
+        val density = LocalDensity.current.density
         MockStage(originY = 92, heightPx = 1420, modifier = Modifier.graphicsLayer {
-            transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0f, 0f)
+            transformOrigin = TransformOrigin(0f, 0f)
             scaleX = 760f / 734f
             translationX = -14f * (760f / 734f) * u * density
         }) {
@@ -174,7 +190,8 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
             val pick = ui.pick
             Box(Modifier.at(10, 582).size(px(728), px(220)).mockCardBox(26))
             if (pick != null) {
-                Box(Modifier.at(42, 598).size(px(315), px(194)).clip(RoundedCornerShape(px(18))).clickable(role = Role.Button) { onOpenStore(pick.store.id) }) {
+                Box(Modifier.at(42, 598).size(px(315), px(194)).clip(RoundedCornerShape(px(18)))
+                    .clickable(role = Role.Button) { onOpenStore(pick.store.id) }) {
                     StorePhoto(pick.store, Modifier.fillMaxSize())
                 }
                 Box(Modifier.at(380, 604).width(px(270)).clickable(role = Role.Button) { onOpenStore(pick.store.id) }) {
@@ -200,7 +217,8 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
                     }
                 }
             }
-            Box(Modifier.at(38, 566)) { LimePill(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_01), 21, padX = 22, padY = 9) }
+            Box(Modifier.at(38, 566)) { LimePill(stringResource(R.string.home_01),
+                21, padX = 22, padY = 9) }
 
             // 지금 가장 핫한 노포
             MockPic(R.drawable.mk_home_title_hot, 276, 50, Modifier.at(24, 850))
@@ -210,7 +228,8 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
                 contentPadding = PaddingValues(horizontal = px(33)),
                 horizontalArrangement = Arrangement.spacedBy(px(18)),
             ) {
-                items(ui.hot, key = { it.store.id }) { c -> HotCard(c, onOpen = { onOpenStore(c.store.id) }, onHeart = { vm.toggleBookmark(c.store.id) }) }
+                items(ui.hot, key = { it.store.id }) { c -> HotCard(c, onOpen = { onOpenStore(c.store.id) },
+                    onHeart = { vm.toggleBookmark(c.store.id) }) }
             }
 
             // 내 주변 노포 찾기
@@ -227,14 +246,18 @@ fun HomeScreen(vm: HomeViewModel, onOpenStore: (String) -> Unit, onSearch: () ->
             // 칩 일곱 개: 전체·국밥·냉면·분식·고기·카페·기타 → 탐색 탭 칩(전체·국밥·면·고기·분식·카페)
             listOf(8 to 94, 111 to 96, 217 to 96, 324 to 88, 420 to 85, 513 to 90, 613 to 108).forEachIndexed { i, (x, w) ->
                 val target = intArrayOf(0, 1, 2, 4, 3, 5, 0)[i]
-                Box(Modifier.at(20 + x, 1298).size(px(w), px(76)).clickable(role = Role.Button) { onPickChip(target) }.semantics { contentDescription = "내 주변 노포 칩 " + i })
+                Box(Modifier.at(20 + x, 1298).size(px(w), px(76)).clickable(role = Role.Button) { onPickChip(target) }
+                    .semantics { contentDescription = "내 주변 노포 칩 " + i })
             }
 
             // 노포 AI 투어 코스 배너
             MockPic(R.drawable.mk_home_banner, 706, 112, Modifier.at(28, 1388), onClick = { onOpenChat(tourPrompt) })
-            Box(Modifier.at(113, 1405).width(px(270))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_02), 23, weight = FontWeight.Bold, font = MockSerif) }
+            Box(Modifier.at(113, 1405)
+                .width(px(270))) { MockText(stringResource(R.string.home_02),
+                23, weight = FontWeight.Bold, font = MockSerif) }
             Box(Modifier.at(113, 1443).width(px(300))) {
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.home_03), 17, color = MockColors.Ink2, maxLines = 2, lineHeightPx = 25)
+                MockText(stringResource(R.string.home_03), 17,
+                    color = MockColors.Ink2, maxLines = 2, lineHeightPx = 25)
             }
         }
         Box(Modifier.height(px(40)))
@@ -256,7 +279,8 @@ private fun HotCard(c: StoreCardData, onOpen: () -> Unit, onHeart: () -> Unit) {
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RatingText(c.rating?.average, c.rating?.count, 19, showCount = true)
-                if (c.rating != null && c.distanceLabel != null) Box(Modifier.padding(horizontal = px(10)).size(px(2), px(18)).background(MockColors.Line))
+                if (c.rating != null && c.distanceLabel != null) Box(Modifier.padding(horizontal = px(10))
+                    .size(px(2), px(18)).background(MockColors.Line))
                 c.distanceLabel?.let { PinIcon(19); Box(Modifier.width(px(5))); MockText(it, 19, weight = FontWeight.Medium) }
             }
         }

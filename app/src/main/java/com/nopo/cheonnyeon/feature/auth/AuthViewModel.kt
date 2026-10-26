@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
+import com.nopo.cheonnyeon.core.common.Analytics
 import com.nopo.cheonnyeon.data.remote.AuthRepository
 import com.nopo.cheonnyeon.domain.rule.AuthValidation
+import com.nopo.cheonnyeon.platform.auth.GoogleSignIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,11 @@ data class AuthUiState(
     val nick: NickStatus = NickStatus.IDLE,
 )
 
+private const val NICK_CHECK_DELAY_MS = 400L
+
+/** 로그인 성공 뒤 화면이 넘어가지 않아도 "로그인 중…" 표시를 푸는 시간 */
+private const val SIGN_IN_SETTLE_MS = 8_000L
+
 /** 로그인·가입·재설정·닉네임 복구 화면이 함께 쓴다. 성공하면 세션 상태가 바뀌어 내비게이션이 알아서 이동한다. */
 class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (Boolean) -> Unit = {}) : ViewModel() {
     /** 로그인 상태 유지 체크: 꺼 두면 앱을 다시 켤 때 로그아웃된다 */
@@ -33,18 +40,22 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
     val state: StateFlow<AuthUiState> = _state.asStateFlow()
     private var nickJob: Job? = null
 
-    fun signIn(email: String, password: String) = run(keepBusy = true, onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signIn(email, password) }
+    fun signIn(email: String, password: String) =
+        run(keepBusy = true, onSuccess = { Analytics.login() }) { repo.signIn(email, password) }
 
-    fun signUp(email: String, password: String, nickname: String) = run(onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.signUp() }) { repo.signUp(email, password, nickname) }
+    fun signUp(email: String, password: String, nickname: String) =
+        run(onSuccess = { Analytics.signUp() }) { repo.signUp(email, password, nickname) }
 
-    /** 구글 로그인: [token] 은 [com.nopo.cheonnyeon.platform.auth.GoogleSignIn] 이 받은 ID 토큰 */
-    fun googleSignIn(token: String) = run(keepBusy = true, onSuccess = { com.nopo.cheonnyeon.core.common.Analytics.login() }) { repo.signInWithGoogle(token) }
+    /** 구글 로그인: [token] 은 [GoogleSignIn] 이 받은 ID 토큰 */
+    fun googleSignIn(token: String) =
+        run(keepBusy = true, onSuccess = { Analytics.login() }) { repo.signInWithGoogle(token) }
 
     fun showMessage(error: AppError) = _state.update { it.copy(error = error) }
 
     fun createProfile(nickname: String) = run { repo.createProfile(nickname) }
 
-    fun sendReset(email: String) = run(onSuccess = { _state.update { it.copy(resetSent = true) } }) { repo.sendPasswordReset(email) }
+    fun sendReset(email: String) =
+        run(onSuccess = { _state.update { it.copy(resetSent = true) } }) { repo.sendPasswordReset(email) }
 
     /** 로그인 성공 뒤 화면이 넘어가기까지 "로그인 중…" 을 유지했다가, 세션이 정해지면 푼다 */
     fun settle() = _state.update { if (it.busy) it.copy(busy = false) else it }
@@ -60,9 +71,13 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
         }
         _state.update { it.copy(nick = NickStatus.CHECKING) }
         nickJob = viewModelScope.launch {
-            delay(400)
-            val ok = repo.isNicknameAvailable(nick)
-            _state.update { it.copy(nick = when (ok) { true -> NickStatus.AVAILABLE; false -> NickStatus.TAKEN; null -> NickStatus.UNKNOWN }) }
+            delay(NICK_CHECK_DELAY_MS)
+            val status = when (repo.isNicknameAvailable(nick)) {
+                true -> NickStatus.AVAILABLE
+                false -> NickStatus.TAKEN
+                null -> NickStatus.UNKNOWN
+            }
+            _state.update { it.copy(nick = status) }
         }
     }
 
@@ -74,7 +89,10 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
             val stay = keepBusy && r is AppResult.Success
             _state.update { it.copy(busy = stay, error = r.errorOrNull) }
             if (r is AppResult.Success) onSuccess()
-            if (stay) { kotlinx.coroutines.delay(8_000); settle() }
+            if (stay) {
+                delay(SIGN_IN_SETTLE_MS)
+                settle()
+            }
         }
     }
 }

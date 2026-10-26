@@ -1,50 +1,63 @@
 package com.nopo.cheonnyeon.core.designsystem.mock
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.nopo.cheonnyeon.R
 import kotlin.math.cos
 import kotlin.math.sin
@@ -55,6 +68,9 @@ import kotlin.math.sin
  */
 const val MOCK_MAX_WIDTH_DP = 600
 
+/** 시안 폰 화면의 가로 px. 시안 px → dp 환산 비율의 기준이다 */
+const val MOCK_DESIGN_WIDTH_PX = 760
+
 val LocalMockU = compositionLocalOf { 0.47f }
 
 /** 기준 y 좌표: [MockStage] 안에서 Modifier.at(x, y) 의 y 에서 이 값을 뺀다 */
@@ -64,7 +80,7 @@ val LocalMockOriginY = compositionLocalOf { 0 }
 fun ProvideMockScale(content: @Composable () -> Unit) {
     // 태블릿·폴더블 펼침처럼 넓은 화면에서는 폭을 MAX_WIDTH_DP 로 묶는다 (MainActivity 가 같은 폭으로 가운데에 놓는다)
     val w = minOf(LocalConfiguration.current.screenWidthDp, MOCK_MAX_WIDTH_DP)
-    CompositionLocalProvider(LocalMockU provides (w / 760f), content = content)
+    CompositionLocalProvider(LocalMockU provides (w / MOCK_DESIGN_WIDTH_PX.toFloat()), content = content)
 }
 
 @Composable
@@ -77,7 +93,8 @@ fun px(n: Float): Dp = (n * LocalMockU.current).dp
 
 @Composable
 @ReadOnlyComposable
-fun pxSp(n: Int): TextUnit = with(androidx.compose.ui.platform.LocalDensity.current) { (n * LocalMockU.current).dp.toSp() } // 시안 좌표 레이아웃이 깨지지 않게 시스템 글자 크기 배율과 무관한 고정 크기
+// 시안 좌표 레이아웃이 깨지지 않게, 시스템 글자 크기 배율과 무관한 고정 크기로 바꾼다
+fun pxSp(n: Int): TextUnit = with(LocalDensity.current) { (n * LocalMockU.current).dp.toSp() }
 
 /** 시안에서 잰 색 */
 object MockColors {
@@ -98,11 +115,18 @@ object MockColors {
     val Stamp = Color(0xFFB4332A)
 }
 
-val MockSerif = FontFamily(Font(R.font.nanum_myeongjo_extrabold, FontWeight.ExtraBold), Font(R.font.nanum_myeongjo_extrabold, FontWeight.Bold))
+val MockSerif = FontFamily(
+    Font(R.font.nanum_myeongjo_extrabold, FontWeight.ExtraBold),
+    Font(R.font.nanum_myeongjo_extrabold, FontWeight.Bold),
+)
 val MockSans = FontFamily.Default
 
 /** 로고 글자와 비슷한 굵은 디스플레이 글자체(제목·닉네임용) */
-val MockBrush = FontFamily(Font(R.font.black_han_sans, FontWeight.ExtraBold), Font(R.font.black_han_sans, FontWeight.Bold), Font(R.font.black_han_sans, FontWeight.Normal))
+val MockBrush = FontFamily(
+    Font(R.font.black_han_sans, FontWeight.ExtraBold),
+    Font(R.font.black_han_sans, FontWeight.Bold),
+    Font(R.font.black_han_sans, FontWeight.Normal),
+)
 
 /** [MockStage] 안에서 시안 좌표(x, y)에 놓는다. */
 @Composable
@@ -116,33 +140,44 @@ fun MockStage(originY: Int, heightPx: Int, modifier: Modifier = Modifier, conten
     }
 }
 
+/** [onClick] 이 있을 때만 버튼으로 누를 수 있게 한다 */
+private fun Modifier.clickableIfSet(onClick: (() -> Unit)?): Modifier =
+    if (onClick != null) clickable(role = Role.Button, onClick = onClick) else this
+
+/** 그림 파일 이름에서 TalkBack 이 읽을 이름을 정한다. 알 수 없으면 null */
+private fun pictureLabel(resourceName: String): String? = when {
+    resourceName.contains("bell") -> "알림"
+    resourceName.contains("ic_search") -> "검색"
+    resourceName.contains("menu_all") -> "전체 메뉴 보기"
+    resourceName.contains("my_edit") -> "프로필 편집"
+    resourceName.contains("_all") -> "전체 보기"
+    resourceName.contains("more") -> "더보기"
+    resourceName.contains("card_saved") -> "저장한 노포"
+    resourceName.contains("card_history") -> "방문 기록"
+    resourceName.contains("card_alarm") -> "알림 설정"
+    resourceName.contains("card_prefs") -> "앱 환경 설정"
+    resourceName.contains("card_account") -> "계정 관리"
+    resourceName.contains("card_support") -> "고객센터"
+    else -> null
+}
+
 /** 시안에서 잘라 낸 그림. 원래 크기(w x h px)로 그린다. */
 @Composable
-fun MockPic(@DrawableRes id: Int, w: Int, h: Int, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, description: String? = null) {
+fun MockPic(
+    @DrawableRes id: Int,
+    w: Int,
+    h: Int,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    description: String? = null,
+) {
     // 누를 수 있는 그림은 TalkBack 이 읽을 이름이 필요하다: 그림 파일 이름으로 정한다
-    val label = description ?: if (onClick != null) {
-        val name = androidx.compose.ui.platform.LocalContext.current.resources.getResourceEntryName(id)
-        when {
-            name.contains("bell") -> "알림"
-            name.contains("ic_search") -> "검색"
-            name.contains("menu_all") -> "전체 메뉴 보기"
-            name.contains("my_edit") -> "프로필 편집"
-            name.contains("_all") -> "전체 보기"
-            name.contains("more") -> "더보기"
-            name.contains("card_saved") -> "저장한 노포"
-            name.contains("card_history") -> "방문 기록"
-            name.contains("card_alarm") -> "알림 설정"
-            name.contains("card_prefs") -> "앱 환경 설정"
-            name.contains("card_account") -> "계정 관리"
-            name.contains("card_support") -> "고객센터"
-            else -> null
-        }
-    } else null
-    androidx.compose.foundation.Image(
+    val label = description ?: if (onClick != null) pictureLabel(LocalContext.current.resources.getResourceEntryName(id)) else null
+    Image(
         painter = painterResource(id),
         contentDescription = label,
         contentScale = ContentScale.FillBounds,
-        modifier = modifier.size(px(w), px(h)).then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier),
+        modifier = modifier.size(px(w), px(h)).clickableIfSet(onClick),
     )
 }
 
@@ -195,10 +230,18 @@ fun MockText(
 
 /** 연두 알약 (태그·선택된 칩) */
 @Composable
-fun LimePill(text: String, sizePx: Int, modifier: Modifier = Modifier, padX: Int = 24, padY: Int = 8, bold: Boolean = true, onClick: (() -> Unit)? = null) {
+fun LimePill(
+    text: String,
+    sizePx: Int,
+    modifier: Modifier = Modifier,
+    padX: Int = 24,
+    padY: Int = 8,
+    bold: Boolean = true,
+    onClick: (() -> Unit)? = null,
+) {
     Box(
         modifier.clip(RoundedCornerShape(50)).background(MockColors.Lime)
-            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+            .clickableIfSet(onClick)
             .padding(horizontal = px(padX), vertical = px(padY)),
         contentAlignment = Alignment.Center,
     ) {
@@ -208,10 +251,19 @@ fun LimePill(text: String, sizePx: Int, modifier: Modifier = Modifier, padX: Int
 
 /** 회색 알약 칩 (카테고리 칩) */
 @Composable
-fun GrayPill(text: String, sizePx: Int, modifier: Modifier = Modifier, padX: Int = 22, padY: Int = 8, color: Color = MockColors.Chip, textColor: Color = MockColors.Ink2, onClick: (() -> Unit)? = null) {
+fun GrayPill(
+    text: String,
+    sizePx: Int,
+    modifier: Modifier = Modifier,
+    padX: Int = 22,
+    padY: Int = 8,
+    color: Color = MockColors.Chip,
+    textColor: Color = MockColors.Ink2,
+    onClick: (() -> Unit)? = null,
+) {
     Box(
         modifier.clip(RoundedCornerShape(50)).background(color)
-            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+            .clickableIfSet(onClick)
             .padding(horizontal = px(padX), vertical = px(padY)),
         contentAlignment = Alignment.Center,
     ) {
@@ -221,6 +273,8 @@ fun GrayPill(text: String, sizePx: Int, modifier: Modifier = Modifier, padX: Int
 
 // ---------------------------------------------------------------------------------------------
 // 직접 그리는 아이콘 (사진 위에 얹히거나 색이 바뀌는 것)
+
+private val StarOutline = Color(0xFF8A6A00)
 
 @Composable
 fun StarIcon(sizePx: Int, modifier: Modifier = Modifier, color: Color = MockColors.Star) {
@@ -236,7 +290,7 @@ fun StarIcon(sizePx: Int, modifier: Modifier = Modifier, color: Color = MockColo
         }
         path.close()
         drawPath(path, color)
-        drawPath(path, Color(0xFF8A6A00), style = Stroke(width = size.minDimension * 0.07f, join = StrokeJoin.Round))
+        drawPath(path, StarOutline, style = Stroke(width = size.minDimension * 0.07f, join = StrokeJoin.Round))
     }
 }
 
@@ -254,7 +308,7 @@ fun PinIcon(sizePx: Int, modifier: Modifier = Modifier, color: Color = MockColor
             close()
         }
         drawPath(path, color)
-        drawCircle(Color(0xFFFCF7EB), radius = w * 0.17f, center = Offset(w * 0.5f, h * 0.32f))
+        drawCircle(MockColors.Cream, radius = w * 0.17f, center = Offset(w * 0.5f, h * 0.32f))
     }
 }
 
@@ -338,16 +392,18 @@ fun ChevronDown(sizePx: Int, modifier: Modifier = Modifier, color: Color = MockC
 fun LimeArrowButton(sizePx: Int, modifier: Modifier = Modifier, onClick: (() -> Unit)? = null) {
     Box(
         modifier.size(px(sizePx)).clip(CircleShape).background(MockColors.Lime)
-            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier),
+            .clickableIfSet(onClick),
         contentAlignment = Alignment.Center,
     ) { ChevronRight((sizePx * 0.5f).toInt()) }
 }
+
+private val PhotoButtonScrim = Color(0x59000000)
 
 /** 사진 위에 얹는 반투명 어두운 동그라미 버튼(하트·북마크) */
 @Composable
 fun PhotoCircleButton(sizePx: Int, modifier: Modifier = Modifier, onClick: () -> Unit, content: @Composable BoxScope.() -> Unit) {
     Box(
-        modifier.size(px(sizePx)).clip(CircleShape).background(Color(0x59000000)).clickable(role = Role.Button, onClick = onClick),
+        modifier.size(px(sizePx)).clip(CircleShape).background(PhotoButtonScrim).clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
         content = content,
     )
@@ -357,12 +413,12 @@ fun PhotoCircleButton(sizePx: Int, modifier: Modifier = Modifier, onClick: () ->
 @Composable
 fun RatingText(rating: Double?, count: Int?, sizePx: Int, modifier: Modifier = Modifier, showCount: Boolean = false) {
     if (rating == null) return
-    androidx.compose.foundation.layout.Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         StarIcon(sizePx + 4)
-        androidx.compose.foundation.layout.Spacer(Modifier.width(px(8)))
+        Spacer(Modifier.width(px(8)))
         MockText(String.format("%.1f", rating), sizePx, weight = FontWeight.Medium)
         if (showCount && count != null) {
-            androidx.compose.foundation.layout.Spacer(Modifier.width(px(6)))
+            Spacer(Modifier.width(px(6)))
             MockText("(${"%,d".format(count)})", sizePx - 2, color = MockColors.Hint)
         }
     }
@@ -377,10 +433,10 @@ fun Modifier.mockCardBox(radiusPx: Int = 18, fill: Color = MockColors.Card): Mod
 
 /** 한 줄 가로 구분 여백 */
 @Composable
-fun VSpacePx(h: Int) = androidx.compose.foundation.layout.Spacer(Modifier.height(px(h)))
+fun VSpacePx(h: Int) = Spacer(Modifier.height(px(h)))
 
 @Composable
-fun HSpacePx(w: Int) = androidx.compose.foundation.layout.Spacer(Modifier.width(px(w)))
+fun HSpacePx(w: Int) = Spacer(Modifier.width(px(w)))
 
 @Composable
 fun Modifier.mockPadX(x: Int): Modifier = this.padding(horizontal = px(x))
@@ -392,7 +448,7 @@ fun Modifier.fullWidth(): Modifier = this.fillMaxWidth()
 /** 북마크(저장하기) 버튼에 TalkBack 이 읽을 이름을 붙인다 */
 @Composable
 fun Modifier.saveDescription(): Modifier {
-    val label = androidx.compose.ui.res.stringResource(R.string.det_save)
+    val label = stringResource(R.string.det_save)
     return this.semantics { contentDescription = label }
 }
 
@@ -406,19 +462,19 @@ fun MockInput(
     sizePx: Int = 24,
     password: Boolean = false,
     visible: Boolean = false,
-    keyboard: androidx.compose.ui.text.input.KeyboardType = androidx.compose.ui.text.input.KeyboardType.Text,
-    ime: androidx.compose.ui.text.input.ImeAction = androidx.compose.ui.text.input.ImeAction.Next,
+    keyboard: KeyboardType = KeyboardType.Text,
+    ime: ImeAction = ImeAction.Next,
     onDone: (() -> Unit)? = null,
 ) {
     Box(modifier, contentAlignment = Alignment.CenterStart) {
         if (value.isEmpty()) MockText(hint, sizePx, color = Color(0xFF9AA0AB))
-        androidx.compose.foundation.text.BasicTextField(
+        BasicTextField(
             value = value, onValueChange = onChange, singleLine = true,
             textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(sizePx), color = MockColors.Navy),
-            cursorBrush = androidx.compose.ui.graphics.SolidColor(MockColors.Navy),
-            visualTransformation = if (password && !visible) androidx.compose.ui.text.input.PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = if (password) androidx.compose.ui.text.input.KeyboardType.Password else keyboard, imeAction = ime),
-            keyboardActions = androidx.compose.foundation.text.KeyboardActions(onDone = { onDone?.invoke() }),
+            cursorBrush = SolidColor(MockColors.Navy),
+            visualTransformation = if (password && !visible) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(keyboardType = if (password) KeyboardType.Password else keyboard, imeAction = ime),
+            keyboardActions = KeyboardActions(onDone = { onDone?.invoke() }),
             modifier = Modifier.fillMaxWidth(),
         )
     }

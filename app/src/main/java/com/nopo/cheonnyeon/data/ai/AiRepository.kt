@@ -4,13 +4,20 @@ import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
 import com.nopo.cheonnyeon.core.common.asFailure
 import com.nopo.cheonnyeon.core.common.asSuccess
+import com.nopo.cheonnyeon.domain.model.Title
+import com.nopo.cheonnyeon.domain.rule.ChatCandidate
+import com.nopo.cheonnyeon.domain.rule.LoyaltyInput
+import com.nopo.cheonnyeon.domain.rule.LoyaltyScore
 import com.nopo.cheonnyeon.domain.rule.MenuPick
 import com.nopo.cheonnyeon.domain.rule.MenuRoulette
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -23,7 +30,7 @@ data class ChatContextInfo(
     val nowText: String,
     val locationText: String,
     val totalYears: Int,
-    val candidates: List<com.nopo.cheonnyeon.domain.rule.ChatCandidate>,
+    val candidates: List<ChatCandidate>,
 )
 
 /** 챗봇 답변: 글과, 후보 가게 중에서 고른 가게(ID, 이유; 코스면 순서대로) */
@@ -39,7 +46,7 @@ data class LoyaltyAnalysis(
     val reasons: List<String>,
     val peerCount: Int,
     val topPercent: Int,
-    val input: com.nopo.cheonnyeon.domain.rule.LoyaltyInput,
+    val input: LoyaltyInput,
 )
 
 /** 취향 분석에 쓰는 내 리뷰 한 개(가게 메뉴 포함) */
@@ -97,14 +104,17 @@ class AiRepository(private val client: GeminiClient) {
         val picked = ArrayList<MenuPick>()
         repeat(2) { attempt ->
             val exclude = MenuRoulette.exclusions(rounds) + picked.map { it.menu }
-            val result = client.generateJson(tastePrompt(input, exclude, rounds.size + 1, 3 - picked.size, attempt), RECOMMEND_SCHEMA, temperature = 1.0)
+            val prompt = tastePrompt(input, exclude, rounds.size + 1, MenuRoulette.PER_ROUND - picked.size, attempt)
+            val result = client.generateJson(prompt, RECOMMEND_SCHEMA, temperature = TEMP_VARIED)
             val text = when (result) {
                 is AppResult.Success -> result.value
                 is AppResult.Failure -> if (picked.isEmpty()) return result else return finish(summary, picked)
             }
-            val dto = runCatching { json.decodeFromString<RecommendDto>(text) }.getOrNull() ?: return if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else finish(summary, picked)
+            val dto = runCatching { json.decodeFromString<RecommendDto>(text) }.getOrNull()
+                ?: return if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else finish(summary, picked)
             if (summary.isBlank()) summary = dto.analysis.trim()
-            val fresh = MenuRoulette.fresh(dto.picks.map { MenuPick(it.menu.trim(), it.reason.trim(), it.ingredients.map(String::trim).filter(String::isNotEmpty).take(6)) }, rounds, picked)
+            val candidates = dto.picks.map { MenuPick(it.menu.trim(), it.reason.trim(), it.ingredients.trimmedNotEmpty().take(MAX_INGREDIENTS)) }
+            val fresh = MenuRoulette.fresh(candidates, rounds, picked)
             picked += fresh.take(MenuRoulette.PER_ROUND - picked.size)
             if (picked.size >= MenuRoulette.PER_ROUND) return finish(summary, picked)
         }
@@ -112,17 +122,22 @@ class AiRepository(private val client: GeminiClient) {
     }
 
     private fun finish(summary: String, picked: List<MenuPick>): AppResult<MenuAnalysis> =
-        if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else MenuAnalysis(summary, picked.take(MenuRoulette.PER_ROUND)).asSuccess()
+        if (picked.isEmpty()) {
+            AppError.E_AI_FAILED.asFailure()
+        } else {
+            MenuAnalysis(summary, picked.take(MenuRoulette.PER_ROUND)).asSuccess()
+        }
 
     /**
      * 노포 도우미 챗봇: 자연어 찾기("비 오는 날 종로에서 혼자 먹기 좋은 국밥집"), 천년 경로 설계("1,000년까지 남은 312년을 가장 빨리 채우는 코스"),
      * 오늘의 노포 코스(지금 위치·영업시간 고려) 등. 가게는 [ChatContextInfo.candidates] 안에서만 고르며, 후보에 없는 ID는 버린다.
      */
     suspend fun chat(history: List<ChatTurn>, userText: String, info: ChatContextInfo): AppResult<ChatReply> {
-        val remaining = (com.nopo.cheonnyeon.domain.model.Title.MASTER.requiredYears - info.totalYears).coerceAtLeast(0)
+        val remaining = (Title.MASTER.requiredYears - info.totalYears).coerceAtLeast(0)
         val prompt = buildString {
             append("너는 '노포 패스포트' 앱의 AI 노포 도우미야. 오래된 노포(30년 이상) 맛집을 찾고 코스를 짜 줘. 친근하지만 존댓말로, 한국어로 답해.\n")
-            append("앱 규칙: 노포를 방문 인증하면 그 가게의 업력(년)만큼 '세월'이 쌓이고, 세월 1,000년이 되면 '천년 미식가'야. 이미 가 본 곳(visited=Y)은 세월이 더 쌓이지 않아.\n")
+            append("앱 규칙: 노포를 방문 인증하면 그 가게의 업력(년)만큼 '세월'이 쌓이고, 세월 1,000년이 되면 '천년 미식가'야. ")
+            append("이미 가 본 곳(visited=Y)은 세월이 더 쌓이지 않아.\n")
             append("지금 시각: ${info.nowText}\n내 위치: ${info.locationText}\n내 세월: ${info.totalYears}년 (1,000년까지 ${remaining}년 남음)\n\n")
             append("[요청 유형 가이드]\n")
             append("- 말로 찾기: 분위기·날씨·인원·메뉴 조건에 맞는 가게를 후보에서 골라 이유를 말해 줘(비 오는 날=국물·따뜻한 메뉴 등 상식으로 해석).\n")
@@ -131,21 +146,28 @@ class AiRepository(private val client: GeminiClient) {
             append("[후보 가게] (id | 이름 | 지역 | years | 메뉴 | 영업시간 | 거리 | visited)\n")
             info.candidates.forEach { c ->
                 val s = c.store
-                append("${s.id} | ${s.name} | ${s.sigungu} | ${c.years} | ${s.menuItems.take(3).joinToString("/")} | ${(s.hours ?: "정보 없음").take(40)} | ${c.distanceKm?.let { "%.1fkm".format(it) } ?: "-"} | ${if (c.visited) "Y" else "N"}\n")
+                val menus = s.menuItems.take(MAX_CHAT_MENUS).joinToString("/")
+                val hours = (s.hours ?: "정보 없음").take(MAX_CHAT_HOURS_CHARS)
+                val distance = c.distanceKm?.let { "%.1fkm".format(it) } ?: "-"
+                append("${s.id} | ${s.name} | ${s.sigungu} | ${c.years} | $menus | $hours | $distance | ${if (c.visited) "Y" else "N"}\n")
             }
             append("\n[이전 대화]\n")
-            history.takeLast(MAX_CHAT_TURNS).forEach { append(if (it.isUser) "사용자: " else "도우미: "); append(it.text.take(300)); append('\n') }
+            history.takeLast(MAX_CHAT_TURNS).forEach {
+                append(if (it.isUser) "사용자: " else "도우미: ")
+                append(it.text.take(MAX_CHAT_TURN_CHARS))
+                append('\n')
+            }
             append("\n[지금 사용자 말]\n$userText\n\n")
             append("답변 규칙: reply는 3문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 5개(코스면 방문 순서대로)와 한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
         }
-        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), CHAT_SCHEMA, temperature = 0.7)
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), CHAT_SCHEMA, temperature = TEMP_CHAT)
         val text = when (result) {
             is AppResult.Success -> result.value
             is AppResult.Failure -> return result
         }
         val dto = runCatching { json.decodeFromString<ChatDto>(text) }.getOrNull() ?: return AppError.E_AI_FAILED.asFailure()
         val valid = info.candidates.map { it.store.id }.toSet()
-        val picks = dto.stores.filter { it.id in valid }.distinctBy { it.id }.take(6).map { it.id to it.reason.trim() }
+        val picks = dto.stores.filter { it.id in valid }.distinctBy { it.id }.take(MAX_CHAT_PICKS).map { it.id to it.reason.trim() }
         if (dto.reply.isBlank() && picks.isEmpty()) return AppError.E_AI_FAILED.asFailure()
         return ChatReply(dto.reply.trim(), picks).asSuccess()
     }
@@ -156,11 +178,11 @@ class AiRepository(private val client: GeminiClient) {
      */
     suspend fun loyalty(
         storeName: String,
-        input: com.nopo.cheonnyeon.domain.rule.LoyaltyInput,
-        peers: List<com.nopo.cheonnyeon.domain.rule.LoyaltyInput>,
+        input: LoyaltyInput,
+        peers: List<LoyaltyInput>,
         avgRating: Double?,
     ): AppResult<LoyaltyAnalysis> {
-        val rule = com.nopo.cheonnyeon.domain.rule.LoyaltyScore
+        val rule = LoyaltyScore
         val summary = rule.summary(peers)
         val baseline = rule.baseline(input, peers)
         val top = rule.topPercent(input, peers)
@@ -174,7 +196,7 @@ class AiRepository(private val client: GeminiClient) {
             append("규칙: score는 기준 점수 ${baseline}에서 ±${rule.AI_ADJUST} 안으로만 조정해(표본이 적으면 기준에 가깝게, 지표가 뚜렷하면 더 벌려). ")
             append("label은 '동네 단골 맛집'처럼 6~12자 이름표. summary는 두 문장 이내로 단골들의 충성도를 평가. reasons는 근거 2~3개(숫자를 인용한 짧은 문장). 한국어 JSON으로만 답해.")
         }
-        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), LOYALTY_SCHEMA, temperature = 0.3)
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), LOYALTY_SCHEMA, temperature = TEMP_FACTUAL)
         val text = when (result) {
             is AppResult.Success -> result.value
             is AppResult.Failure -> return result
@@ -182,14 +204,20 @@ class AiRepository(private val client: GeminiClient) {
         val dto = runCatching { json.decodeFromString<LoyaltyDto>(text) }.getOrNull() ?: return AppError.E_AI_FAILED.asFailure()
         if (dto.summary.isBlank()) return AppError.E_AI_FAILED.asFailure()
         return LoyaltyAnalysis(
-            score = rule.clamp(dto.score, baseline), baseline = baseline, label = dto.label.trim(), summary = dto.summary.trim(),
-            reasons = dto.reasons.map(String::trim).filter(String::isNotEmpty).take(3), peerCount = summary.count, topPercent = top, input = input,
+            score = rule.clamp(dto.score, baseline),
+            baseline = baseline,
+            label = dto.label.trim(),
+            summary = dto.summary.trim(),
+            reasons = dto.reasons.trimmedNotEmpty().take(MAX_LOYALTY_REASONS),
+            peerCount = summary.count,
+            topPercent = top,
+            input = input,
         ).asSuccess()
     }
 
     /** 처음 AI 호출이 느린 것을 줄이려고, 룰렛 화면을 열 때 사용자 정보 없는 짧은 요청을 미리 보내 연결을 데워 둔다 */
     suspend fun warmUp() {
-        client.generateJson(listOf(GeminiPart.Text("ok 라고만 답해.")), HINT_SCHEMA, temperature = 0.0)
+        client.generateJson(listOf(GeminiPart.Text("ok 라고만 답해.")), HINT_SCHEMA, temperature = TEMP_DETERMINISTIC)
     }
 
     /** [texts]를 [language]로 번역한다(순서·개수 유지). 가게 이름·메뉴 이름 같은 고유명사는 원어를 괄호로 함께 둔다 */
@@ -197,7 +225,7 @@ class AiRepository(private val client: GeminiClient) {
         if (texts.isEmpty()) return emptyList<String>().asSuccess()
         // 글이 많으면 한 번에 보내지 않고 묶음으로 나눠 동시에 번역한다(한 번에 40개를 보내면 30초 넘게 걸림). 순서는 유지한다
         val chunks = texts.chunked(TRANSLATE_CHUNK)
-        val results = kotlinx.coroutines.coroutineScope {
+        val results = coroutineScope {
             chunks.map { chunk -> async { translateChunk(chunk, language) } }.awaitAll()
         }
         val out = ArrayList<String>(texts.size)
@@ -215,9 +243,9 @@ class AiRepository(private val client: GeminiClient) {
         val prompt = buildString {
             append("다음 JSON 배열의 각 글을 '$language'(으)로 자연스럽게 번역해 줘. 한국 음식·가게 소개글과 이용자 리뷰야.\n")
             append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang (설렁탕)). 번역 결과만 JSON으로 답해.\n\n")
-            append(kotlinx.serialization.json.JsonArray(texts.map { kotlinx.serialization.json.JsonPrimitive(it.take(2000)) }).toString())
+            append(JsonArray(texts.map { JsonPrimitive(it.take(MAX_TRANSLATE_TEXT_CHARS)) }).toString())
         }
-        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), TRANSLATE_SCHEMA, temperature = 0.2)
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), TRANSLATE_SCHEMA, temperature = TEMP_TRANSLATE)
         val text = when (result) {
             is AppResult.Success -> result.value
             is AppResult.Failure -> return result
@@ -231,7 +259,8 @@ class AiRepository(private val client: GeminiClient) {
         val usable = reviews.filter { it.text.isNotBlank() }.take(MAX_INSIGHT_REVIEWS)
         val cacheKey = storeId + "|" + reviews.size + "|" + usable.joinToString("") { it.text }.hashCode()
         insightCache[cacheKey]?.let { return it.asSuccess() }
-        val result = client.generateJson(listOf(GeminiPart.Text(insightPrompt(storeName, menus, reviews, usable))), INSIGHT_SCHEMA, temperature = 0.4)
+        val prompt = insightPrompt(storeName, menus, reviews, usable)
+        val result = client.generateJson(listOf(GeminiPart.Text(prompt)), INSIGHT_SCHEMA, temperature = TEMP_INSIGHT)
         val text = when (result) {
             is AppResult.Success -> result.value
             is AppResult.Failure -> return result
@@ -239,9 +268,9 @@ class AiRepository(private val client: GeminiClient) {
         val dto = runCatching { json.decodeFromString<InsightDto>(text) }.getOrNull() ?: return AppError.E_AI_FAILED.asFailure()
         val insight = StoreInsight(
             oneLine = dto.oneLine.trim(),
-            strengths = dto.strengths.map(String::trim).filter(String::isNotEmpty).take(4),
-            menus = dto.menus.filter { it.menu.isNotBlank() }.map { InsightMenu(it.menu.trim(), it.reason.trim()) }.take(3),
-            weaknesses = dto.weaknesses.map(String::trim).filter(String::isNotEmpty).take(3),
+            strengths = dto.strengths.trimmedNotEmpty().take(MAX_INSIGHT_STRENGTHS),
+            menus = dto.menus.filter { it.menu.isNotBlank() }.map { InsightMenu(it.menu.trim(), it.reason.trim()) }.take(MAX_INSIGHT_MENUS),
+            weaknesses = dto.weaknesses.trimmedNotEmpty().take(MAX_INSIGHT_WEAKNESSES),
             bestFor = dto.bestFor.trim(),
         )
         if (insight.oneLine.isBlank() && insight.strengths.isEmpty()) return AppError.E_AI_FAILED.asFailure()
@@ -253,20 +282,30 @@ class AiRepository(private val client: GeminiClient) {
      * 영수증 인식에 실패했을 때 원인과 다시 찍는 방법을 한두 문장으로 알려 준다(예: "가게 이름이 잘렸어요. 위쪽까지 찍어 주세요").
      * [imageBase64]는 방금 찍은 영수증 사진(JPEG, 줄인 것)이며 이 호출에서만 쓰고 저장하지 않는다.
      */
-    suspend fun receiptHint(storeName: String, ocrLines: List<String>, reason: String, imageBase64: String?, subject: String = "영수증"): AppResult<String> {
+    suspend fun receiptHint(
+        storeName: String,
+        ocrLines: List<String>,
+        reason: String,
+        imageBase64: String?,
+        subject: String = "영수증",
+    ): AppResult<String> {
         val prompt = buildString {
             append("너는 방문 인증 앱의 촬영 도우미야. 사용자가 '$storeName'의 $subject 사진을 찍었는데 인식에 실패했어.\n")
             append("실패 이유: $reason\n")
-            append("글자 인식(OCR)이 읽은 줄(최대 25줄):\n")
-            if (ocrLines.isEmpty()) append("(읽힌 글자 없음)\n") else ocrLines.take(25).forEachIndexed { i, l -> append("${i + 1}. ${l.take(60)}\n") }
-            if (imageBase64 != null) append(if (subject == "영수증") "첨부 사진은 방금 찍은 영수증이야. 사진에서 가게 이름·날짜·시간이 보이는지, 잘렸는지, 흐리거나 어둡거나 빛이 반사되거나 기울었는지, 다른 가게 영수증은 아닌지 살펴봐.\n" else "첨부 사진은 방금 찍은 $subject 사진이야. 가게 이름·전화번호·메뉴 글자가 크고 선명하게 보이는지, 잘렸는지, 너무 멀거나 흐리거나 어둡거나 반사되는지, 다른 가게는 아닌지 살펴봐.\n")
+            append("글자 인식(OCR)이 읽은 줄(최대 ${MAX_HINT_OCR_LINES}줄):\n")
+            if (ocrLines.isEmpty()) {
+                append("(읽힌 글자 없음)\n")
+            } else {
+                ocrLines.take(MAX_HINT_OCR_LINES).forEachIndexed { i, l -> append("${i + 1}. ${l.take(MAX_HINT_LINE_CHARS)}\n") }
+            }
+            if (imageBase64 != null) append(photoLookHint(subject))
             append("가장 큰 원인 하나를 골라, 사용자가 다시 찍을 때 할 행동을 존댓말 한두 문장으로 알려 줘. 예: \"가게 이름이 잘렸어요. 영수증 위쪽까지 화면에 담아 주세요.\"\n")
             append("추측이 어려우면 일반적인 촬영 요령(밝은 곳, 평평하게, 전체가 틀 안에)을 알려 줘. 한국어 JSON으로만 답해.")
         }
         val parts = ArrayList<GeminiPart>()
         parts += GeminiPart.Text(prompt)
         imageBase64?.let { parts += GeminiPart.Image("image/jpeg", it) }
-        val result = client.generateJson(parts, HINT_SCHEMA, temperature = 0.3)
+        val result = client.generateJson(parts, HINT_SCHEMA, temperature = TEMP_FACTUAL)
         val text = when (result) {
             is AppResult.Success -> result.value
             is AppResult.Failure -> return result
@@ -274,6 +313,17 @@ class AiRepository(private val client: GeminiClient) {
         val tip = runCatching { json.decodeFromString<HintDto>(text).tip.trim() }.getOrNull().orEmpty()
         return if (tip.isBlank()) AppError.E_AI_FAILED.asFailure() else tip.asSuccess()
     }
+
+    /** 영수증이면 영수증용, 아니면(간판·메뉴판) 가게 사진용으로 "사진에서 무엇을 살펴볼지" 안내 문장을 만든다 */
+    private fun photoLookHint(subject: String): String =
+        if (subject == "영수증") {
+            "첨부 사진은 방금 찍은 영수증이야. 사진에서 가게 이름·날짜·시간이 보이는지, 잘렸는지, 흐리거나 어둡거나 빛이 반사되거나 기울었는지, 다른 가게 영수증은 아닌지 살펴봐.\n"
+        } else {
+            "첨부 사진은 방금 찍은 $subject 사진이야. 가게 이름·전화번호·메뉴 글자가 크고 선명하게 보이는지, 잘렸는지, 너무 멀거나 흐리거나 어둡거나 반사되는지, 다른 가게는 아닌지 살펴봐.\n"
+        }
+
+    /** 공백을 다듬고 빈 항목은 뺀다 */
+    private fun List<String>.trimmedNotEmpty(): List<String> = map(String::trim).filter(String::isNotEmpty)
 
     internal fun tastePrompt(input: TasteInput, exclude: List<String>, round: Int, need: Int, attempt: Int): List<GeminiPart> {
         val sb = StringBuilder()
@@ -315,17 +365,40 @@ class AiRepository(private val client: GeminiClient) {
     private companion object {
         const val MAX_TASTE_REVIEWS = 12
         const val MAX_TASTE_PHOTOS = 6
+        const val MAX_INGREDIENTS = 6
         const val MAX_INSIGHT_REVIEWS = 60
+        const val MAX_INSIGHT_STRENGTHS = 4
+        const val MAX_INSIGHT_MENUS = 3
+        const val MAX_INSIGHT_WEAKNESSES = 3
+        const val MAX_LOYALTY_REASONS = 3
+
         /** 번역을 한 번에 보내는 글 수(묶음별로 동시에 요청) */
         const val TRANSLATE_CHUNK = 8
+        const val MAX_TRANSLATE_TEXT_CHARS = 2000
+
         const val MAX_CHAT_TURNS = 8
+        const val MAX_CHAT_TURN_CHARS = 300
+        const val MAX_CHAT_PICKS = 6
+        const val MAX_CHAT_MENUS = 3
+        const val MAX_CHAT_HOURS_CHARS = 40
+
+        const val MAX_HINT_OCR_LINES = 25
+        const val MAX_HINT_LINE_CHARS = 60
+
+        // 모델 온도: 클수록 다양한 답, 작을수록 일정한 답
+        const val TEMP_VARIED = 1.0
+        const val TEMP_CHAT = 0.7
+        const val TEMP_INSIGHT = 0.4
+        const val TEMP_FACTUAL = 0.3
+        const val TEMP_TRANSLATE = 0.2
+        const val TEMP_DETERMINISTIC = 0.0
 
         private fun str(desc: String? = null) = buildJsonObject { put("type", "STRING"); if (desc != null) put("description", desc) }
         private fun arr(item: JsonElement) = buildJsonObject { put("type", "ARRAY"); put("items", item) }
         private fun obj(props: Map<String, JsonElement>) = buildJsonObject {
             put("type", "OBJECT")
             put("properties", buildJsonObject { props.forEach { (k, v) -> put(k, v) } })
-            put("required", buildJsonArray { props.keys.forEach { add(kotlinx.serialization.json.JsonPrimitive(it)) } })
+            put("required", buildJsonArray { props.keys.forEach { add(JsonPrimitive(it)) } })
         }
 
         val RECOMMEND_SCHEMA: JsonElement = obj(
@@ -335,7 +408,9 @@ class AiRepository(private val client: GeminiClient) {
             ),
         )
         val CHAT_SCHEMA: JsonElement = obj(mapOf("reply" to str(), "stores" to arr(obj(mapOf("id" to str(), "reason" to str())))))
-        val LOYALTY_SCHEMA: JsonElement = obj(mapOf("score" to buildJsonObject { put("type", "INTEGER") }, "label" to str(), "summary" to str(), "reasons" to arr(str())))
+        val LOYALTY_SCHEMA: JsonElement = obj(
+            mapOf("score" to buildJsonObject { put("type", "INTEGER") }, "label" to str(), "summary" to str(), "reasons" to arr(str())),
+        )
         val TRANSLATE_SCHEMA: JsonElement = obj(mapOf("items" to arr(str())))
         val HINT_SCHEMA: JsonElement = obj(mapOf("tip" to str("사용자에게 보여 줄 한두 문장")))
         val INSIGHT_SCHEMA: JsonElement = obj(

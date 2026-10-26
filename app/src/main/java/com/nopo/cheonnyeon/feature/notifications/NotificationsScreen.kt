@@ -6,28 +6,30 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.SeoulZone
@@ -35,13 +37,14 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.data.local.MyVisitEntity
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
+import java.time.Instant
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import java.time.Instant
 
 data class NoticeItem(val key: String, val title: String, val body: String, val at: Long, val storeId: String? = null, val lime: Boolean = false, val tab: Int? = null)
 
@@ -51,7 +54,7 @@ data class NoticeItem(val key: String, val title: String, val body: String, val 
  */
 /** 알림 목록을 만드는 규칙 (순수 함수): 시험 가게 방문은 뺀다. 칭호가 오른 방문에만 칭호 알림이 붙고, 최신순으로 정렬한다. */
 fun buildNotices(
-    visits: List<com.nopo.cheonnyeon.data.local.MyVisitEntity>, storeNames: Map<String, String>, news: Boolean, reco: Boolean, nowMs: Long,
+    visits: List<MyVisitEntity>, storeNames: Map<String, String>, news: Boolean, reco: Boolean, nowMs: Long,
 ): List<NoticeItem> {
     val real = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedBy { it.firstVisitedAt }
     val out = ArrayList<NoticeItem>()
@@ -87,7 +90,7 @@ fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenSt
     val items by vm.items.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.notice_01), 34, font = MockSerif, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(stringResource(com.nopo.cheonnyeon.R.string.notice_01), 34, font = MockSerif, weight = FontWeight.ExtraBold) }
         }
         LazyColumn(contentPadding = PaddingValues(px(20)), verticalArrangement = Arrangement.spacedBy(px(14))) {
             items(items, key = { it.key }) { n ->
@@ -111,4 +114,4 @@ fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenSt
     }
 }
 
-private val Color_Gray = androidx.compose.ui.graphics.Color(0xFFCFCCBE)
+private val Color_Gray = Color(0xFFCFCCBE)

@@ -1,6 +1,9 @@
 package com.nopo.cheonnyeon.domain.rule
 
-/** 업력 = 방문한 해 − 창업연도. 공식 지정 가게는 모두 30년 이상이라 30을 바닥값으로 둔다 (PRD 6.1, D-07). */
+/**
+ * 업력 = 방문한 해 − 창업연도.
+ * 공식 지정 가게는 모두 30년 이상이라 30을 바닥값으로 둔다 (PRD 6.1, D-07).
+ */
 object YearsCalculator {
     const val MIN_YEARS = 30
 

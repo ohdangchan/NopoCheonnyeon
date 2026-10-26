@@ -31,6 +31,10 @@ object LoyaltyScore {
     /** 표본이 이만큼 이상이면 점수를 그대로 믿는다 */
     const val FULL_CONFIDENCE_VISITORS = 20
 
+    /** 기준 점수에서 재방문율 백분위와 평균 단골 횟수 백분위가 차지하는 비중 (합 1.0) */
+    private const val RATE_WEIGHT = 0.65
+    private const val VISITS_WEIGHT = 0.35
+
     /** [value]가 [sortedPeers] 중 얼마나 위인지(0~1). 같은 값은 절반씩 */
     fun percentile(value: Double, sortedPeers: List<Double>): Double {
         if (sortedPeers.isEmpty()) return 0.5
@@ -55,7 +59,7 @@ object LoyaltyScore {
     fun baseline(input: LoyaltyInput, peers: List<LoyaltyInput>): Int {
         val rateP = percentile(input.rate, peers.map { it.rate }.sorted())
         val visitsP = percentile(input.avgVisitCount, peers.map { it.avgVisitCount }.sorted())
-        val raw = (rateP * 0.65 + visitsP * 0.35) * 100.0
+        val raw = (rateP * RATE_WEIGHT + visitsP * VISITS_WEIGHT) * 100.0
         val confidence = (input.visitors.toDouble() / FULL_CONFIDENCE_VISITORS).coerceIn(0.0, 1.0)
         return (50.0 + (raw - 50.0) * confidence).toInt().coerceIn(0, 100)
     }
@@ -65,7 +69,8 @@ object LoyaltyScore {
         (100 - (percentile(input.rate, peers.map { it.rate }.sorted()) * 100).toInt()).coerceIn(1, 100)
 
     /** AI 점수를 기준 점수 ±[AI_ADJUST]와 0~100 안으로 */
-    fun clamp(aiScore: Int, baseline: Int): Int = aiScore.coerceIn(baseline - AI_ADJUST, baseline + AI_ADJUST).coerceIn(0, 100)
+    fun clamp(aiScore: Int, baseline: Int): Int =
+        aiScore.coerceIn(baseline - AI_ADJUST, baseline + AI_ADJUST).coerceIn(0, 100)
 
     /** 점수대별 이름표 */
     fun gradeKey(score: Int): Int = when {

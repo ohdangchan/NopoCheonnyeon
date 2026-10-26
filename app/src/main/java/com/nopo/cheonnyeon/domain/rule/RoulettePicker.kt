@@ -11,6 +11,14 @@ data class RouletteFilter(val sido: String? = null, val cuisine: String? = null,
 object RoulettePicker {
     val CUISINES = listOf("한식", "중식", "일식", "양식", "분식", "카페")
 
+    /** 사진 있는 가게에 주는 가중치 배수 */
+    private const val PHOTO_WEIGHT = 3.0
+
+    /** 평점 가중치 = [RATING_BASE] + 평점 / [RATING_SCALE]. 평점이 없으면 [DEFAULT_RATING]으로 본다 */
+    private const val RATING_BASE = 0.5
+    private const val RATING_SCALE = 5.0
+    private const val DEFAULT_RATING = 3.5
+
     private val rules = listOf(
         "카페" to listOf("카페", "커피", "베이커리", "제과", "빵", "디저트", "다방", "케이크", "떡집"),
         "중식" to listOf("중식", "중화", "짜장", "짬뽕", "탕수", "마라", "딤섬", "만두"),
@@ -44,14 +52,15 @@ object RoulettePicker {
             .filter { f.sido == null || it.sido == f.sido }
             .filter { f.cuisine == null || cuisineOf(it) == f.cuisine }
         if (f.walkMeters == null || here == null) return base
-        val near = base.filter { GeoDistance.meters(here.first, here.second, it.lat!!, it.lng!!) <= f.walkMeters }
-        return near
+        return base.filter { GeoDistance.meters(here.first, here.second, it.lat!!, it.lng!!) <= f.walkMeters }
     }
 
     /** 사진이 있는 가게와 평점이 높은 가게가 더 잘 뽑히게 가중 무작위로 한 곳을 고른다. 후보가 없으면 null */
     fun pick(list: List<Store>, ratings: Map<String, Double>, random: Random = Random.Default): Store? {
         if (list.isEmpty()) return null
-        val weights = list.map { s -> (if (s.photoUrls.isNotEmpty()) 3.0 else 1.0) * (0.5 + (ratings[s.id] ?: 3.5) / 5.0) }
+        val weights = list.map { s ->
+            (if (s.photoUrls.isNotEmpty()) PHOTO_WEIGHT else 1.0) * (RATING_BASE + (ratings[s.id] ?: DEFAULT_RATING) / RATING_SCALE)
+        }
         var x = random.nextDouble() * weights.sum()
         list.forEachIndexed { i, s -> x -= weights[i]; if (x <= 0) return s }
         return list.last()

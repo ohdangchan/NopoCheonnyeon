@@ -1,24 +1,41 @@
 package com.nopo.cheonnyeon.feature.verify
 
+import android.graphics.Bitmap
+import android.os.SystemClock
+import android.util.Base64
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.app.AppContainer
+import com.nopo.cheonnyeon.core.common.Analytics
 import com.nopo.cheonnyeon.core.common.AppError
 import com.nopo.cheonnyeon.core.common.AppResult
+import com.nopo.cheonnyeon.core.common.SeoulZone
+import com.nopo.cheonnyeon.core.util.ClockSkew
 import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.data.visit.AwardResult
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.model.VerifyMethod
 import com.nopo.cheonnyeon.domain.rule.DailyLimitPolicy
+import com.nopo.cheonnyeon.domain.rule.RegionProgress
+import com.nopo.cheonnyeon.domain.rule.RegionProgressRule
 import com.nopo.cheonnyeon.domain.rule.VerificationConfig
 import com.nopo.cheonnyeon.domain.verify.PhotoMatcher
+import com.nopo.cheonnyeon.domain.verify.ReceiptParser
 import com.nopo.cheonnyeon.domain.verify.VerifyReceiptUseCase
 import com.nopo.cheonnyeon.platform.camera.CameraController
 import com.nopo.cheonnyeon.platform.camera.toUprightBitmap
 import com.nopo.cheonnyeon.platform.location.Fix
 import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
+import com.nopo.cheonnyeon.platform.location.LocationSettingsResult
+import com.nopo.cheonnyeon.platform.network.ClockSkewChecker
 import com.nopo.cheonnyeon.platform.ocr.MlKitKoreanRecognizer
+import com.nopo.cheonnyeon.platform.ocr.OcrBox
+import com.nopo.cheonnyeon.platform.ocr.OcrScan
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.time.Instant
+import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,8 +72,8 @@ data class VerifyUiState(
     /** 영수증 스캔 연출: 레이저가 훑는 중 → 인식한 글자에 형광펜 */
     val scanPhase: ScanPhase = ScanPhase.NONE,
     /** 방금 찍은 영수증 장면(화면 표시용으로 줄인 것, 메모리에서만 쓰고 파일로 저장하지 않는다) */
-    val scanFrame: android.graphics.Bitmap? = null,
-    val scanBoxes: List<com.nopo.cheonnyeon.platform.ocr.OcrBox> = emptyList(),
+    val scanFrame: Bitmap? = null,
+    val scanBoxes: List<OcrBox> = emptyList(),
     /** AI 촬영 도우미 안내(Gemini). 인식 실패 때 한두 문장 */
     val aiHint: String? = null,
     /** AI 안내를 받으려면 전송 동의가 필요함(처음 한 번) */
@@ -64,7 +81,7 @@ data class VerifyUiState(
     /** 영수증 글자 확인을 마쳤고 사용자가 "인증 정보 확정하기"를 누르기를 기다리는 중 */
     val confirm: ReceiptInfo? = null,
     /** 인증을 마친 뒤 그 가게가 속한 시·도의 지역 스탬프 진행 */
-    val region: com.nopo.cheonnyeon.domain.rule.RegionProgress? = null,
+    val region: RegionProgress? = null,
     /** 마지막으로 잰 가게까지의 거리(미터). 아직 안 쟀으면 null */
     val distanceM: Int? = null,
     /** 마지막으로 잰 내 위치(지도에 표시만 하고 저장·전송하지 않는다) */
@@ -77,7 +94,7 @@ data class VerifyUiState(
 data class RecentVisit(val store: Store, val years: Int, val at: Long)
 
 /** 확인 화면에 보여 줄 영수증에서 읽은 값(없으면 null) */
-data class ReceiptInfo(val storeName: String, val paidAt: java.time.LocalDateTime?, val amount: Long?, val address: String, val hash: String?, val approval: String?)
+data class ReceiptInfo(val storeName: String, val paidAt: LocalDateTime?, val amount: Long?, val address: String, val hash: String?, val approval: String?)
 
 enum class ScanPhase { NONE, LASER, HIGHLIGHT }
 
@@ -92,7 +109,7 @@ class VerifyViewModel(
     private val storeId: String,
     private val saved: SavedStateHandle,
     /** 기기 시계 오차(ms)를 재는 함수. 시험에서는 바꿔 끼운다 */
-    private val measureClockSkew: suspend () -> Long? = { com.nopo.cheonnyeon.platform.network.ClockSkewChecker().measureMillis() },
+    private val measureClockSkew: suspend () -> Long? = { ClockSkewChecker().measureMillis() },
 ) : ViewModel() {
     // 글자 인식기·위치는 쓸 때 만든다 (ViewModel을 단위 시험에서 만들 수 있게)
     private val recognizerLazy = lazy { MlKitKoreanRecognizer() }
@@ -115,14 +132,14 @@ class VerifyViewModel(
     fun requestReview() { container.pendingReviewStoreId.value = storeId }
 
     init {
-        com.nopo.cheonnyeon.core.common.Analytics.verifyStart()
+        Analytics.verifyStart()
         loadRecent()
         viewModelScope.launch {
             runCatching { allowLocationOnly = container.settings.allowLocationOnly.first() }
         }
         viewModelScope.launch {
             val skew = measureClockSkew()
-            if (skew != null && com.nopo.cheonnyeon.core.util.ClockSkew.exceedsWarning(skew)) {
+            if (skew != null && ClockSkew.exceedsWarning(skew)) {
                 _state.update { it.copy(clockSkewMinutes = kotlin.math.abs(skew) / 60_000L) }
             }
         }
@@ -132,9 +149,9 @@ class VerifyViewModel(
             if (store != null) {
                 val limit = DailyLimitPolicy.check(container.visits.visitRefs(), store.id, store.isTest, container.clock.now())
                 if (limit != null) {
-                    val today = container.clock.now().atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate()
+                    val today = container.clock.now().atZone(SeoulZone).toLocalDate()
                     val list = container.database.myVisitDao().observeAll().first()
-                        .filter { !it.storeId.startsWith(Store.TEST_PREFIX) && java.time.Instant.ofEpochMilli(it.lastVisitedAt).atZone(com.nopo.cheonnyeon.core.common.SeoulZone).toLocalDate() == today }
+                        .filter { !it.storeId.startsWith(Store.TEST_PREFIX) && Instant.ofEpochMilli(it.lastVisitedAt).atZone(SeoulZone).toLocalDate() == today }
                         .map { (container.catalog.byId(it.storeId)?.name ?: it.storeId) to it.yearsAwarded }
                     _state.update { it.copy(blocked = true, error = limit, todayVisits = list) }
                 }
@@ -199,10 +216,10 @@ class VerifyViewModel(
         clearScan()
         _state.update { it.copy(busy = true, error = null, scanPhase = ScanPhase.LASER, aiHint = null) }
         viewModelScope.launch {
-            val t0 = android.os.SystemClock.elapsedRealtime()
+            val t0 = SystemClock.elapsedRealtime()
             val scan = scanReceipt(camera)
             // 레이저가 최소 한 번은 훑고 지나가게 한다
-            val wait = LASER_MIN_MS - (android.os.SystemClock.elapsedRealtime() - t0)
+            val wait = LASER_MIN_MS - (SystemClock.elapsedRealtime() - t0)
             if (wait > 0) kotlinx.coroutines.delay(wait)
             if (scan == null) {
                 _state.update { it.copy(busy = false, scanPhase = ScanPhase.NONE, error = AppError.E_RECEIPT_UNREADABLE) }
@@ -222,7 +239,7 @@ class VerifyViewModel(
                 is AppResult.Success -> {
                     // 바로 도장을 찍지 않고, 읽은 정보를 보여 주고 사용자가 확정할 때 기록한다
                     val joined = scan.lines.joinToString("\n")
-                    val parsed = com.nopo.cheonnyeon.domain.verify.ReceiptParser.parse(joined)
+                    val parsed = ReceiptParser.parse(joined)
                     val approval = APPROVAL_REGEX.find(joined)?.groupValues?.get(1)
                     _state.update {
                         it.copy(
@@ -236,17 +253,17 @@ class VerifyViewModel(
     }
 
     /** 촬영해서 글자와 위치를 읽는다. 화면에 보일 줄인 장면은 상태에 둔다. 실패하면 null */
-    private suspend fun scanReceipt(camera: CameraController, proofFile: java.io.File? = null): com.nopo.cheonnyeon.platform.ocr.OcrScan? = try {
+    private suspend fun scanReceipt(camera: CameraController, proofFile: File? = null): OcrScan? = try {
         val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
         withContext(Dispatchers.Default) {
             try {
                 val scale = FRAME_SIDE.toFloat() / maxOf(bitmap.width, bitmap.height)
-                val frame = if (scale < 1f) android.graphics.Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap.copy(android.graphics.Bitmap.Config.ARGB_8888, false)
+                val frame = if (scale < 1f) Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap.copy(Bitmap.Config.ARGB_8888, false)
                 _state.update { it.copy(scanFrame = frame) }
                 // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
                 proofFile?.let { f ->
                     f.parentFile?.mkdirs()
-                    f.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }
+                    f.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 85, it) }
                 }
                 withTimeout(OCR_TIMEOUT_MS) { recognizer.readScan(bitmap) }
             } finally {
@@ -259,10 +276,10 @@ class VerifyViewModel(
         null
     }
 
-    private fun jpegBase64(frame: android.graphics.Bitmap): String? = runCatching {
-        val out = java.io.ByteArrayOutputStream()
-        frame.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out)
-        android.util.Base64.encodeToString(out.toByteArray(), android.util.Base64.NO_WRAP)
+    private fun jpegBase64(frame: Bitmap): String? = runCatching {
+        val out = ByteArrayOutputStream()
+        frame.compress(Bitmap.CompressFormat.JPEG, 70, out)
+        Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
     }.getOrNull()
 
     private var pendingHint: HintRequest? = null
@@ -328,7 +345,7 @@ class VerifyViewModel(
         viewModelScope.launch {
             // 기기 위치 설정이 꺼져 있으면 시스템 켜기 대화상자를 먼저 띄운다 (아키텍처 5.2 3단계)
             val settings = try { location.checkSettings() } catch (_: Exception) { null }
-            if (settings is com.nopo.cheonnyeon.platform.location.LocationSettingsResult.Resolvable) {
+            if (settings is LocationSettingsResult.Resolvable) {
                 _state.update { it.copy(busy = false, pendingResolution = settings.exception) }
                 return@launch
             }
@@ -364,10 +381,10 @@ class VerifyViewModel(
         clearScan()
         _state.update { it.copy(busy = true, error = null, scanPhase = ScanPhase.LASER, aiHint = null) }
         viewModelScope.launch {
-            val t0 = android.os.SystemClock.elapsedRealtime()
-            val proof = java.io.File(container.appContext.filesDir, "proofs/" + store.id + ".jpg")
+            val t0 = SystemClock.elapsedRealtime()
+            val proof = File(container.appContext.filesDir, "proofs/" + store.id + ".jpg")
             val scan = scanReceipt(camera, proof)
-            val wait = LASER_MIN_MS - (android.os.SystemClock.elapsedRealtime() - t0)
+            val wait = LASER_MIN_MS - (SystemClock.elapsedRealtime() - t0)
             if (wait > 0) kotlinx.coroutines.delay(wait)
             val lines = scan?.lines ?: emptyList()
             if (scan != null) {
@@ -422,25 +439,25 @@ class VerifyViewModel(
         }
         container.syncScheduler.enqueue()
         saved[KEY_STEP] = VerifyStep.DONE.name
-        com.nopo.cheonnyeon.core.common.Analytics.verifyResult(method.name, "success")
-        com.nopo.cheonnyeon.core.common.Analytics.stampAwarded(award.years, award.grade.name)
+        Analytics.verifyResult(method.name, "success")
+        Analytics.stampAwarded(award.years, award.grade.name)
         val region = runCatching {
             val visited = container.database.myVisitDao().observeAll().first().map { it.storeId }.toSet()
-            com.nopo.cheonnyeon.domain.rule.RegionProgressRule.compute(container.catalog.all(), visited).firstOrNull { it.sido == store.sido }
+            RegionProgressRule.compute(container.catalog.all(), visited).firstOrNull { it.sido == store.sido }
         }.getOrNull()
         _state.update { it.copy(busy = false, error = null, award = award, step = VerifyStep.DONE, region = region) }
         loadRecent()
     }
 
     /** 촬영 → 글자 줄 목록. 10초 제한, 이미지는 변환 직후 버린다. 실패하면 null */
-    private suspend fun readText(camera: CameraController, proofFile: java.io.File? = null): List<String>? = try {
+    private suspend fun readText(camera: CameraController, proofFile: File? = null): List<String>? = try {
         val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
         withContext(Dispatchers.Default) {
             try {
                 // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
                 proofFile?.let { f ->
                     f.parentFile?.mkdirs()
-                    f.outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 85, it) }
+                    f.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 85, it) }
                 }
                 withTimeout(OCR_TIMEOUT_MS) { recognizer.read(bitmap).lines }
             } finally {
