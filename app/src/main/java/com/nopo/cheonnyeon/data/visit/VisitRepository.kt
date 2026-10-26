@@ -172,7 +172,11 @@ class VisitRepository(
                 // 집계는 따로 보내고, 실패하면 대기열에 남겨 다시 보낸다 (방문 기록에는 영향 없음)
                 statsDelta(visit)?.let { d ->
                     if (!writeStats(d)) {
-                        pendingDao.add(PendingOpEntity(type = TYPE_STATS, payload = json.encodeToString(d), createdAt = clock.now().toEpochMilli()))
+                        pendingDao.add(PendingOpEntity(
+                            type = TYPE_STATS,
+                            payload = json.encodeToString(d),
+                            createdAt = clock.now().toEpochMilli()
+                        ))
                     }
                 }
             } catch (e: CancellationException) {

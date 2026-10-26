@@ -73,7 +73,9 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
     val scope = rememberCoroutineScope()
     val authVm: AuthViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = AuthViewModel(container.auth) { keep -> scope.launch { container.settings.setKeepLogin(keep) } } as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = AuthViewModel(container.auth) { keep ->
+            scope.launch { container.settings.setKeepLogin(keep) }
+        } as T
     })
 
     val onboardingDone by container.settings.onboardingDone.collectAsStateWithLifecycle(initialValue = null)
@@ -144,9 +146,22 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
         composable(Routes.STORE, arguments = listOf(navArgument("id") { type = NavType.StringType })) { entry ->
             val id = entry.arguments?.getString("id").orEmpty()
             val vm: StoreDetailViewModel = viewModel(factory = factoryOf { StoreDetailViewModel(container, id) })
-            StoreDetailScreen(vm, onBack = { nav.popBackStack() }, onVerify = { nav.navigate(Routes.verify(id)) }, translateBar = { s -> TranslateBar(container, s) }, reviews = { store ->
-                val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
-                StoreReviewsSection(reviewsVm, onOpenProfile = { nav.navigate(Routes.profile(it)) }, onVerify = { nav.navigate(Routes.verify(store.id)) })
+            StoreDetailScreen(vm,
+                onBack = { nav.popBackStack() },
+                onVerify = { nav.navigate(Routes.verify(id)) },
+                translateBar = { s -> TranslateBar(
+                container,
+                s
+            ) }, reviews = { store ->
+                val reviewsVm: ReviewsViewModel = viewModel(
+                    key = "reviews_" + store.id,
+                    factory = factoryOf { ReviewsViewModel(container, store) }
+                )
+                StoreReviewsSection(
+                    reviewsVm,
+                    onOpenProfile = { nav.navigate(Routes.profile(it)) },
+                    onVerify = { nav.navigate(Routes.verify(store.id)) }
+                )
             })
         }
         if (BuildConfig.DEBUG) {
@@ -184,7 +199,10 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
             val id = entry.arguments?.getString("id").orEmpty()
             val store = produceState<Store?>(null, id) { value = container.catalog.byId(id) }.value
             if (store != null) {
-                val reviewsVm: ReviewsViewModel = viewModel(key = "reviews_" + store.id, factory = factoryOf { ReviewsViewModel(container, store) })
+                val reviewsVm: ReviewsViewModel = viewModel(
+                    key = "reviews_" + store.id,
+                    factory = factoryOf { ReviewsViewModel(container, store) }
+                )
                 ReviewWriteScreen(
                     reviewsVm, store, onBack = { nav.popBackStack() },
                     onOpenStore = { nav.popBackStack(); nav.navigate(Routes.store(store.id)) },
@@ -203,7 +221,12 @@ fun NopoNavHost(container: AppContainer, debugRoute: String? = null) {
         }
         composable(Routes.CHAT, arguments = listOf(navArgument("q") { type = NavType.StringType; defaultValue = "" })) { entry ->
             val vm: ChatViewModel = viewModel(factory = factoryOf { ChatViewModel(container) })
-            ChatScreen(vm, initialQuery = entry.arguments?.getString("q").orEmpty(), onBack = { nav.popBackStack() }, onOpenStore = { nav.navigate(Routes.store(it)) })
+            ChatScreen(
+                vm,
+                initialQuery = entry.arguments?.getString("q").orEmpty(),
+                onBack = { nav.popBackStack() },
+                onOpenStore = { nav.navigate(Routes.store(it)) }
+            )
         }
         composable(Routes.ROULETTE) {
             val vm: NopoRouletteViewModel = viewModel(factory = factoryOf { NopoRouletteViewModel(container) })

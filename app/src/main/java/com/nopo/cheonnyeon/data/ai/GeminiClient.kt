@@ -52,7 +52,9 @@ private object FirebaseTransport : GeminiTransport {
         }
         val t0 = android.os.SystemClock.elapsedRealtime()
         return try {
-            m.generateContent(request).text.also { android.util.Log.d("Nopo", "AI " + model + " " + (android.os.SystemClock.elapsedRealtime() - t0) + "ms") }
+            m.generateContent(request)
+                .text
+                .also { android.util.Log.d("Nopo", "AI " + model + " " + (android.os.SystemClock.elapsedRealtime() - t0) + "ms") }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
@@ -84,13 +86,20 @@ class GeminiClient(
                 throw e
             } catch (_: Exception) {
                 // 기본 모델이 붐비거나 느리면 예비 모델로 한 번 더
-                if (model == FALLBACK_MODEL) throw IllegalStateException("AI 호출 실패") else transport.generate(withSchema, temperature, FALLBACK_MODEL)
+                if (model == FALLBACK_MODEL) throw IllegalStateException("AI 호출 실패") else transport.generate(
+                    withSchema,
+                    temperature,
+                    FALLBACK_MODEL
+                )
             }?.trim().orEmpty()
             clean(text)?.asSuccess() ?: AppError.E_AI_FAILED.asFailure()
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            if (generateSequence<Throwable>(e) { it.cause }.any { it is java.io.IOException }) AppError.E_NETWORK.asFailure() else AppError.E_AI_FAILED.asFailure()
+            if (generateSequence<Throwable>(e) { it.cause }.any { it is java.io.IOException }) AppError.E_NETWORK
+                .asFailure() else AppError
+                .E_AI_FAILED
+                .asFailure()
         }
     }
 

@@ -84,7 +84,8 @@ class HallOfFameViewModel(private val container: AppContainer) : ViewModel() {
                     myRank = rank, topPercent = HallOfFameRule.topPercent(rank, users.size),
                     byYears = users.sortedByDescending { u -> u.years },
                     byReviews = users.sortedWith(compareByDescending<DemoUser> { u -> u.reviews }.thenByDescending { u -> u.years }),
-                    topStores = data?.topStores(10).orEmpty().mapNotNull { t -> stores[t.storeId]?.let { s -> HallStore(s, t.average, t.count) } },
+                    topStores = data?.topStores(10).orEmpty().mapNotNull { t -> stores[t.storeId]?.let { s -> HallStore(s, t.average,
+                        t.count) } },
                 )
             }
         }
@@ -97,7 +98,8 @@ fun HallOfFameScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (
     val c = NopoTheme.colors
     var tab by rememberSaveable { mutableIntStateOf(0) }
 
-    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding().padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
+    Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding()
+        .padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             TextButton(onBack) { Text(stringResource(R.string.detail_back)) }
             Text(stringResource(R.string.hall_title), style = NopoTheme.typography.headlineMedium, color = c.primary)
@@ -123,7 +125,8 @@ fun HallOfFameScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (
                 item { Podium(list.take(3), byReviews = tab == 1) }
                 items(maxOf(0, list.size - 3)) { i -> UserRow(i + 4, list[i + 3], tab == 1) }
             }
-            item { Text(stringResource(R.string.hall_titles_note), style = NopoTheme.typography.bodySmall, color = c.ink2, modifier = Modifier.padding(vertical = NopoTheme.spacing.md)) }
+            item { Text(stringResource(R.string.hall_titles_note), style = NopoTheme.typography.bodySmall, color = c.ink2,
+                modifier = Modifier.padding(vertical = NopoTheme.spacing.md)) }
         }
     }
 }
@@ -131,14 +134,17 @@ fun HallOfFameScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (
 @Composable
 private fun MyCard(s: HallUiState) {
     val c = NopoTheme.colors
-    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             Text(s.nickname.ifBlank { "-" }, style = NopoTheme.typography.titleLarge, color = c.ink)
             TitleBadge(TitlePolicy.titleFor(s.myYears))
         }
         Text(stringResource(R.string.hall_my_line, s.myYears, s.myRank, s.topPercent), color = c.ink)
-        Text(stringResource(R.string.hall_my_progress, HallOfFameRule.progressToMaster(s.myYears)), style = NopoTheme.typography.bodySmall, color = c.ink2)
-        LinearProgressIndicator(progress = { HallOfFameRule.progressToMaster(s.myYears) / 100f }, modifier = Modifier.fillMaxWidth(), color = c.brass, trackColor = c.tealSoft)
+        Text(stringResource(R.string.hall_my_progress, HallOfFameRule.progressToMaster(s.myYears)), style = NopoTheme.typography.bodySmall,
+            color = c.ink2)
+        LinearProgressIndicator(progress = { HallOfFameRule.progressToMaster(s.myYears) / 100f }, modifier = Modifier.fillMaxWidth(),
+            color = c.brass, trackColor = c.tealSoft)
     }
 }
 
@@ -148,16 +154,20 @@ private fun Podium(top: List<DemoUser>, byReviews: Boolean) {
     if (top.size < 3) return
     // 2위 1위 3위 순서, 1위가 가장 높다
     val order = listOf(1 to 80.dp, 0 to 112.dp, 2 to 64.dp)
-    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
         Text(stringResource(R.string.hall_top3), style = NopoTheme.typography.titleMedium, color = c.primary)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm), verticalAlignment = Alignment.Bottom) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm),
+            verticalAlignment = Alignment.Bottom) {
             order.forEach { (idx, h) ->
                 val u = top[idx]
-                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs)) {
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs)) {
                     TitleBadge(TitlePolicy.titleFor(u.years))
                     Text(u.nickname, style = NopoTheme.typography.titleSmall, color = c.ink, maxLines = 1)
                     Text(
-                        if (byReviews) stringResource(R.string.hall_reviews_count, u.reviews) else stringResource(R.string.hall_years, u.years),
+                        if (byReviews) stringResource(R.string.hall_reviews_count, u.reviews) else stringResource(R.string.hall_years,
+                            u.years),
                         style = NopoTheme.typography.titleMedium, color = c.stamp,
                     )
                     Text(stringResource(R.string.hall_stores_count, u.stores), style = NopoTheme.typography.bodySmall, color = c.ink2)
@@ -199,7 +209,8 @@ private fun UserRow(rank: Int, u: DemoUser, byReviews: Boolean) {
 private fun StoreRow(rank: Int, s: HallStore, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(s.store.id) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(c.surface,
+            NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(s.store.id) }.padding(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
     ) {
         Text(rank.toString(), style = NopoTheme.typography.titleLarge, color = c.ink2)

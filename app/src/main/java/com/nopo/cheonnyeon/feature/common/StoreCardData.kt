@@ -36,8 +36,20 @@ object StoreCards {
     }
 
     fun of(store: Store, currentYear: Int, ratings: Map<String, StoreRating>, fix: Fix?, bookmarks: Set<String>): StoreCardData {
-        val d = if (fix != null && store.lat != null && store.lng != null) GeoDistance.meters(fix.lat, fix.lng, store.lat, store.lng) else null
-        return StoreCardData(store, YearsCalculator.yearsAtVisit(store.foundedYear?.takeIf { it <= currentYear }, currentYear), tag(store, currentYear), ratings[store.id], d, store.id in bookmarks)
+        val d = if (fix != null && store.lat != null && store.lng != null) GeoDistance.meters(
+            fix.lat,
+            fix.lng,
+            store.lat,
+            store.lng
+        ) else null
+        return StoreCardData(
+            store,
+            YearsCalculator.yearsAtVisit(store.foundedYear?.takeIf { it <= currentYear }, currentYear),
+            tag(store, currentYear),
+            ratings[store.id],
+            d,
+            store.id in bookmarks
+        )
     }
 
     /** 대표 메뉴로 보이는 말: 첫 번째 메뉴 */

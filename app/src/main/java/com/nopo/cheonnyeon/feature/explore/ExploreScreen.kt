@@ -119,7 +119,8 @@ class ExploreViewModel(private val container: AppContainer) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            container.requestedExploreChip.collect { c -> if (c != null) { chip.value = c; region.value = null; query.value = ""; container.requestedExploreChip.value = null } }
+            container.requestedExploreChip
+                .collect { c -> if (c != null) { chip.value = c; region.value = null; query.value = ""; container.requestedExploreChip.value = null } }
         }
         viewModelScope.launch { stores.value = container.catalog.all().filter { !it.isTest } }
     }

@@ -81,7 +81,8 @@ private const val PAGE_SLOTS = 9
 
 /** 여권 쪽 구성: 0쪽(첫 펼침의 오른쪽, 지역 스탬프 6칸) → 나머지 지역 스탬프 → 방문한 노포 도장 */
 internal fun buildPages(regions: List<RegionProgress>, stamps: List<PassportStamp>): List<BookPage> {
-    val region = regions.sortedWith(compareByDescending<RegionProgress> { it.stamped }.thenByDescending { it.visited }).map { Slot.Region(it) as Slot }
+    val region = regions.sortedWith(compareByDescending<RegionProgress> { it.stamped }.thenByDescending { it.visited })
+        .map { Slot.Region(it) as Slot }
     val pages = ArrayList<BookPage>()
     pages += BookPage("", (region.take(FIRST_PAGE_SLOTS) + List(FIRST_PAGE_SLOTS) { Slot.Empty }).take(FIRST_PAGE_SLOTS))
     region.drop(FIRST_PAGE_SLOTS).chunked(PAGE_SLOTS).forEach { pages += BookPage("지역 스탬프", it) }
@@ -139,9 +140,11 @@ internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (Pas
         // 배경 사진 속 여권이 살짝 기울어 있어, 펼친 면도 같은 각도로 기울여 진짜 책처럼 맞춘다
         Box(Modifier.fillMaxSize().graphicsLayer { rotationZ = BOOK_TILT; transformOrigin = TransformOrigin(0.5f, 0.52f) }) {
         // 왼쪽 정지면
-        if (k >= 1) PageSurface(left = true, Modifier.offset(px(SPINE - PAGE_W), px(PAGE_TOP))) { PageBody(2 * k - 1, page(2 * k - 1), stats, onStamp) }
+        if (k >= 1) PageSurface(left = true, Modifier.offset(px(SPINE - PAGE_W), px(PAGE_TOP))) { PageBody(2 * k - 1, page(2 * k - 1),
+            stats, onStamp) }
         // 오른쪽에 드러날 다음 장
-        if (t > 0f && k + 1 < spreads) PageSurface(left = false, Modifier.offset(px(SPINE), px(PAGE_TOP))) { PageBody(2 * (k + 1), page(2 * (k + 1)), stats, onStamp) }
+        if (t > 0f && k + 1 < spreads) PageSurface(left = false, Modifier.offset(px(SPINE), px(PAGE_TOP))) { PageBody(2 * (k + 1),
+            page(2 * (k + 1)), stats, onStamp) }
         // 넘어가는 장
         if (t < 0.5f) {
             PageSurface(
@@ -174,7 +177,8 @@ internal fun PassportBook(stats: BookStats, pages: List<BookPage>, onStamp: (Pas
 
 @Composable
 private fun PageSurface(left: Boolean, modifier: Modifier, shade: Float = 0f, content: @Composable () -> Unit) {
-    val gutter = if (left) Brush.horizontalGradient(listOf(Color.Transparent, Color(0x26000000))) else Brush.horizontalGradient(listOf(Color(0x26000000), Color.Transparent))
+    val gutter = if (left) Brush.horizontalGradient(listOf(Color.Transparent,
+        Color(0x26000000))) else Brush.horizontalGradient(listOf(Color(0x26000000), Color.Transparent))
     Box(modifier.size(px(PAGE_W), px(PAGE_H)).background(Parchment).border(1.dp, PageLine)) {
         Box(Modifier.align(if (left) Alignment.CenterEnd else Alignment.CenterStart).size(px(34), px(PAGE_H)).background(gutter))
         content()
@@ -195,14 +199,16 @@ private fun PageBody(index: Int, page: BookPage?, stats: BookStats, onStamp: (Pa
         return
     }
     Box(Modifier.fillMaxSize()) {
-        Box(Modifier.fillMaxWidth().offset(y = px(14)), contentAlignment = Alignment.TopCenter) { MockText(page.title, 23, color = Color(0xFF8A7F66), font = MockSerif, weight = FontWeight.ExtraBold) }
+        Box(Modifier.fillMaxWidth().offset(y = px(14)), contentAlignment = Alignment.TopCenter) { MockText(page.title, 23,
+            color = Color(0xFF8A7F66), font = MockSerif, weight = FontWeight.ExtraBold) }
         page.slots.forEachIndexed { i, s -> SlotAt(s, ColX[i % 3], 100 + (i / 3) * 122, 96, onStamp) }
         if (page.slots.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 MockText("영수증 인증으로\n첫 도장을 찍어 보세요", 22, color = Faint, align = TextAlign.Center, maxLines = 2, lineHeightPx = 32)
             }
         }
-        Box(Modifier.fillMaxWidth().offset(y = px(PAGE_H - 36)), contentAlignment = Alignment.TopCenter) { MockText("– ${index + 1} –", 20, color = Faint) }
+        Box(Modifier.fillMaxWidth().offset(y = px(PAGE_H - 36)), contentAlignment = Alignment.TopCenter) { MockText("– ${index + 1} –", 20,
+            color = Faint) }
     }
 }
 
@@ -215,12 +221,17 @@ private fun Page0(stats: BookStats, page: BookPage?, onStamp: (PassportStamp) ->
                 color = Color(0xFFCFC5AE), cornerRadius = CornerRadius(14.dp.toPx()),
                 style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f))),
             )
-            drawLine(Color(0xFFD8CEB7), Offset(size.width * 0.5f, 18.dp.toPx()), Offset(size.width * 0.5f, size.height - 18.dp.toPx()), strokeWidth = 1.dp.toPx())
+            drawLine(Color(0xFFD8CEB7), Offset(size.width * 0.5f, 18.dp.toPx()), Offset(size.width * 0.5f, size.height - 18.dp.toPx()),
+                strokeWidth = 1.dp.toPx())
         }
         MockPic(R.drawable.mk_col_ic_plane, 60, 45, Modifier.offset(px(54), px(22)))
         MockPic(R.drawable.mk_col_ic_seal, 47, 42, Modifier.offset(px(210), px(24)))
-        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(stringResource(R.string.col_06), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
-        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)), contentAlignment = Alignment.Center) { MockText(stringResource(R.string.book_01), 21, color = MockColors.Navy, weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(11), px(70)).size(px(148), px(32)),
+            contentAlignment = Alignment.Center) { MockText(stringResource(R.string.col_06), 21, color = MockColors.Navy,
+            weight = FontWeight.Medium) }
+        Box(Modifier.offset(px(159), px(70)).size(px(148), px(32)),
+            contentAlignment = Alignment.Center) { MockText(stringResource(R.string.book_01), 21, color = MockColors.Navy,
+            weight = FontWeight.Medium) }
         Box(Modifier.offset(px(11), px(100)).size(px(148), px(64)), contentAlignment = Alignment.Center) {
             Row(verticalAlignment = Alignment.Bottom) {
                 MockText("${stats.visited}", 56, font = MockSerif, weight = FontWeight.ExtraBold)
@@ -260,7 +271,8 @@ private fun RegionStampView(r: RegionProgress) {
                 drawCircle(color, radius = w / 2 - 2.dp.toPx(), style = Stroke(2.6.dp.toPx()))
                 drawCircle(color, radius = w / 2 - 7.dp.toPx(), style = Stroke(1.dp.toPx()))
             } else {
-                drawCircle(Color(0xFFC4BAA2), radius = w / 2 - 2.dp.toPx(), style = Stroke(1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f, 7f))))
+                drawCircle(Color(0xFFC4BAA2), radius = w / 2 - 2.dp.toPx(), style = Stroke(1.5.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(7f, 7f))))
             }
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -292,7 +304,8 @@ private fun StoreStampView(s: PassportStamp, onClick: () -> Unit) {
             drawCircle(color, radius = w / 2 - 7.dp.toPx(), style = Stroke(1.dp.toPx()))
         }
         Column(Modifier.size(px(62)), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            MockText(s.store?.name ?: s.visit.storeId, 15, color = color, font = MockSerif, weight = FontWeight.ExtraBold, maxLines = 3, align = TextAlign.Center, lineHeightPx = 17)
+            MockText(s.store?.name ?: s.visit.storeId, 15, color = color, font = MockSerif, weight = FontWeight.ExtraBold, maxLines = 3,
+                align = TextAlign.Center, lineHeightPx = 17)
             MockText("${s.visit.yearsAwarded}년", 15, color = color, weight = FontWeight.Bold)
         }
     }

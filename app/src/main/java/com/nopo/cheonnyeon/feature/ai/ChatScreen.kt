@@ -117,7 +117,8 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
             when (val r = container.ai.chat(turns, text, info)) {
                 is AppResult.Success -> {
                     val byId = info.candidates.associateBy { it.store.id }
-                    val refs = r.value.picks.mapNotNull { (id, reason) -> byId[id]?.let { ChatStoreRef(id, it.store.name, it.years, reason) } }
+                    val refs = r.value.picks.mapNotNull { (id, reason) -> byId[id]?.let { ChatStoreRef(id, it.store.name, it.years,
+                        reason) } }
                     val bot = ChatMessage(nextId++, ChatMessage.ROLE_BOT, r.value.text, container.clock.now().toEpochMilli(), refs)
                     container.chatStore.append(owner, bot)
                     _state.update { it.copy(messages = it.messages + bot, sending = false) }
@@ -134,10 +135,14 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
     /** 지금 시각·위치(권한이 있으면)·세월·후보 가게를 모은다. 위치는 이 호출에서만 쓰고 저장하지 않는다 */
     private suspend fun buildContext(text: String): ChatContextInfo {
         val now = container.clock.now().atZone(SeoulZone)
-        val nowText = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + " (" + listOf("월", "화", "수", "목", "금", "토", "일")[now.dayOfWeek.value - 1] + "요일, 서울 시간)"
-        val granted = ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        val fix = container.lastFix.value ?: if (granted) runCatching { FusedLocationAdapter(container.appContext).quickFix() }.getOrNull() else null
+        val nowText = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + " (" + listOf("월", "화", "수", "목", "금", "토",
+            "일")[now.dayOfWeek.value - 1] + "요일, 서울 시간)"
+        val granted = ContextCompat.checkSelfPermission(container.appContext,
+            android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(container.appContext,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val fix = container.lastFix.value ?: if (granted) runCatching { FusedLocationAdapter(container.appContext)
+            .quickFix() }.getOrNull() else null
         val visits = container.database.myVisitDao().observeAll().first()
         val total = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded }
         val candidates = ChatCandidates.pick(
@@ -183,7 +188,8 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding().navigationBarsPadding().imePadding()) {
         Row(Modifier.padding(horizontal = NopoTheme.spacing.lg), verticalAlignment = Alignment.CenterVertically) {
             TextButton(onBack) { Text(stringResource(R.string.detail_back)) }
-            Text(stringResource(R.string.chat_title), style = NopoTheme.typography.headlineMedium, color = c.primary, modifier = Modifier.weight(1f))
+            Text(stringResource(R.string.chat_title), style = NopoTheme.typography.headlineMedium, color = c.primary,
+                modifier = Modifier.weight(1f))
             if (state.messages.isNotEmpty()) TextButton({ confirmClear = true }) { Text(stringResource(R.string.chat_clear)) }
         }
         if (!state.available) {
@@ -215,10 +221,14 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
         }
         // 예시 질문: 눌러서 바로 물어볼 수 있다(접고 펼칠 수 있음)
         var showSamples by rememberSaveable { mutableStateOf(true) }
-        Column(Modifier.fillMaxWidth().padding(horizontal = NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
-            Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { showSamples = !showSamples }, verticalAlignment = Alignment.CenterVertically) {
-                Text(stringResource(R.string.chat_samples_title), style = NopoTheme.typography.labelMedium, color = c.primary, modifier = Modifier.weight(1f))
-                Text(stringResource(if (showSamples) R.string.chat_samples_hide else R.string.chat_samples_show), style = NopoTheme.typography.labelMedium, color = c.ink2)
+        Column(Modifier.fillMaxWidth().padding(horizontal = NopoTheme.spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+            Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { showSamples = !showSamples },
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.chat_samples_title), style = NopoTheme.typography.labelMedium, color = c.primary,
+                    modifier = Modifier.weight(1f))
+                Text(stringResource(if (showSamples) R.string.chat_samples_hide else R.string.chat_samples_show),
+                    style = NopoTheme.typography.labelMedium, color = c.ink2)
             }
             if (showSamples) {
                 listOf(
@@ -235,7 +245,8 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
                 }
             }
         }
-        Row(Modifier.fillMaxWidth().padding(NopoTheme.spacing.md), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Row(Modifier.fillMaxWidth().padding(NopoTheme.spacing.md), verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             OutlinedTextField(
                 value = input, onValueChange = { input = it.take(300) },
                 placeholder = { Text(stringResource(R.string.chat_hint)) },
@@ -262,7 +273,8 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
 @Composable
 private fun Bubble(m: ChatMessage, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
-    Column(Modifier.fillMaxWidth(), horizontalAlignment = if (m.isUser) Alignment.End else Alignment.Start, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+    Column(Modifier.fillMaxWidth(), horizontalAlignment = if (m.isUser) Alignment.End else Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         if (m.text.isNotBlank()) {
             Text(
                 m.text,
@@ -273,10 +285,12 @@ private fun Bubble(m: ChatMessage, onOpenStore: (String) -> Unit) {
         }
         m.stores.forEachIndexed { i, s ->
             Column(
-                Modifier.fillMaxWidth().background(c.tealSoft, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(s.id) }.padding(NopoTheme.spacing.md),
+                Modifier.fillMaxWidth().background(c.tealSoft,
+                    NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(s.id) }.padding(NopoTheme.spacing.md),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
-                Text("${i + 1}. ${s.name} · ${stringResource(R.string.years_value, s.years)}", style = NopoTheme.typography.titleSmall, color = c.primary)
+                Text("${i + 1}. ${s.name} · ${stringResource(R.string.years_value, s.years)}", style = NopoTheme.typography.titleSmall,
+                    color = c.primary)
                 if (s.reason.isNotBlank()) Text(s.reason, style = NopoTheme.typography.bodySmall, color = c.ink)
             }
         }

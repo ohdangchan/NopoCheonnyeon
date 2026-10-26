@@ -42,8 +42,24 @@ fun SplashScreen() {
         Box(Modifier.align(Alignment.TopCenter).offset(y = maxHeight * 0.901f - 26.dp), contentAlignment = Alignment.Center) {
             Canvas(Modifier.size(52.dp).rotate(angle)) {
                 val w = 5.dp.toPx()
-                drawArc(Color(0xFFE3ECC0), 0f, 360f, false, topLeft = Offset(w / 2, w / 2), size = Size(size.width - w, size.height - w), style = Stroke(w))
-                drawArc(MockColors.LimeDeep, -90f, 110f, false, topLeft = Offset(w / 2, w / 2), size = Size(size.width - w, size.height - w), style = Stroke(w, cap = StrokeCap.Round))
+                drawArc(
+                    Color(0xFFE3ECC0),
+                    0f,
+                    360f,
+                    false,
+                    topLeft = Offset(w / 2, w / 2),
+                    size = Size(size.width - w, size.height - w),
+                    style = Stroke(w)
+                )
+                drawArc(
+                    MockColors.LimeDeep,
+                    -90f,
+                    110f,
+                    false,
+                    topLeft = Offset(w / 2, w / 2),
+                    size = Size(size.width - w, size.height - w),
+                    style = Stroke(w, cap = StrokeCap.Round)
+                )
             }
         }
         Box(Modifier.align(Alignment.TopCenter).offset(y = maxHeight * 0.940f - 12.dp)) {

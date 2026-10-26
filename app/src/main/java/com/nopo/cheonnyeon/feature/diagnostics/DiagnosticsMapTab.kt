@@ -172,7 +172,11 @@ fun DiagnosticsMapTab(modifier: Modifier = Modifier) {
                         .background(NopoTheme.colors.stampSoft)
                         .padding(NopoTheme.spacing.md),
                 ) {
-                    Text(stringResource(R.string.diag_map_auth_failed, it), style = NopoTheme.typography.titleSmall, color = NopoTheme.colors.ink)
+                    Text(
+                        stringResource(R.string.diag_map_auth_failed, it),
+                        style = NopoTheme.typography.titleSmall,
+                        color = NopoTheme.colors.ink
+                    )
                     Text(stringResource(R.string.diag_map_auth_hint), style = NopoTheme.typography.bodySmall, color = NopoTheme.colors.ink2)
                 }
             }
@@ -229,7 +233,11 @@ fun DiagnosticsMapTab(modifier: Modifier = Modifier) {
                     enabled = naverMap != null,
                 )
             }
-            readyMs?.let { Text(stringResource(R.string.diag_map_ready, it.toInt()), style = NopoTheme.extraTypography.metric, color = NopoTheme.colors.ink2) }
+            readyMs?.let { Text(
+                stringResource(R.string.diag_map_ready, it.toInt()),
+                style = NopoTheme.extraTypography.metric,
+                color = NopoTheme.colors.ink2
+            ) }
             markerInfo?.let { Text(it, style = NopoTheme.extraTypography.metric, color = NopoTheme.colors.ink2) }
             LocationResult(state)
         }
@@ -245,8 +253,16 @@ private fun LocationResult(state: DiagMapState) {
     Text(stringResource(R.string.diag_map_latlng, fix.lat, fix.lng, fix.accuracyM), style = NopoTheme.extraTypography.metric, color = c.ink)
     if (fix.isMock) Text(stringResource(R.string.diag_loc_mock), style = NopoTheme.typography.labelLarge, color = c.stamp)
     when {
-        state.addressLoading -> Text(stringResource(R.string.diag_map_addr_loading), style = NopoTheme.typography.bodyMedium, color = c.ink2)
-        state.addressError != null -> Text(stringResource(R.string.diag_map_addr_error, state.addressError), style = NopoTheme.typography.bodyMedium, color = c.stamp)
+        state.addressLoading -> Text(
+            stringResource(R.string.diag_map_addr_loading),
+            style = NopoTheme.typography.bodyMedium,
+            color = c.ink2
+        )
+        state.addressError != null -> Text(
+            stringResource(R.string.diag_map_addr_error, state.addressError),
+            style = NopoTheme.typography.bodyMedium,
+            color = c.stamp
+        )
         state.address != null -> {
             val a = state.address
             Text(
@@ -254,7 +270,11 @@ private fun LocationResult(state: DiagMapState) {
                 style = NopoTheme.typography.titleSmall,
                 color = c.ink,
             )
-            a.building?.let { Text(stringResource(R.string.diag_map_building, it), style = NopoTheme.typography.bodyMedium, color = c.ink2) }
+            a.building?.let { Text(
+                stringResource(R.string.diag_map_building, it),
+                style = NopoTheme.typography.bodyMedium,
+                color = c.ink2
+            ) }
             a.jibun?.let { Text(stringResource(R.string.diag_map_jibun, it), style = NopoTheme.typography.bodyMedium, color = c.ink2) }
         }
     }

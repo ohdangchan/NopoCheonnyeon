@@ -326,7 +326,11 @@ fun BookmarkIcon(sizePx: Int, modifier: Modifier = Modifier, color: Color = Colo
             lineTo(w * 0.22f, h * 0.92f)
             close()
         }
-        if (filled) drawPath(path, color) else drawPath(path, color, style = Stroke(width = w * 0.09f, join = StrokeJoin.Round, cap = StrokeCap.Round))
+        if (filled) drawPath(path, color) else drawPath(
+            path,
+            color,
+            style = Stroke(width = w * 0.09f, join = StrokeJoin.Round, cap = StrokeCap.Round)
+        )
     }
 }
 
@@ -491,7 +495,9 @@ fun MockCheck(checked: Boolean, sizePx: Int, modifier: Modifier = Modifier, onCh
         contentAlignment = Alignment.Center,
     ) {
         if (checked) Canvas(Modifier.size(px((sizePx * 0.6f).toInt()))) {
-            val p = Path().apply { moveTo(size.width * 0.1f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.85f); lineTo(size.width * 0.92f, size.height * 0.18f) }
+            val p = Path().apply { moveTo(size.width * 0.1f, size.height * 0.55f);
+                 lineTo(size.width * 0.4f, size.height * 0.85f);
+                lineTo(size.width * 0.92f, size.height * 0.18f) }
             drawPath(p, MockColors.Navy, style = Stroke(width = size.width * 0.16f, cap = StrokeCap.Round, join = StrokeJoin.Round))
         }
     }
@@ -499,7 +505,15 @@ fun MockCheck(checked: Boolean, sizePx: Int, modifier: Modifier = Modifier, onCh
 
 /** 연두색 긴 버튼(글자 가운데, 오른쪽에 > 표시) */
 @Composable
-fun MockLimeBar(text: String, heightPx: Int, modifier: Modifier = Modifier, textPx: Int = 28, enabled: Boolean = true, arrowCircle: Boolean = false, onClick: () -> Unit) {
+fun MockLimeBar(
+    text: String,
+    heightPx: Int,
+    modifier: Modifier = Modifier,
+    textPx: Int = 28,
+    enabled: Boolean = true,
+    arrowCircle: Boolean = false,
+    onClick: () -> Unit
+) {
     Box(
         modifier.height(px(heightPx)).clip(RoundedCornerShape(50)).background(if (enabled) MockColors.Lime2 else Color(0xFFE2E8C4))
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
@@ -507,7 +521,10 @@ fun MockLimeBar(text: String, heightPx: Int, modifier: Modifier = Modifier, text
     ) {
         MockText(text, textPx, weight = FontWeight.ExtraBold, color = if (enabled) MockColors.Navy else Color(0xFF8A9078))
         Box(Modifier.align(Alignment.CenterEnd).padding(end = px(if (arrowCircle) 18 else 34))) {
-            if (arrowCircle) Box(Modifier.size(px(52)).clip(CircleShape).background(Color(0xCCFFFFFF)), contentAlignment = Alignment.Center) { ChevronRight(28) }
+            if (arrowCircle) Box(
+                Modifier.size(px(52)).clip(CircleShape).background(Color(0xCCFFFFFF)),
+                contentAlignment = Alignment.Center
+            ) { ChevronRight(28) }
             else ChevronRight(30)
         }
     }

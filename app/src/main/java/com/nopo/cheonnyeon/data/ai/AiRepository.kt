@@ -76,7 +76,12 @@ data class StoreInsight(
 @Serializable private data class TranslateDto(val items: List<String> = emptyList())
 @Serializable private data class ChatPickDto(val id: String = "", val reason: String = "")
 @Serializable private data class ChatDto(val reply: String = "", val stores: List<ChatPickDto> = emptyList())
-@Serializable private data class LoyaltyDto(val score: Int = 0, val label: String = "", val summary: String = "", val reasons: List<String> = emptyList())
+@Serializable private data class LoyaltyDto(
+    val score: Int = 0,
+    val label: String = "",
+    val summary: String = "",
+    val reasons: List<String> = emptyList()
+)
 @Serializable private data class HintDto(val tip: String = "")
 @Serializable private data class MenuDto(val menu: String = "", val reason: String = "")
 @Serializable private data class InsightDto(
@@ -113,7 +118,11 @@ class AiRepository(private val client: GeminiClient) {
             val dto = runCatching { json.decodeFromString<RecommendDto>(text) }.getOrNull()
                 ?: return if (picked.isEmpty()) AppError.E_AI_FAILED.asFailure() else finish(summary, picked)
             if (summary.isBlank()) summary = dto.analysis.trim()
-            val candidates = dto.picks.map { MenuPick(it.menu.trim(), it.reason.trim(), it.ingredients.trimmedNotEmpty().take(MAX_INGREDIENTS)) }
+            val candidates = dto.picks.map { MenuPick(
+                it.menu.trim(),
+                it.reason.trim(),
+                it.ingredients.trimmedNotEmpty().take(MAX_INGREDIENTS)
+            ) }
             val fresh = MenuRoulette.fresh(candidates, rounds, picked)
             picked += fresh.take(MenuRoulette.PER_ROUND - picked.size)
             if (picked.size >= MenuRoulette.PER_ROUND) return finish(summary, picked)
@@ -141,7 +150,8 @@ class AiRepository(private val client: GeminiClient) {
             append("지금 시각: ${info.nowText}\n내 위치: ${info.locationText}\n내 세월: ${info.totalYears}년 (1,000년까지 ${remaining}년 남음)\n\n")
             append("[요청 유형 가이드]\n")
             append("- 말로 찾기: 분위기·날씨·인원·메뉴 조건에 맞는 가게를 후보에서 골라 이유를 말해 줘(비 오는 날=국물·따뜻한 메뉴 등 상식으로 해석).\n")
-            append("- 천년 경로 설계: 안 가 본 곳(visited=N) 중 years가 큰 곳을 서로 가까운 순서로 묶어, 남은 ${remaining}년을 가장 빨리(가장 적은 곳 수로) 채우는 코스를 짜. 코스의 years 합계가 남은 세월에 닿는지 말해 줘(합계는 후보의 years 숫자만 더해서).\n")
+            append("- 천년 경로 설계: 안 가 본 곳(visited=N) 중 years가 큰 곳을 서로 가까운 순서로 묶어, 남은 ${remaining}년을 가장 빨리(가장 적은 ")
+            append("곳 수로) 채우는 코스를 짜. 코스의 years 합계가 남은 세월에 닿는지 말해 줘(합계는 후보의 years 숫자만 더해서).\n")
             append("- 오늘의 노포 코스: 지금 시각과 영업시간(hours), 거리(km)를 고려해 반나절 3~4곳을 방문 순서대로. 영업시간이 불확실하면 확인하라고 덧붙여.\n\n")
             append("[후보 가게] (id | 이름 | 지역 | years | 메뉴 | 영업시간 | 거리 | visited)\n")
             info.candidates.forEach { c ->
@@ -158,7 +168,8 @@ class AiRepository(private val client: GeminiClient) {
                 append('\n')
             }
             append("\n[지금 사용자 말]\n$userText\n\n")
-            append("답변 규칙: reply는 3문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 5개(코스면 방문 순서대로)와 한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
+            append("답변 규칙: reply는 3문장 이내로 핵심만(마크다운 기호 없이 일반 글). stores에는 추천 가게를 후보의 id 그대로 최대 5개(코스면 방문 순서대로)와 ")
+            append("한 줄 이유로 넣어. 후보에 없는 가게는 절대 넣지 마. 조건에 맞는 가게가 없으면 stores는 비우고 솔직히 말해. JSON으로만 답해.")
         }
         val result = client.generateJson(listOf(GeminiPart.Text(prompt)), CHAT_SCHEMA, temperature = TEMP_CHAT)
         val text = when (result) {
@@ -189,9 +200,11 @@ class AiRepository(private val client: GeminiClient) {
         fun pct(x: Double) = "%.0f%%".format(x * 100)
         val prompt = buildString {
             append("너는 노포 맛집의 '단골 충성도'를 분석하는 데이터 분석가야. '$storeName'의 재방문 지표를 다른 가게들과 비교해서 100점 만점으로 점수를 매겨 줘.\n\n")
-            append("[이 가게] 방문자 ${input.visitors}명, 다시 온 사람 ${input.revisitors}명(재방문율 ${pct(input.rate)}), 리뷰에 적힌 평균 단골 횟수 ${"%.2f".format(input.avgVisitCount)}회, 리뷰 ${input.reviewCount}개")
+            append("[이 가게] 방문자 ${input.visitors}명, 다시 온 사람 ${input.revisitors}명(재방문율 ${pct(input.rate)}), 리뷰에 ")
+            append("적힌 평균 단골 횟수 ${"%.2f".format(input.avgVisitCount)}회, 리뷰 ${input.reviewCount}개")
             if (avgRating != null) append(", 평균 별점 ${"%.1f".format(avgRating)}")
-            append("\n[비교 대상 ${summary.count}곳] 재방문율 평균 ${pct(summary.meanRate)}, 중앙값 ${pct(summary.medianRate)}, 상위 25% 경계 ${pct(summary.p75Rate)}, 평균 단골 횟수 ${"%.2f".format(summary.meanVisits)}회\n")
+            append("\n[비교 대상 ${summary.count}곳] 재방문율 평균 ${pct(summary.meanRate)}, 중앙값 ${pct(summary.medianRate)}, ")
+            append("상위 25% 경계 ${pct(summary.p75Rate)}, 평균 단골 횟수 ${"%.2f".format(summary.meanVisits)}회\n")
             append("[계산한 기준] 재방문율은 비교 대상 중 상위 ${top}%, 표본 보정까지 한 기준 점수는 ${baseline}점\n\n")
             append("규칙: score는 기준 점수 ${baseline}에서 ±${rule.AI_ADJUST} 안으로만 조정해(표본이 적으면 기준에 가깝게, 지표가 뚜렷하면 더 벌려). ")
             append("label은 '동네 단골 맛집'처럼 6~12자 이름표. summary는 두 문장 이내로 단골들의 충성도를 평가. reasons는 근거 2~3개(숫자를 인용한 짧은 문장). 한국어 JSON으로만 답해.")
@@ -242,7 +255,8 @@ class AiRepository(private val client: GeminiClient) {
     suspend fun translateChunk(texts: List<String>, language: String): AppResult<List<String>> {
         val prompt = buildString {
             append("다음 JSON 배열의 각 글을 '$language'(으)로 자연스럽게 번역해 줘. 한국 음식·가게 소개글과 이용자 리뷰야.\n")
-            append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang (설렁탕)). 번역 결과만 JSON으로 답해.\n\n")
+            append("규칙: 배열 길이와 순서를 그대로 유지하고, 줄바꿈은 살려. 가게 이름·메뉴 이름(예: 설렁탕)은 번역문 뒤에 원어를 괄호로 한 번 붙여 줘(예: seolleongtang ")
+            append("(설렁탕)). 번역 결과만 JSON으로 답해.\n\n")
             append(JsonArray(texts.map { JsonPrimitive(it.take(MAX_TRANSLATE_TEXT_CHARS)) }).toString())
         }
         val result = client.generateJson(listOf(GeminiPart.Text(prompt)), TRANSLATE_SCHEMA, temperature = TEMP_TRANSLATE)
@@ -255,7 +269,12 @@ class AiRepository(private val client: GeminiClient) {
     }
 
     /** 가게의 다른 이용자 리뷰를 분석한다. 같은 가게·같은 리뷰 묶음은 이번 실행 동안 다시 묻지 않는다 */
-    suspend fun analyzeStore(storeId: String, storeName: String, menus: List<String>, reviews: List<InsightReview>): AppResult<StoreInsight> {
+    suspend fun analyzeStore(
+        storeId: String,
+        storeName: String,
+        menus: List<String>,
+        reviews: List<InsightReview>
+    ): AppResult<StoreInsight> {
         val usable = reviews.filter { it.text.isNotBlank() }.take(MAX_INSIGHT_REVIEWS)
         val cacheKey = storeId + "|" + reviews.size + "|" + usable.joinToString("") { it.text }.hashCode()
         insightCache[cacheKey]?.let { return it.asSuccess() }

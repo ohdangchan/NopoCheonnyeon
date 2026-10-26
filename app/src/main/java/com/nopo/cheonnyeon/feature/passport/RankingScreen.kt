@@ -90,7 +90,8 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
             item {
                 MockStage(originY = 84, heightPx = 915) {
                     MockPic(R.drawable.mk2_v_hdr, 460, 117, Modifier.at(20, 88))
-                    Box(Modifier.at(652, 98).size(px(76)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "닫기" }, contentAlignment = Alignment.Center) { Close() }
+                    Box(Modifier.at(652, 98).size(px(76)).clickable(role = Role.Button,
+                        onClick = onBack).semantics { contentDescription = "닫기" }, contentAlignment = Alignment.Center) { Close() }
                     MockPic(R.drawable.mk2_k_title, 760, 200, Modifier.at(0, 205))
                     // 탭
                     val names = listOf("전국 랭킹", "서울 랭킹", "친구 랭킹")
@@ -99,38 +100,50 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                     names.forEachIndexed { i, n ->
                         val sel = tab == i
                         Box(
-                            Modifier.at(xs[i], 410).size(px(ws[i]), px(74)).clip(RoundedCornerShape(50)).background(if (sel) MockColors.Navy else Color(0xFFF7F3E6))
-                                .then(if (sel) Modifier else Modifier.border(1.dp, Line, RoundedCornerShape(50))).clickable(role = Role.Tab) { tab = i },
+                            Modifier.at(xs[i], 410).size(px(ws[i]),
+                                px(74)).clip(RoundedCornerShape(50)).background(if (sel) MockColors.Navy else Color(0xFFF7F3E6))
+                                .then(if (sel) Modifier else Modifier.border(1.dp, Line,
+                                    RoundedCornerShape(50))).clickable(role = Role.Tab) { tab = i },
                             contentAlignment = Alignment.Center,
                         ) { MockText(n, 24, color = if (sel) Color.White else MockColors.Navy, weight = FontWeight.ExtraBold) }
                     }
                     if (tab == 0 && rows.size >= 3) {
                         val top = rows.take(3)
-                        Podium(top[1], 18, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFE6EAF2), Color(0xFFF6F4EC))), Color(0xFF7A8AA6), 2)
-                        Podium(top[0], 250, 534, 262, 447, Brush.verticalGradient(listOf(Color(0xFFFBE9A6), Color(0xFFFCF3D0))), Color(0xFFD9A323), 1)
-                        Podium(top[2], 505, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFF8DCC4), Color(0xFFFBEFE3))), Color(0xFFB8692B), 3)
+                        Podium(top[1], 18, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFE6EAF2), Color(0xFFF6F4EC))),
+                            Color(0xFF7A8AA6), 2)
+                        Podium(top[0], 250, 534, 262, 447, Brush.verticalGradient(listOf(Color(0xFFFBE9A6), Color(0xFFFCF3D0))),
+                            Color(0xFFD9A323), 1)
+                        Podium(top[2], 505, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFF8DCC4), Color(0xFFFBEFE3))),
+                            Color(0xFFB8692B), 3)
                     } else if (tab == 0) {
-                        MockText("아직 순위를 보여 줄 만큼 이용자가 모이지 않았어요.\n방문 인증을 하면 내 순위가 아래에 나와요.", 24, Modifier.at(40, 620).width(px(680)), color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
+                        MockText("아직 순위를 보여 줄 만큼 이용자가 모이지 않았어요.\n방문 인증을 하면 내 순위가 아래에 나와요.", 24, Modifier.at(40, 620).width(px(680)),
+                            color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
                     } else {
-                        MockText(if (tab == 1) "서울 랭킹은 준비 중이에요." else "친구 랭킹은 준비 중이에요.\n친구를 초대하면 함께 겨룰 수 있어요.", 24, Modifier.at(40, 620).width(px(680)), color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
+                        MockText(if (tab == 1) "서울 랭킹은 준비 중이에요." else "친구 랭킹은 준비 중이에요.\n친구를 초대하면 함께 겨룰 수 있어요.", 24, Modifier.at(40,
+                            620).width(px(680)), color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
                     }
                 }
             }
             if (tab == 0) {
                 item {
                     Box(Modifier.fillMaxWidth().padding(horizontal = px(18))) {
-                        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = px(26), topEnd = px(26))).background(Color(0xFFFCFAF4)).border(1.dp, Line, RoundedCornerShape(topStart = px(26), topEnd = px(26)))) {
-                            Row(Modifier.fillMaxWidth().padding(horizontal = px(22), vertical = px(22)), verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(topStart = px(26),
+                            topEnd = px(26))).background(Color(0xFFFCFAF4)).border(1.dp, Line, RoundedCornerShape(topStart = px(26),
+                            topEnd = px(26)))) {
+                            Row(Modifier.fillMaxWidth().padding(horizontal = px(22), vertical = px(22)),
+                                verticalAlignment = Alignment.CenterVertically) {
                                 MockText("전체 랭킹", 28, font = MockSerif, weight = FontWeight.ExtraBold)
                                 Box(Modifier.width(px(14)))
                                 MockText("TOP 100", 21, color = Gray)
                                 Box(Modifier.weight(1f))
                                 Box {
-                                    Row(Modifier.clickable(role = Role.Button) { sortMenu = true }, verticalAlignment = Alignment.CenterVertically) {
+                                    Row(Modifier.clickable(role = Role.Button) { sortMenu = true },
+                                        verticalAlignment = Alignment.CenterVertically) {
                                         MockText(SortOptions[sort], 21, color = Gray); Box(Modifier.width(px(8))); ChevronDown(22)
                                     }
                                     DropdownMenu(expanded = sortMenu, onDismissRequest = { sortMenu = false }) {
-                                        SortOptions.forEachIndexed { i, o -> DropdownMenuItem(text = { Text(o) }, onClick = { sort = i; sortMenu = false }) }
+                                        SortOptions.forEachIndexed { i, o -> DropdownMenuItem(text = { Text(o) },
+                                            onClick = { sort = i; sortMenu = false }) }
                                     }
                                 }
                             }
@@ -138,7 +151,8 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                     }
                 }
                 itemsIndexed(if (rows.size >= 3) rows.drop(3) else rows, key = { _, r -> r.rank }) { _, r ->
-                    Box(Modifier.fillMaxWidth().padding(horizontal = px(18)).background(Color(0xFFFCFAF4)).border(0.5.dp, Line)) { RankLine(r) }
+                    Box(Modifier.fillMaxWidth().padding(horizontal = px(18)).background(Color(0xFFFCFAF4)).border(0.5.dp,
+                        Line)) { RankLine(r) }
                 }
             }
         }
@@ -150,14 +164,17 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
 private fun Close() {
     Canvas(Modifier.size(px(38))) {
         val sw = size.width * 0.1f
-        drawLine(MockColors.Navy, Offset(size.width * 0.1f, size.height * 0.1f), Offset(size.width * 0.9f, size.height * 0.9f), sw, StrokeCap.Round)
-        drawLine(MockColors.Navy, Offset(size.width * 0.9f, size.height * 0.1f), Offset(size.width * 0.1f, size.height * 0.9f), sw, StrokeCap.Round)
+        drawLine(MockColors.Navy, Offset(size.width * 0.1f, size.height * 0.1f), Offset(size.width * 0.9f, size.height * 0.9f), sw,
+            StrokeCap.Round)
+        drawLine(MockColors.Navy, Offset(size.width * 0.9f, size.height * 0.1f), Offset(size.width * 0.1f, size.height * 0.9f), sw,
+            StrokeCap.Round)
     }
 }
 
 @Composable
 private fun Avatar(name: String, sizePx: Int, tint: Color) {
-    Box(Modifier.size(px(sizePx)).clip(CircleShape).background(tint.copy(alpha = 0.18f)).border(2.dp, Color.White, CircleShape), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(px(sizePx)).clip(CircleShape).background(tint.copy(alpha = 0.18f)).border(2.dp, Color.White, CircleShape),
+        contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
             val w = size.width
             drawCircle(tint.copy(alpha = 0.55f), w * 0.2f, Offset(w * 0.5f, w * 0.38f))
@@ -171,20 +188,25 @@ private val Tints = listOf(Color(0xFF6B7B93), Color(0xFFB07A2B), Color(0xFF8A5A3
 @Composable
 private fun BoxScope.Podium(row: RankRow, x: Int, y: Int, w: Int, h: Int, bg: Brush, medal: Color, place: Int) {
     val years = row.user.years
-    Box(Modifier.at(x, y).size(px(w), px(h)).clip(RoundedCornerShape(topStart = px(w / 2), topEnd = px(w / 2), bottomStart = px(26), bottomEnd = px(26))).background(bg))
+    Box(Modifier.at(x, y).size(px(w), px(h)).clip(RoundedCornerShape(topStart = px(w / 2), topEnd = px(w / 2), bottomStart = px(26),
+        bottomEnd = px(26))).background(bg))
     // 메달
-    Box(Modifier.at(x + w / 2 - 38, y - 22).size(px(76)).clip(CircleShape).background(medal), contentAlignment = Alignment.Center) { MockText("$place", 36, color = Color.White, weight = FontWeight.ExtraBold) }
+    Box(Modifier.at(x + w / 2 - 38, y - 22).size(px(76)).clip(CircleShape).background(medal),
+        contentAlignment = Alignment.Center) { MockText("$place", 36, color = Color.White, weight = FontWeight.ExtraBold) }
     val av = if (place == 1) 176 else 160
     Box(Modifier.at(x + w / 2 - av / 2, y + 62)) { Avatar(row.user.nickname, av, Tints[place]) }
     val ny = y + 62 + av + 14
     MockText(row.user.nickname, 25, Modifier.at(x, ny).width(px(w)), weight = FontWeight.ExtraBold, align = TextAlign.Center)
-    Box(Modifier.at(x + 18, ny + 44).size(px(w - 36), px(44)).clip(RoundedCornerShape(50)).background(medal.copy(alpha = 0.22f)), contentAlignment = Alignment.Center) {
+    Box(Modifier.at(x + 18, ny + 44).size(px(w - 36), px(44)).clip(RoundedCornerShape(50)).background(medal.copy(alpha = 0.22f)),
+        contentAlignment = Alignment.Center) {
         MockText(stringResource(TitlePolicy.titleFor(years).labelRes()), 20, weight = FontWeight.ExtraBold, maxLines = 1)
     }
     val cy = ny + 106
-    MockText("${row.user.stores}곳", 22, Modifier.at(x + 14, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold, align = TextAlign.Center)
+    MockText("${row.user.stores}곳", 22, Modifier.at(x + 14, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold,
+        align = TextAlign.Center)
     MockText("방문한 노포", 15, Modifier.at(x + 14, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
-    MockText("${titleCount(years)}개", 22, Modifier.at(x + w / 2, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold, align = TextAlign.Center)
+    MockText("${titleCount(years)}개", 22, Modifier.at(x + w / 2, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold,
+        align = TextAlign.Center)
     MockText("수집한 칭호", 15, Modifier.at(x + w / 2, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
 }
 
@@ -199,18 +221,21 @@ private fun RankLine(r: RankRow) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 MockText(r.user.nickname + if (r.me) " (나)" else "", 25, Modifier.weight(1f, fill = false), weight = FontWeight.ExtraBold)
                 Box(Modifier.width(px(12)))
-                Box(Modifier.clip(RoundedCornerShape(50)).background(tint.copy(alpha = 0.18f)).padding(horizontal = px(14), vertical = px(3))) {
+                Box(Modifier.clip(RoundedCornerShape(50)).background(tint.copy(alpha = 0.18f)).padding(horizontal = px(14),
+                    vertical = px(3))) {
                     MockText(stringResource(TitlePolicy.titleFor(r.user.years).labelRes()), 17, weight = FontWeight.Medium)
                 }
             }
             MockText("세월 ${r.user.years}년 · 리뷰 ${r.user.reviews}개", 18, color = Gray)
         }
         Column(Modifier.width(px(130)), horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_store, 34, 33); Box(Modifier.width(px(8))); MockText("${r.user.stores}곳", 22, weight = FontWeight.ExtraBold) }
+            Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_store, 34,
+                33); Box(Modifier.width(px(8))); MockText("${r.user.stores}곳", 22, weight = FontWeight.ExtraBold) }
             MockText("방문한 노포", 15, color = Gray)
         }
         Column(Modifier.width(px(130)), horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_ticket, 34, 35); Box(Modifier.width(px(8))); MockText("${titleCount(r.user.years)}개", 22, weight = FontWeight.ExtraBold) }
+            Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_ticket, 34,
+                35); Box(Modifier.width(px(8))); MockText("${titleCount(r.user.years)}개", 22, weight = FontWeight.ExtraBold) }
             MockText("수집한 칭호", 15, color = Gray)
         }
         ChevronRight(26)

@@ -53,14 +53,22 @@ private const val DEV_TAPS = 5
 
 /** 설정 (S-903): 앱 정보·데이터 출처·오픈소스 라이선스·로그아웃. 앱 정보를 5번 누르면 진단 도구가 열린다 (SC-8). */
 @Composable
-fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Unit, devTools: @Composable () -> Unit, onDiagnostics: () -> Unit) {
+fun SettingsScreen(
+    container: AppContainer,
+    signOutButton: @Composable () -> Unit,
+    devTools: @Composable () -> Unit,
+    onDiagnostics: () -> Unit
+) {
     val c = NopoTheme.colors
     val context = LocalContext.current
     var taps by rememberSaveable { mutableIntStateOf(0) }
     var catalogInfo by remember { mutableStateOf<Pair<Long, Int>?>(null) }
     var showLicenses by rememberSaveable { mutableStateOf(false) }
     var showPolicy by rememberSaveable { mutableStateOf(false) }
-    val version = remember { runCatching { context.packageManager.getPackageInfo(context.packageName, 0).versionName }.getOrNull().orEmpty() }
+    val version = remember { runCatching { context.packageManager.getPackageInfo(
+        context.packageName,
+        0
+    ).versionName }.getOrNull().orEmpty() }
 
     var nickname by remember { mutableStateOf<String?>(null) }
     val email = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.email }
@@ -87,7 +95,10 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
                 color = c.ink,
                 modifier = Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch).clickable(role = Role.Button) { taps++ },
             )
-            catalogInfo?.let { (v, n) -> Text(stringResource(R.string.settings_catalog, n, v), color = c.ink2, style = NopoTheme.typography.bodySmall) }
+            catalogInfo?.let { (
+                v,
+                n
+            ) -> Text(stringResource(R.string.settings_catalog, n, v), color = c.ink2, style = NopoTheme.typography.bodySmall) }
         }
         Section(stringResource(R.string.settings_verify)) {
             val locOnly by container.settings.allowLocationOnly.collectAsStateWithLifecycle(initialValue = true)
@@ -113,7 +124,10 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
         if (showLicenses) {
             stringArrayResource(R.array.licenses_list).forEach { row ->
                 val (name, license, purpose) = row.split("|")
-                Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs)) {
+                Column(
+                    Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+                    verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs)
+                ) {
                     Text(name, color = c.ink, style = NopoTheme.typography.titleSmall)
                     Text(license, color = c.primary, style = NopoTheme.typography.labelMedium)
                     Text(purpose, color = c.ink2, style = NopoTheme.typography.bodySmall)
@@ -124,12 +138,19 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
             MenuPhotos.credits(context).values.forEach { cr ->
                 Column(
                     Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) {
-                        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(cr.page)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                        runCatching { context.startActivity(Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(cr.page)
+                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                     }.padding(NopoTheme.spacing.md),
                     verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xxs),
                 ) {
                     Text(cr.title, color = c.ink, style = NopoTheme.typography.labelLarge)
-                    Text(listOf(cr.artist, cr.license).filter { it.isNotBlank() }.joinToString(" · "), color = c.primary, style = NopoTheme.typography.labelMedium)
+                    Text(
+                        listOf(cr.artist, cr.license).filter { it.isNotBlank() }.joinToString(" · "),
+                        color = c.primary,
+                        style = NopoTheme.typography.labelMedium
+                    )
                     Text("Wikimedia Commons", color = c.ink2, style = NopoTheme.typography.bodySmall)
                 }
             }
@@ -145,7 +166,12 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
 
         if (taps >= DEV_TAPS) {
             Section(stringResource(R.string.settings_dev)) {
-                NopoButton(stringResource(R.string.diag_title), onDiagnostics, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                NopoButton(
+                    stringResource(R.string.diag_title),
+                    onDiagnostics,
+                    style = NopoButtonStyle.Outline,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 val demoOn by container.settings.demoData.collectAsStateWithLifecycle(initialValue = true)
                 val demoScope = androidx.compose.runtime.rememberCoroutineScope()
                 Row(Modifier.fillMaxWidth().heightIn(min = NopoTheme.spacing.minTouch), verticalAlignment = Alignment.CenterVertically) {
@@ -160,7 +186,14 @@ fun SettingsScreen(container: AppContainer, signOutButton: @Composable () -> Uni
                     demoScope.launch { container.visits.clearDemoVisits(); demoAdded.value = -1 }
                 }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
                 demoAdded.value?.let { n ->
-                    Text(if (n < 0) stringResource(R.string.settings_demo_passport_cleared) else stringResource(R.string.settings_demo_passport_done, n), color = c.primary, style = NopoTheme.typography.bodySmall)
+                    Text(
+                        if (n < 0) stringResource(R.string.settings_demo_passport_cleared) else stringResource(
+                            R.string.settings_demo_passport_done,
+                            n
+                        ),
+                        color = c.primary,
+                        style = NopoTheme.typography.bodySmall
+                    )
                 }
                 devTools()
             }
@@ -180,7 +213,8 @@ private fun AccountSection(container: AppContainer, c: NopoColors) {
     var visibility by remember { mutableStateOf("ALL") }
     var visSaved by remember { mutableStateOf(false) }
     LaunchedEffect(visDialog) {
-        if (visDialog) container.auth.currentUid?.let { me -> container.profiles.profile(me).valueOrNull?.let { visibility = it.visibility } }
+        if (visDialog) container.auth
+            .currentUid?.let { me -> container.profiles.profile(me).valueOrNull?.let { visibility = it.visibility } }
     }
     var deleteDialog by rememberSaveable { mutableStateOf(false) }
     var nick by rememberSaveable { mutableStateOf("") }
@@ -190,10 +224,25 @@ private fun AccountSection(container: AppContainer, c: NopoColors) {
     val nickInvalid = AuthValidation.nickname(nick).takeIf { nick.isNotEmpty() }
 
     Section(stringResource(R.string.settings_account)) {
-        NopoButton(stringResource(R.string.settings_change_nick), { error = null; nick = ""; nickDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
-        NopoButton(stringResource(R.string.settings_visibility), { error = null; visSaved = false; visDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        NopoButton(
+            stringResource(R.string.settings_change_nick),
+            { error = null; nick = ""; nickDialog = true },
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth()
+        )
+        NopoButton(
+            stringResource(R.string.settings_visibility),
+            { error = null; visSaved = false; visDialog = true },
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth()
+        )
         if (visSaved) Text(stringResource(R.string.visibility_saved), color = c.primary, style = NopoTheme.typography.bodySmall)
-        NopoButton(stringResource(R.string.settings_delete_account), { error = null; password = ""; deleteDialog = true }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+        NopoButton(
+            stringResource(R.string.settings_delete_account),
+            { error = null; password = ""; deleteDialog = true },
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 
     if (visDialog) {
@@ -202,7 +251,11 @@ private fun AccountSection(container: AppContainer, c: NopoColors) {
             title = { Text(stringResource(R.string.settings_visibility)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
-                    listOf("ALL" to R.string.visibility_all, "COUNT" to R.string.visibility_count, "PRIVATE" to R.string.visibility_private).forEach { (key, label) ->
+                    listOf(
+                        "ALL" to R.string.visibility_all,
+                        "COUNT" to R.string.visibility_count,
+                        "PRIVATE" to R.string.visibility_private
+                    ).forEach { (key, label) ->
                         Row(
                             Modifier.fillMaxWidth().clickable(role = Role.Button) { visibility = key },
                             verticalAlignment = Alignment.CenterVertically,

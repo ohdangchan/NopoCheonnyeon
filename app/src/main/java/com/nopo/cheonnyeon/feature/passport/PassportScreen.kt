@@ -186,7 +186,8 @@ fun PassportScreen(
     val stats = BookStats(visited = real.size, goal = goal, titles = title.ordinal + 1)
 
     if (all) {
-        PassportAll(vm, state, visited, bookmarks, onBack = { all = false }, onOpenStore = onOpenStore, onOpenProfile = onOpenProfile, onOpenHall = onOpenHall, onOpenDex = { dex = true }, startReviews = startReviews)
+        PassportAll(vm, state, visited, bookmarks, onBack = { all = false }, onOpenStore = onOpenStore, onOpenProfile = onOpenProfile,
+            onOpenHall = onOpenHall, onOpenDex = { dex = true }, startReviews = startReviews)
     } else {
         Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
             MockStage(originY = 84, heightPx = 1490) {
@@ -213,9 +214,11 @@ fun PassportScreen(
                 val into = (state.totalYears - title.requiredYears).coerceAtLeast(0)
                 val frac = if (nextTitle == null) 1f else (into.toFloat() / span).coerceIn(0f, 1f)
                 Box(Modifier.at(42, 1062).size(px(380), px(18)).clip(RoundedCornerShape(50)).background(Color(0xFFD9DBCB))) {
-                    Box(Modifier.fillMaxSize().padding(end = px(380) * (1f - frac)).clip(RoundedCornerShape(50)).background(MockColors.LimeDeep))
+                    Box(Modifier.fillMaxSize().padding(end = px(380) * (1f - frac)).clip(RoundedCornerShape(50))
+                        .background(MockColors.LimeDeep))
                 }
-                MockText(if (nextTitle != null) "$into/$span" else "MAX", 22, Modifier.at(436, 1058), color = MockColors.Ink2, weight = FontWeight.Medium)
+                MockText(if (nextTitle != null) "$into/$span" else "MAX", 22, Modifier.at(436, 1058), color = MockColors.Ink2,
+                    weight = FontWeight.Medium)
                 ChevronRight(26, Modifier.at(474, 1012))
 
                 // AI 룰렛 (시안의 선물 자리)
@@ -229,7 +232,8 @@ fun PassportScreen(
                         style = Stroke(1.2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 7f))),
                     )
                 }
-                Box(Modifier.at(534, 1002).size(px(62), px(62)).clip(CircleShape).background(MockColors.Lime), contentAlignment = Alignment.Center) {
+                Box(Modifier.at(534, 1002).size(px(62), px(62)).clip(CircleShape).background(MockColors.Lime),
+                    contentAlignment = Alignment.Center) {
                     AiSparkIcon(40)
                 }
                 MockText(stringResource(R.string.col_02), 21, Modifier.at(608, 990), weight = FontWeight.Bold)
@@ -240,8 +244,11 @@ fun PassportScreen(
                 MockPic(R.drawable.mk_col_title_visited, 296, 60, Modifier.at(14, 1110))
                 MockPic(R.drawable.mk_col_all, 145, 48, Modifier.at(605, 1118), onClick = { all = true })
                 if (visited.isEmpty()) {
-                    Box(Modifier.at(18, 1190).size(px(724), px(230)).clip(RoundedCornerShape(px(20))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(20))), contentAlignment = Alignment.Center) {
-                        MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center, maxLines = 2, lineHeightPx = 36)
+                    Box(Modifier.at(18, 1190).size(px(724),
+                        px(230)).clip(RoundedCornerShape(px(20))).background(MockColors.Card).border(1.dp, MockColors.CardLine,
+                        RoundedCornerShape(px(20))), contentAlignment = Alignment.Center) {
+                        MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center,
+                            maxLines = 2, lineHeightPx = 36)
                     }
                 } else {
                     val rowState = rememberLazyListState()
@@ -250,15 +257,18 @@ fun PassportScreen(
                         contentPadding = PaddingValues(horizontal = px(18)), horizontalArrangement = Arrangement.spacedBy(px(8)),
                     ) {
                         items(visited.take(30), key = { it.visit.storeId }) { s ->
-                            VisitedCard(s, s.visit.storeId in bookmarks, px(197), onOpen = { onOpenStore(s.visit.storeId) }, onBookmark = { vm.toggleBookmark(s.visit.storeId) })
+                            VisitedCard(s, s.visit.storeId in bookmarks, px(197), onOpen = { onOpenStore(s.visit.storeId) },
+                                onBookmark = { vm.toggleBookmark(s.visit.storeId) })
                         }
                     }
                     val dots = minOf(4, (minOf(visited.size, 30) + 1) / 2).coerceAtLeast(1)
                     val selected = (rowState.firstVisibleItemIndex / 2).coerceIn(0, dots - 1)
-                    Row(Modifier.at(0, 1480).fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.at(0, 1480).fillMaxWidth(), horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically) {
                         repeat(dots) { i ->
                             val on = i == selected
-                            Box(Modifier.padding(horizontal = px(8)).size(px(if (on) 18 else 13)).clip(CircleShape).background(if (on) MockColors.LimeDeep else Color(0xFFCFCCBE)))
+                            Box(Modifier.padding(horizontal = px(8)).size(px(if (on) 18 else 13)).clip(CircleShape)
+                                .background(if (on) MockColors.LimeDeep else Color(0xFFCFCCBE)))
                         }
                     }
                 }
@@ -284,13 +294,18 @@ private fun VisitedCard(s: PassportStamp, bookmarked: Boolean, width: Dp, onOpen
         Box(Modifier.fillMaxWidth().height(px(198))) {
             StorePhoto(store, Modifier.fillMaxSize())
             Box(
-                Modifier.align(Alignment.TopEnd).padding(top = px(14), end = px(12)).size(px(40)).clip(CircleShape).background(Color(0xE6FFFFFF)).saveDescription().clickable(role = Role.Button, onClick = onBookmark),
+                Modifier.align(Alignment.TopEnd).padding(top = px(14),
+                    end = px(12)).size(px(40)).clip(CircleShape).background(Color(0xE6FFFFFF)).saveDescription()
+                        .clickable(role = Role.Button, onClick = onBookmark),
                 contentAlignment = Alignment.Center,
             ) { BookmarkIcon(26, color = MockColors.Navy, filled = bookmarked) }
-            Box(Modifier.align(Alignment.BottomStart).padding(start = px(10), bottom = px(8)).size(px(84)).rotate(-9f).clip(CircleShape).background(Color(0xCCFFFFFF)).border(2.dp, MockColors.Stamp, CircleShape), contentAlignment = Alignment.Center) {
+            Box(Modifier.align(Alignment.BottomStart).padding(start = px(10),
+                bottom = px(8)).size(px(84)).rotate(-9f).clip(CircleShape).background(Color(0xCCFFFFFF)).border(2.dp, MockColors.Stamp,
+                CircleShape), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     MockText("${date.year}", 15, color = MockColors.Stamp, font = MockSerif, weight = FontWeight.ExtraBold)
-                    MockText("%d.%02d".format(date.monthValue, date.dayOfMonth), 22, color = MockColors.Stamp, font = MockSerif, weight = FontWeight.ExtraBold)
+                    MockText("%d.%02d".format(date.monthValue, date.dayOfMonth), 22, color = MockColors.Stamp, font = MockSerif,
+                        weight = FontWeight.ExtraBold)
                     MockText("VISITED", 12, color = MockColors.Stamp, weight = FontWeight.Bold)
                 }
             }
@@ -323,13 +338,17 @@ private fun PassportAll(
 
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(stringResource(R.string.col_05), 32, font = MockBrush, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(stringResource(R.string.col_05), 32,
+                font = MockBrush, weight = FontWeight.ExtraBold) }
             Box(Modifier.weight(1f))
             MockText("내가 방문한 노포 ${visited.size}곳", 22, color = MockColors.Ink2)
         }
-        Row(Modifier.fillMaxWidth().padding(horizontal = px(20)).horizontalScrollCompat(), horizontalArrangement = Arrangement.spacedBy(px(12))) {
-            GrayPill(stringResource(R.string.col_06), 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = false }
-            GrayPill(stringResource(R.string.col_07), 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip, textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
+        Row(Modifier.fillMaxWidth().padding(horizontal = px(20)).horizontalScrollCompat(),
+            horizontalArrangement = Arrangement.spacedBy(px(12))) {
+            GrayPill(stringResource(R.string.col_06), 22, color = if (!reviewsMode) MockColors.Lime else MockColors.Chip,
+                textColor = MockColors.Navy) { reviewsMode = false }
+            GrayPill(stringResource(R.string.col_07), 22, color = if (reviewsMode) MockColors.Lime else MockColors.Chip,
+                textColor = MockColors.Navy) { reviewsMode = true; vm.loadReviews() }
             GrayPill(stringResource(R.string.col_08), 22, textColor = MockColors.Navy, onClick = onOpenDex)
             GrayPill(stringResource(R.string.col_09), 22, textColor = MockColors.Navy, onClick = onOpenHall)
             vm.myUid?.let { uid -> GrayPill(stringResource(R.string.col_10), 22, textColor = MockColors.Navy) { onOpenProfile(uid) } }
@@ -349,18 +368,23 @@ private fun PassportAll(
                 }
             }
         }
-        if (shareFailed) Box(Modifier.padding(px(20))) { MockText(stringResource(R.string.share_card_failed), 22, color = MockColors.Stamp) }
+        if (shareFailed) Box(Modifier.padding(px(20))) { MockText(stringResource(R.string.share_card_failed), 22,
+            color = MockColors.Stamp) }
         Box(Modifier.height(px(14)))
         if (reviewsMode) {
             val list = myReviews
             when {
-                list == null -> Box(Modifier.padding(px(24))) { MockText(stringResource(R.string.list_loading), 24, color = MockColors.Hint) }
-                list.isEmpty() -> Box(Modifier.padding(px(24))) { MockText(stringResource(R.string.profile_no_reviews), 24, color = MockColors.Hint) }
-                else -> LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(px(20)), verticalArrangement = Arrangement.spacedBy(px(12))) {
+                list == null -> Box(Modifier.padding(px(24))) { MockText(stringResource(R.string.list_loading), 24,
+                    color = MockColors.Hint) }
+                list.isEmpty() -> Box(Modifier.padding(px(24))) { MockText(stringResource(R.string.profile_no_reviews), 24,
+                    color = MockColors.Hint) }
+                else -> LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(px(20)),
+                    verticalArrangement = Arrangement.spacedBy(px(12))) {
                     items(list.size) { i ->
                         val r = list[i]
                         Column(
-                            Modifier.fillMaxWidth().clip(RoundedCornerShape(px(16))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(16)))
+                            Modifier.fillMaxWidth().clip(RoundedCornerShape(px(16))).background(MockColors.Card).border(1.dp,
+                                MockColors.CardLine, RoundedCornerShape(px(16)))
                                 .clickable(role = Role.Button) { onOpenStore(r.storeId) }.padding(px(18)),
                             verticalArrangement = Arrangement.spacedBy(px(8)),
                         ) {
@@ -374,7 +398,8 @@ private fun PassportAll(
             }
         } else if (visited.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(px(30)), contentAlignment = Alignment.Center) {
-                MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center, maxLines = 2, lineHeightPx = 36)
+                MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center, maxLines = 2,
+                    lineHeightPx = 36)
             }
         } else {
             LazyVerticalGrid(
@@ -382,7 +407,8 @@ private fun PassportAll(
                 horizontalArrangement = Arrangement.spacedBy(px(14)), verticalArrangement = Arrangement.spacedBy(px(14)),
             ) {
                 gridItems(visited, key = { it.visit.storeId }) { s ->
-                    VisitedCard(s, s.visit.storeId in bookmarks, px(350), onOpen = { onOpenStore(s.visit.storeId) }, onBookmark = { vm.toggleBookmark(s.visit.storeId) })
+                    VisitedCard(s, s.visit.storeId in bookmarks, px(350), onOpen = { onOpenStore(s.visit.storeId) },
+                        onBookmark = { vm.toggleBookmark(s.visit.storeId) })
                 }
             }
         }

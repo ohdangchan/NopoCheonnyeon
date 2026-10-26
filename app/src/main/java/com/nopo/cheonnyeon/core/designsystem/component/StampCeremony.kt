@@ -152,7 +152,12 @@ private fun DrawScope.drawInkBurst(center: Offset, ink: Color, t: Float) {
             drawCircle(ink.copy(alpha = a * 0.9f), (2.5f + (i % 3)).dp.toPx() * (1f - t * 0.6f), Offset(x, y))
         } else {
             val tail = 9.dp.toPx() * (1f - t)
-            drawLine(ink.copy(alpha = a * 0.8f), Offset(x, y), Offset(x - cos(angle) * tail, y - sin(angle) * tail), strokeWidth = 2.dp.toPx())
+            drawLine(
+                ink.copy(alpha = a * 0.8f),
+                Offset(x, y),
+                Offset(x - cos(angle) * tail, y - sin(angle) * tail),
+                strokeWidth = 2.dp.toPx()
+            )
         }
     }
 }

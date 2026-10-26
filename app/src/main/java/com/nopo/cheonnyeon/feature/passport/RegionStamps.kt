@@ -42,16 +42,20 @@ fun RegionStamps(regions: List<RegionProgress>) {
         verticalArrangement = Arrangement.spacedBy(sp.md),
     ) {
         item(span = { GridItemSpan(3) }) {
-            Column(Modifier.fillMaxWidth().background(c.tealSoft, RoundedCornerShape(16.dp)).padding(sp.md), verticalArrangement = Arrangement.spacedBy(sp.xs)) {
+            Column(Modifier.fillMaxWidth().background(c.tealSoft, RoundedCornerShape(16.dp)).padding(sp.md),
+                verticalArrangement = Arrangement.spacedBy(sp.xs)) {
                 Text(stringResource(R.string.region_stamps_count, earned), style = NopoTheme.typography.titleMedium, color = c.sign)
                 if (next != null) {
-                    Text(stringResource(R.string.region_stamps_next, next.sido, next.remaining), style = NopoTheme.typography.bodyMedium, color = c.ink)
+                    Text(stringResource(R.string.region_stamps_next, next.sido, next.remaining), style = NopoTheme.typography.bodyMedium,
+                        color = c.ink)
                     LinearProgressIndicator(
                         progress = { next.visited / next.target.toFloat() }, modifier = Modifier.fillMaxWidth(), color = c.accent, trackColor = c.surface,
                     )
-                    Text(stringResource(R.string.region_stamps_progress, next.visited, next.target), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                    Text(stringResource(R.string.region_stamps_progress, next.visited, next.target),
+                        style = NopoTheme.typography.labelMedium, color = c.ink2)
                 } else {
-                    Text(stringResource(R.string.region_stamps_empty, RegionProgress.REGION_STAMP_TARGET), style = NopoTheme.typography.bodyMedium, color = c.ink2)
+                    Text(stringResource(R.string.region_stamps_empty, RegionProgress.REGION_STAMP_TARGET),
+                        style = NopoTheme.typography.bodyMedium, color = c.ink2)
                 }
             }
         }
@@ -65,7 +69,8 @@ private fun RegionStamp(r: RegionProgress) {
     val ring = if (r.stamped) c.stamp else c.line
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         Box(
-            Modifier.size(84.dp).rotate(if (r.stamped) -8f else 0f).border(BorderStroke(if (r.stamped) 3.dp else 2.dp, ring), CircleShape).padding(6.dp)
+            Modifier.size(84.dp).rotate(if (r.stamped) -8f else 0f).border(BorderStroke(if (r.stamped) 3.dp else 2.dp, ring),
+                CircleShape).padding(6.dp)
                 .border(BorderStroke(1.dp, ring), CircleShape),
             contentAlignment = Alignment.Center,
         ) {

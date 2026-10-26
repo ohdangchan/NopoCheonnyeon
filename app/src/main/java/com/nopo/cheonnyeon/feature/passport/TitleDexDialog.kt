@@ -57,7 +57,8 @@ fun TitleDexDialog(totalYears: Int, onDismiss: () -> Unit) {
                         ) {
                             Box(Modifier.width(120.dp).graphicsLayer { alpha = if (reached) 1f else 0.45f }) { TitleBadge(t) }
                             Column(Modifier.weight(1f)) {
-                                Text(stringResource(R.string.title_dex_years, t.requiredYears), style = NopoTheme.typography.bodyMedium, color = c.ink)
+                                Text(stringResource(R.string.title_dex_years, t.requiredYears), style = NopoTheme.typography.bodyMedium,
+                                    color = c.ink)
                                 Text(
                                     when {
                                         t == mine -> stringResource(R.string.title_dex_current)

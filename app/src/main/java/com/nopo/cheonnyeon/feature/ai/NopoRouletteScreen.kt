@@ -293,7 +293,8 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
         val ranked = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(RANK_POOL)
         val likedPick = ranked.filter { prefMatch(it) }.shuffled().take(LIKED_CANDIDATES)
         val candidates = (likedPick + ranked.shuffled().take(ASK_CANDIDATES - likedPick.size)).distinct().map { s ->
-            val km = if (fix != null && s.lat != null && s.lng != null) GeoDistance.meters(fix.lat, fix.lng, s.lat, s.lng) / 1000.0 else null
+            val km = if (fix != null && s.lat != null && s.lng != null) GeoDistance.meters(fix.lat, fix.lng, s.lat,
+                s.lng) / 1000.0 else null
             ChatCandidate(s, yearsOf(s), km, false)
         }
         val info = ChatContextInfo(
@@ -419,9 +420,11 @@ private fun ConditionRow(vm: NopoRouletteViewModel, state: NopoRouletteState, en
                     1 -> PriceOptions.forEach { p -> DropdownMenuItem(text = { Text(p) }, onClick = { vm.setPrice(p); close() }) }
                     2 -> {
                         DropdownMenuItem(text = { Text(stringResource(R.string.rou_03)) }, onClick = { vm.setCuisine(null); close() })
-                        RoulettePicker.CUISINES.forEach { c -> DropdownMenuItem(text = { Text(c) }, onClick = { vm.setCuisine(c); close() }) }
+                        RoulettePicker.CUISINES.forEach { c -> DropdownMenuItem(text = { Text(c) },
+                            onClick = { vm.setCuisine(c); close() }) }
                     }
-                    else -> WalkOptions.forEach { w -> DropdownMenuItem(text = { Text(walkLabel(w)) }, onClick = { vm.setWalk(w); close() }) }
+                    else -> WalkOptions.forEach { w -> DropdownMenuItem(text = { Text(walkLabel(w)) },
+                        onClick = { vm.setWalk(w); close() }) }
                 }
             }
         }
@@ -432,7 +435,8 @@ private fun ConditionRow(vm: NopoRouletteViewModel, state: NopoRouletteState, en
 @Composable
 private fun AnalysisNotice() {
     Row(
-        Modifier.at(24, 96).size(px(712), px(120)).clip(RoundedCornerShape(px(24))).background(MockColors.Lime2).padding(horizontal = px(24)),
+        Modifier.at(24, 96).size(px(712),
+            px(120)).clip(RoundedCornerShape(px(24))).background(MockColors.Lime2).padding(horizontal = px(24)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         CircularProgressIndicator(Modifier.size(px(44)), color = MockColors.Navy, strokeWidth = 3.dp)
@@ -467,10 +471,14 @@ private fun SpinButton(spinning: Boolean, onSpin: () -> Unit) {
 @Composable
 private fun LastPickCard(last: StoreCardData) {
     MockPic(R.drawable.mk2_r_chip_tab, 327, 47, Modifier.at(45, 1262))
-    Box(Modifier.at(20, 1315).size(px(720), px(230)).clip(RoundedCornerShape(px(26))).background(RouletteCardBg).border(1.dp, RouletteCardLine, RoundedCornerShape(px(26)))) {
-        Box(Modifier.padding(px(16)).size(px(250), px(198)).clip(RoundedCornerShape(px(18)))) { StorePhoto(last.store, Modifier.fillMaxSize()) }
-        MockText(last.store.name, 31, Modifier.padding(start = px(290), top = px(22)).width(px(360)), font = MockSerif, weight = FontWeight.ExtraBold)
-        MockText(last.oneLiner, 21, Modifier.padding(start = px(290), top = px(74)).width(px(420)), color = RouletteInkGray, maxLines = 2, lineHeightPx = 28)
+    Box(Modifier.at(20, 1315).size(px(720), px(230)).clip(RoundedCornerShape(px(26))).background(RouletteCardBg).border(1.dp,
+        RouletteCardLine, RoundedCornerShape(px(26)))) {
+        Box(Modifier.padding(px(16)).size(px(250), px(198)).clip(RoundedCornerShape(px(18)))) { StorePhoto(last.store,
+            Modifier.fillMaxSize()) }
+        MockText(last.store.name, 31, Modifier.padding(start = px(290), top = px(22)).width(px(360)), font = MockSerif,
+            weight = FontWeight.ExtraBold)
+        MockText(last.oneLiner, 21, Modifier.padding(start = px(290), top = px(74)).width(px(420)), color = RouletteInkGray, maxLines = 2,
+            lineHeightPx = 28)
         Row(Modifier.padding(start = px(290), top = px(150))) {
             RatingText(last.rating?.average, last.rating?.count, 21)
             last.distanceLabel?.let { MockText(distanceSuffix(last.rating != null, it), 21, color = RouletteInkGray) }
@@ -515,8 +523,10 @@ private fun IdleView(vm: NopoRouletteViewModel, state: NopoRouletteState, onBack
 private fun CloseGlyph() {
     Canvas(Modifier.size(px(38))) {
         val sw = size.width * 0.1f
-        drawLine(MockColors.Navy, Offset(size.width * 0.1f, size.height * 0.1f), Offset(size.width * 0.9f, size.height * 0.9f), sw, StrokeCap.Round)
-        drawLine(MockColors.Navy, Offset(size.width * 0.9f, size.height * 0.1f), Offset(size.width * 0.1f, size.height * 0.9f), sw, StrokeCap.Round)
+        drawLine(MockColors.Navy, Offset(size.width * 0.1f, size.height * 0.1f), Offset(size.width * 0.9f, size.height * 0.9f), sw,
+            StrokeCap.Round)
+        drawLine(MockColors.Navy, Offset(size.width * 0.9f, size.height * 0.1f), Offset(size.width * 0.1f, size.height * 0.9f), sw,
+            StrokeCap.Round)
     }
 }
 
@@ -524,7 +534,8 @@ private fun CloseGlyph() {
 private fun ChevronLeftGlyph() {
     Canvas(Modifier.size(px(24), px(34))) {
         val p = Path().apply {
-            moveTo(size.width * 0.9f, size.height * 0.1f); lineTo(size.width * 0.15f, size.height * 0.5f); lineTo(size.width * 0.9f, size.height * 0.9f)
+            moveTo(size.width * 0.9f, size.height * 0.1f); lineTo(size.width * 0.15f, size.height * 0.5f); lineTo(size.width * 0.9f,
+                size.height * 0.9f)
         }
         drawPath(p, MockColors.Navy, style = Stroke(size.width * 0.14f, cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
@@ -555,7 +566,8 @@ private fun ResultView(vm: NopoRouletteViewModel, state: NopoRouletteState, onCl
                 contentAlignment = Alignment.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    PinIcon(30, color = MockColors.Navy); Box(Modifier.width(px(14))); MockText(stringResource(R.string.rou_07), 30, weight = FontWeight.ExtraBold)
+                    PinIcon(30, color = MockColors.Navy); Box(Modifier.width(px(14))); MockText(stringResource(R.string.rou_07), 30,
+                        weight = FontWeight.ExtraBold)
                 }
             }
             SecondaryPill(30, stringResource(R.string.rou_08)) { vm.spin() }
@@ -581,7 +593,8 @@ private fun PickPhotoCard(card: StoreCardData, onBookmark: () -> Unit) {
     Box(Modifier.at(22, 710).size(px(716), px(296)).clip(RoundedCornerShape(topStart = px(36), topEnd = px(36)))) {
         HorizontalPager(pager, Modifier.fillMaxSize()) { page -> StorePhoto(card.store, Modifier.fillMaxSize(), index = page) }
         Row(
-            Modifier.padding(start = px(16), top = px(16)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).padding(horizontal = px(22), vertical = px(8)),
+            Modifier.padding(start = px(16),
+                top = px(16)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).padding(horizontal = px(22), vertical = px(8)),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             MockText("♛", 24); Box(Modifier.width(px(10))); MockText(stringResource(R.string.rou_05), 23, weight = FontWeight.ExtraBold)
@@ -604,11 +617,13 @@ private fun PickPhotoCard(card: StoreCardData, onBookmark: () -> Unit) {
 @Composable
 private fun PickInfoCard(card: StoreCardData, onBookmark: () -> Unit) {
     val store = card.store
-    Box(Modifier.at(22, 997).size(px(716), px(250)).clip(RoundedCornerShape(bottomStart = px(30), bottomEnd = px(30))).background(RouletteCardBg))
+    Box(Modifier.at(22, 997).size(px(716), px(250)).clip(RoundedCornerShape(bottomStart = px(30),
+        bottomEnd = px(30))).background(RouletteCardBg))
     MockText(store.name, 40, Modifier.at(50, 1017).width(px(520)), font = MockSerif, weight = FontWeight.ExtraBold)
     MockText(card.oneLiner, 22, Modifier.at(50, 1078).width(px(560)), color = RouletteInkGray)
     Row(Modifier.at(50, 1125), horizontalArrangement = Arrangement.spacedBy(px(12))) {
-        val tags = listOfNotNull(RoulettePicker.cuisineOf(store), store.foundedYear?.let { "${it / 10 * 10}년대" }, store.sigungu.takeIf { it.isNotBlank() }, "노포")
+        val tags = listOfNotNull(RoulettePicker.cuisineOf(store), store.foundedYear?.let { "${it / 10 * 10}년대" },
+            store.sigungu.takeIf { it.isNotBlank() }, "노포")
         tags.forEach { t ->
             Box(Modifier.clip(RoundedCornerShape(50)).background(RouletteChipBg).padding(horizontal = px(20), vertical = px(7))) {
                 MockText(t, 21, color = RouletteInkGray)
@@ -639,9 +654,12 @@ private fun OtherPicks(others: List<StoreCardData>, onOpenStore: (String) -> Uni
                 .background(RouletteCardBg).border(1.dp, RouletteCardLine, RoundedCornerShape(px(24)))
                 .clickable(role = Role.Button) { onOpenStore(o.store.id) },
         ) {
-            Box(Modifier.padding(px(12)).size(px(200), px(148)).clip(RoundedCornerShape(px(16)))) { StorePhoto(o.store, Modifier.fillMaxSize()) }
-            MockText(o.store.name, 30, Modifier.padding(start = px(236), top = px(16)).width(px(440)), font = MockSerif, weight = FontWeight.ExtraBold, maxLines = 1)
-            MockText(o.oneLiner, 20, Modifier.padding(start = px(236), top = px(62)).width(px(450)), color = RouletteInkGray, maxLines = 2, lineHeightPx = 27)
+            Box(Modifier.padding(px(12)).size(px(200), px(148)).clip(RoundedCornerShape(px(16)))) { StorePhoto(o.store,
+                Modifier.fillMaxSize()) }
+            MockText(o.store.name, 30, Modifier.padding(start = px(236), top = px(16)).width(px(440)), font = MockSerif,
+                weight = FontWeight.ExtraBold, maxLines = 1)
+            MockText(o.oneLiner, 20, Modifier.padding(start = px(236), top = px(62)).width(px(450)), color = RouletteInkGray, maxLines = 2,
+                lineHeightPx = 27)
             Row(Modifier.padding(start = px(236), top = px(122)), verticalAlignment = Alignment.CenterVertically) {
                 RatingText(o.rating?.average, o.rating?.count, 21)
                 o.distanceLabel?.let { MockText(distanceSuffix(o.rating != null, it), 21, color = RouletteInkGray) }

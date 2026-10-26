@@ -52,7 +52,9 @@ fun TitleBadge(title: Title, modifier: Modifier = Modifier) {
     val style = when (title) {
         Title.SPROUT -> BadgeStyle(c.tealSoft, if (c.isDark) c.ink else c.sign, null, 22.dp)
         Title.REGULAR, Title.WANDERER -> BadgeStyle(c.primary, c.onPrimary, null, 22.dp)
-        Title.ELDER, Title.CONNOISSEUR, Title.PIONEER -> BadgeStyle(c.brassSoft, if (c.isDark) c.brass else c.onBrass, BorderStroke(1.2.dp, c.brass), 26.dp)
+        Title.ELDER, Title
+            .CONNOISSEUR, Title
+            .PIONEER -> BadgeStyle(c.brassSoft, if (c.isDark) c.brass else c.onBrass, BorderStroke(1.2.dp, c.brass), 26.dp)
         Title.ARTISAN, Title.KEEPER -> BadgeStyle(c.stamp, c.onStamp, null, 26.dp, shadow = 2.dp)
         Title.SAGE, Title.LEGEND -> BadgeStyle(c.stamp, c.onStamp, BorderStroke(1.5.dp, c.brass), 28.dp, shadow = 3.dp)
         Title.MASTER -> BadgeStyle(c.brass, c.onBrass, BorderStroke(2.dp, c.stamp), 30.dp)

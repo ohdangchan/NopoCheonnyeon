@@ -36,7 +36,10 @@ data class ChatMessage(
 class ChatStore(context: Context, private val io: CoroutineDispatcher) {
     private val dir = File(context.filesDir, "chat")
     /** 계정마다 따로 저장해 다른 계정으로 로그인해도 기록이 섞이지 않는다 */
-    private fun file(owner: String) = File(dir, owner.filter { it.isLetterOrDigit() || it == '_' || it == '-' }.ifBlank { "guest" } + ".jsonl")
+    private fun file(owner: String) = File(
+        dir,
+        owner.filter { it.isLetterOrDigit() || it == '_' || it == '-' }.ifBlank { "guest" } + ".jsonl"
+    )
     private val json = Json { ignoreUnknownKeys = true }
 
     suspend fun load(owner: String): List<ChatMessage> = withContext(io) {

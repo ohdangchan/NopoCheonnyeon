@@ -76,9 +76,19 @@ internal fun DrawScope.drawFireworks(center: Offset, t: Float, tier: Int, colors
             val col = colors[(i + s) % colors.size].copy(alpha = a)
             drawCircle(col, (3.5f * (1f - lt * 0.5f)).dp.toPx(), Offset(x, y))
             // 꼬리
-            drawLine(col.copy(alpha = a * 0.5f), Offset(x, y), Offset(x - cos(ang) * 10.dp.toPx() * (1f - lt), y - sin(ang) * 10.dp.toPx() * (1f - lt)), 2.dp.toPx())
+            drawLine(
+                col.copy(alpha = a * 0.5f),
+                Offset(x, y),
+                Offset(x - cos(ang) * 10.dp.toPx() * (1f - lt), y - sin(ang) * 10.dp.toPx() * (1f - lt)),
+                2.dp.toPx()
+            )
         }
-        drawCircle(colors[s % colors.size].copy(alpha = (1f - lt) * 0.5f), 120.dp.toPx() * lt, origin, style = Stroke(4.dp.toPx() * (1f - lt)))
+        drawCircle(
+            colors[s % colors.size].copy(alpha = (1f - lt) * 0.5f),
+            120.dp.toPx() * lt,
+            origin,
+            style = Stroke(4.dp.toPx() * (1f - lt))
+        )
     }
 }
 

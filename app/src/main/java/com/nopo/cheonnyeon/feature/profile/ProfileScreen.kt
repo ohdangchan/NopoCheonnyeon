@@ -114,7 +114,10 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
     var shownVisits by rememberSaveable { mutableIntStateOf(PAGE) }
     var shownReviews by rememberSaveable { mutableIntStateOf(PAGE) }
     Column(Modifier.fillMaxSize().background(c.paper).statusBarsPadding()) {
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)) {
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(NopoTheme.spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md)
+        ) {
             when {
                 state.loading -> Text(stringResource(R.string.list_loading), color = c.ink)
                 state.error != null -> {
@@ -123,17 +126,32 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
                 }
                 profile == null -> EmptyState(stringResource(R.string.profile_not_found))
                 else -> {
-                    Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md), verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(profile.nickname, style = NopoTheme.typography.headlineMedium, color = c.ink)
                         TitleBadge(titleOf(profile.titleId))
                     }
-                    Text(stringResource(R.string.profile_joined, dateOf(profile.createdAtMillis)), style = NopoTheme.typography.bodySmall, color = c.ink2)
-                    Text(stringResource(R.string.profile_stats, profile.totalYears, profile.visitCount, profile.reviewCount), style = NopoTheme.extraTypography.metric, color = c.primary)
+                    Text(
+                        stringResource(R.string.profile_joined, dateOf(profile.createdAtMillis)),
+                        style = NopoTheme.typography.bodySmall,
+                        color = c.ink2
+                    )
+                    Text(
+                        stringResource(R.string.profile_stats, profile.totalYears, profile.visitCount, profile.reviewCount),
+                        style = NopoTheme.extraTypography.metric,
+                        color = c.primary
+                    )
                     YearsGauge(totalYears = profile.totalYears, yearsToNextTitle = TitlePolicy.yearsToNext(profile.totalYears))
 
                     Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
                         FilterChip(tab == 0, { tab = 0 }, label = { Text(stringResource(R.string.profile_tab_visits, state.visits.size)) })
-                        FilterChip(tab == 1, { tab = 1 }, label = { Text(stringResource(R.string.profile_tab_reviews, state.reviews.size)) })
+                        FilterChip(
+                            tab == 1,
+                            { tab = 1 },
+                            label = { Text(stringResource(R.string.profile_tab_reviews, state.reviews.size)) }
+                        )
                     }
 
                     if (tab == 0) {
@@ -145,7 +163,12 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
                             else -> {
                                 state.visits.take(shownVisits).forEach { v -> VisitCard(v, onOpenStore) }
                                 if (state.visits.size > shownVisits) {
-                                    NopoButton(stringResource(R.string.reviews_more), { shownVisits += PAGE }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                                    NopoButton(
+                                        stringResource(R.string.reviews_more),
+                                        { shownVisits += PAGE },
+                                        style = NopoButtonStyle.Outline,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
                                 }
                             }
                         }
@@ -153,14 +176,24 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
                         if (state.reviews.isEmpty()) Text(stringResource(R.string.profile_no_reviews), color = c.ink2)
                         state.reviews.take(shownReviews).forEach { r -> ReviewCard(r, onOpenStore) }
                         if (state.reviews.size > shownReviews) {
-                            NopoButton(stringResource(R.string.reviews_more), { shownReviews += PAGE }, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                            NopoButton(
+                                stringResource(R.string.reviews_more),
+                                { shownReviews += PAGE },
+                                style = NopoButtonStyle.Outline,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
                     Text(stringResource(R.string.profile_privacy_note), style = NopoTheme.typography.bodySmall, color = c.ink2)
                 }
             }
         }
-        NopoButton(stringResource(R.string.detail_back), onBack, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(NopoTheme.spacing.md))
+        NopoButton(
+            stringResource(R.string.detail_back),
+            onBack,
+            style = NopoButtonStyle.Outline,
+            modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(NopoTheme.spacing.md)
+        )
     }
 }
 
@@ -168,7 +201,10 @@ fun ProfileScreen(vm: ProfileViewModel, onBack: () -> Unit, onOpenStore: (String
 private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Row(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(
+            c.surface,
+            NopoTheme.shapes.md
+        ).clickable(role = Role.Button) { onOpenStore(v.storeId) }.padding(NopoTheme.spacing.md),
         horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -179,7 +215,11 @@ private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
                 listOfNotNull(v.sigungu.ifBlank { null }, stringResource(R.string.years_value, v.yearsAwarded)).joinToString(" · "),
                 color = c.ink2, style = NopoTheme.typography.bodySmall,
             )
-            Text(stringResource(R.string.profile_visit_meta, dateOf(v.firstVisitedMillis), v.visitCount), color = c.ink2, style = NopoTheme.typography.bodySmall)
+            Text(
+                stringResource(R.string.profile_visit_meta, dateOf(v.firstVisitedMillis), v.visitCount),
+                color = c.ink2,
+                style = NopoTheme.typography.bodySmall
+            )
         }
     }
 }
@@ -188,7 +228,10 @@ private fun VisitCard(v: VisitedStore, onOpenStore: (String) -> Unit) {
 private fun ReviewCard(r: ReviewItem, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
     Column(
-        Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
+        Modifier.fillMaxWidth().background(
+            c.surface,
+            NopoTheme.shapes.md
+        ).clickable(role = Role.Button) { onOpenStore(r.storeId) }.padding(NopoTheme.spacing.md),
         verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs),
     ) {
         Text(r.storeName, color = c.ink, style = NopoTheme.typography.titleSmall)

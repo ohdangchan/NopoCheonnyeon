@@ -97,7 +97,10 @@ val AlbumPermission: String
     get() = if (Build.VERSION.SDK_INT >= 33) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
 
 fun albumGranted(context: Context) =
-    isGranted(context, AlbumPermission) || (Build.VERSION.SDK_INT >= 34 && isGranted(context, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"))
+    isGranted(
+        context,
+        AlbumPermission
+    ) || (Build.VERSION.SDK_INT >= 34 && isGranted(context, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"))
 
 /** 알림 권한: 안드로이드 13 이상에서만 따로 허용을 받는다 */
 val NotificationPermission: String?
@@ -349,7 +352,10 @@ fun PermissionIntroScreen(
                 contentAlignment = Alignment.Center,
             ) { MockText("모두 허용하고 시작하기  ›", 30, color = MockColors.Lime2, weight = FontWeight.ExtraBold) }
             Box(
-                Modifier.fillMaxWidth().padding(top = px(8)).clickable(role = Role.Button, onClick = onAllowSelected).padding(vertical = px(12)),
+                Modifier.fillMaxWidth()
+                    .padding(top = px(8))
+                    .clickable(role = Role.Button, onClick = onAllowSelected)
+                    .padding(vertical = px(12)),
                 contentAlignment = Alignment.Center,
             ) { MockText("선택한 권한만 허용", 24, weight = FontWeight.Bold, color = Color(0xFF374151)) }
         }
@@ -379,13 +385,20 @@ private fun stateLabel(index: Int, on: Boolean): String {
 
 /** 권한 관리 한 줄 오른쪽의 상태 글자와 스위치, 그리고 줄 전체를 누르는 자리 */
 @Composable
-private fun androidx.compose.foundation.layout.BoxScope.ManageRowControls(index: Int, y0: Int, on: Boolean, label: String, onRow: (Int) -> Unit) {
+private fun androidx.compose
+    .foundation
+    .layout
+    .BoxScope
+    .ManageRowControls(index: Int, y0: Int, on: Boolean, label: String, onRow: (Int) -> Unit) {
     MockText(
         label, 22, Modifier.at(486, y0 + 38).size(px(118), px(40)),
         color = if (on) GrantedGreen else BodyGray, weight = FontWeight.Medium, align = TextAlign.End,
     )
     Box(Modifier.at(612, y0 + 36)) { ToggleSwitch(on) }
-    Box(Modifier.at(12, y0).size(px(736), px(130)).clickable(role = Role.Switch) { onRow(index) }.semantics { contentDescription = RowTitles[index] })
+    Box(Modifier.at(12, y0).size(
+        px(736),
+        px(130)
+    ).clickable(role = Role.Switch) { onRow(index) }.semantics { contentDescription = RowTitles[index] })
 }
 
 /**
@@ -397,7 +410,10 @@ fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (In
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 88, heightPx = 1580) {
             MockPic(R.drawable.mk2_pm_head, 760, 468, Modifier.at(0, 88))
-            Box(Modifier.at(18, 110).size(px(80), px(80)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "뒤로" })
+            Box(Modifier.at(18, 110).size(px(80), px(80)).clickable(
+                role = Role.Button,
+                onClick = onBack
+            ).semantics { contentDescription = "뒤로" })
             val rows = listOf(
                 R.drawable.mk2_pm_row1, R.drawable.mk2_pm_row2, R.drawable.mk2_pm_row3,
                 R.drawable.mk2_pm_row4, R.drawable.mk2_pm_row5, R.drawable.mk2_pm_row6,
@@ -415,7 +431,10 @@ fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (In
                 Modifier.at(12, ay).size(px(736), px(130)).clip(RoundedCornerShape(px(22)))
                     .background(CardBackground).border(1.dp, Color(0xFFEFE9D8), RoundedCornerShape(px(22))),
             )
-            Box(Modifier.at(40, ay + 30).size(px(70)).clip(CircleShape).background(Color(0xFFE2F77A)), contentAlignment = Alignment.Center) { AlbumGlyph() }
+            Box(
+                Modifier.at(40, ay + 30).size(px(70)).clip(CircleShape).background(Color(0xFFE2F77A)),
+                contentAlignment = Alignment.Center
+            ) { AlbumGlyph() }
             MockText(stringResource(R.string.perm_01), 28, Modifier.at(142, ay + 20), weight = FontWeight.ExtraBold, font = MockSans)
             MockText(
                 "리뷰에 음식 사진을 올릴 때\n앨범에서 고를 수 있어요.", 20, Modifier.at(142, ay + 62).size(px(360), px(60)),

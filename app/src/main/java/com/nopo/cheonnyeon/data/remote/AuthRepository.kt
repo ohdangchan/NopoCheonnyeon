@@ -152,7 +152,11 @@ class AuthRepository(
         }
         batch.update(
             userDoc(me),
-            mapOf("nickname" to newNick, "nicknameLower" to AuthValidation.nicknameKey(newNick), "updatedAt" to FieldValue.serverTimestamp()),
+            mapOf(
+                "nickname" to newNick,
+                "nicknameLower" to AuthValidation.nicknameKey(newNick),
+                "updatedAt" to FieldValue.serverTimestamp()
+            ),
         )
         db.collection(REVIEWS).whereEqualTo("uid", me).get().await().documents.forEach { d ->
             batch.update(d.reference, mapOf("nickname" to newNick))
