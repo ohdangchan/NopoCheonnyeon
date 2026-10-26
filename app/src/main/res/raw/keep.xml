@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오류 문구는 AppError.message()가 이름("err_" + 오류 코드)으로 찾아 쓰므로 릴리스의 리소스 축소(R8)가 지우지 않게 지킨다 -->
-<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/err_*" />
+<!-- 구글 로그인은 default_web_client_id 를 이름으로 찾아 쓰므로 함께 지킨다. 오류 문구는 AppError.message()가 이름("err_" + 오류 코드)으로 찾아 쓰므로 릴리스의 리소스 축소(R8)가 지우지 않게 지킨다 -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/err_*,@string/default_web_client_id" />
