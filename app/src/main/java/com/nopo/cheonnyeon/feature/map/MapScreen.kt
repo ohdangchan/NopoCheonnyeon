@@ -222,7 +222,8 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
             .background(MockColors.Card)) {
             Box(Modifier.align(Alignment.TopCenter).padding(top = px(16)).size(px(60), px(7)).clip(RoundedCornerShape(50))
                 .background(Color(0xFFCFCBBB)))
-            MockPic(R.drawable.mk_map_title_near, 252, 52, Modifier.padding(start = px(18), top = px(23)))
+            MockText(stringResource(R.string.map_near_title), 36, Modifier.padding(start = px(18), top = px(27)),
+                font = MockSerif, weight = FontWeight.ExtraBold)
             MockPic(R.drawable.mk_map_more, 95, 48, Modifier.align(Alignment.TopEnd).padding(end = px(15), top = px(27)),
                 onClick = vm::toggleListMode)
             LazyRow(

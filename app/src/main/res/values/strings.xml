@@ -129,6 +129,7 @@
     <string name="diag_loc_none">아직 측정하지 않았어요</string>
 
     <!-- 진단 지도 탭 (SPK-1) -->
+    <string name="map_near_title">지금 이 근처 노포</string>
     <string name="diag_map_markers_1000">마커 1,000개</string>
     <string name="diag_map_markers_clear">마커 지우기</string>
     <string name="diag_map_my_location">내 위치 찾기</string>
