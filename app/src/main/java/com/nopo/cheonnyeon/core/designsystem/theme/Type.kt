@@ -2,11 +2,12 @@ package com.nopo.cheonnyeon.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.nopo.cheonnyeon.R
@@ -18,7 +19,7 @@ val BlackHanSans = FontFamily(Font(R.font.nanum_myeongjo_extrabold, FontWeight.E
 val NopoSans = FontFamily.SansSerif
 
 /** 거리·일시·금액·좌표. 가변 글꼴 하나에서 굵기를 고른다. */
-@OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
+@OptIn(ExperimentalTextApi::class)
 val JetBrainsMono = FontFamily(
     Font(
         R.font.jetbrains_mono,

@@ -24,7 +24,8 @@ object ReceiptMatcher {
         val paidAt = receipt.paidAt ?: return AppError.E_RECEIPT_NO_DATE.asFailure()
         val age = Duration.between(paidAt.atZone(SeoulZone).toInstant(), now)
         val tooOld = age > Duration.ofHours(VerificationConfig.RECEIPT_MAX_AGE_HOURS.toLong())
-        val tooFuture = age.isNegative && age.negated() > Duration.ofMinutes(VerificationConfig.RECEIPT_FUTURE_TOLERANCE_MIN.toLong())
+        val futureTolerance = Duration.ofMinutes(VerificationConfig.RECEIPT_FUTURE_TOLERANCE_MIN.toLong())
+        val tooFuture = age.isNegative && age.negated() > futureTolerance
         if (tooOld || tooFuture) return AppError.E_RECEIPT_EXPIRED.asFailure()
         return ReceiptMatch(byPhone, similarity).asSuccess()
     }

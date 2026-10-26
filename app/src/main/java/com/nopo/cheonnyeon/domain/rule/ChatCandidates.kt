@@ -12,8 +12,14 @@ data class ChatCandidate(val store: Store, val years: Int, val distanceKm: Doubl
  * 1,000년 경로를 짤 때를 위해 안 가 본 곳 중 업력이 높은 곳도 따로 더한다.
  */
 object ChatCandidates {
+    /** 가까운(또는 지역에 맞는) 후보 수 */
     const val NEAR_LIMIT = 24
+
+    /** 1,000년 경로용으로 더하는 "안 가 본 곳 중 업력 높은" 후보 수 */
     const val RICH_LIMIT = 10
+
+    /** 업력 높은 후보를 고르기 전에 살펴보는 범위 배수 (RICH_LIMIT × 이 값) */
+    private const val RICH_SCAN_FACTOR = 10
 
     fun pick(
         stores: List<Store>,
@@ -33,7 +39,7 @@ object ChatCandidates {
         val base = if (regionHits.isNotEmpty()) regionHits else all
         val ordered = if (here != null) base.sortedBy { it.distanceKm } else base.sortedByDescending { it.years }
         val near = ordered.take(NEAR_LIMIT)
-        val pool = ordered.take(RICH_LIMIT * 10).filter { !it.visited && it !in near }
+        val pool = ordered.take(RICH_LIMIT * RICH_SCAN_FACTOR).filter { !it.visited && it !in near }
         val rich = pool.sortedByDescending { it.years }.take(RICH_LIMIT)
         return near + rich
     }
@@ -43,6 +49,7 @@ object ChatCandidates {
         val gu = s.sigungu.removeSuffix("구").removeSuffix("시").removeSuffix("군")
         if (gu.length >= 2 && text.contains(gu)) return true
         val sido = s.sido.take(2)
-        return sido.length == 2 && s.sido.isNotBlank() && text.contains(sido) && s.sido != "서울" // 서울은 너무 넓어 지역 한정으로 쓰지 않는다
+        // 서울은 너무 넓어 지역 한정으로 쓰지 않는다
+        return sido.length == 2 && s.sido.isNotBlank() && text.contains(sido) && s.sido != "서울"
     }
 }

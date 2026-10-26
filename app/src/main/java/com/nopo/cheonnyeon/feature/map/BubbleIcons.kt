@@ -59,7 +59,8 @@ object BubbleIcons {
         cv.save()
         cv.clipPath(clip)
         val side = minOf(photo.width, photo.height)
-        val src = android.graphics.Rect((photo.width - side) / 2, (photo.height - side) / 2, (photo.width + side) / 2, (photo.height + side) / 2)
+        val src = android.graphics.Rect((photo.width - side) / 2, (photo.height - side) / 2, (photo.width + side) / 2,
+            (photo.height + side) / 2)
         cv.drawBitmap(photo, src, RectF(cx - r, cy - r, cx + r, cy + r), p)
         cv.restore()
         // 글자

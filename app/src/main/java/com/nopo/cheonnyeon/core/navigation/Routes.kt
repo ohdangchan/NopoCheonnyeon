@@ -1,6 +1,8 @@
 package com.nopo.cheonnyeon.core.navigation
 
-/** 화면 경로 (아키텍처 3장). 가게·인증 화면은 E5~E6에서 추가 */
+import android.net.Uri
+
+/** 화면 경로 (아키텍처 3장). 값에 {id} 처럼 중괄호가 있으면 인자를 받는 경로이고, 아래 함수로 실제 경로를 만든다. */
 object Routes {
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
@@ -22,7 +24,7 @@ object Routes {
     const val NOTIFICATIONS = "notifications"
     const val ROULETTE = "roulette"
     const val CHAT = "chat?q={q}"
-    fun chat(q: String = "") = if (q.isBlank()) "chat" else "chat?q=" + android.net.Uri.encode(q)
+    fun chat(q: String = "") = if (q.isBlank()) "chat" else "chat?q=" + Uri.encode(q)
 
     /** 로그인 전에 열 수 있는 화면 (FR-AUTH-06) */
     val signedOutRoutes = setOf(LOGIN, SIGN_UP, RESET)

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -38,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -51,7 +53,6 @@ import androidx.lifecycle.viewModelScope
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.SeoulZone
-import com.nopo.cheonnyeon.core.designsystem.mock.AiSparkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.BookmarkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronDown
 import com.nopo.cheonnyeon.core.designsystem.mock.LimePill
@@ -64,10 +65,11 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
-import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.mockCardBox
-import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.core.designsystem.mock.pxSp
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
+import com.nopo.cheonnyeon.data.remote.StoreRating
 import com.nopo.cheonnyeon.domain.catalog.StoreFilter
 import com.nopo.cheonnyeon.domain.catalog.StoreFilters
 import com.nopo.cheonnyeon.domain.model.Store
@@ -92,7 +94,8 @@ class ExploreViewModel(private val container: AppContainer) : ViewModel() {
     val region = MutableStateFlow<String?>(null)
     private val year = LocalDate.now(SeoulZone).year
 
-    val regions: StateFlow<List<String>> = stores.combine(region) { all, _ -> all.map { it.sido }.filter { it.isNotBlank() }.distinct().sorted() }
+    val regions: StateFlow<List<String>> = stores.combine(region) { all, _ -> all.map { it.sido }.filter { it.isNotBlank() }
+        .distinct().sorted() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val cards: StateFlow<List<StoreCardData>> = combine(stores, query, chip, region, container.ratings) { all, q, c, r, ratings ->
@@ -104,7 +107,7 @@ class ExploreViewModel(private val container: AppContainer) : ViewModel() {
         val c = a[2] as Int
         val r = a[3] as String?
         @Suppress("UNCHECKED_CAST")
-        val ratings = a[4] as Map<String, com.nopo.cheonnyeon.data.remote.StoreRating>
+        val ratings = a[4] as Map<String, StoreRating>
         val words = listOf(q.trim(), if (c == 0) "" else ExploreChips[c]).filter { it.isNotEmpty() }.joinToString(" ")
         val found = StoreFilters.apply(all, StoreFilter(query = words, foodOnly = true), emptySet()).filter { r == null || it.sido == r }
         found.sortedWith(
@@ -133,7 +136,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
     val region by vm.region.collectAsStateWithLifecycle()
     val regions by vm.regions.collectAsStateWithLifecycle()
     var regionMenu by remember { mutableStateOf(false) }
-    val focus = androidx.compose.ui.platform.LocalFocusManager.current
+    val focus = LocalFocusManager.current
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding(),
@@ -148,10 +151,12 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                     MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
                     MockPic(R.drawable.mk_explore_title, 380, 111, Modifier.at(20, 225))
                     // 검색창
-                    Box(Modifier.at(25, 343).size(px(713), px(75)).clip(RoundedCornerShape(px(38))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(38))))
+                    Box(Modifier.at(25, 343).size(px(713), px(75)).clip(RoundedCornerShape(px(38)))
+                        .background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(38))))
                     MockPic(R.drawable.mk_explore_ic_search, 46, 38, Modifier.at(46, 362))
                     Box(Modifier.at(105, 352).size(px(540), px(56)), contentAlignment = Alignment.CenterStart) {
-                        if (query.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_01), 24, color = MockColors.Hint)
+                        if (query.isEmpty()) MockText(stringResource(R.string.explore_01),
+                            24, color = MockColors.Hint)
                         BasicTextField(
                             value = query, onValueChange = { vm.query.value = it }, singleLine = true,
                             textStyle = TextStyle(fontFamily = MockSans, fontSize = pxSp(24), color = MockColors.Navy),
@@ -162,17 +167,27 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                         )
                     }
                     Box(
-                        Modifier.at(672, 352).size(px(60), px(56)).semantics { contentDescription = "AI 도우미" }.clickable(role = Role.Button) { onOpenChat(query) },
+                        Modifier.at(672, 352).size(px(60), px(56)).semantics { contentDescription = "AI 도우미" }
+                            .clickable(role = Role.Button) { onOpenChat(query) },
                         contentAlignment = Alignment.Center,
                     ) {
-                            Box(Modifier.size(px(52)).clip(CircleShape).background(MockColors.Lime2), contentAlignment = Alignment.Center) { MockText("AI", 24, weight = FontWeight.ExtraBold, color = MockColors.Navy) }
+                            Box(Modifier.size(px(52)).clip(CircleShape).background(MockColors.Lime2),
+                                contentAlignment = Alignment.Center) { MockText("AI", 24, weight = FontWeight.ExtraBold,
+                                color = MockColors.Navy) }
                         }
                     // 칩 줄
-                    Row(Modifier.at(24, 438).fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(px(13))) {
-                        ExploreChips.forEachIndexed { i, label -> Chip(label, selected = chip == i && region == null || (i == 0 && chip == 0 && region == null)) { vm.chip.value = i; vm.region.value = null } }
+                    Row(Modifier.at(24, 438).fillMaxWidth().horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(px(13))) {
+                        ExploreChips.forEachIndexed { i, label ->
+                            Chip(
+                                label,
+                                selected = chip == i && region == null || (i == 0 && chip == 0 && region == null),
+                            ) { vm.chip.value = i; vm.region.value = null }
+                        }
                         Box {
                             Row(
-                                Modifier.height(px(54)).clip(RoundedCornerShape(50)).background(if (region != null) MockColors.Lime else MockColors.Chip)
+                                Modifier.height(px(54)).clip(RoundedCornerShape(50))
+                                    .background(if (region != null) MockColors.Lime else MockColors.Chip)
                                     .clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
@@ -181,8 +196,10 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                                 ChevronDown(20)
                             }
                             DropdownMenu(expanded = regionMenu, onDismissRequest = { regionMenu = false }) {
-                                DropdownMenuItem(text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_02)) }, onClick = { vm.region.value = null; regionMenu = false })
-                                regions.forEach { r -> DropdownMenuItem(text = { Text(r) }, onClick = { vm.region.value = r; vm.chip.value = 0; regionMenu = false }) }
+                                DropdownMenuItem(text = { Text(stringResource(R.string.explore_02)) },
+                                    onClick = { vm.region.value = null; regionMenu = false })
+                                regions.forEach { r -> DropdownMenuItem(text = { Text(r) },
+                                    onClick = { vm.region.value = r; vm.chip.value = 0; regionMenu = false }) }
                             }
                         }
                     }
@@ -190,7 +207,8 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
             }
         }
         if (cards.isEmpty()) {
-            item(span = { GridItemSpan(2) }) { Box(Modifier.padding(px(40))) { MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.explore_03), 24, color = MockColors.Hint) } }
+            item(span = { GridItemSpan(2) }) { Box(Modifier.padding(px(40))) { MockText(stringResource(R.string.explore_03),
+                24, color = MockColors.Hint) } }
         }
         itemsIndexed(cards, key = { _, c -> c.store.id }) { i, c ->
             val left = i % 2 == 0
@@ -218,7 +236,8 @@ fun ExploreCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Unit, mo
         Box(Modifier.fillMaxWidth().height(px(243))) {
             StorePhoto(c.store, Modifier.fillMaxSize())
             Box(Modifier.padding(start = px(15), top = px(21))) { LimePill(c.tag, 20, padX = 16, padY = 5) }
-            Box(Modifier.align(Alignment.TopEnd).padding(top = px(18), end = px(14)).size(px(40)).saveDescription().clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
+            Box(Modifier.align(Alignment.TopEnd).padding(top = px(18), end = px(14)).size(px(40)).saveDescription()
+                .clickable(role = Role.Button, onClick = onBookmark), contentAlignment = Alignment.Center) {
                 BookmarkIcon(34, filled = c.bookmarked)
             }
         }

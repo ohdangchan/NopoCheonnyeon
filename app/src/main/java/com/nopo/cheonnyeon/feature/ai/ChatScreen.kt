@@ -1,26 +1,25 @@
 package com.nopo.cheonnyeon.feature.ai
 
+import android.content.pm.PackageManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -54,7 +54,6 @@ import com.nopo.cheonnyeon.data.ai.ChatTurn
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.model.Title
 import com.nopo.cheonnyeon.domain.rule.ChatCandidates
-import com.nopo.cheonnyeon.domain.rule.YearsCalculator
 import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -136,8 +135,8 @@ class ChatViewModel(private val container: AppContainer) : ViewModel() {
     private suspend fun buildContext(text: String): ChatContextInfo {
         val now = container.clock.now().atZone(SeoulZone)
         val nowText = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) + " (" + listOf("월", "화", "수", "목", "금", "토", "일")[now.dayOfWeek.value - 1] + "요일, 서울 시간)"
-        val granted = androidx.core.content.ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
-            androidx.core.content.ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val granted = ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(container.appContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val fix = container.lastFix.value ?: if (granted) runCatching { FusedLocationAdapter(container.appContext).quickFix() }.getOrNull() else null
         val visits = container.database.myVisitDao().observeAll().first()
         val total = visits.filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sumOf { it.yearsAwarded }
@@ -207,7 +206,7 @@ fun ChatScreen(vm: ChatViewModel, initialQuery: String = "", onBack: () -> Unit,
             items(state.messages, key = { it.id }) { m -> Bubble(m, onOpenStore) }
             if (state.sending) item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    androidx.compose.material3.CircularProgressIndicator(Modifier.size(28.dp), color = c.primary, strokeWidth = 3.dp)
+                    CircularProgressIndicator(Modifier.size(28.dp), color = c.primary, strokeWidth = 3.dp)
                     Spacer(Modifier.width(12.dp))
                     Text(stringResource(R.string.chat_thinking), color = c.ink, style = NopoTheme.typography.titleMedium)
                 }

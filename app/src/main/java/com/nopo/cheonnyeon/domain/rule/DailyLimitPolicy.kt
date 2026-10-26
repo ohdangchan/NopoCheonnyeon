@@ -8,7 +8,8 @@ import java.time.Instant
 /** 하루 5곳, 같은 가게 하루 1회 (FR-VER-14). 날짜는 기기 시간대와 상관없이 서울 자정 기준. */
 object DailyLimitPolicy {
     /**
-     * 테스트 가게는 한도와 같은 가게 제한에서 제외하고, 테스트 방문은 실제 집계에도 넣지 않는다 (FR-TST-02).
+     * 테스트 가게는 한도와 같은 가게 제한에서 제외하고,
+     * 테스트 방문은 실제 집계에도 넣지 않는다 (FR-TST-02).
      * @return 인증할 수 없으면 이유, 가능하면 null
      */
     fun check(visits: List<VisitRef>, storeId: String, isTestStore: Boolean, now: Instant): AppError? {

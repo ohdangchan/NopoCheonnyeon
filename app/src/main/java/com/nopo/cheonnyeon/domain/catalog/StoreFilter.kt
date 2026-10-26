@@ -19,9 +19,13 @@ data class StoreFilter(
     val unvisitedOnly: Boolean = false,
 )
 
+/** 가게 목록을 걸러 내고 정렬하는 순수 규칙 */
 object StoreFilters {
+    private val whitespace = Regex("\\s+")
+
+    /** [filter]의 조건을 모두 만족하는 가게만 남긴다. 검색어가 비어 있으면 이름 조건은 건너뛴다 */
     fun apply(stores: List<Store>, filter: StoreFilter, visitedIds: Set<String>): List<Store> {
-        val words = filter.query.split(Regex("\\s+")).map(TextNormalizer::normalize).filter { it.isNotEmpty() }
+        val words = filter.query.split(whitespace).map(TextNormalizer::normalize).filter { it.isNotEmpty() }
         return stores.filter { s ->
             (!filter.foodOnly || s.isFood) &&
                 (filter.program == null || filter.program.code in s.programs) &&
@@ -46,6 +50,7 @@ object StoreFilters {
             if (s.lat == null || s.lng == null) Double.MAX_VALUE else GeoDistance.meters(lat, lng, s.lat, s.lng)
         }
 
+    /** 지도 화면의 네 모서리 안에 있는 가게 (좌표 없는 가게는 제외) */
     fun inBounds(stores: List<Store>, south: Double, north: Double, west: Double, east: Double): List<Store> =
         stores.filter { s -> s.lat != null && s.lng != null && s.lat in south..north && s.lng in west..east }
 }

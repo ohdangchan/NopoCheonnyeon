@@ -33,11 +33,11 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
+import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.domain.rule.VerificationConfig
 import com.nopo.cheonnyeon.platform.location.Fix
 import com.nopo.cheonnyeon.platform.location.FusedLocationAdapter
 import com.nopo.cheonnyeon.platform.location.LocationSettingsResult
-import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
 import kotlinx.coroutines.Job

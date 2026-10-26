@@ -1,16 +1,17 @@
 package com.nopo.cheonnyeon.feature.auth
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,7 +28,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -35,14 +35,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.SeoulZone
@@ -53,7 +57,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
 import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
-import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
+import com.nopo.cheonnyeon.core.designsystem.mock.RatingText
 import com.nopo.cheonnyeon.core.designsystem.mock.StarIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
 import com.nopo.cheonnyeon.core.designsystem.mock.px
@@ -61,8 +65,8 @@ import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.TasteRecommender
 import com.nopo.cheonnyeon.feature.common.StoreCards
 import com.nopo.cheonnyeon.feature.store.StorePhoto
-import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlinx.coroutines.launch
 
 private val Hairline = Color(0xFFE2DDCB)
 private val Gray = Color(0xFF4B5563)
@@ -89,7 +93,7 @@ fun OnboardingScreen(container: AppContainer, onDone: () -> Unit) {
     var regions by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var foods by rememberSaveable { mutableStateOf(emptyList<String>()) }
     val scope = rememberCoroutineScope()
-    androidx.activity.compose.BackHandler(enabled = step > 0) { step -= 1 }
+    BackHandler(enabled = step > 0) { step -= 1 }
     val finish = { onDone() }
     when (step) {
         0 -> IntroPage(onStart = { step = 1 }, onBrowse = finish)
@@ -139,8 +143,8 @@ private fun Badge(selected: Boolean, centerX: Int, centerY: Int) {
         contentAlignment = Alignment.Center,
     ) {
         if (selected) Canvas(Modifier.size(px(24))) {
-            val p = androidx.compose.ui.graphics.Path().apply { moveTo(size.width * 0.12f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.82f); lineTo(size.width * 0.9f, size.height * 0.2f) }
-            drawPath(p, MockColors.Navy, style = Stroke(size.width * 0.16f, cap = StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+            val p = Path().apply { moveTo(size.width * 0.12f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.82f); lineTo(size.width * 0.9f, size.height * 0.2f) }
+            drawPath(p, MockColors.Navy, style = Stroke(size.width * 0.16f, cap = StrokeCap.Round, join = StrokeJoin.Round))
         }
     }
 }
@@ -155,7 +159,7 @@ private fun SectionHead(icon: @Composable () -> Unit, y: Int, title: String, sub
 @Composable
 private fun PinGlyph() = Canvas(Modifier.size(px(40))) {
     val w = size.width
-    val p = androidx.compose.ui.graphics.Path().apply {
+    val p = Path().apply {
         moveTo(w * 0.5f, w * 0.96f); cubicTo(w * 0.1f, w * 0.55f, w * 0.14f, w * 0.3f, w * 0.14f, w * 0.3f)
         cubicTo(w * 0.14f, w * 0.1f, w * 0.3f, 0f, w * 0.5f, 0f); cubicTo(w * 0.7f, 0f, w * 0.86f, w * 0.1f, w * 0.86f, w * 0.3f)
         cubicTo(w * 0.86f, w * 0.3f, w * 0.9f, w * 0.55f, w * 0.5f, w * 0.96f); close()
@@ -171,7 +175,7 @@ private fun ForkGlyph() = Canvas(Modifier.size(px(40))) {
     for (x in listOf(0.2f, 0.33f, 0.46f)) drawLine(MockColors.Navy, Offset(w * x, w * 0.1f), Offset(w * x, w * 0.4f), w * 0.07f, StrokeCap.Round)
     drawLine(MockColors.Navy, Offset(w * 0.2f, w * 0.38f), Offset(w * 0.46f, w * 0.38f), w * 0.07f, StrokeCap.Round)
     drawLine(MockColors.Navy, Offset(w * 0.33f, w * 0.38f), Offset(w * 0.33f, w * 0.92f), w * 0.1f, StrokeCap.Round)
-    drawOval(MockColors.Navy, Offset(w * 0.64f, w * 0.08f), androidx.compose.ui.geometry.Size(w * 0.24f, w * 0.42f))
+    drawOval(MockColors.Navy, Offset(w * 0.64f, w * 0.08f), Size(w * 0.24f, w * 0.42f))
     drawLine(MockColors.Navy, Offset(w * 0.76f, w * 0.45f), Offset(w * 0.76f, w * 0.92f), w * 0.1f, StrokeCap.Round)
 }
 
@@ -179,7 +183,7 @@ private fun ForkGlyph() = Canvas(Modifier.size(px(40))) {
 private fun CompassGlyph() = Canvas(Modifier.size(px(46))) {
     val w = size.width
     drawCircle(MockColors.Navy, w * 0.44f, Offset(w / 2, w / 2), style = Stroke(w * 0.07f))
-    val p = androidx.compose.ui.graphics.Path().apply { moveTo(w * 0.68f, w * 0.32f); lineTo(w * 0.56f, w * 0.56f); lineTo(w * 0.32f, w * 0.68f); lineTo(w * 0.44f, w * 0.44f); close() }
+    val p = Path().apply { moveTo(w * 0.68f, w * 0.32f); lineTo(w * 0.56f, w * 0.56f); lineTo(w * 0.32f, w * 0.68f); lineTo(w * 0.44f, w * 0.44f); close() }
     drawPath(p, MockColors.Navy)
 }
 
@@ -201,15 +205,15 @@ private fun PreferencePage(
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref2_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(2f / 3f, "2 / 3")
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_01), 54, Modifier.at(38, 288), font = MockSerif, weight = FontWeight.ExtraBold)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_02), 54, Modifier.at(38, 358), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_01), 54, Modifier.at(38, 288), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_02), 54, Modifier.at(38, 358), font = MockSerif, weight = FontWeight.ExtraBold)
             Underline(38, 436, 285)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_03), 24, Modifier.at(40, 478), color = Ink2)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_04), 24, Modifier.at(40, 516), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_03), 24, Modifier.at(40, 478), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_04), 24, Modifier.at(40, 516), color = Ink2)
 
             SectionHead({ PinGlyph() }, 572, "어떤 지역을 좋아하세요?", "여러 지역을 선택할 수 있어요.")
             Box(Modifier.at(580, 596).size(px(152), px(52)).clip(RoundedCornerShape(50)).border(1.dp, Hairline, RoundedCornerShape(50)).background(CardWhite), contentAlignment = Alignment.Center) {
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_05), 21, color = MockColors.Navy)
+                MockText(androidx.compose.ui.res.stringResource(R.string.onb_05), 21, color = MockColors.Navy)
             }
             TasteRecommender.REGIONS.forEachIndexed { i, r ->
                 val sel = r.key in regions
@@ -244,7 +248,7 @@ private fun PreferencePage(
             }
             BigLimeButton("이 취향으로 추천받기", 1440, onNext)
             Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }
     }
@@ -264,14 +268,14 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref3_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(1f, "3 / 3")
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_07), 58, Modifier.at(38, 296), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_07), 58, Modifier.at(38, 296), font = MockSerif, weight = FontWeight.ExtraBold)
             Underline(38, 380, 330)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_08), 25, Modifier.at(40, 426), color = Ink2)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_09), 25, Modifier.at(40, 466), color = Ink2)
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_10), 25, Modifier.at(40, 506), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_08), 25, Modifier.at(40, 426), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_09), 25, Modifier.at(40, 466), color = Ink2)
+            MockText(androidx.compose.ui.res.stringResource(R.string.onb_10), 25, Modifier.at(40, 506), color = Ink2)
 
             SectionHead({ PinGlyph() }, 572, "선택한 지역", "이런 지역의 노포를 찾아드릴게요.")
-            if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
+            if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
             Row(Modifier.at(0, 664).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(30)), horizontalArrangement = Arrangement.spacedBy(px(16))) {
                 picked.forEach { r ->
                     Row(
@@ -288,7 +292,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             }
 
             SectionHead({ ForkGlyph() }, 836, "선택한 음식 취향", "이런 음식을 중심으로 추천해드릴게요.")
-            if (pickedFoods.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_12), 22, Modifier.at(40, 940), color = Gray)
+            if (pickedFoods.isEmpty()) MockText(androidx.compose.ui.res.stringResource(R.string.onb_12), 22, Modifier.at(40, 940), color = Gray)
             Row(Modifier.at(0, 930).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(28)), horizontalArrangement = Arrangement.spacedBy(px(10))) {
                 pickedFoods.forEach { f ->
                     Box(Modifier.size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(20))).background(CardWhite)) {
@@ -317,14 +321,14 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                             }
                         }
                         MockText(st.name, 30, Modifier.width(px(330)), font = MockSerif, weight = FontWeight.ExtraBold)
-                        com.nopo.cheonnyeon.core.designsystem.mock.RatingText(card.rating?.average, card.rating?.count, 20, showCount = true)
+                        RatingText(card.rating?.average, card.rating?.count, 20, showCount = true)
                         MockText(card.oneLiner, 19, Modifier.width(px(330)), color = Gray, maxLines = 2, lineHeightPx = 26)
                     }
                 }
             }
             BigLimeButton("노포 추천 받기", 1440, onStart)
             Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
+                MockText(androidx.compose.ui.res.stringResource(R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }
     }

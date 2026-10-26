@@ -14,7 +14,9 @@ object MenuPhotos {
         "tteokbokki" to listOf("떡볶이", "분식", "튀김", "순대", "오뎅", "어묵", "떡"),
         "gimbap" to listOf("김밥"),
         "bulgogi" to listOf("불고기", "전골", "샤브"),
-        "gogi" to listOf("갈비", "삼겹", "구이", "고기", "수육", "족발", "보쌈", "돼지", "소고기", "한우", "곱창", "제육", "육회", "생선"),
+        "gogi" to listOf(
+            "갈비", "삼겹", "구이", "고기", "수육", "족발", "보쌈", "돼지", "소고기", "한우", "곱창", "제육", "육회", "생선",
+        ),
         "jjigae" to listOf("찌개", "매운탕", "추어탕", "해물탕"),
         "bibimbap" to listOf("비빔밥", "덮밥", "정식", "백반", "한정식"),
     )
@@ -32,7 +34,10 @@ object MenuPhotos {
         val json = context.assets.open("menu/credits.json").bufferedReader().use { JSONObject(it.readText()) }
         json.keys().asSequence().associateWith { k ->
             val c = json.getJSONObject(k)
-            Credit(k, c.optString("title"), c.optString("artist"), c.optString("license"), c.optString("license_url"), c.optString("page"))
+            Credit(
+                key = k, title = c.optString("title"), artist = c.optString("artist"),
+                license = c.optString("license"), licenseUrl = c.optString("license_url"), page = c.optString("page"),
+            )
         }
     }.getOrDefault(emptyMap()).also { cached = it }
 

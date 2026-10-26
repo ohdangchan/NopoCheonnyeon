@@ -2,12 +2,13 @@ package com.nopo.cheonnyeon.core.designsystem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.EmptyState
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
@@ -31,6 +31,7 @@ import com.nopo.cheonnyeon.core.designsystem.component.YearsGauge
 import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.domain.model.StampGrade
 import com.nopo.cheonnyeon.domain.model.Title
+import com.nopo.cheonnyeon.R
 
 /**
  * 공통 컴포넌트를 실기기에서 라이트·다크·큰 글씨로 확인하는 화면.
@@ -119,7 +120,7 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 @Composable
 private fun DesignCatalogPreview() {
     NopoTheme {
-        androidx.compose.material3.Surface(color = NopoTheme.colors.paper) {
+        Surface(color = NopoTheme.colors.paper) {
             DesignCatalogScreen(PaddingValues(NopoTheme.spacing.lg))
         }
     }

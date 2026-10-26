@@ -1,8 +1,8 @@
 package com.nopo.cheonnyeon.feature.settings
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
+import android.content.pm.PackageManager
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,6 +18,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -30,14 +31,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nopo.cheonnyeon.R
+import com.nopo.cheonnyeon.core.designsystem.mock.MockBrush
 import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
@@ -45,6 +50,7 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.at
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import com.nopo.cheonnyeon.feature.my.MyViewModel
 import com.nopo.cheonnyeon.feature.my.SupportDialog
 import com.nopo.cheonnyeon.feature.passport.PassportViewModel
@@ -63,13 +69,13 @@ fun MockSettingsScreen(
     val saved by myVm.saved.collectAsStateWithLifecycle()
     val photoVersion by myVm.photoVersion.collectAsStateWithLifecycle()
     val reviews by passportVm.reviews.collectAsStateWithLifecycle()
-    androidx.compose.runtime.LaunchedEffect(Unit) { passportVm.loadReviews() }
+    LaunchedEffect(Unit) { passportVm.loadReviews() }
     val nickname by produceState("") { value = passportVm.nickname() }
     val real = remember(state.stamps) { state.stamps.filter { !it.isTest } }
-    val titles = com.nopo.cheonnyeon.domain.rule.TitlePolicy.titleFor(state.totalYears).ordinal + 1
+    val titles = TitlePolicy.titleFor(state.totalYears).ordinal + 1
     var dialog by rememberSaveable { mutableIntStateOf(0) }
     var support by rememberSaveable { mutableStateOf(false) }
-    androidx.activity.compose.BackHandler(onBack = onBack)
+    BackHandler(onBack = onBack)
 
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 1480) {
@@ -82,16 +88,16 @@ fun MockSettingsScreen(
             Box(Modifier.at(38, 365).size(px(128)).clip(CircleShape).background(Color(0xFFECE7D4)), contentAlignment = Alignment.Center) {
                 if (photoVersion != 0L) coil3.compose.AsyncImage(
                     model = coil3.request.ImageRequest.Builder(context).data(myVm.photoFile).memoryCacheKey("profile-$photoVersion").build(),
-                    contentDescription = "프로필 사진", contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize(),
-                ) else androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                    contentDescription = "프로필 사진", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                ) else Canvas(Modifier.fillMaxSize()) {
                     val w = size.width
                     drawCircle(MockColors.Navy, w * 0.17f, Offset(w * 0.5f, w * 0.38f))
                     drawCircle(MockColors.Navy, w * 0.34f, Offset(w * 0.5f, w * 1.0f))
                 }
             }
-            MockText(nickname.ifBlank { "노포여행자" }, 34, Modifier.at(198, 375).width(px(480)), font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold)
+            MockText(nickname.ifBlank { "노포여행자" }, 34, Modifier.at(198, 375).width(px(480)), font = MockBrush, weight = FontWeight.ExtraBold)
             MockText(myVm.email ?: "", 23, Modifier.at(198, 424).width(px(480)), color = Color(0xFF4B5563))
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_01), 20, Modifier.at(198, 462).width(px(480)), color = Color(0xFF4B5563))
+            MockText(stringResource(R.string.set2_01), 20, Modifier.at(198, 462).width(px(480)), color = Color(0xFF4B5563))
             val stats = listOf(real.size, saved.size, reviews?.size ?: 0, titles)
             val xs = listOf(118, 293, 468, 643)
             val labels = listOf("방문한 노포", "저장한 맛집", "작성한 리뷰", "획득한 칭호")
@@ -102,9 +108,9 @@ fun MockSettingsScreen(
             }
             // 메뉴 일곱 줄
             MockPic(R.drawable.mk2_a_list, 736, 697, Modifier.at(12, 608))
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_02), 22, Modifier.at(586, 1047).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
-            val granted = androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
-                androidx.core.content.ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            MockText(stringResource(R.string.set2_02), 22, Modifier.at(586, 1047).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
+            val granted = ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
             MockText(if (granted) "허용됨" else "허용 안 됨", 22, Modifier.at(586, 1147).width(px(100)), weight = FontWeight.Medium, align = TextAlign.End)
             val actions: List<() -> Unit> = listOf(
                 onLegacy, { dialog = 1 }, onNotify, onLegacy, { dialog = 2 },
@@ -120,14 +126,14 @@ fun MockSettingsScreen(
         }
     }
     if (dialog == 1) AlertDialog(
-        onDismissRequest = { dialog = 0 }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_03)) },
+        onDismissRequest = { dialog = 0 }, title = { Text(stringResource(R.string.set2_03)) },
         text = { Text("현재 이메일 계정으로 로그인되어 있어요.\n${myVm.email ?: ""}") },
-        confirmButton = { TextButton({ dialog = 0 }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
+        confirmButton = { TextButton({ dialog = 0 }) { Text(stringResource(R.string.ver_02)) } },
     )
     if (dialog == 2) AlertDialog(
-        onDismissRequest = { dialog = 0 }, title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_04)) },
-        text = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.set2_05)) },
-        confirmButton = { TextButton({ dialog = 0 }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.ver_02)) } },
+        onDismissRequest = { dialog = 0 }, title = { Text(stringResource(R.string.set2_04)) },
+        text = { Text(stringResource(R.string.set2_05)) },
+        confirmButton = { TextButton({ dialog = 0 }) { Text(stringResource(R.string.ver_02)) } },
     )
     if (support) SupportDialog(myVm.email) { support = false }
 }

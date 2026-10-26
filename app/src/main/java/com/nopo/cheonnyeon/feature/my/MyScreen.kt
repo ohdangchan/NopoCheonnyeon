@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.my
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,6 +15,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,20 +27,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,9 +55,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -69,6 +77,7 @@ import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.core.common.message
 import com.nopo.cheonnyeon.core.designsystem.mock.BookmarkIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.ChevronRight
+import com.nopo.cheonnyeon.core.designsystem.mock.MockBrush
 import com.nopo.cheonnyeon.core.designsystem.mock.MockColors
 import com.nopo.cheonnyeon.core.designsystem.mock.MockPic
 import com.nopo.cheonnyeon.core.designsystem.mock.MockSerif
@@ -76,17 +85,19 @@ import com.nopo.cheonnyeon.core.designsystem.mock.MockStage
 import com.nopo.cheonnyeon.core.designsystem.mock.MockText
 import com.nopo.cheonnyeon.core.designsystem.mock.PinIcon
 import com.nopo.cheonnyeon.core.designsystem.mock.at
-import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
 import com.nopo.cheonnyeon.core.designsystem.mock.px
+import com.nopo.cheonnyeon.core.designsystem.mock.saveDescription
+import com.nopo.cheonnyeon.data.local.SettingsStore
 import com.nopo.cheonnyeon.domain.model.Store
-import com.nopo.cheonnyeon.domain.model.Title
 import com.nopo.cheonnyeon.domain.rule.AuthValidation
+import com.nopo.cheonnyeon.domain.rule.CollectionRules
 import com.nopo.cheonnyeon.domain.rule.TitlePolicy
 import com.nopo.cheonnyeon.feature.common.StoreCards
-import com.nopo.cheonnyeon.feature.explore.StoreCard
+import com.nopo.cheonnyeon.feature.explore.ExploreCard
 import com.nopo.cheonnyeon.feature.passport.PassportViewModel
 import com.nopo.cheonnyeon.feature.store.StorePhoto
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -101,7 +112,7 @@ import java.time.LocalDate
 const val SUPPORT_EMAIL = "wow.sillyer@gmail.com"
 
 class MyViewModel(private val container: AppContainer) : ViewModel() {
-    private val catalog = kotlinx.coroutines.flow.MutableStateFlow<List<Store>>(emptyList())
+    private val catalog = MutableStateFlow<List<Store>>(emptyList())
 
     init {
         viewModelScope.launch { catalog.value = container.catalog.all().filter { !it.isTest } }
@@ -118,7 +129,7 @@ class MyViewModel(private val container: AppContainer) : ViewModel() {
 
     /** 프로필 사진(이 기기에만 저장). 바뀔 때마다 올라가는 번호로 화면이 다시 그린다 */
     val photoFile = File(container.appContext.filesDir, "profile.jpg")
-    private val _photoVersion = kotlinx.coroutines.flow.MutableStateFlow(if (photoFile.exists()) photoFile.lastModified() else 0L)
+    private val _photoVersion = MutableStateFlow(if (photoFile.exists()) photoFile.lastModified() else 0L)
     val photoVersion: StateFlow<Long> = _photoVersion
 
     fun setPhoto(uri: Uri) {
@@ -166,10 +177,10 @@ fun MyScreen(
     val real = remember(state.stamps) { state.stamps.filter { !it.isTest && it.store != null } }
     val visited = remember(real) { real.sortedByDescending { it.visit.lastVisitedAt } }
     val title = TitlePolicy.titleFor(state.totalYears)
-    val goal = com.nopo.cheonnyeon.domain.rule.CollectionRules.goal(real.size)
+    val goal = CollectionRules.goal(real.size)
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri -> if (uri != null) vm.setPhoto(uri) }
     BackHandler(enabled = sub != Sub.NONE) { sub = Sub.NONE }
-    androidx.compose.runtime.LaunchedEffect(openSaved) { if (openSaved) { sub = Sub.SAVED; onSavedHandled() } }
+    LaunchedEffect(openSaved) { if (openSaved) { sub = Sub.SAVED; onSavedHandled() } }
 
     when (sub) {
         Sub.SAVED -> { SavedScreen(vm, saved, bookmarks, onBack = { sub = Sub.NONE }, onOpenStore = onOpenStore); return }
@@ -190,13 +201,13 @@ fun MyScreen(
                 if (photoVersion != 0L) {
                     coil3.compose.AsyncImage(
                         model = coil3.request.ImageRequest.Builder(LocalContext.current).data(vm.photoFile).memoryCacheKey("profile-$photoVersion").build(),
-                        contentDescription = "프로필 사진", contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                        contentDescription = "프로필 사진", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
                     )
                 } else DefaultAvatar()
             }
             Box(Modifier.at(150, 360).size(px(54)).clip(CircleShape).background(Color(0xFF3A3F47)).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, contentAlignment = Alignment.Center) { CameraIcon() }
             Row(Modifier.at(222, 268).clickable(role = Role.Button) { editOpen = true }, verticalAlignment = Alignment.CenterVertically) {
-                MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold)
+                MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = MockBrush, weight = FontWeight.ExtraBold)
                 ChevronRight(30)
             }
             MockPic(R.drawable.mk_my_tagline, 248, 64, Modifier.at(226, 338))
@@ -209,12 +220,12 @@ fun MyScreen(
                 MockText("${real.size}", 52, font = MockSerif, weight = FontWeight.ExtraBold)
                 MockText(" / $goal", 28, color = MockColors.Ink2, font = MockSerif)
             }
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.col_06), 22, Modifier.at(197, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
+            MockText(stringResource(R.string.col_06), 22, Modifier.at(197, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
             Row(Modifier.at(398, 517), verticalAlignment = Alignment.Bottom) {
                 MockText("${title.ordinal + 1}", 52, font = MockSerif, weight = FontWeight.ExtraBold)
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_02), 26, color = MockColors.Ink2, font = MockSerif)
+                MockText(stringResource(R.string.book_02), 26, color = MockColors.Ink2, font = MockSerif)
             }
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.book_01), 22, Modifier.at(398, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
+            MockText(stringResource(R.string.book_01), 22, Modifier.at(398, 580), color = MockColors.Ink2, weight = FontWeight.Medium)
 
             // 메뉴 카드 6장
             Card(R.drawable.mk_my_card_saved, 12, 655, 362, 207) { sub = Sub.SAVED }
@@ -231,7 +242,7 @@ fun MyScreen(
             MockPic(R.drawable.mk_my_all, 108, 46, Modifier.at(640, 1300), onClick = onOpenCollection)
             if (visited.isEmpty()) {
                 Box(Modifier.at(15, 1360).size(px(730), px(150)).clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18))), contentAlignment = Alignment.Center) {
-                    MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_01), 22, color = MockColors.Hint)
+                    MockText(stringResource(R.string.my_01), 22, color = MockColors.Hint)
                 }
             } else {
                 LazyRow(Modifier.at(0, 1352).fillMaxWidth().height(px(172)), contentPadding = PaddingValues(horizontal = px(15)), horizontalArrangement = Arrangement.spacedBy(px(12))) {
@@ -266,13 +277,13 @@ fun MyScreen(
 }
 
 @Composable
-private fun androidx.compose.foundation.layout.BoxScope.Card(res: Int, x: Int, y: Int, w: Int, h: Int, onClick: () -> Unit) {
+private fun BoxScope.Card(res: Int, x: Int, y: Int, w: Int, h: Int, onClick: () -> Unit) {
     MockPic(res, w, h, Modifier.at(x, y), onClick = onClick)
 }
 
 /** 메뉴 카드 안의 사진 자리에 실제 가게 사진을 올린다 */
 @Composable
-private fun androidx.compose.foundation.layout.BoxScope.RealPhoto(store: Store?, x: Int, y: Int) {
+private fun BoxScope.RealPhoto(store: Store?, x: Int, y: Int) {
     Box(Modifier.at(x, y).size(px(139), px(186)).clip(RoundedCornerShape(px(12))).background(Color(0xFFEFEAD8))) {
         if (store != null) StorePhoto(store, Modifier.fillMaxSize())
         else Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { BookmarkIcon(60, color = Color(0xFFCFC8B0)) }
@@ -292,7 +303,7 @@ private fun DefaultAvatar() {
 private fun CameraIcon() {
     Canvas(Modifier.size(px(30))) {
         val w = size.width
-        drawRoundRect(Color.White, topLeft = Offset(0f, w * 0.22f), size = androidx.compose.ui.geometry.Size(w, w * 0.7f), cornerRadius = androidx.compose.ui.geometry.CornerRadius(w * 0.14f))
+        drawRoundRect(Color.White, topLeft = Offset(0f, w * 0.22f), size = Size(w, w * 0.7f), cornerRadius = CornerRadius(w * 0.14f))
         drawCircle(Color(0xFF3A3F47), radius = w * 0.2f, center = Offset(w * 0.5f, w * 0.57f))
         drawCircle(Color.White, radius = w * 0.11f, center = Offset(w * 0.5f, w * 0.57f))
     }
@@ -308,14 +319,14 @@ private fun EditProfileDialog(vm: MyViewModel, current: String, onDismiss: () ->
     val invalid = AuthValidation.nickname(nick)
     AlertDialog(
         onDismissRequest = { if (!busy) onDismiss() },
-        title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_02)) },
+        title = { Text(stringResource(R.string.my_02)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = nick, onValueChange = { nick = it; error = null }, singleLine = true, label = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_03)) },
+                    value = nick, onValueChange = { nick = it; error = null }, singleLine = true, label = { Text(stringResource(R.string.my_03)) },
                     supportingText = { Text(error ?: stringResourceSafe(R.string.auth_nickname_hint)) }, isError = error != null,
                 )
-                TextButton(onClick = { onPickPhoto() }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_04)) }
+                TextButton(onClick = { onPickPhoto() }) { Text(stringResource(R.string.my_04)) }
             }
         },
         confirmButton = {
@@ -330,44 +341,44 @@ private fun EditProfileDialog(vm: MyViewModel, current: String, onDismiss: () ->
                         if (r is AppResult.Success) { onSaved(); onDismiss() } else error = r.errorOrNull?.message(context)
                     }
                 },
-            ) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_05)) }
+            ) { Text(stringResource(R.string.my_05)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_06)) } },
+        dismissButton = { TextButton(onClick = onDismiss, enabled = !busy) { Text(stringResource(R.string.my_06)) } },
     )
 }
 
 @Composable
-private fun stringResourceSafe(id: Int): String = androidx.compose.ui.res.stringResource(id)
+private fun stringResourceSafe(id: Int): String = stringResource(id)
 
 @Composable
 internal fun SupportDialog(email: String?, onDismiss: () -> Unit) {
     val context = LocalContext.current
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_07)) },
+        title = { Text(stringResource(R.string.my_07)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_08))
-                Text(SUPPORT_EMAIL, style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
-                if (!email.isNullOrBlank()) Text("내 계정: $email", style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.my_08))
+                Text(SUPPORT_EMAIL, style = MaterialTheme.typography.titleMedium)
+                if (!email.isNullOrBlank()) Text("내 계정: $email", style = MaterialTheme.typography.bodySmall)
             }
         },
         confirmButton = {
             TextButton(onClick = {
                 val send = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL"))
                     .putExtra(Intent.EXTRA_SUBJECT, "[노포 패스포트] 문의").putExtra(Intent.EXTRA_TEXT, "\n\n---\n앱 버전 ${BuildConfig.VERSION_NAME}" + (if (!email.isNullOrBlank()) "\n계정 $email" else ""))
-                try { context.startActivity(send.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: android.content.ActivityNotFoundException) { }
+                try { context.startActivity(send.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: ActivityNotFoundException) { }
                 onDismiss()
-            }) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_09)) }
+            }) { Text(stringResource(R.string.my_09)) }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_06)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.my_06)) } },
     )
 }
 
 @Composable
 private fun SubHeader(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ $title", 34, font = com.nopo.cheonnyeon.core.designsystem.mock.MockBrush, weight = FontWeight.ExtraBold) }
+        Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ $title", 34, font = MockBrush, weight = FontWeight.ExtraBold) }
     }
 }
 
@@ -382,12 +393,12 @@ private fun SavedScreen(vm: MyViewModel, saved: List<Store>, bookmarks: Set<Stri
                 MockText("아직 저장한 노포가 없어요.\n가게 화면에서 '저장하기'를 눌러 보세요.", 24, color = MockColors.Hint, maxLines = 3, lineHeightPx = 36)
             }
         } else {
-            androidx.compose.foundation.lazy.grid.LazyVerticalGrid(
-                columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(2), contentPadding = PaddingValues(px(19)),
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2), contentPadding = PaddingValues(px(19)),
                 horizontalArrangement = Arrangement.spacedBy(px(14)), verticalArrangement = Arrangement.spacedBy(px(14)),
             ) {
                 gridItems(saved, key = { it.id }) { s ->
-                    com.nopo.cheonnyeon.feature.explore.ExploreCard(StoreCards.of(s, year, emptyMap(), null, bookmarks), onOpen = { onOpenStore(s.id) }, onBookmark = { vm.toggleBookmark(s.id) })
+                    ExploreCard(StoreCards.of(s, year, emptyMap(), null, bookmarks), onOpen = { onOpenStore(s.id) }, onBookmark = { vm.toggleBookmark(s.id) })
                 }
             }
         }
@@ -418,12 +429,12 @@ internal fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
         Column(Modifier.padding(horizontal = px(20)), verticalArrangement = Arrangement.spacedBy(px(16))) {
             ToggleRow(stringResource(R.string.my_t11), stringResource(R.string.my_b12), news) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
             ToggleRow(stringResource(R.string.my_t13), stringResource(R.string.my_b14), reco) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
-            MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_10), 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
+            MockText(stringResource(R.string.my_10), 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
         }
     }
 }
 
-private suspend fun com.nopo.cheonnyeon.data.local.SettingsStore.setNotifyRecoSafe(v: Boolean) = setNotifyReco(v)
+private suspend fun SettingsStore.setNotifyRecoSafe(v: Boolean) = setNotifyReco(v)
 
 /** 앱 환경 설정 */
 @Composable
@@ -441,7 +452,7 @@ private fun AppPrefsScreen(vm: MyViewModel, onBack: () -> Unit) {
             ToggleRow(stringResource(R.string.my_t19), stringResource(R.string.my_b20), loc) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
             ToggleRow(stringResource(R.string.my_t21), stringResource(R.string.my_b22), demo) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
             Column(Modifier.fillMaxWidth().padding(px(8)), verticalArrangement = Arrangement.spacedBy(px(6))) {
-                MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.my_11), 21, color = MockColors.Hint)
+                MockText(stringResource(R.string.my_11), 21, color = MockColors.Hint)
                 MockText("앱 버전 ${BuildConfig.VERSION_NAME}", 21, color = MockColors.Hint)
             }
         }

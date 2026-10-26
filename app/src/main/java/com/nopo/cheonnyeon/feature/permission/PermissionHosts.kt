@@ -1,10 +1,14 @@
 package com.nopo.cheonnyeon.feature.permission
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,9 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,6 +24,31 @@ import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
 import kotlinx.coroutines.launch
+
+// 처음 권한 안내 줄 번호 ([IntroPermRows] 순서와 같다)
+private const val INTRO_LOCATION = 0
+private const val INTRO_CAMERA = 1
+private const val INTRO_ALBUM = 2
+private const val INTRO_NOTIFICATION = 3
+private const val INTRO_SHARE = 4
+private const val INTRO_ANALYTICS = 5
+
+// 앱 안 허용 창 단계
+private const val ASK_NONE = 0
+private const val ASK_SHARE = 1
+private const val ASK_ANALYTICS = 2
+
+// 방문 기록 공개 범위 (프로필 문서의 값)
+private const val VISIBILITY_ALL = "ALL"
+private const val VISIBILITY_PRIVATE = "PRIVATE"
+
+// 권한 관리 화면 줄 번호
+private const val MANAGE_LOCATION = 0
+private const val MANAGE_CAMERA = 1
+private const val MANAGE_NOTIFICATION = 2
+private const val MANAGE_MARKETING = 3
+private const val MANAGE_SHARE = 4
+private const val MANAGE_ANALYTICS = 5
 
 /**
  * 처음 권한 안내: 여섯 가지(위치·카메라·사진 앨범·알림·방문 기록 공유·앱 사용 데이터 수집)를 눌러 고르고 한꺼번에 요청한다.
@@ -32,51 +58,64 @@ import kotlinx.coroutines.launch
 fun PermissionIntroHost(container: AppContainer) {
     val scope = rememberCoroutineScope()
     var selected by rememberSaveable { mutableStateOf(IntroPermRows.indices.toSet()) }
-    // 앱 안 허용 창 단계: 0 없음, 1 방문 기록 공유, 2 앱 사용 데이터 수집 (고른 것만 차례로 묻는다)
-    var asking by remember { mutableIntStateOf(0) }
+    // 앱 안 허용 창 단계 (고른 것만 차례로 묻는다)
+    var asking by remember { mutableIntStateOf(ASK_NONE) }
     var chosen by remember { mutableStateOf(emptySet<Int>()) }
     val finish = { scope.launch { container.settings.setPermIntroDone() }; Unit }
 
-    fun nextAsk(from: Int) {
-        val n = (from..2).firstOrNull { (it + 3) in chosen } ?: 0
-        if (n == 0) finish() else asking = n
+    fun saveVisibility(visibility: String) {
+        container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, visibility) } }
     }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { nextAsk(1) }
+
+    /** [from] 단계부터 고른 앱 안 항목이 있으면 그 허용 창을 띄우고, 없으면 안내를 마친다 */
+    fun nextAsk(from: Int) {
+        val next = (from..ASK_ANALYTICS).firstOrNull { (it + INTRO_SHARE - ASK_SHARE) in chosen } ?: ASK_NONE
+        if (next == ASK_NONE) finish() else asking = next
+    }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { nextAsk(ASK_SHARE) }
 
     fun run(pick: Set<Int>) {
         chosen = pick
         // 고르지 않은 앱 안 항목은 꺼 둔다(고른 것만 허용)
-        if (4 !in pick) container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "PRIVATE") } }
-        if (5 !in pick) scope.launch { container.settings.setAnalyticsOn(false) }
+        if (INTRO_SHARE !in pick) saveVisibility(VISIBILITY_PRIVATE)
+        if (INTRO_ANALYTICS !in pick) scope.launch { container.settings.setAnalyticsOn(false) }
         val list = mutableListOf<String>()
-        if (0 in pick) { list += Manifest.permission.ACCESS_FINE_LOCATION; list += Manifest.permission.ACCESS_COARSE_LOCATION }
-        if (1 in pick) list += Manifest.permission.CAMERA
-        if (2 in pick) list += AlbumPermission
-        if (3 in pick) NotificationPermission?.let { list += it }
-        if (list.isEmpty()) nextAsk(1) else launcher.launch(list.toTypedArray())
+        if (INTRO_LOCATION in pick) {
+            list += Manifest.permission.ACCESS_FINE_LOCATION
+            list += Manifest.permission.ACCESS_COARSE_LOCATION
+        }
+        if (INTRO_CAMERA in pick) list += Manifest.permission.CAMERA
+        if (INTRO_ALBUM in pick) list += AlbumPermission
+        if (INTRO_NOTIFICATION in pick) NotificationPermission?.let { list += it }
+        if (list.isEmpty()) nextAsk(ASK_SHARE) else launcher.launch(list.toTypedArray())
     }
 
     PermissionIntroScreen(
         selected = selected,
         onToggle = { i -> selected = if (i in selected) selected - i else selected + i },
-        onAllowAll = { selected = IntroPermRows.indices.toSet(); run(IntroPermRows.indices.toSet()) },
+        onAllowAll = {
+            selected = IntroPermRows.indices.toSet()
+            run(IntroPermRows.indices.toSet())
+        },
         onAllowSelected = { run(selected) },
         onLater = { finish() },
     )
 
-    if (asking == 1) AlertDialog(
+    if (asking == ASK_SHARE) AlertDialog(
         onDismissRequest = {},
         title = { Text("방문 기록 공유") },
         text = { Text("다른 사용자와 내 방문 기록을 공유하고 나만의 노포 여정을 보여줄까요? 설정에서 언제든 바꿀 수 있어요.") },
-        confirmButton = { TextButton({ container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "ALL") } }; nextAsk(2) }) { Text("허용") } },
-        dismissButton = { TextButton({ container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "PRIVATE") } }; nextAsk(2) }) { Text("허용 안 함") } },
+        confirmButton = { TextButton({ saveVisibility(VISIBILITY_ALL); nextAsk(ASK_ANALYTICS) }) { Text("허용") } },
+        dismissButton = { TextButton({ saveVisibility(VISIBILITY_PRIVATE); nextAsk(ASK_ANALYTICS) }) { Text("허용 안 함") } },
     )
-    if (asking == 2) AlertDialog(
+    if (asking == ASK_ANALYTICS) AlertDialog(
         onDismissRequest = {},
         title = { Text("앱 사용 데이터 수집") },
-        text = { Text("서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.") },
-        confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) }; asking = 0; finish() }) { Text("허용") } },
-        dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) }; asking = 0; finish() }) { Text("허용 안 함") } },
+        text = {
+            Text("서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.")
+        },
+        confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) }; asking = ASK_NONE; finish() }) { Text("허용") } },
+        dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) }; asking = ASK_NONE; finish() }) { Text("허용 안 함") } },
     )
 }
 
@@ -88,8 +127,7 @@ fun NotificationPermissionHost(onDone: () -> Unit) {
     val context = LocalContext.current
     NotificationPermissionScreen(
         onAllow = {
-            if (perm == null || notificationsGranted(context)) { onDone() }
-            else launcher.launch(perm)
+            if (perm == null || notificationsGranted(context)) onDone() else launcher.launch(perm)
         },
         onLater = onDone,
     )
@@ -108,29 +146,46 @@ fun PermissionManageHost(container: AppContainer, onBack: () -> Unit, onNotifica
     var share by remember { mutableStateOf(true) }
     var albumTick by remember { mutableIntStateOf(0) }
     val album = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { albumTick++ }
-    LaunchedEffect(Unit) { container.auth.currentUid?.let { uid -> container.profiles.profile(uid).valueOrNull?.let { share = it.visibility != "PRIVATE" } } }
+    LaunchedEffect(Unit) {
+        container.auth.currentUid?.let { uid ->
+            container.profiles.profile(uid).valueOrNull?.let { share = it.visibility != VISIBILITY_PRIVATE }
+        }
+    }
     val states = remember(tick, albumTick, loc.status, cam.status, marketing, analytics, share) {
-        listOf(locationGranted(context), cameraGranted(context), notificationsGranted(context), marketing, share, analytics, albumGranted(context))
+        listOf(
+            locationGranted(context), cameraGranted(context), notificationsGranted(context),
+            marketing, share, analytics, albumGranted(context),
+        )
     }
     PermissionManageScreen(
         states = states, onBack = onBack,
         onRow = { i ->
             when (i) {
-                0 -> if (states[0] || loc.status == PermissionStatus.PERMANENTLY_DENIED) openAppSettings(context) else loc.request()
-                1 -> if (states[1] || cam.status == PermissionStatus.PERMANENTLY_DENIED) openAppSettings(context) else cam.request()
-                2 -> if (states[2]) {
-                    runCatching { context.startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
-                } else onNotificationScreen()
-                3 -> scope.launch { container.settings.setMarketing(!marketing) }
-                4 -> {
+                MANAGE_LOCATION ->
+                    if (states[0] || loc.status == PermissionStatus.PERMANENTLY_DENIED) openAppSettings(context) else loc.request()
+                MANAGE_CAMERA ->
+                    if (states[1] || cam.status == PermissionStatus.PERMANENTLY_DENIED) openAppSettings(context) else cam.request()
+                MANAGE_NOTIFICATION -> if (states[2]) openNotificationSettings(context) else onNotificationScreen()
+                MANAGE_MARKETING -> scope.launch { container.settings.setMarketing(!marketing) }
+                MANAGE_SHARE -> {
                     val next = !share
                     share = next
-                    scope.launch { container.auth.currentUid?.let { container.profiles.setVisibility(it, if (next) "ALL" else "PRIVATE") } }
+                    scope.launch {
+                        container.auth.currentUid?.let { container.profiles.setVisibility(it, if (next) VISIBILITY_ALL else VISIBILITY_PRIVATE) }
+                    }
                 }
-                5 -> scope.launch { container.settings.setAnalyticsOn(!analytics) }
+                MANAGE_ANALYTICS -> scope.launch { container.settings.setAnalyticsOn(!analytics) }
                 else -> if (states[6]) openAppSettings(context) else album.launch(AlbumPermission)
             }
         },
         onInfo = { openAppSettings(context) },
     )
+}
+
+/** 이 앱의 알림 설정 화면을 연다 */
+private fun openNotificationSettings(context: Context) {
+    runCatching {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+        context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    }
 }

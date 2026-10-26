@@ -1,5 +1,7 @@
 package com.nopo.cheonnyeon.domain.rule
 
+import com.nopo.cheonnyeon.domain.model.Title
+
 /** 명예의 전당 순위 계산 (같은 세월이면 같은 순위, 나보다 세월이 많은 사람 수 + 1) */
 object HallOfFameRule {
     fun rank(myYears: Int, otherYears: List<Int>): Int = 1 + otherYears.count { it > myYears }
@@ -11,5 +13,5 @@ object HallOfFameRule {
     }
 
     /** 천년 미식가(1,000년)까지 얼마나 왔는지 0~100 */
-    fun progressToMaster(years: Int): Int = (years * 100 / com.nopo.cheonnyeon.domain.model.Title.MASTER.requiredYears).coerceIn(0, 100)
+    fun progressToMaster(years: Int): Int = (years * 100 / Title.MASTER.requiredYears).coerceIn(0, 100)
 }

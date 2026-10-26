@@ -1,6 +1,7 @@
 package com.nopo.cheonnyeon.feature.ai
 
 import android.graphics.BitmapFactory
+import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -21,7 +23,6 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import com.nopo.cheonnyeon.R
-import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -61,7 +62,7 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                 val start = -120f + i * 60f           // 첫 칸(국밥)이 위쪽 가운데
                 val path = Path().apply {
                     moveTo(c.x, c.y)
-                    arcTo(androidx.compose.ui.geometry.Rect(c.x - inner, c.y - inner, c.x + inner, c.y + inner), start, 60f, false)
+                    arcTo(Rect(c.x - inner, c.y - inner, c.x + inner, c.y + inner), start, 60f, false)
                     close()
                 }
                 clipPath(path) {
@@ -74,9 +75,9 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                 }
                 // 칸 이름
                 drawContext.canvas.nativeCanvas.apply {
-                    val p = android.graphics.Paint().apply {
+                    val p = Paint().apply {
                         color = android.graphics.Color.WHITE; textSize = d * 0.058f; isAntiAlias = true; isFakeBoldText = true
-                        textAlign = android.graphics.Paint.Align.CENTER; setShadowLayer(d * 0.01f, 0f, 0f, android.graphics.Color.BLACK)
+                        textAlign = Paint.Align.CENTER; setShadowLayer(d * 0.01f, 0f, 0f, android.graphics.Color.BLACK)
                     }
                     drawText(s.name, (c.x + inner * 0.78f * cos(mid(start))).toFloat(), (c.y + inner * 0.78f * sin(mid(start))).toFloat() + d * 0.02f, p)
                 }

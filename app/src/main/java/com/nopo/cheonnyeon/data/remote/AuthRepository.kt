@@ -1,12 +1,14 @@
 package com.nopo.cheonnyeon.data.remote
 
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.nopo.cheonnyeon.core.common.AppError
@@ -54,7 +56,7 @@ class AuthRepository(
 
     /** 확인할 수 없으면(오프라인 등) 막지 않고 있는 것으로 본다 */
     private suspend fun hasProfile(uid: String): Boolean = try {
-        withTimeout(PROFILE_TIMEOUT_MS) { db.collection("users").document(uid).get().await().exists() }
+        withTimeout(PROFILE_TIMEOUT_MS) { userDoc(uid).get().await().exists() }
     } catch (e: CancellationException) {
         if (e is TimeoutCancellationException) true else throw e
     } catch (_: Exception) {
@@ -63,11 +65,13 @@ class AuthRepository(
 
     val currentUid: String? get() = auth.currentUser?.uid
 
+    private fun userDoc(uid: String): DocumentReference = db.collection(USERS).document(uid)
+
+    private fun nicknameDoc(nickname: String): DocumentReference = db.collection(NICKNAMES).document(AuthValidation.nicknameKey(nickname))
+
     /** true = 사용 가능. 네트워크 오류면 null (가입 시도 때 다시 확인된다) */
     suspend fun isNicknameAvailable(nick: String): Boolean? = try {
-        withTimeout(TIMEOUT_MS) {
-            !db.collection("nicknames").document(AuthValidation.nicknameKey(nick)).get().await().exists()
-        }
+        withTimeout(TIMEOUT_MS) { !nicknameDoc(nick).get().await().exists() }
     } catch (e: CancellationException) {
         if (e is TimeoutCancellationException) null else throw e
     } catch (_: Exception) {
@@ -86,9 +90,9 @@ class AuthRepository(
         val uid = auth.currentUser?.uid ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
         if (isNicknameAvailable(nickname) == false) return@call AppError.AUTH_NICK_TAKEN.asFailure()
         val batch = db.batch()
-        batch.set(db.collection("nicknames").document(AuthValidation.nicknameKey(nickname)), mapOf("uid" to uid))
+        batch.set(nicknameDoc(nickname), mapOf("uid" to uid))
         batch.set(
-            db.collection("users").document(uid),
+            userDoc(uid),
             mapOf(
                 "nickname" to nickname,
                 "nicknameLower" to AuthValidation.nicknameKey(nickname),
@@ -119,7 +123,7 @@ class AuthRepository(
     /** 내 닉네임 (프로필 문서). 못 읽으면 null */
     suspend fun currentNickname(): String? = try {
         val me = auth.currentUser?.uid ?: return null
-        withTimeout(TIMEOUT_MS) { db.collection("users").document(me).get().await().getString("nickname") }
+        withTimeout(TIMEOUT_MS) { userDoc(me).get().await().getString("nickname") }
     } catch (e: CancellationException) {
         if (e is TimeoutCancellationException) null else throw e
     } catch (_: Exception) {
@@ -128,7 +132,7 @@ class AuthRepository(
 
     /** 구글 ID 토큰으로 로그인한다. 처음 쓰는 계정이면 프로필이 없어 세션 상태가 NeedsNickname 이 되고, 닉네임 화면으로 이어진다. */
     suspend fun signInWithGoogle(idToken: String): AppResult<Unit> = call {
-        auth.signInWithCredential(com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)).await()
+        auth.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null)).await()
         profileRefresh.value++
         Unit.asSuccess()
     }
@@ -136,20 +140,21 @@ class AuthRepository(
     /** 닉네임 변경 (S-408): 새 닉네임 확보 → 옛 닉네임 해제 → 내 리뷰의 닉네임 일괄 갱신, 한 묶음으로 */
     suspend fun changeNickname(newNick: String): AppResult<Unit> = call {
         val me = auth.currentUser?.uid ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
-        val old = db.collection("users").document(me).get().await().getString("nickname").orEmpty()
-        if (AuthValidation.nicknameKey(old) != AuthValidation.nicknameKey(newNick) && isNicknameAvailable(newNick) == false) {
+        val old = userDoc(me).get().await().getString("nickname").orEmpty()
+        val keyChanged = AuthValidation.nicknameKey(old) != AuthValidation.nicknameKey(newNick)
+        if (keyChanged && isNicknameAvailable(newNick) == false) {
             return@call AppError.AUTH_NICK_TAKEN.asFailure()
         }
         val batch = db.batch()
-        if (AuthValidation.nicknameKey(old) != AuthValidation.nicknameKey(newNick)) {
-            if (old.isNotEmpty()) batch.delete(db.collection("nicknames").document(AuthValidation.nicknameKey(old)))
-            batch.set(db.collection("nicknames").document(AuthValidation.nicknameKey(newNick)), mapOf("uid" to me))
+        if (keyChanged) {
+            if (old.isNotEmpty()) batch.delete(nicknameDoc(old))
+            batch.set(nicknameDoc(newNick), mapOf("uid" to me))
         }
         batch.update(
-            db.collection("users").document(me),
+            userDoc(me),
             mapOf("nickname" to newNick, "nicknameLower" to AuthValidation.nicknameKey(newNick), "updatedAt" to FieldValue.serverTimestamp()),
         )
-        db.collection("reviews").whereEqualTo("uid", me).get().await().documents.forEach { d ->
+        db.collection(REVIEWS).whereEqualTo("uid", me).get().await().documents.forEach { d ->
             batch.update(d.reference, mapOf("nickname" to newNick))
         }
         batch.commit().await()
@@ -160,14 +165,14 @@ class AuthRepository(
     suspend fun deleteAccount(password: String): AppResult<Unit> = call {
         val user = auth.currentUser ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
         val email = user.email ?: return@call AppError.E_AUTH_REQUIRED.asFailure()
-        user.reauthenticate(com.google.firebase.auth.EmailAuthProvider.getCredential(email, password)).await()
+        user.reauthenticate(EmailAuthProvider.getCredential(email, password)).await()
         val me = user.uid
-        val nick = db.collection("users").document(me).get().await().getString("nickname")
+        val nick = userDoc(me).get().await().getString("nickname")
         val batch = db.batch()
-        db.collection("reviews").whereEqualTo("uid", me).get().await().documents.forEach { batch.delete(it.reference) }
-        db.collection("users").document(me).collection("visits").get().await().documents.forEach { batch.delete(it.reference) }
-        nick?.let { batch.delete(db.collection("nicknames").document(AuthValidation.nicknameKey(it))) }
-        batch.delete(db.collection("users").document(me))
+        db.collection(REVIEWS).whereEqualTo("uid", me).get().await().documents.forEach { batch.delete(it.reference) }
+        userDoc(me).collection("visits").get().await().documents.forEach { batch.delete(it.reference) }
+        nick?.let { batch.delete(nicknameDoc(it)) }
+        batch.delete(userDoc(me))
         batch.commit().await()
         user.delete().await()
         Unit.asSuccess()
@@ -183,17 +188,21 @@ class AuthRepository(
         toError(e).asFailure()
     }
 
+    /** 인증 예외를 사용자에게 보여 줄 오류로 바꾼다. 네트워크 오류와 그 밖의 예외는 모두 [AppError.E_NETWORK] */
     private fun toError(e: Exception): AppError = when (e) {
         is FirebaseAuthUserCollisionException -> AppError.AUTH_EMAIL_IN_USE
         is FirebaseAuthWeakPasswordException -> AppError.AUTH_WEAK_PASSWORD
         is FirebaseAuthInvalidCredentialsException, is FirebaseAuthInvalidUserException -> AppError.AUTH_WRONG_CREDENTIAL
         is FirebaseTooManyRequestsException -> AppError.AUTH_TOO_MANY
-        is FirebaseNetworkException -> AppError.E_NETWORK
         else -> AppError.E_NETWORK
     }
 
     private companion object {
+        const val USERS = "users"
+        const val NICKNAMES = "nicknames"
+        const val REVIEWS = "reviews"
         const val TIMEOUT_MS = 15_000L
+
         /** 로그인 직후 프로필 확인은 짧게: 늦으면 있는 것으로 보고 홈으로 보낸다 */
         const val PROFILE_TIMEOUT_MS = 5_000L
     }

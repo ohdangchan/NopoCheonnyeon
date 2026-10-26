@@ -19,8 +19,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.component.CelebrationOverlay
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButton
 import com.nopo.cheonnyeon.core.designsystem.component.NopoButtonStyle
@@ -38,7 +40,7 @@ import kotlinx.coroutines.delay
 fun StampPreviewDialog(grade: StampGrade, years: Int, titleUp: Title?, onDismiss: () -> Unit) {
     val c = NopoTheme.colors
     val context = LocalContext.current
-    val animate = remember { android.provider.Settings.Global.getFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f }
+    val animate = remember { animationsEnabled(context) }
     var impacted by remember { mutableStateOf(!animate) }
     var showTitle by remember { mutableStateOf(false) }
     LaunchedEffect(impacted) {
@@ -57,10 +59,15 @@ fun StampPreviewDialog(grade: StampGrade, years: Int, titleUp: Title?, onDismiss
             ) {
                 StampCeremony(years = years, grade = grade, animate = animate, onImpact = { impacted = true })
                 Row(Modifier.fillMaxWidth().padding(top = NopoTheme.spacing.xl)) {
-                    NopoButton(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.detail_back), onDismiss, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                    NopoButton(
+                        stringResource(R.string.detail_back), onDismiss,
+                        style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth(),
+                    )
                 }
             }
-            if (showTitle && titleUp != null) TitleUpDialog(titleUp, titleUp.requiredYears, preview = true) { showTitle = false }
+            if (showTitle && titleUp != null) {
+                TitleUpDialog(titleUp, titleUp.requiredYears, preview = true) { showTitle = false }
+            }
         }
     }
 }

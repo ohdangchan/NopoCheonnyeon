@@ -3,14 +3,23 @@ package com.nopo.cheonnyeon.data.visit
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.Source
 import com.nopo.cheonnyeon.core.common.Clock
 import com.nopo.cheonnyeon.core.common.DispatcherProvider
 import com.nopo.cheonnyeon.core.common.SeoulZone
 import com.nopo.cheonnyeon.data.local.MyVisitDao
+import com.nopo.cheonnyeon.data.local.MyVisitEntity
 import com.nopo.cheonnyeon.data.local.PendingOpDao
 import com.nopo.cheonnyeon.data.local.PendingOpEntity
+import com.nopo.cheonnyeon.data.remote.DemoReviews
+import com.nopo.cheonnyeon.data.remote.DemoVisit
+import com.nopo.cheonnyeon.domain.model.StampGrade
 import com.nopo.cheonnyeon.domain.model.Store
+import com.nopo.cheonnyeon.domain.model.Title
 import com.nopo.cheonnyeon.domain.model.VerifyMethod
 import com.nopo.cheonnyeon.domain.model.VisitRef
 import com.nopo.cheonnyeon.domain.rule.StampGradePolicy
@@ -23,8 +32,8 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
@@ -40,10 +49,10 @@ import java.util.Date
 data class AwardResult(
     val storeName: String,
     val years: Int,
-    val grade: com.nopo.cheonnyeon.domain.model.StampGrade,
+    val grade: StampGrade,
     val firstVisit: Boolean,
     val totalYearsAfter: Int,
-    val titleUp: com.nopo.cheonnyeon.domain.model.Title?,
+    val titleUp: Title?,
     val method: VerifyMethod,
     val pendingSync: Boolean,
 )
@@ -90,10 +99,14 @@ class VisitRepository(
 
     fun dismissDuplicateNotice() { _duplicateNotices.value = emptyList() }
 
+    private fun userDoc(uid: String): DocumentReference = db().collection(USERS).document(uid)
+
+    private fun visitsOf(uid: String): CollectionReference = userDoc(uid).collection(VISITS)
+
     /** 내 방문 문서의 서버 쪽 방문 횟수(문서가 없으면 0). 확인하지 못하면 null */
     private suspend fun serverVisitCount(user: String, storeId: String): Int? = try {
         withTimeout(SYNC_TIMEOUT_MS) {
-            val d = db().collection("users").document(user).collection("visits").document(storeId).get(com.google.firebase.firestore.Source.SERVER).await()
+            val d = visitsOf(user).document(storeId).get(Source.SERVER).await()
             if (d.exists()) (d.getLong("visitCount") ?: 1L).toInt() else 0
         }
     } catch (e: CancellationException) {
@@ -104,8 +117,9 @@ class VisitRepository(
 
     val pendingCount: Flow<Int> get() = pendingDao.observeCount()
 
-    suspend fun visitRefs(): List<VisitRef> =
-        visitDao.observeAll().first().map { VisitRef(it.storeId, Instant.ofEpochMilli(it.lastVisitedAt), isTest = it.storeId.startsWith(Store.TEST_PREFIX)) }
+    suspend fun visitRefs(): List<VisitRef> = visitDao.observeAll().first().map {
+        VisitRef(it.storeId, Instant.ofEpochMilli(it.lastVisitedAt), isTest = it.storeId.startsWith(Store.TEST_PREFIX))
+    }
 
     suspend fun record(store: Store, method: VerifyMethod, photoVerified: Boolean, receiptHash: String?): AwardResult =
         withContext(dispatchers.io) {
@@ -132,7 +146,9 @@ class VisitRepository(
                     titleId = TitlePolicy.titleFor(totalAfter).name,
                 )
                 // 테스트 가게 기록은 기기에만 남기고 서버로 보내지 않는다 (FR-TST-02)
-                if (!store.isTest) pendingDao.add(PendingOpEntity(type = TYPE_VISIT, payload = json.encodeToString(op), createdAt = now.toEpochMilli()))
+                if (!store.isTest) {
+                    pendingDao.add(PendingOpEntity(type = TYPE_VISIT, payload = json.encodeToString(op), createdAt = now.toEpochMilli()))
+                }
                 result = AwardResult(store.name, saved.yearsAwarded, grade, firstVisit, totalAfter, titleUp, method, pendingSync = true)
             }
             result
@@ -143,38 +159,31 @@ class VisitRepository(
         val user = uid() ?: return@withLock pendingDao.all().size
         for (op in pendingDao.all()) {
             if (op.type == TYPE_STATS) { retryStatsOp(op); continue }
-            val visit = try { json.decodeFromString<PendingVisit>(op.payload) } catch (_: Exception) { pendingDao.remove(op.id); continue }
+            val visit = try {
+                json.decodeFromString<PendingVisit>(op.payload)
+            } catch (_: Exception) {
+                pendingDao.remove(op.id)
+                continue
+            }
             try {
                 withTimeout(SYNC_TIMEOUT_MS) { commit(user, visit) }
                 pendingDao.remove(op.id)
                 visitDao.markSynced(visit.storeId)
                 // 집계는 따로 보내고, 실패하면 대기열에 남겨 다시 보낸다 (방문 기록에는 영향 없음)
                 statsDelta(visit)?.let { d ->
-                    if (!writeStats(d)) pendingDao.add(PendingOpEntity(type = TYPE_STATS, payload = json.encodeToString(d), createdAt = clock.now().toEpochMilli()))
+                    if (!writeStats(d)) {
+                        pendingDao.add(PendingOpEntity(type = TYPE_STATS, payload = json.encodeToString(d), createdAt = clock.now().toEpochMilli()))
+                    }
                 }
             } catch (e: CancellationException) {
-                if (e is TimeoutCancellationException) { pendingDao.bumpAttempts(op.id); break } else throw e
-            } catch (e: FirebaseFirestoreException) {
-                if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED && visit.receiptHash != null) {
-                    // 거부됐다. 첫 방문 기록이 이미 서버에 있으면 앞선 전송이 성공했는데 응답만 못 받은 재전송이라 성공으로 본다 (아키텍처 5.3)
-                    when (SyncRejectionPolicy.decide(visit.firstVisit, visit.visitCount, serverVisitCount(user, visit.storeId))) {
-                        SyncRejection.RETRY_LATER -> { pendingDao.bumpAttempts(op.id); break } // 확인하지 못했으니 다음에 다시
-                        SyncRejection.ALREADY_SYNCED -> { pendingDao.remove(op.id); visitDao.markSynced(visit.storeId) }
-                        SyncRejection.DUPLICATE_RECEIPT -> {
-                            // 해시 문서가 이미 있음 = 같은 영수증 재사용. 기기 기록을 되돌리고 사용자에게 알린다
-                            pendingDao.remove(op.id)
-                            if (visit.firstVisit) visitDao.delete(visit.storeId)
-                            _duplicateNotices.update { it + visit.storeName }
-                        }
-                    }
-                } else if (e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
-                    // 영수증 해시가 없는 기록이 규칙에 막혔다. 뒤의 기록까지 막지 않도록 건너뛰고, 너무 여러 번 거부되면 대기열에서 뺀다
-                    // (기기 기록은 남아 "확인 중"으로 보이며, 원인을 고친 뒤 다시 인증하면 된다)
-                    if (op.attempts >= MAX_DENIED_ATTEMPTS) pendingDao.remove(op.id) else pendingDao.bumpAttempts(op.id)
-                } else {
+                if (e is TimeoutCancellationException) {
                     pendingDao.bumpAttempts(op.id)
                     break
+                } else {
+                    throw e
                 }
+            } catch (e: FirebaseFirestoreException) {
+                if (handleRejection(user, op, visit, e)) break
             } catch (_: Exception) {
                 pendingDao.bumpAttempts(op.id)
                 break
@@ -184,19 +193,54 @@ class VisitRepository(
     }
 
     /**
+     * 서버가 방문 기록을 받아 주지 않았을 때의 처리. 뒤의 기록까지 멈춰야 하면 true(대기열 처리를 여기서 끝낸다), 건너뛰고 계속이면 false.
+     */
+    private suspend fun handleRejection(user: String, op: PendingOpEntity, visit: PendingVisit, e: FirebaseFirestoreException): Boolean {
+        val denied = e.code == FirebaseFirestoreException.Code.PERMISSION_DENIED
+        if (denied && visit.receiptHash != null) {
+            // 거부됐다. 첫 방문 기록이 이미 서버에 있으면 앞선 전송이 성공했는데 응답만 못 받은 재전송이라 성공으로 본다 (아키텍처 5.3)
+            when (SyncRejectionPolicy.decide(visit.firstVisit, visit.visitCount, serverVisitCount(user, visit.storeId))) {
+                SyncRejection.RETRY_LATER -> { // 확인하지 못했으니 다음에 다시
+                    pendingDao.bumpAttempts(op.id)
+                    return true
+                }
+                SyncRejection.ALREADY_SYNCED -> {
+                    pendingDao.remove(op.id)
+                    visitDao.markSynced(visit.storeId)
+                }
+                SyncRejection.DUPLICATE_RECEIPT -> {
+                    // 해시 문서가 이미 있음 = 같은 영수증 재사용. 기기 기록을 되돌리고 사용자에게 알린다
+                    pendingDao.remove(op.id)
+                    if (visit.firstVisit) visitDao.delete(visit.storeId)
+                    _duplicateNotices.update { it + visit.storeName }
+                }
+            }
+            return false
+        }
+        if (denied) {
+            // 영수증 해시가 없는 기록이 규칙에 막혔다. 뒤의 기록까지 막지 않도록 건너뛰고, 너무 여러 번 거부되면 대기열에서 뺀다
+            // (기기 기록은 남아 "확인 중"으로 보이며, 원인을 고친 뒤 다시 인증하면 된다)
+            if (op.attempts >= MAX_DENIED_ATTEMPTS) pendingDao.remove(op.id) else pendingDao.bumpAttempts(op.id)
+            return false
+        }
+        pendingDao.bumpAttempts(op.id)
+        return true
+    }
+
+    /**
      * 서버의 방문 기록을 기기로 내려받는다 (S-307, FR-AUTH-10). 재설치·다른 기기에서 로그인했을 때 세월과 도장을 되살린다.
      * 기기에 이미 있는 가게는 건드리지 않는다. @return 새로 채운 도장 수, 실패하면 null
      */
     suspend fun restoreFromServer(): Int? {
         val user = uid() ?: return null
         return try {
-            val docs = withTimeout(SYNC_TIMEOUT_MS) { db().collection("users").document(user).collection("visits").get().await() }
+            val docs = withTimeout(SYNC_TIMEOUT_MS) { visitsOf(user).get().await() }
             var added = 0
             for (d in docs.documents) {
                 if (visitDao.byStore(d.id) != null) continue
                 val first = d.getTimestamp("firstVisitedAt")?.toDate()?.time ?: continue
                 visitDao.put(
-                    com.nopo.cheonnyeon.data.local.MyVisitEntity(
+                    MyVisitEntity(
                         storeId = d.id,
                         yearsAwarded = (d.getLong("yearsAwarded") ?: continue).toInt(),
                         method = d.getString("method") ?: VerifyMethod.RECEIPT.name,
@@ -217,14 +261,16 @@ class VisitRepository(
     }
 
     /** 시연용 패스포트: 서버에 올리지 않는 도장(synced=true, 방법 DEMO)을 넣는다. 이미 실제 기록이 있는 가게는 건드리지 않는다. */
-    suspend fun seedDemoVisits(visits: List<com.nopo.cheonnyeon.data.remote.DemoVisit>): Int = withContext(dispatchers.io) {
+    suspend fun seedDemoVisits(visits: List<DemoVisit>): Int = withContext(dispatchers.io) {
         val now = clock.now().toEpochMilli()
         var added = 0
         inTransaction {
             for (v in visits) {
                 if (visitDao.byStore(v.storeId) != null) continue
                 val first = now - v.daysAgo * DAY_MS
-                visitDao.put(com.nopo.cheonnyeon.data.local.MyVisitEntity(v.storeId, v.years, DEMO_METHOD, first, first + (v.visitCount - 1) * 3 * DAY_MS, v.visitCount, synced = true))
+                // 마지막 방문일은 방문 횟수에 맞춰 3일 간격으로 늘린다
+                val last = first + (v.visitCount - 1) * DEMO_REVISIT_GAP_DAYS * DAY_MS
+                visitDao.put(MyVisitEntity(v.storeId, v.years, DEMO_METHOD, first, last, v.visitCount, synced = true))
                 added++
             }
         }
@@ -246,9 +292,11 @@ class VisitRepository(
 
     private suspend fun commit(uid: String, v: PendingVisit) {
         val firestore = db()
-        val seoulMidnight = Date.from(Instant.ofEpochMilli(v.atMillis).atZone(SeoulZone).toLocalDate().atStartOfDay(SeoulZone).toInstant())
+        val seoulMidnight = Date.from(
+            Instant.ofEpochMilli(v.atMillis).atZone(SeoulZone).toLocalDate().atStartOfDay(SeoulZone).toInstant(),
+        )
         val batch = firestore.batch()
-        val visitRef = firestore.collection("users").document(uid).collection("visits").document(v.storeId)
+        val visitRef = visitsOf(uid).document(v.storeId)
         if (v.firstVisit) {
             batch.set(
                 visitRef,
@@ -262,10 +310,13 @@ class VisitRepository(
             batch.update(visitRef, mapOf("lastVisitedAt" to Timestamp(seoulMidnight), "visitCount" to v.visitCount))
         }
         v.receiptHash?.let {
-            batch.set(firestore.collection("receiptHashes").document(it), mapOf("uid" to uid, "storeId" to v.storeId, "createdAt" to FieldValue.serverTimestamp()))
+            batch.set(
+                firestore.collection(RECEIPT_HASHES).document(it),
+                mapOf("uid" to uid, "storeId" to v.storeId, "createdAt" to FieldValue.serverTimestamp()),
+            )
         }
         batch.update(
-            firestore.collection("users").document(uid),
+            firestore.collection(USERS).document(uid),
             mapOf(
                 "totalYears" to FieldValue.increment(if (v.firstVisit) v.years.toLong() else 0L),
                 "visitCount" to FieldValue.increment(1),
@@ -288,9 +339,11 @@ class VisitRepository(
     /** 집계를 서버에 보낸다. 방문 기록 전송과 따로 보내며, 성공하면 true */
     private suspend fun writeStats(d: PendingStats): Boolean = try {
         withTimeout(SYNC_TIMEOUT_MS) {
-            db().collection("storeStats").document(d.storeId)
-                .set(mapOf("visitors" to FieldValue.increment(d.visitors.toLong()), "revisitors" to FieldValue.increment(d.revisitors.toLong())), com.google.firebase.firestore.SetOptions.merge())
-                .await()
+            val increments = mapOf(
+                "visitors" to FieldValue.increment(d.visitors.toLong()),
+                "revisitors" to FieldValue.increment(d.revisitors.toLong()),
+            )
+            db().collection(STORE_STATS).document(d.storeId).set(increments, SetOptions.merge()).await()
         }
         true
     } catch (e: CancellationException) {
@@ -311,9 +364,14 @@ class VisitRepository(
 
     private companion object {
         const val TYPE_VISIT = "VISIT"
-        const val DEMO_METHOD = com.nopo.cheonnyeon.data.remote.DemoReviews.METHOD_DEMO
+        const val DEMO_METHOD = DemoReviews.METHOD_DEMO
         const val DAY_MS = 86_400_000L
+        const val DEMO_REVISIT_GAP_DAYS = 3
         const val TYPE_STATS = "STATS"
+        const val USERS = "users"
+        const val VISITS = "visits"
+        const val RECEIPT_HASHES = "receiptHashes"
+        const val STORE_STATS = "storeStats"
         const val SYNC_TIMEOUT_MS = 15_000L
         const val MAX_DENIED_ATTEMPTS = 10
     }

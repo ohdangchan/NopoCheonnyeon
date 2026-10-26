@@ -32,3 +32,7 @@ tools/_vs_cache/
 
 # 참고용 외부 자료(저장소에는 올리지 않음)
 ex_copy/
+
+# Firebase CLI 로그와 개인용 Claude 설정
+firebase-debug.log
+.claude/settings.local.json

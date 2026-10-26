@@ -1,10 +1,14 @@
 package com.nopo.cheonnyeon.feature.diagnostics
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,11 +28,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import com.nopo.cheonnyeon.BuildConfig
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.core.designsystem.DesignCatalogScreen
@@ -115,7 +121,7 @@ fun DiagnosticsScreen(modifier: Modifier = Modifier) {
 private fun DeviceInfo() {
     val style = NopoTheme.extraTypography.metric
     val color = NopoTheme.colors.onSign
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
     val lines = remember { deviceInfoLines(context) }
     val copiedText = stringResource(R.string.diag_copied)
     lines.forEach { Text(it, style = style, color = color) }
@@ -127,17 +133,17 @@ private fun DeviceInfo() {
             .clickable {
                 // 마지막 측정값은 탭에서 측정할 때마다 바뀌므로 복사할 때 다시 읽는다
                 val text = (lines + lastMeasurementLines(context)).joinToString("\n")
-                val cm = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                cm.setPrimaryClip(android.content.ClipData.newPlainText("nopo-diagnostics", text))
-                android.widget.Toast.makeText(context, copiedText, android.widget.Toast.LENGTH_SHORT).show()
+                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                cm.setPrimaryClip(ClipData.newPlainText("nopo-diagnostics", text))
+                Toast.makeText(context, copiedText, Toast.LENGTH_SHORT).show()
             }
             .padding(vertical = NopoTheme.spacing.sm),
     )
 }
 
 /** 기기·OS·앱·Play 서비스·권한 상태. 개인정보(이메일·좌표)는 넣지 않는다. */
-private fun deviceInfoLines(context: android.content.Context): List<String> {
-    fun granted(p: String) = androidx.core.content.ContextCompat.checkSelfPermission(context, p) == android.content.pm.PackageManager.PERMISSION_GRANTED
+private fun deviceInfoLines(context: Context): List<String> {
+    fun granted(p: String) = ContextCompat.checkSelfPermission(context, p) == PackageManager.PERMISSION_GRANTED
     val gms = runCatching { context.packageManager.getPackageInfo("com.google.android.gms", 0).versionName }.getOrNull() ?: "-"
     fun yn(b: Boolean) = context.getString(if (b) R.string.diag_yes else R.string.diag_no)
     return listOf(
@@ -154,7 +160,7 @@ private fun deviceInfoLines(context: android.content.Context): List<String> {
     )
 }
 
-private fun lastMeasurementLines(context: android.content.Context): List<String> = listOf(
+private fun lastMeasurementLines(context: Context): List<String> = listOf(
     context.getString(R.string.diag_last_map_auth, DiagLast.mapAuthError ?: context.getString(R.string.diag_none)),
     context.getString(R.string.diag_last_location, DiagLast.locationAccuracyM?.let { "%.1f".format(it) } ?: "-"),
     context.getString(R.string.diag_last_ocr, DiagLast.ocrMs?.toString() ?: "-"),
