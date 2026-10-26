@@ -108,11 +108,18 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
     val state: StateFlow<NopoRouletteState> = _state.asStateFlow()
     private val legacy = MenuRouletteViewModel(container)
     private var stores: List<Store> = emptyList()
+    /** 처음 설치 때 고른 취향(지역·음식). 룰렛과 AI 추천에서 우선 반영한다 */
+    private var prefRegions: List<com.nopo.cheonnyeon.domain.rule.TasteRegion> = emptyList()
+    private var prefFoods: List<com.nopo.cheonnyeon.domain.rule.TasteFood> = emptyList()
+    private fun prefMatch(s: Store) = prefRegions.any { com.nopo.cheonnyeon.domain.rule.TasteRecommender.inRegion(s, it) } || prefFoods.any { com.nopo.cheonnyeon.domain.rule.TasteRecommender.matchesFood(s, it) }
     private val year = LocalDate.now(SeoulZone).year
 
     init {
         viewModelScope.launch {
             stores = container.catalog.all().filter { !it.isTest && it.isFood }
+            val rk = container.settings.prefRegions.first(); val fk = container.settings.prefFoods.first()
+            prefRegions = com.nopo.cheonnyeon.domain.rule.TasteRecommender.REGIONS.filter { it.key in rk }
+            prefFoods = com.nopo.cheonnyeon.domain.rule.TasteRecommender.FOODS.filter { it.key in fk }
             _state.update { it.copy(regions = stores.map { s -> s.sido }.filter { s -> s.isNotBlank() }.distinct().sorted(), consent = container.settings.aiConsent.first()) }
         }
         viewModelScope.launch {
@@ -175,7 +182,9 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
             }
             var pool = fresh.filter { f -> chosen.none { it.id == f.id } }
             while (chosen.size < PER_SPIN && pool.isNotEmpty()) {
-                val one = RoulettePicker.pick(pool, ratings) ?: break
+                // 처음에 고른 취향에 맞는 곳을 앞의 두 자리에 우선 놓는다
+                val liked = if (chosen.size < 2) pool.filter { prefMatch(it) } else emptyList()
+                val one = RoulettePicker.pick(liked.ifEmpty { pool }, ratings) ?: break
                 chosen += one
                 pool = pool.filter { it.id != one.id }
             }
@@ -208,7 +217,9 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
     /** AI에게 후보(15곳)에서 서로 다른 세 곳을 골라 달라고 한다. (id, 이유) 목록, 첫 번째가 오늘의 추천 */
     private suspend fun askAi(list: List<Store>, f: RouletteFilter): List<Pair<String, String>>? {
         val fix = container.lastFix.value
-        val candidates = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(60).shuffled().take(10).map { s ->
+        val ranked = list.sortedByDescending { it.photoUrls.isNotEmpty() }.take(60)
+        val likedPick = ranked.filter { prefMatch(it) }.shuffled().take(6)
+        val candidates = (likedPick + ranked.shuffled().take(10 - likedPick.size)).distinct().map { s ->
             ChatCandidate(
                 s, YearsCalculator.yearsAtVisit(s.foundedYear?.takeIf { it <= year }, year),
                 if (fix != null && s.lat != null && s.lng != null) com.nopo.cheonnyeon.core.util.GeoDistance.meters(fix.lat, fix.lng, s.lat, s.lng) / 1000.0 else null, false,
@@ -219,7 +230,7 @@ class NopoRouletteViewModel(private val container: AppContainer) : ViewModel() {
             totalYears = 0, candidates = candidates,
         )
         val q = "노포 룰렛 조건: 지역 ${f.sido ?: "전국"}, 음식 ${f.cuisine ?: "아무거나"}, 가격대 ${_state.value.price}, 도보 ${f.walkMeters?.let { "${it}m 이내" } ?: "제한 없음"}. " +
-            "후보 중 오늘 가볼 노포를 서로 다른 세 곳 골라 줘. 첫 번째가 가장 추천하는 곳이고, 첫 번째 이유는 두세 문장으로."
+            (if (prefRegions.isEmpty() && prefFoods.isEmpty()) "" else "사용자가 처음에 고른 취향: 지역 ${prefRegions.joinToString("·") { it.label }.ifBlank { "상관없음" }}, 음식 ${prefFoods.joinToString("·") { it.label }.ifBlank { "상관없음" }}. 이 취향에 맞는 후보를 우선해 줘. ") + "후보 중 오늘 가볼 노포를 서로 다른 세 곳 골라 줘. 첫 번째가 가장 추천하는 곳이고, 첫 번째 이유는 두세 문장으로."
         val reply = container.ai.chat(emptyList(), q, info)
         return (reply as? AppResult.Success)?.value?.picks
     }

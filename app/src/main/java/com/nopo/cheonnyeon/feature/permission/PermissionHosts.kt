@@ -12,6 +12,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,20 +24,59 @@ import com.nopo.cheonnyeon.platform.permission.PermissionStatus
 import com.nopo.cheonnyeon.platform.permission.rememberPermission
 import kotlinx.coroutines.launch
 
-/** 처음 권한 안내: 고른 권한을 한꺼번에 요청하고 안내를 마친 것으로 기록한다 */
+/**
+ * 처음 권한 안내: 여섯 가지(위치·카메라·사진 앨범·알림·방문 기록 공유·앱 사용 데이터 수집)를 눌러 고르고 한꺼번에 요청한다.
+ * 앞의 네 가지는 시스템 허용 창이, 뒤의 두 가지는 앱의 허용 창이 차례로 뜬다. 안내를 마치면 다시 보이지 않게 기록한다.
+ */
 @Composable
 fun PermissionIntroHost(container: AppContainer) {
     val scope = rememberCoroutineScope()
+    var selected by rememberSaveable { mutableStateOf(IntroPermRows.indices.toSet()) }
+    // 앱 안 허용 창 단계: 0 없음, 1 방문 기록 공유, 2 앱 사용 데이터 수집 (고른 것만 차례로 묻는다)
+    var asking by remember { mutableIntStateOf(0) }
+    var chosen by remember { mutableStateOf(emptySet<Int>()) }
     val finish = { scope.launch { container.settings.setPermIntroDone() }; Unit }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { finish() }
+
+    fun nextAsk(from: Int) {
+        val n = (from..2).firstOrNull { (it + 3) in chosen } ?: 0
+        if (n == 0) finish() else asking = n
+    }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { nextAsk(1) }
+
+    fun run(pick: Set<Int>) {
+        chosen = pick
+        // 고르지 않은 앱 안 항목은 꺼 둔다(고른 것만 허용)
+        if (4 !in pick) container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "PRIVATE") } }
+        if (5 !in pick) scope.launch { container.settings.setAnalyticsOn(false) }
+        val list = mutableListOf<String>()
+        if (0 in pick) { list += Manifest.permission.ACCESS_FINE_LOCATION; list += Manifest.permission.ACCESS_COARSE_LOCATION }
+        if (1 in pick) list += Manifest.permission.CAMERA
+        if (2 in pick) list += AlbumPermission
+        if (3 in pick) NotificationPermission?.let { list += it }
+        if (list.isEmpty()) nextAsk(1) else launcher.launch(list.toTypedArray())
+    }
+
     PermissionIntroScreen(
-        onAllowAll = {
-            val list = mutableListOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, AlbumPermission)
-            NotificationPermission?.let { list += it }
-            launcher.launch(list.toTypedArray())
-        },
-        onAllowRequired = { launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CAMERA, AlbumPermission)) },
+        selected = selected,
+        onToggle = { i -> selected = if (i in selected) selected - i else selected + i },
+        onAllowAll = { selected = IntroPermRows.indices.toSet(); run(IntroPermRows.indices.toSet()) },
+        onAllowSelected = { run(selected) },
         onLater = { finish() },
+    )
+
+    if (asking == 1) AlertDialog(
+        onDismissRequest = {},
+        title = { Text("방문 기록 공유") },
+        text = { Text("다른 사용자와 내 방문 기록을 공유하고 나만의 노포 여정을 보여줄까요? 설정에서 언제든 바꿀 수 있어요.") },
+        confirmButton = { TextButton({ container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "ALL") } }; nextAsk(2) }) { Text("허용") } },
+        dismissButton = { TextButton({ container.auth.currentUid?.let { uid -> scope.launch { container.profiles.setVisibility(uid, "PRIVATE") } }; nextAsk(2) }) { Text("허용 안 함") } },
+    )
+    if (asking == 2) AlertDialog(
+        onDismissRequest = {},
+        title = { Text("앱 사용 데이터 수집") },
+        text = { Text("서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.") },
+        confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) }; asking = 0; finish() }) { Text("허용") } },
+        dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) }; asking = 0; finish() }) { Text("허용 안 함") } },
     )
 }
 

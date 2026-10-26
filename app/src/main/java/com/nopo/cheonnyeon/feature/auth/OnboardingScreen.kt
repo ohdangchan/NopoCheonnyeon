@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -255,8 +257,8 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
         val all = container.catalog.all()
         value = TasteRecommender.recommend(all, regions.toSet(), foods.toSet(), container.ratings.value.mapValues { it.value.average })
     }
-    val picked = TasteRecommender.REGIONS.filter { it.key in regions }.take(2)
-    val pickedFoods = TasteRecommender.FOODS.filter { it.key in foods }.take(4)
+    val picked = TasteRecommender.REGIONS.filter { it.key in regions }
+    val pickedFoods = TasteRecommender.FOODS.filter { it.key in foods }
     Column(Modifier.fillMaxSize().background(Color(0xFFFBF6EB)).statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 1575) {
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
@@ -270,26 +272,30 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
 
             SectionHead({ PinGlyph() }, 572, "선택한 지역", "이런 지역의 노포를 찾아드릴게요.")
             if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
-            picked.forEachIndexed { i, r ->
-                Row(
-                    Modifier.at(33 + i * 355, 664).size(px(342), px(154)).clip(RoundedCornerShape(px(22))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(22))).background(CardWhite).padding(px(8)),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(Modifier.size(px(138), px(138)).clip(RoundedCornerShape(px(14)))) { MockPic(RegionRes.getValue(r.key), 138, 138) }
-                    Column(Modifier.padding(start = px(16)), verticalArrangement = Arrangement.spacedBy(px(4))) {
-                        MockText(r.label, 27, color = MockColors.Navy, weight = FontWeight.ExtraBold)
-                        MockText(r.desc, 18, Modifier.width(px(160)), color = Gray, maxLines = 2, lineHeightPx = 25)
+            Row(Modifier.at(0, 664).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(30)), horizontalArrangement = Arrangement.spacedBy(px(16))) {
+                picked.forEach { r ->
+                    Row(
+                        Modifier.size(px(342), px(154)).clip(RoundedCornerShape(px(22))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(22))).background(CardWhite).padding(px(8)),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box(Modifier.size(px(138), px(138)).clip(RoundedCornerShape(px(14)))) { MockPic(RegionRes.getValue(r.key), 138, 138) }
+                        Column(Modifier.padding(start = px(16)), verticalArrangement = Arrangement.spacedBy(px(4))) {
+                            MockText(r.label, 27, color = MockColors.Navy, weight = FontWeight.ExtraBold)
+                            MockText(r.desc, 18, Modifier.width(px(160)), color = Gray, maxLines = 2, lineHeightPx = 25)
+                        }
                     }
                 }
             }
 
             SectionHead({ ForkGlyph() }, 836, "선택한 음식 취향", "이런 음식을 중심으로 추천해드릴게요.")
             if (pickedFoods.isEmpty()) MockText(androidx.compose.ui.res.stringResource(com.nopo.cheonnyeon.R.string.onb_12), 22, Modifier.at(40, 940), color = Gray)
-            pickedFoods.forEachIndexed { i, f ->
-                Box(Modifier.at(28 + i * 180, 930).size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(20))).background(CardWhite)) {
-                    Box(Modifier.padding(start = px(6), top = px(8)).size(px(160), px(96)).clip(RoundedCornerShape(px(14)))) { MockPic(FoodRes.getValue(f.key), 164, 98) }
-                    MockText(f.label, 25, Modifier.padding(start = px(12), top = px(110)), color = MockColors.Navy, weight = FontWeight.ExtraBold)
-                    MockText(f.desc, 17, Modifier.padding(start = px(12), top = px(144)).width(px(156)), color = Gray)
+            Row(Modifier.at(0, 930).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(28)), horizontalArrangement = Arrangement.spacedBy(px(10))) {
+                pickedFoods.forEach { f ->
+                    Box(Modifier.size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(20))).background(CardWhite)) {
+                        Box(Modifier.padding(start = px(6), top = px(8)).size(px(160), px(96)).clip(RoundedCornerShape(px(14)))) { MockPic(FoodRes.getValue(f.key), 164, 98) }
+                        MockText(f.label, 25, Modifier.padding(start = px(12), top = px(110)), color = MockColors.Navy, weight = FontWeight.ExtraBold)
+                        MockText(f.desc, 17, Modifier.padding(start = px(12), top = px(144)).width(px(156)), color = Gray)
+                    }
                 }
             }
 

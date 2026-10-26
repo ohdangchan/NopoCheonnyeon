@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -106,10 +107,10 @@ private fun StaticSpotsScreen(res: Int, heightPx: Int, originY: Int, spots: List
 @Composable
 private fun StaticScreen(res: Int, heightPx: Int, originY: Int, later: String, allow: String, icon: @Composable () -> Unit, onLater: () -> Unit, onAllow: () -> Unit) {
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
-        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             MockStage(originY = originY, heightPx = heightPx) { MockPic(res, 760, heightPx, Modifier.at(0, originY)) }
         }
-        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+        // 그림 칸이 남는 높이를 모두 쓰고(넘치면 스크롤), 두 버튼은 아래에 고정한다. (여기에 빈 칸을 같이 늘리면 그림이 절반에서 잘린다)
         androidx.compose.foundation.layout.Row(Modifier.padding(horizontal = px(16), vertical = px(12)), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(px(14))) {
             Box(
                 Modifier.weight(0.8f).size(px(10), px(90)).clip(RoundedCornerShape(px(26))).background(Color(0xFFFCFAF4)).border(1.dp, Color(0xFFD5CFBC), RoundedCornerShape(px(26)))
@@ -185,15 +186,83 @@ fun LocationPermissionScreen(onAllow: () -> Unit, onLater: () -> Unit) =
 fun PermissionOffScreen(onOpenSettings: () -> Unit, onLater: () -> Unit) =
     StaticScreen(R.drawable.mk2_p_off, 1420, 88, "나중에", "설정 열기", { GearGlyph() }, onLater, onOpenSettings)
 
-/** 시안 19: 처음 권한 안내. 전체 화면이라 위쪽 여백을 따로 두지 않는다. */
-@Composable
-fun PermissionIntroScreen(onAllowAll: () -> Unit, onAllowRequired: () -> Unit, onLater: () -> Unit) = StaticSpotsScreen(
-    R.drawable.mk2_p_intro, 1288, 62,
-    spots = listOf(
-        Spot(20, 70, 70, 60, "뒤로", onLater), Spot(590, 85, 150, 45, "나중에 하기", onLater),
-        Spot(127, 1213, 508, 78, "모두 허용하고 시작하기", onAllowAll), Spot(285, 1296, 190, 40, "선택 권한만 허용하기", onAllowRequired),
-    ),
+/** 처음 권한 안내에서 고를 수 있는 여섯 가지. 번호는 [PermissionIntroHost] 와 맞춘다. */
+class IntroPermRow(val title: String, val required: Boolean, val desc: String)
+
+val IntroPermRows = listOf(
+    IntroPermRow("위치 접근 권한", true, "현재 위치를 기반으로\n주변 노포를 찾고, 방문 인증을 할 수 있어요."),
+    IntroPermRow("카메라 접근 권한", true, "영수증 인증, 음식 사진 촬영 등\n다양한 인증에 필요해요."),
+    IntroPermRow("사진 앨범 접근 권한", true, "앨범에 저장된 사진으로\n리뷰에 사진을 붙일 수 있어요."),
+    IntroPermRow("알림 권한", false, "새로운 노포, 이벤트, 스탬프 달성 소식을\n바로 알려드려요."),
+    IntroPermRow("방문 기록 공유", false, "다른 사용자와 방문 기록을 공유하고\n나만의 노포 여정을 보여줄 수 있어요."),
+    IntroPermRow("앱 사용 데이터 수집", false, "더 나은 서비스 제공을 위해\n앱 사용 데이터를 수집해요."),
 )
+
+/**
+ * 시안 19: 처음 권한 안내. 머리글 그림은 시안 그대로, 여섯 가지 권한은 눌러서 고르거나 뺄 수 있는 줄로 다시 그렸다.
+ * 아래 "모두 허용하고 시작하기"는 전부 고른 것으로 보고 요청하고, "선택한 권한만 허용하기"는 고른 것만 요청한다.
+ */
+@Composable
+fun PermissionIntroScreen(selected: Set<Int>, onToggle: (Int) -> Unit, onAllowAll: () -> Unit, onAllowSelected: () -> Unit, onLater: () -> Unit) {
+    Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            MockStage(originY = 62, heightPx = 470) {
+                MockPic(R.drawable.mk2_p_intro_head, 760, 470, Modifier.at(0, 62))
+                Box(Modifier.at(20, 70).size(px(70), px(60)).clickable(role = Role.Button, onClick = onLater).semantics { contentDescription = "뒤로" })
+                Box(Modifier.at(590, 85).size(px(150), px(45)).clickable(role = Role.Button, onClick = onLater).semantics { contentDescription = "나중에 하기" })
+            }
+            IntroPermRows.forEachIndexed { i, r ->
+                val on = i in selected
+                androidx.compose.foundation.layout.Row(
+                    Modifier.padding(horizontal = px(30), vertical = px(7)).fillMaxWidth().clip(RoundedCornerShape(px(26)))
+                        .background(Color(0xFFFCFAF4)).border(if (on) 2.dp else 1.dp, if (on) MockColors.Lime2 else Color(0xFFE2DDCB), RoundedCornerShape(px(26)))
+                        .clickable(role = Role.Checkbox) { onToggle(i) }.semantics { contentDescription = r.title + if (on) " 선택됨" else " 선택 안 됨" }.padding(px(18)),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(px(84)).clip(RoundedCornerShape(px(24))).background(Color(0xFFF1EDE0)), contentAlignment = Alignment.Center) {
+                        when (i) {
+                            0 -> PinGlyph()
+                            1 -> CameraGlyph2()
+                            2 -> AlbumGlyph()
+                            3 -> BellGlyph()
+                            4 -> com.nopo.cheonnyeon.core.designsystem.mock.PinIcon(34)
+                            else -> GearGlyph()
+                        }
+                    }
+                    Column(Modifier.weight(1f).padding(start = px(20)), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(px(6))) {
+                        androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+                            MockText(r.title, 27, weight = FontWeight.ExtraBold)
+                            Box(Modifier.width(px(12)))
+                            Box(Modifier.clip(RoundedCornerShape(50)).background(if (r.required) Color(0xFFE7F5A8) else Color(0xFFEAE6D8)).padding(horizontal = px(14), vertical = px(3))) {
+                                MockText(if (r.required) "필수" else "선택", 19, weight = FontWeight.Bold)
+                            }
+                        }
+                        MockText(r.desc, 20, color = Color(0xFF4B5563), maxLines = 2, lineHeightPx = 28)
+                    }
+                    Box(
+                        Modifier.size(px(52)).clip(CircleShape).background(if (on) MockColors.Lime2 else Color.White).border(2.dp, if (on) MockColors.Lime2 else Color(0xFFCFCABB), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        if (on) androidx.compose.foundation.Canvas(Modifier.size(px(26))) {
+                            val q = androidx.compose.ui.graphics.Path().apply { moveTo(size.width * 0.12f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.82f); lineTo(size.width * 0.9f, size.height * 0.2f) }
+                            drawPath(q, MockColors.Navy, style = androidx.compose.ui.graphics.drawscope.Stroke(size.width * 0.16f, cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+                        }
+                    }
+                }
+            }
+            Box(Modifier.size(px(20)))
+        }
+        Column(Modifier.fillMaxWidth().background(MockColors.Cream).padding(horizontal = px(30), vertical = px(10)), horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                Modifier.fillMaxWidth().size(px(10), px(92)).clip(RoundedCornerShape(50)).background(MockColors.Navy).clickable(role = Role.Button, onClick = onAllowAll),
+                contentAlignment = Alignment.Center,
+            ) { MockText("모두 허용하고 시작하기  ›", 30, color = MockColors.Lime2, weight = FontWeight.ExtraBold) }
+            Box(Modifier.fillMaxWidth().padding(top = px(8)).clickable(role = Role.Button, onClick = onAllowSelected).padding(vertical = px(12)), contentAlignment = Alignment.Center) {
+                MockText("선택한 권한만 허용", 24, weight = FontWeight.Bold, color = Color(0xFF374151))
+            }
+        }
+    }
+}
 
 @Composable
 private fun ToggleSwitch(on: Boolean) {
