@@ -124,7 +124,8 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
         val catalog = container.catalog.all().associateBy { it.id }
         val visited = container.visits.visitRefs().mapNotNull { catalog[it.storeId] }
         val fallback = visited.flatMap { s ->
-            s.photoUrls.take(1) + (if (container.settings.demoData.first()) container.demoReviews.forStore(s.id).flatMap { it.photos }.take(2).mapNotNull(::photoModelString) else emptyList())
+            s.photoUrls.take(1) + (if (container.settings.demoData.first()) container.demoReviews.forStore(s.id)
+                .flatMap { it.photos }.take(2).mapNotNull(::photoModelString) else emptyList())
         }.distinct()
         return fallback.take(MAX_REEL) to false
     }
@@ -217,7 +218,8 @@ class MenuRouletteViewModel(private val container: AppContainer) : ViewModel() {
         val foods = container.catalog.all().filter { it.isFood && !it.isTest && it.menuItems.isNotEmpty() }
         return picks.associate { p ->
             val k = MenuRoulette.key(p.menu)
-            p.menu to foods.filter { s -> s.menuItems.any { m -> val mk = MenuRoulette.key(m); mk.length >= 2 && k.length >= 2 && (mk.contains(k) || k.contains(mk)) } }
+            p.menu to foods.filter { s -> s.menuItems.any { m -> val mk = MenuRoulette.key(m); mk.length >= 2 && k.length >= 2 &&
+                (mk.contains(k) || k.contains(mk)) } }
                 .sortedBy { it.foundedYear ?: Int.MAX_VALUE }.take(3)
         }
     }
@@ -258,27 +260,35 @@ fun MenuRouletteScreen(vm: MenuRouletteViewModel, onBack: () -> Unit, onOpenStor
                 Text(stringResource(R.string.ai_unavailable), color = c.stamp)
             } else {
                 if (state.usedReviews > 0 || state.usedPhotos > 0) {
-                    Text(stringResource(R.string.roulette_used, state.usedReviews, state.usedPhotos), style = NopoTheme.typography.bodySmall, color = c.ink2)
+                    Text(stringResource(R.string.roulette_used, state.usedReviews, state.usedPhotos),
+                        style = NopoTheme.typography.bodySmall, color = c.ink2)
                 }
-                if (state.summary.isNotBlank()) Text(state.summary, style = NopoTheme.typography.bodyMedium, color = c.ink, modifier = Modifier.fillMaxWidth().background(c.tealSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md))
+                if (state.summary.isNotBlank()) Text(state.summary, style = NopoTheme.typography.bodyMedium, color = c.ink,
+                    modifier = Modifier.fillMaxWidth().background(c.tealSoft, NopoTheme.shapes.md).padding(NopoTheme.spacing.md))
                 state.error?.let { Text(it.message(context), color = c.stamp) }
                 state.latest.forEachIndexed { i, p -> PickCard(i + 1, p, state.storesByMenu[p.menu].orEmpty(), onOpenStore) }
                 if (state.rounds.isNotEmpty()) {
-                    Text(stringResource(R.string.roulette_seen, state.total, MenuRoulette.MAX_MENUS), style = NopoTheme.typography.labelMedium, color = c.ink2)
+                    Text(stringResource(R.string.roulette_seen, state.total, MenuRoulette.MAX_MENUS),
+                        style = NopoTheme.typography.labelMedium, color = c.ink2)
                     if (state.rounds.size > 1) {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                            state.rounds.dropLast(1).flatten().forEach { Text(it.menu, style = NopoTheme.typography.labelSmall, color = c.ink2, modifier = Modifier.background(c.surface, NopoTheme.shapes.pill).padding(horizontal = 10.dp, vertical = 4.dp)) }
+                            state.rounds.dropLast(1).flatten().forEach { Text(it.menu, style = NopoTheme.typography.labelSmall,
+                                color = c.ink2, modifier = Modifier.background(c.surface, NopoTheme.shapes.pill).padding(horizontal = 10.dp,
+                                vertical = 4.dp)) }
                         }
                     }
                 }
             }
         }
-        Column(Modifier.fillMaxWidth().background(c.surface).padding(NopoTheme.spacing.lg), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
+        Column(Modifier.fillMaxWidth().background(c.surface).padding(NopoTheme.spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             when {
                 !state.available -> Unit
                 !state.canSpin -> {
-                    Text(stringResource(R.string.roulette_done, MenuRoulette.MAX_MENUS), style = NopoTheme.typography.bodyMedium, color = c.ink)
-                    NopoButton(stringResource(R.string.roulette_reset), vm::reset, style = NopoButtonStyle.Outline, modifier = Modifier.fillMaxWidth())
+                    Text(stringResource(R.string.roulette_done, MenuRoulette.MAX_MENUS), style = NopoTheme.typography.bodyMedium,
+                        color = c.ink)
+                    NopoButton(stringResource(R.string.roulette_reset), vm::reset, style = NopoButtonStyle.Outline,
+                        modifier = Modifier.fillMaxWidth())
                 }
                 else -> NopoButton(
                     stringResource(
@@ -303,16 +313,19 @@ fun MenuRouletteScreen(vm: MenuRouletteViewModel, onBack: () -> Unit, onOpenStor
 @Composable
 private fun PickCard(n: Int, p: MenuPick, stores: List<Store>, onOpenStore: (String) -> Unit) {
     val c = NopoTheme.colors
-    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md), verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
+    Column(Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).padding(NopoTheme.spacing.md),
+        verticalArrangement = Arrangement.spacedBy(NopoTheme.spacing.xs)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
-            Box(Modifier.size(28.dp).background(c.stamp, NopoTheme.shapes.pill), contentAlignment = Alignment.Center) { Text(n.toString(), color = c.onStamp, style = NopoTheme.typography.labelMedium) }
+            Box(Modifier.size(28.dp).background(c.stamp, NopoTheme.shapes.pill), contentAlignment = Alignment.Center) { Text(n.toString(),
+                color = c.onStamp, style = NopoTheme.typography.labelMedium) }
             Text(p.menu, style = NopoTheme.typography.titleLarge, color = c.ink)
         }
         if (p.reason.isNotBlank()) Text(p.reason, style = NopoTheme.typography.bodyMedium, color = c.ink)
         if (p.ingredients.isNotEmpty()) {
             Text(stringResource(R.string.roulette_ingredients), style = NopoTheme.typography.labelMedium, color = c.ink2)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                p.ingredients.forEach { Text(it, style = NopoTheme.typography.labelSmall, color = c.onPrimary, modifier = Modifier.background(c.primary, NopoTheme.shapes.pill).padding(horizontal = 10.dp, vertical = 4.dp)) }
+                p.ingredients.forEach { Text(it, style = NopoTheme.typography.labelSmall, color = c.onPrimary,
+                    modifier = Modifier.background(c.primary, NopoTheme.shapes.pill).padding(horizontal = 10.dp, vertical = 4.dp)) }
             }
         }
         if (stores.isNotEmpty()) {
@@ -343,7 +356,8 @@ private fun Wheel(spinning: Boolean, modifier: Modifier = Modifier) {
         rotate(angle.value, center) {
             val sweep = 360f / colors.size
             colors.forEachIndexed { i, col ->
-                drawArc(col, i * sweep, sweep, true, topLeft = Offset(center.x - r * 0.92f, center.y - r * 0.92f), size = Size(r * 1.84f, r * 1.84f))
+                drawArc(col, i * sweep, sweep, true, topLeft = Offset(center.x - r * 0.92f, center.y - r * 0.92f), size = Size(r * 1.84f,
+                    r * 1.84f))
             }
         }
         drawCircle(c.paper, r * 0.16f, center)
@@ -403,7 +417,8 @@ private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: Dp, rows:
         }
     }
     val sweep = androidx.compose.animation.core.rememberInfiniteTransition(label = "sweep")
-    val scan by sweep.animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(tween(900, easing = LinearEasing), RepeatMode.Reverse), label = "scan")
+    val scan by sweep.animateFloat(0f, 1f, androidx.compose.animation.core.infiniteRepeatable(tween(900, easing = LinearEasing),
+        RepeatMode.Reverse), label = "scan")
     // 한 줄은 사진을 여러 번 이어 붙여 끊김 없이 돈다
     val reps = maxOf(2, kotlin.math.ceil(14f / photos.size).toInt() + 1)
     val loop = unit * photos.size
@@ -431,14 +446,16 @@ private fun PhotoReelBody(photos: List<Any>, spinning: Boolean, itemW: Dp, rows:
         Canvas(Modifier.fillMaxSize()) {
             val fw = itemW.toPx() + 28.dp.toPx()
             val left = (size.width - fw) / 2
-            if (frame) drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), Offset(left, 6.dp.toPx()), Size(fw, size.height - 12.dp.toPx()), CornerRadius(14.dp.toPx()), style = Stroke(3.dp.toPx()))
+            if (frame) drawRoundRect(c.laser.copy(alpha = if (spinning) 0.9f else 0.5f), Offset(left, 6.dp.toPx()), Size(fw,
+                size.height - 12.dp.toPx()), CornerRadius(14.dp.toPx()), style = Stroke(3.dp.toPx()))
             if (frame && spinning) {
                 val y = 6.dp.toPx() + (size.height - 12.dp.toPx()) * scan
                 drawLine(c.laser, Offset(left, y), Offset(left + fw, y), 3.dp.toPx())
             }
             // 양쪽 가장자리를 어둡게
             drawRect(Brush.horizontalGradient(listOf(c.sign, Color.Transparent), 0f, 90.dp.toPx()), size = Size(90.dp.toPx(), size.height))
-            drawRect(Brush.horizontalGradient(listOf(Color.Transparent, c.sign), size.width - 90.dp.toPx(), size.width), Offset(size.width - 90.dp.toPx(), 0f), Size(90.dp.toPx(), size.height))
+            drawRect(Brush.horizontalGradient(listOf(Color.Transparent, c.sign), size.width - 90.dp.toPx(), size.width),
+                Offset(size.width - 90.dp.toPx(), 0f), Size(90.dp.toPx(), size.height))
         }
     }
 }

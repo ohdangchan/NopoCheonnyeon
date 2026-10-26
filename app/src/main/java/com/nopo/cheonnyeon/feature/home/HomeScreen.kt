@@ -147,7 +147,8 @@ class HomeViewModel(private val container: AppContainer) : ViewModel() {
             .filter { it.store.photoUrls.isNotEmpty() }.take(30)
         if (candidates.isEmpty()) return
         val info = ChatContextInfo(
-            nowText = today.toString(), locationText = fix?.let { "사용자 위치 기준 가까운 순" } ?: "위치 모름", totalYears = visits.sumOf { it.yearsAwarded }, candidates = candidates,
+            nowText = today.toString(), locationText = fix?.let { "사용자 위치 기준 가까운 순" } ?: "위치 모름", totalYears = visits
+                .sumOf { it.yearsAwarded }, candidates = candidates,
         )
         val reply = container.ai.chat(emptyList(), "오늘 가볼 만한 노포를 딱 한 곳만 골라 줘. 이유는 한 문장으로.", info)
         if (reply is AppResult.Success) {

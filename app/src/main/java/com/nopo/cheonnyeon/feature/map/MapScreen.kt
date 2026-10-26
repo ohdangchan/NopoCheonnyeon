@@ -196,7 +196,10 @@ fun MapScreen(vm: MapViewModel, onOpenStore: (String) -> Unit, onOpenChat: (Stri
                 Column(Modifier.fillMaxSize()) {
                     if (state.mapFailed) {
                         Text(
-                            stringResource(R.string.map_failed_fallback), style = NopoTheme.typography.labelMedium, color = NopoTheme.colors.ink,
+                            stringResource(R.string.map_failed_fallback), style = NopoTheme.typography
+                                .labelMedium, color = NopoTheme
+                                .colors
+                                .ink,
                             modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.stampSoft)
                                 .padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
                         )
@@ -297,7 +300,8 @@ private fun MapContent(
 
     DisposableEffect(Unit) {
         val sdk = NaverMapSdk.getInstance(context)
-        sdk.onAuthFailedListener = NaverMapSdk.OnAuthFailedListener { e -> vm.onMapFailed(); authError = e.errorCode; DiagLast.mapAuthError = e.errorCode }
+        sdk.onAuthFailedListener = NaverMapSdk
+            .OnAuthFailedListener { e -> vm.onMapFailed(); authError = e.errorCode; DiagLast.mapAuthError = e.errorCode }
         onDispose { sdk.onAuthFailedListener = null }
     }
 

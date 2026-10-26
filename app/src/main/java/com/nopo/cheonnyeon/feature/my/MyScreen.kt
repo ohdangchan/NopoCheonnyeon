@@ -141,7 +141,11 @@ class MyViewModel(private val container: AppContainer) : ViewModel() {
                     resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
                     var sample = 1
                     while (bounds.outWidth / sample > 1024 || bounds.outHeight / sample > 1024) sample *= 2
-                    val bmp = resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, BitmapFactory.Options().apply { inSampleSize = sample }) }
+                    val bmp = resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(
+                        it,
+                        null,
+                        BitmapFactory.Options().apply { inSampleSize = sample }
+                    ) }
                     if (bmp != null) photoFile.outputStream().use { bmp.compress(Bitmap.CompressFormat.JPEG, 88, it) }
                 }
             }
@@ -197,15 +201,32 @@ fun MyScreen(
             MockPic(R.drawable.mk_ic_bell, 54, 56, Modifier.at(682, 88), onClick = onBell)
 
             // 프로필
-            Box(Modifier.at(28, 238).size(px(176)).clip(CircleShape).background(Color(0xFFECE7D4)).border(2.dp, Color(0xFFE3DCC4), CircleShape).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.at(
+                    28,
+                    238
+                ).size(px(176)).clip(CircleShape).background(Color(0xFFECE7D4)).border(2.dp, Color(0xFFE3DCC4), CircleShape).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                contentAlignment = Alignment.Center
+            ) {
                 if (photoVersion != 0L) {
                     coil3.compose.AsyncImage(
-                        model = coil3.request.ImageRequest.Builder(LocalContext.current).data(vm.photoFile).memoryCacheKey("profile-$photoVersion").build(),
+                        model = coil3.request
+                            .ImageRequest
+                            .Builder(LocalContext.current)
+                            .data(vm.photoFile)
+                            .memoryCacheKey("profile-$photoVersion")
+                            .build(),
                         contentDescription = "프로필 사진", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
                     )
                 } else DefaultAvatar()
             }
-            Box(Modifier.at(150, 360).size(px(54)).clip(CircleShape).background(Color(0xFF3A3F47)).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }, contentAlignment = Alignment.Center) { CameraIcon() }
+            Box(
+                Modifier.at(
+                    150,
+                    360
+                ).size(px(54)).clip(CircleShape).background(Color(0xFF3A3F47)).clickable(role = Role.Button) { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                contentAlignment = Alignment.Center
+            ) { CameraIcon() }
             Row(Modifier.at(222, 268).clickable(role = Role.Button) { editOpen = true }, verticalAlignment = Alignment.CenterVertically) {
                 MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = MockBrush, weight = FontWeight.ExtraBold)
                 ChevronRight(30)
@@ -241,28 +262,68 @@ fun MyScreen(
             MockPic(R.drawable.mk_my_title_recent, 246, 50, Modifier.at(14, 1298))
             MockPic(R.drawable.mk_my_all, 108, 46, Modifier.at(640, 1300), onClick = onOpenCollection)
             if (visited.isEmpty()) {
-                Box(Modifier.at(15, 1360).size(px(730), px(150)).clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18))), contentAlignment = Alignment.Center) {
+                Box(
+                    Modifier.at(
+                        15,
+                        1360
+                    ).size(px(730), px(150)).clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18))),
+                    contentAlignment = Alignment.Center
+                ) {
                     MockText(stringResource(R.string.my_01), 22, color = MockColors.Hint)
                 }
             } else {
-                LazyRow(Modifier.at(0, 1352).fillMaxWidth().height(px(172)), contentPadding = PaddingValues(horizontal = px(15)), horizontalArrangement = Arrangement.spacedBy(px(12))) {
+                LazyRow(
+                    Modifier.at(0, 1352).fillMaxWidth().height(px(172)),
+                    contentPadding = PaddingValues(horizontal = px(15)),
+                    horizontalArrangement = Arrangement.spacedBy(px(12))
+                ) {
                     items(visited.take(12), key = { it.visit.storeId }) { s ->
                         val store = s.store ?: return@items
                         val date = Instant.ofEpochMilli(s.visit.lastVisitedAt).atZone(SeoulZone).toLocalDate()
                         Box(Modifier.width(px(245)).height(px(170)).clip(RoundedCornerShape(px(14))).clickable(role = Role.Button) { onOpenStore(store.id) }) {
                             StorePhoto(store, Modifier.fillMaxSize())
-                            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xB3000000)), startY = 100f)))
-                            Box(Modifier.align(Alignment.TopEnd).padding(top = px(10), end = px(10)).size(px(36)).saveDescription().clickable(role = Role.Button) { vm.toggleBookmark(store.id) }, contentAlignment = Alignment.Center) {
+                            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(
+                                listOf(Color.Transparent, Color(0xB3000000)),
+                                startY = 100f
+                            )))
+                            Box(
+                                Modifier.align(Alignment.TopEnd).padding(
+                                    top = px(10),
+                                    end = px(10)
+                                ).size(px(36)).saveDescription().clickable(role = Role.Button) { vm.toggleBookmark(store.id) },
+                                contentAlignment = Alignment.Center
+                            ) {
                                 BookmarkIcon(28, filled = store.id in bookmarks)
                             }
-                            Column(Modifier.align(Alignment.BottomStart).padding(start = px(14), bottom = px(10)), verticalArrangement = Arrangement.spacedBy(px(2))) {
-                                Box(Modifier.clip(RoundedCornerShape(50)).background(MockColors.Lime).padding(horizontal = px(12), vertical = px(3))) {
-                                    MockText("%d. %02d. %02d".format(date.year, date.monthValue, date.dayOfMonth), 17, weight = FontWeight.Medium)
+                            Column(
+                                Modifier.align(Alignment.BottomStart).padding(start = px(14), bottom = px(10)),
+                                verticalArrangement = Arrangement.spacedBy(px(2))
+                            ) {
+                                Box(Modifier.clip(RoundedCornerShape(50)).background(MockColors.Lime).padding(
+                                    horizontal = px(12),
+                                    vertical = px(3)
+                                )) {
+                                    MockText(
+                                        "%d. %02d. %02d".format(date.year, date.monthValue, date.dayOfMonth),
+                                        17,
+                                        weight = FontWeight.Medium
+                                    )
                                 }
-                                MockText(store.name, 25, Modifier.width(px(220)), color = Color.White, font = MockSerif, weight = FontWeight.ExtraBold)
+                                MockText(
+                                    store.name,
+                                    25,
+                                    Modifier.width(px(220)),
+                                    color = Color.White,
+                                    font = MockSerif,
+                                    weight = FontWeight.ExtraBold
+                                )
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     PinIcon(17, color = Color.White); Box(Modifier.width(px(5)))
-                                    MockText(listOf(store.sido, store.sigungu).filter { it.isNotBlank() }.joinToString(" "), 17, color = Color.White)
+                                    MockText(
+                                        listOf(store.sido, store.sigungu).filter { it.isNotBlank() }.joinToString(" "),
+                                        17,
+                                        color = Color.White
+                                    )
                                 }
                             }
                         }
@@ -272,7 +333,13 @@ fun MyScreen(
         }
     }
 
-    if (editOpen) EditProfileDialog(vm, nickname, onDismiss = { editOpen = false }, onSaved = { nickRefresh++ }, onPickPhoto = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) })
+    if (editOpen) EditProfileDialog(
+        vm,
+        nickname,
+        onDismiss = { editOpen = false },
+        onSaved = { nickRefresh++ },
+        onPickPhoto = { picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+    )
     if (supportOpen) SupportDialog(vm.email) { supportOpen = false }
 }
 
@@ -378,7 +445,10 @@ internal fun SupportDialog(email: String?, onDismiss: () -> Unit) {
 @Composable
 private fun SubHeader(title: String, onBack: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText("‹ $title", 34, font = MockBrush, weight = FontWeight.ExtraBold) }
+        Box(Modifier.clickable(
+            role = Role.Button,
+            onClick = onBack
+        ).padding(px(10))) { MockText("‹ $title", 34, font = MockBrush, weight = FontWeight.ExtraBold) }
     }
 }
 
@@ -398,7 +468,11 @@ private fun SavedScreen(vm: MyViewModel, saved: List<Store>, bookmarks: Set<Stri
                 horizontalArrangement = Arrangement.spacedBy(px(14)), verticalArrangement = Arrangement.spacedBy(px(14)),
             ) {
                 gridItems(saved, key = { it.id }) { s ->
-                    ExploreCard(StoreCards.of(s, year, emptyMap(), null, bookmarks), onOpen = { onOpenStore(s.id) }, onBookmark = { vm.toggleBookmark(s.id) })
+                    ExploreCard(
+                        StoreCards.of(s, year, emptyMap(), null, bookmarks),
+                        onOpen = { onOpenStore(s.id) },
+                        onBookmark = { vm.toggleBookmark(s.id) }
+                    )
                 }
             }
         }
@@ -408,7 +482,11 @@ private fun SavedScreen(vm: MyViewModel, saved: List<Store>, bookmarks: Set<Stri
 @Composable
 private fun ToggleRow(title: String, body: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(
-        Modifier.fillMaxWidth().clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18))).padding(px(22)),
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(
+            1.dp,
+            MockColors.CardLine,
+            RoundedCornerShape(px(18))
+        ).padding(px(22)),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(px(6))) {
@@ -427,8 +505,16 @@ internal fun NotifySettingsScreen(vm: MyViewModel, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         SubHeader(stringResource(R.string.my_notify_settings), onBack)
         Column(Modifier.padding(horizontal = px(20)), verticalArrangement = Arrangement.spacedBy(px(16))) {
-            ToggleRow(stringResource(R.string.my_t11), stringResource(R.string.my_b12), news) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
-            ToggleRow(stringResource(R.string.my_t13), stringResource(R.string.my_b14), reco) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
+            ToggleRow(
+                stringResource(R.string.my_t11),
+                stringResource(R.string.my_b12),
+                news
+            ) { v -> vm.viewModelScope.launch { vm.settings.setNotifyNews(v) } }
+            ToggleRow(
+                stringResource(R.string.my_t13),
+                stringResource(R.string.my_b14),
+                reco
+            ) { v -> vm.viewModelScope.launch { vm.settings.setNotifyRecoSafe(v) } }
             MockText(stringResource(R.string.my_10), 21, color = MockColors.Hint, maxLines = 2, lineHeightPx = 29)
         }
     }
@@ -446,11 +532,30 @@ private fun AppPrefsScreen(vm: MyViewModel, onBack: () -> Unit) {
     val demo by s.demoData.collectAsStateWithLifecycle(initialValue = true)
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding()) {
         SubHeader(stringResource(R.string.my_app_prefs), onBack)
-        Column(Modifier.padding(horizontal = px(20)).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(px(16))) {
-            ToggleRow(stringResource(R.string.my_t15), stringResource(R.string.my_b16), ai) { v -> vm.viewModelScope.launch { s.setAiConsent(v) } }
-            ToggleRow(stringResource(R.string.my_t17), stringResource(R.string.my_b18), food) { v -> vm.viewModelScope.launch { s.setFoodOnly(v) } }
-            ToggleRow(stringResource(R.string.my_t19), stringResource(R.string.my_b20), loc) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
-            ToggleRow(stringResource(R.string.my_t21), stringResource(R.string.my_b22), demo) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
+        Column(
+            Modifier.padding(horizontal = px(20)).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(px(16))
+        ) {
+            ToggleRow(
+                stringResource(R.string.my_t15),
+                stringResource(R.string.my_b16),
+                ai
+            ) { v -> vm.viewModelScope.launch { s.setAiConsent(v) } }
+            ToggleRow(
+                stringResource(R.string.my_t17),
+                stringResource(R.string.my_b18),
+                food
+            ) { v -> vm.viewModelScope.launch { s.setFoodOnly(v) } }
+            ToggleRow(
+                stringResource(R.string.my_t19),
+                stringResource(R.string.my_b20),
+                loc
+            ) { v -> vm.viewModelScope.launch { s.setAllowLocationOnly(v) } }
+            ToggleRow(
+                stringResource(R.string.my_t21),
+                stringResource(R.string.my_b22),
+                demo
+            ) { v -> vm.viewModelScope.launch { s.setDemoData(v) } }
             Column(Modifier.fillMaxWidth().padding(px(8)), verticalArrangement = Arrangement.spacedBy(px(6))) {
                 MockText(stringResource(R.string.my_11), 21, color = MockColors.Hint)
                 MockText("앱 버전 ${BuildConfig.VERSION_NAME}", 21, color = MockColors.Hint)

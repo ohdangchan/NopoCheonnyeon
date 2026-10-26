@@ -23,7 +23,15 @@ data class ShareCardData(
     val colors: ShareCardColors,
 )
 
-data class ShareCardColors(val background: Int, val surface: Int, val primary: Int, val stamp: Int, val brass: Int, val ink: Int, val ink2: Int)
+data class ShareCardColors(
+    val background: Int,
+    val surface: Int,
+    val primary: Int,
+    val stamp: Int,
+    val brass: Int,
+    val ink: Int,
+    val ink2: Int
+)
 
 /** 패스포트 공유 카드(1080×1350)를 Canvas로 그려 PNG로 저장하고 공유 시트를 띄운다 (PAS-05). */
 object PassportShareCard {
@@ -62,7 +70,12 @@ object PassportShareCard {
         d.recent.take(3).forEachIndexed { i, (name, years) ->
             val y = 1060f + i * 52f
             cv.drawText(name.take(16), 150f, y, paint(38f, c.ink, align = Paint.Align.LEFT))
-            cv.drawText(context.getString(R.string.share_card_years, years), WIDTH - 150f, y, paint(38f, c.stamp, align = Paint.Align.RIGHT))
+            cv.drawText(
+                context.getString(R.string.share_card_years, years),
+                WIDTH - 150f,
+                y,
+                paint(38f, c.stamp, align = Paint.Align.RIGHT)
+            )
         }
         drawQr(context, cv, c, title)
         return bmp
@@ -74,14 +87,24 @@ object PassportShareCard {
         val top = 1230f
         val side = 250f
         val left = 100f
-        cv.drawRoundRect(left - 18f, top - 18f, left + side + 18f, top + side + 18f, 24f, 24f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE })
+        cv.drawRoundRect(
+            left - 18f,
+            top - 18f,
+            left + side + 18f,
+            top + side + 18f,
+            24f,
+            24f,
+            Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.WHITE }
+        )
         val cell = side / qr.width
         val dark = Paint().apply { color = Color.BLACK }
         for (y in 0 until qr.height) for (x in 0 until qr.width) {
             if (qr.get(x, y)) cv.drawRect(left + x * cell, top + y * cell, left + (x + 1) * cell + 0.6f, top + (y + 1) * cell + 0.6f, dark)
         }
         fun text(s: String, size: Float, color: Int, face: Typeface, y: Float) =
-            cv.drawText(s, left + side + 60f, y, Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = size; this.color = color; typeface = face })
+            cv.drawText(s, left + side + 60f, y, Paint(Paint.ANTI_ALIAS_FLAG).apply { textSize = size;
+                 this.color = color;
+                typeface = face })
         text(context.getString(R.string.app_name), 48f, c.primary, title, top + 70f)
         text(context.getString(R.string.share_card_qr_line1), 36f, c.ink, Typeface.DEFAULT_BOLD, top + 140f)
         text(context.getString(R.string.share_card_qr_line2), 36f, c.ink, Typeface.DEFAULT_BOLD, top + 190f)
@@ -103,6 +126,9 @@ object PassportShareCard {
             putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_card_message, ShareConfig.DOWNLOAD_URL))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(Intent.createChooser(send, context.getString(R.string.share_card_chooser)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        context.startActivity(Intent.createChooser(
+            send,
+            context.getString(R.string.share_card_chooser)
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }.isSuccess
 }

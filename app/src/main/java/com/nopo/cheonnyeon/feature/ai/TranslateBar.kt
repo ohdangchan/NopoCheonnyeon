@@ -72,9 +72,11 @@ fun TranslateBar(container: AppContainer, store: Store) {
                 FilterChip(selected = false, onClick = { custom = true }, label = { Text(stringResource(R.string.translate_custom)) })
             }
         }
-        if (current?.loading == true) Text(stringResource(R.string.translate_loading, current.language), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        if (current?.loading == true) Text(stringResource(R.string.translate_loading, current.language),
+            style = NopoTheme.typography.bodySmall, color = c.ink2)
         current?.error?.let { Text(it.message(context), style = NopoTheme.typography.bodySmall, color = c.stamp) }
-        if (current?.active == true) Text(stringResource(R.string.translate_notice, current.language), style = NopoTheme.typography.bodySmall, color = c.ink2)
+        if (current?.active == true) Text(stringResource(R.string.translate_notice, current.language),
+            style = NopoTheme.typography.bodySmall, color = c.ink2)
     }
 
     if (custom) {
@@ -94,7 +96,8 @@ fun TranslateBar(container: AppContainer, store: Store) {
     }
     pendingLanguage?.let { lang ->
         AiConsentDialog(
-            onAgree = { pendingLanguage = null; scope.launch { container.settings.setAiConsent(true); translator.translate(store.id, lang) } },
+            onAgree = { pendingLanguage = null; scope.launch { container.settings.setAiConsent(true); translator.translate(store.id,
+                lang) } },
             onDismiss = { pendingLanguage = null },
         )
     }

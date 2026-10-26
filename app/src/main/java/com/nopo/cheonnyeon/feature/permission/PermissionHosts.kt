@@ -114,8 +114,12 @@ fun PermissionIntroHost(container: AppContainer) {
         text = {
             Text("서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.")
         },
-        confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) }; asking = ASK_NONE; finish() }) { Text("허용") } },
-        dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) }; asking = ASK_NONE; finish() }) { Text("허용 안 함") } },
+        confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) };
+             asking = ASK_NONE;
+            finish() }) { Text("허용") } },
+        dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) };
+             asking = ASK_NONE;
+            finish() }) { Text("허용 안 함") } },
     )
 }
 
@@ -171,7 +175,10 @@ fun PermissionManageHost(container: AppContainer, onBack: () -> Unit, onNotifica
                     val next = !share
                     share = next
                     scope.launch {
-                        container.auth.currentUid?.let { container.profiles.setVisibility(it, if (next) VISIBILITY_ALL else VISIBILITY_PRIVATE) }
+                        container.auth.currentUid?.let { container.profiles.setVisibility(
+                            it,
+                            if (next) VISIBILITY_ALL else VISIBILITY_PRIVATE
+                        ) }
                     }
                 }
                 MANAGE_ANALYTICS -> scope.launch { container.settings.setAnalyticsOn(!analytics) }

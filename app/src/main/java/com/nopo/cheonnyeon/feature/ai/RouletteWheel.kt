@@ -70,7 +70,8 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                     val cx = c.x + (inner * 0.58f * cos(mid)).toFloat()
                     val cy = c.y + (inner * 0.58f * sin(mid)).toFloat()
                     val side = (inner * 1.25f).toInt()
-                    drawImage(s.photo, dstOffset = IntOffset((cx - side / 2).toInt(), (cy - side / 2).toInt()), dstSize = IntSize(side, side))
+                    drawImage(s.photo, dstOffset = IntOffset((cx - side / 2).toInt(), (cy - side / 2).toInt()), dstSize = IntSize(side,
+                        side))
                     drawRect(Color(0x33000000), Offset(c.x - inner, c.y - inner), Size(inner * 2, inner * 2))
                 }
                 // 칸 이름
@@ -79,7 +80,8 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                         color = android.graphics.Color.WHITE; textSize = d * 0.058f; isAntiAlias = true; isFakeBoldText = true
                         textAlign = Paint.Align.CENTER; setShadowLayer(d * 0.01f, 0f, 0f, android.graphics.Color.BLACK)
                     }
-                    drawText(s.name, (c.x + inner * 0.78f * cos(mid(start))).toFloat(), (c.y + inner * 0.78f * sin(mid(start))).toFloat() + d * 0.02f, p)
+                    drawText(s.name, (c.x + inner * 0.78f * cos(mid(start))).toFloat(),
+                        (c.y + inner * 0.78f * sin(mid(start))).toFloat() + d * 0.02f, p)
                 }
             }
             // 칸 사이 금빛 선
@@ -100,7 +102,8 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
             drawImage(center, dstOffset = IntOffset((c.x - cs / 2).toInt(), (c.y - cs / 2).toInt()), dstSize = IntSize(cs, cs))
             // 위쪽 바늘
             val tip = Path().apply {
-                moveTo(c.x, c.y - r - d * 0.015f); lineTo(c.x + d * 0.04f, c.y - r + d * 0.05f); lineTo(c.x, c.y - r + d * 0.1f); lineTo(c.x - d * 0.04f, c.y - r + d * 0.05f); close()
+                moveTo(c.x, c.y - r - d * 0.015f); lineTo(c.x + d * 0.04f, c.y - r + d * 0.05f); lineTo(c.x,
+                    c.y - r + d * 0.1f); lineTo(c.x - d * 0.04f, c.y - r + d * 0.05f); close()
             }
             drawPath(tip, Color(0xFFD9A323)); drawPath(tip, Color(0xFF6B4A0E), style = Stroke(d * 0.006f))
         }

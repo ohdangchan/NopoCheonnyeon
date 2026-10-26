@@ -14,19 +14,43 @@ private data class DemoFile(
 )
 
 @Serializable
-private data class DemoRow(val s: String, val n: String, val t: String, val r: Int, val x: String = "", val v: Int = 1, val d: Int = 1, val p: String = "", val p2: String = "", val p3: String = "")
+private data class DemoRow(
+    val s: String,
+    val n: String,
+    val t: String,
+    val r: Int,
+    val x: String = "",
+    val v: Int = 1,
+    val d: Int = 1,
+    val p: String = "",
+    val p2: String = "",
+    val p3: String = ""
+)
 
 @Serializable
 private data class DemoUserRow(val n: String, val y: Int, val c: Int = 1, val rc: Int = 0)
 
 @Serializable
-private data class DemoMeRow(val totalYears: Int = 0, val visits: List<DemoVisitRow> = emptyList(), val reviews: List<DemoMyReviewRow> = emptyList())
+private data class DemoMeRow(
+    val totalYears: Int = 0,
+    val visits: List<DemoVisitRow> = emptyList(),
+    val reviews: List<DemoMyReviewRow> = emptyList()
+)
 
 @Serializable
 private data class DemoVisitRow(val s: String, val y: Int, val d: Int, val c: Int = 1)
 
 @Serializable
-private data class DemoMyReviewRow(val s: String, val n: String = "", val r: Int, val x: String = "", val d: Int = 1, val p: String = "", val p2: String = "", val p3: String = "")
+private data class DemoMyReviewRow(
+    val s: String,
+    val n: String = "",
+    val r: Int,
+    val x: String = "",
+    val d: Int = 1,
+    val p: String = "",
+    val p2: String = "",
+    val p3: String = ""
+)
 
 /** 명예의 전당에 쓰는 시연용 식객 한 명 */
 data class DemoUser(val nickname: String, val years: Int, val stores: Int, val reviews: Int)
@@ -73,12 +97,18 @@ class DemoReviews(private val context: Context, private val io: CoroutineDispatc
         val byStore = file.reviews.mapIndexed { i, r ->
             ReviewItem(
                 id = "demo_$i", storeId = r.s, storeName = "", uid = DEMO_UID, nickname = r.n, titleId = r.t, rating = r.r.coerceIn(1, 5),
-                text = r.x, visitCount = r.v, updatedAtMillis = now - r.d * DAY_MS, demo = true, photos = listOf(r.p, r.p2, r.p3).filter { it.isNotBlank() }.map { "asset:$it" },
+                text = r.x, visitCount = r
+                    .v, updatedAtMillis = now - r
+                    .d * DAY_MS, demo = true, photos = listOf(r.p, r.p2, r.p3)
+                    .filter { it.isNotBlank() }.map { "asset:$it" },
             )
         }.groupBy { it.storeId }
         val mine = file.me.reviews.mapIndexed { i, r ->
             r.s to ReviewItem(
-                id = "demo_me_$i", storeId = r.s, storeName = r.n, uid = DEMO_ME_UID, nickname = "", titleId = "ARTISAN", rating = r.r.coerceIn(1, 5),
+                id = "demo_me_$i", storeId = r.s, storeName = r
+                    .n, uid = DEMO_ME_UID, nickname = "", titleId = "ARTISAN", rating = r
+                    .r
+                    .coerceIn(1, 5),
                 text = r.x, visitCount = 1, updatedAtMillis = now - r.d * DAY_MS, demo = true,
                 photos = listOf(r.p, r.p2, r.p3).filter { it.isNotBlank() }.map { "asset:$it" },
             )

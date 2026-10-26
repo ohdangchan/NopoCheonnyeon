@@ -46,7 +46,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-data class NoticeItem(val key: String, val title: String, val body: String, val at: Long, val storeId: String? = null, val lime: Boolean = false, val tab: Int? = null)
+data class NoticeItem(
+    val key: String,
+    val title: String,
+    val body: String,
+    val at: Long,
+    val storeId: String? = null,
+    val lime: Boolean = false,
+    val tab: Int? = null
+)
 
 /**
  * 알림 목록. 서버 푸시 없이, 이 기기의 방문 기록에서 도장·칭호 소식을 만들고
@@ -90,12 +98,19 @@ fun NotificationsScreen(vm: NotificationsViewModel, onBack: () -> Unit, onOpenSt
     val items by vm.items.collectAsStateWithLifecycle()
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = px(20), vertical = px(18)), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.clickable(role = Role.Button, onClick = onBack).padding(px(10))) { MockText(stringResource(com.nopo.cheonnyeon.R.string.notice_01), 34, font = MockSerif, weight = FontWeight.ExtraBold) }
+            Box(Modifier.clickable(
+                role = Role.Button,
+                onClick = onBack
+            ).padding(px(10))) { MockText(stringResource(com.nopo.cheonnyeon.R.string.notice_01), 34, font = MockSerif, weight = FontWeight.ExtraBold) }
         }
         LazyColumn(contentPadding = PaddingValues(px(20)), verticalArrangement = Arrangement.spacedBy(px(14))) {
             items(items, key = { it.key }) { n ->
                 Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(1.dp, MockColors.CardLine, RoundedCornerShape(px(18)))
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(px(18))).background(MockColors.Card).border(
+                        1.dp,
+                        MockColors.CardLine,
+                        RoundedCornerShape(px(18))
+                    )
                         .clickable(role = Role.Button) { if (n.storeId != null) onOpenStore(n.storeId) else if (n.tab != null) onOpenTab(n.tab) }.padding(px(22)),
                     horizontalArrangement = Arrangement.spacedBy(px(16)), verticalAlignment = Alignment.Top,
                 ) {

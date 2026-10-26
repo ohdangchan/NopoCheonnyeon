@@ -24,7 +24,14 @@ data class UserProfile(
     val visibility: String = "ALL",
 )
 
-data class VisitedStore(val storeId: String, val storeName: String, val sigungu: String, val yearsAwarded: Int, val visitCount: Int, val firstVisitedMillis: Long? = null)
+data class VisitedStore(
+    val storeId: String,
+    val storeName: String,
+    val sigungu: String,
+    val yearsAwarded: Int,
+    val visitCount: Int,
+    val firstVisitedMillis: Long? = null
+)
 
 /** 다른 사용자의 프로필 조회 (S-804): 칭호·세월·다녀온 노포·남긴 리뷰. 읽기 전용. */
 class ProfileRepository(private val db: () -> FirebaseFirestore, private val reviews: ReviewRepository) {
@@ -45,7 +52,13 @@ class ProfileRepository(private val db: () -> FirebaseFirestore, private val rev
     }
 
     suspend fun visits(uid: String, limit: Long = 60): AppResult<List<VisitedStore>> = call {
-        db().collection("users").document(uid).collection("visits").orderBy("lastVisitedAt", Query.Direction.DESCENDING).limit(limit).get().await()
+        db().collection("users")
+            .document(uid)
+            .collection("visits")
+            .orderBy("lastVisitedAt", Query.Direction.DESCENDING)
+            .limit(limit)
+            .get()
+            .await()
             .documents.map {
                 VisitedStore(
                     storeId = it.id, storeName = it.getString("storeName").orEmpty(), sigungu = it.getString("sigungu").orEmpty(),
@@ -60,7 +73,10 @@ class ProfileRepository(private val db: () -> FirebaseFirestore, private val rev
     /** 내 방문 기록 공개 범위 저장 (FR-PRF-07) */
     suspend fun setVisibility(uid: String, visibility: String): AppResult<Unit> = call {
         db().collection("users").document(uid)
-            .update(mapOf("visitsVisibility" to visibility, "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp())).await()
+            .update(mapOf(
+                "visitsVisibility" to visibility,
+                "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            )).await()
         Unit
     }
 

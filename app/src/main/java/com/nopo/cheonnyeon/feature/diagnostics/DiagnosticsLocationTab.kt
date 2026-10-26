@@ -153,7 +153,11 @@ fun DiagnosticsLocationTab(modifier: Modifier = Modifier) {
             enabled = !state.measuring,
             modifier = Modifier.fillMaxWidth(),
         )
-        if (state.settingsOff) Text(stringResource(R.string.diag_loc_settings_off), color = c.stamp, style = NopoTheme.typography.bodyMedium)
+        if (state.settingsOff) Text(
+            stringResource(R.string.diag_loc_settings_off),
+            color = c.stamp,
+            style = NopoTheme.typography.bodyMedium
+        )
         if (state.timedOut) Text(stringResource(R.string.diag_loc_timeout), color = c.stamp, style = NopoTheme.typography.bodyMedium)
 
         val best = state.best
@@ -196,7 +200,10 @@ fun DiagnosticsLocationTab(modifier: Modifier = Modifier) {
         val lng = targetLng.toDoubleOrNull()
         if (best != null && lat != null && lng != null) {
             val d = GeoDistance.meters(best.lat, best.lng, lat, lng)
-            val pass = d <= VerificationConfig.PHOTO_MAX_DISTANCE_M && best.accuracyM <= VerificationConfig.PHOTO_MAX_ACCURACY_M && !best.isMock
+            val pass = d <= VerificationConfig.PHOTO_MAX_DISTANCE_M && best
+                .accuracyM <= VerificationConfig
+                .PHOTO_MAX_ACCURACY_M && !best
+                .isMock
             Text(stringResource(R.string.diag_loc_distance, d), style = NopoTheme.extraTypography.metric, color = c.ink)
             Text(
                 stringResource(if (pass) R.string.diag_loc_pass else R.string.diag_loc_fail),

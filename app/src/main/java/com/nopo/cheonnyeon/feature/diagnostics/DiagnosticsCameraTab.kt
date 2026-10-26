@@ -82,7 +82,11 @@ fun DiagnosticsCameraTab(modifier: Modifier = Modifier) {
             onStreaming = { if (previewMs == null) previewMs = shown.elapsedNow().inWholeMilliseconds },
         )
         previewMs?.let {
-            Text(stringResource(R.string.diag_cam_preview_ms, it.toInt()), style = NopoTheme.extraTypography.metric, color = NopoTheme.colors.ink)
+            Text(
+                stringResource(R.string.diag_cam_preview_ms, it.toInt()),
+                style = NopoTheme.extraTypography.metric,
+                color = NopoTheme.colors.ink
+            )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(NopoTheme.spacing.sm)) {
             NopoButton(

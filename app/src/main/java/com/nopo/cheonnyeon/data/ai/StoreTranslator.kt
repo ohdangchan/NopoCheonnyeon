@@ -67,7 +67,11 @@ class StoreTranslator(private val ai: AiRepository) {
             }.awaitAll()
         }
         if (done.isNotEmpty()) cache[key] = LinkedHashMap(done)
-        _state.value = if (done.isEmpty()) StoreTranslation(storeId, lang, error = failure ?: AppError.E_AI_FAILED) else StoreTranslation(storeId, lang, LinkedHashMap(done))
+        _state.value = if (done.isEmpty()) StoreTranslation(
+            storeId,
+            lang,
+            error = failure ?: AppError.E_AI_FAILED
+        ) else StoreTranslation(storeId, lang, LinkedHashMap(done))
     }
 
     /** 원문으로 되돌린다 */

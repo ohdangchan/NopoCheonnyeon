@@ -96,7 +96,8 @@ fun MainScreen(
     var settingsSub by rememberSaveable { mutableIntStateOf(0) }
     // 룰렛·랭킹 같은 별도 화면의 하단 탭에서 고른 탭으로 이동한다
     LaunchedEffect(Unit) {
-        container.requestedTab.collect { t -> if (t != null) { tab = t; settingsOpen = false; settingsSub = 0; container.requestedTab.value = null } }
+        container.requestedTab
+            .collect { t -> if (t != null) { tab = t; settingsOpen = false; settingsSub = 0; container.requestedTab.value = null } }
     }
     var logoutAsk by remember { mutableStateOf(false) }
     BackHandler(enabled = tab == 4 && settingsSub != 0) { settingsSub = 0 }
@@ -127,21 +128,53 @@ fun MainScreen(
         if (restoring) {
             Text(
                 stringResource(R.string.restoring_banner), style = NopoTheme.typography.labelMedium, color = NopoTheme.colors.ink,
-                modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.tealSoft).padding(horizontal = NopoTheme.spacing.lg, vertical = NopoTheme.spacing.sm),
+                modifier = Modifier.fillMaxWidth().background(NopoTheme.colors.tealSoft).padding(
+                    horizontal = NopoTheme.spacing.lg,
+                    vertical = NopoTheme.spacing.sm
+                ),
             )
         }
         Column(Modifier.weight(1f)) {
             when (tab) {
-                0 -> HomeScreen(homeVm, onOpenStore, onSearch = { tab = 1 }, onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 }, onOpenChat = onOpenChat, onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 }, onBell = onOpenNotifications)
+                0 -> HomeScreen(
+                    homeVm,
+                    onOpenStore,
+                    onSearch = { tab = 1 },
+                    onOpenMy = { settingsOpen = false; settingsSub = 0; tab = 4 },
+                    onOpenChat = onOpenChat,
+                    onPickChip = { c -> container.requestedExploreChip.value = c; tab = 1 },
+                    onBell = onOpenNotifications
+                )
                 1 -> ExploreScreen(exploreVm, onOpenStore = onOpenStore, onOpenChat = onOpenChat, onBell = onOpenNotifications)
                 2 -> if (locationPermission.status != PermissionStatus.GRANTED && !mapPermLater) {
                     if (locationPermission.status == PermissionStatus.PERMANENTLY_DENIED) {
                         PermissionOffScreen(onOpenSettings = locationPermission.openSettings, onLater = { mapPermLater = true })
                     } else LocationPermissionScreen(onAllow = locationPermission.request, onLater = { mapPermLater = true })
                 } else MapScreen(mapVm, onOpenStore, onOpenChat, onBell = onOpenNotifications, onSearch = { tab = 1 })
-                3 -> PassportScreen(passportVm, onOpenStore, onOpenProfile, onOpenHall, onOpenRoulette, onBell = onOpenNotifications, onSearch = { tab = 1 }, request = collectionRequest, onRequestHandled = { collectionRequest = null })
+                3 -> PassportScreen(
+                    passportVm,
+                    onOpenStore,
+                    onOpenProfile,
+                    onOpenHall,
+                    onOpenRoulette,
+                    onBell = onOpenNotifications,
+                    onSearch = { tab = 1 },
+                    request = collectionRequest,
+                    onRequestHandled = { collectionRequest = null }
+                )
                 else -> when (settingsSub) {
-                    0 -> if (!settingsOpen) MyScreen(myVm, passportVm, onOpenStore, onOpenProfile, onOpenCollection = { tab = 3 }, onOpenSettings = { settingsOpen = true }, onBell = onOpenNotifications, onSearch = { tab = 1 }, openSaved = mySavedRequest, onSavedHandled = { mySavedRequest = false })
+                    0 -> if (!settingsOpen) MyScreen(
+                        myVm,
+                        passportVm,
+                        onOpenStore,
+                        onOpenProfile,
+                        onOpenCollection = { tab = 3 },
+                        onOpenSettings = { settingsOpen = true },
+                        onBell = onOpenNotifications,
+                        onSearch = { tab = 1 },
+                        openSaved = mySavedRequest,
+                        onSavedHandled = { mySavedRequest = false }
+                    )
                         else MockSettingsScreen(
                             myVm, passportVm, onNotify = { settingsSub = 2 }, onLegacy = { settingsSub = 1 }, onPermissions = { settingsSub = 3 }, onHelp = { settingsSub = 5 }, onLogout = { logoutAsk = true },
                             onBell = onOpenNotifications, onBack = { settingsOpen = false },
@@ -226,7 +259,10 @@ private fun PendingQueueDialog(container: AppContainer, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.queue_title)) },
-        text = { Text(if (names.isEmpty()) stringResource(R.string.queue_empty) else stringResource(R.string.queue_body, names.joinToString(", "))) },
+        text = { Text(if (names.isEmpty()) stringResource(R.string.queue_empty) else stringResource(
+            R.string.queue_body,
+            names.joinToString(", ")
+        )) },
         confirmButton = { TextButton({ container.syncScheduler.enqueue(); onDismiss() }) { Text(stringResource(R.string.queue_sync_now)) } },
         dismissButton = { TextButton(onDismiss) { Text(stringResource(R.string.detail_back)) } },
     )
@@ -265,7 +301,10 @@ private fun SignOutButton(container: AppContainer) {
             onDismissRequest = { confirm = false },
             title = { Text(stringResource(R.string.signout_warn_title)) },
             text = {
-                Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", ")))
+                Text(stringResource(
+                    R.string.signout_warn_body,
+                    pending
+                ) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", ")))
             },
             confirmButton = { TextButton({ confirm = false; container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
             dismissButton = { TextButton({ confirm = false }) { Text(stringResource(R.string.detail_back)) } },
@@ -323,7 +362,10 @@ private fun SignOutAsk(container: AppContainer, ask: Boolean, onDone: () -> Unit
         AlertDialog(
             onDismissRequest = onDone,
             title = { Text(stringResource(R.string.signout_warn_title)) },
-            text = { Text(stringResource(R.string.signout_warn_body, pending) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", "))) },
+            text = { Text(stringResource(
+                R.string.signout_warn_body,
+                pending
+            ) + if (unsynced.isEmpty()) "" else "\n\n" + stringResource(R.string.signout_warn_list, unsynced.joinToString(", "))) },
             confirmButton = { TextButton({ onDone(); container.signOut() }) { Text(stringResource(R.string.auth_sign_out)) } },
             dismissButton = { TextButton(onDone) { Text(stringResource(R.string.detail_back)) } },
         )

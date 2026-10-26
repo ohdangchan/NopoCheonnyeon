@@ -41,7 +41,9 @@ class SettingsStore(private val context: Context) {
     val demoData: Flow<Boolean> = context.dataStore.data.map { it[demoDataKey] ?: true }
 
     /** 글자 확인이 3번 실패해도 30m 안이면 위치 확인 도장을 허용 (FR-VER-11) */
-    val allowLocationOnly: Flow<Boolean> = context.dataStore.data.map { it[locationOnlyKey] ?: com.nopo.cheonnyeon.domain.rule.VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL }
+    val allowLocationOnly: Flow<Boolean> = context.dataStore
+        .data
+        .map { it[locationOnlyKey] ?: com.nopo.cheonnyeon.domain.rule.VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL }
 
     /** 시험용 가게에 남긴 내 리뷰들(최신순). 시험용 가게는 서버에 없어서 이 기기에만 저장한다. 예전 한 개짜리 기록은 읽을 때 옮겨 담는다 */
     suspend fun testReviews(storeId: String): List<TestReview> {
@@ -53,7 +55,13 @@ class SettingsStore(private val context: Context) {
         val legacy = prefs[stringPreferencesKey(TEST_REVIEW_PREFIX + storeId)]?.split("|", limit = 3)
         if (legacy == null || legacy.size < 3) return emptyList()
         val photos = prefs[stringPreferencesKey(TEST_REVIEW_PHOTO_PREFIX + storeId)]?.split("\n")?.filter { it.isNotBlank() }.orEmpty()
-        return listOf(TestReview("local_legacy", legacy[0].toIntOrNull() ?: return emptyList(), legacy[1].toLongOrNull() ?: return emptyList(), legacy[2], photos))
+        return listOf(TestReview(
+            "local_legacy",
+            legacy[0].toIntOrNull() ?: return emptyList(),
+            legacy[1].toLongOrNull() ?: return emptyList(),
+            legacy[2],
+            photos
+        ))
     }
 
     /** 같은 id가 있으면 고치고, 없으면 새로 쌓는다 */
@@ -106,7 +114,8 @@ class SettingsStore(private val context: Context) {
     /** 처음 설치 때 고른 좋아하는 지역·음식 (추천에 쓴다) */
     val prefRegions: Flow<Set<String>> = context.dataStore.data.map { it[prefRegionsKey] ?: emptySet() }
     val prefFoods: Flow<Set<String>> = context.dataStore.data.map { it[prefFoodsKey] ?: emptySet() }
-    suspend fun setTaste(regions: Set<String>, foods: Set<String>) { context.dataStore.edit { it[prefRegionsKey] = regions; it[prefFoodsKey] = foods } }
+    suspend fun setTaste(regions: Set<String>, foods: Set<String>) { context.dataStore.edit { it[prefRegionsKey] = regions;
+        it[prefFoodsKey] = foods } }
 
     val keepLogin: Flow<Boolean> = context.dataStore.data.map { it[keepLoginKey] ?: true }
     suspend fun setKeepLogin(v: Boolean) { context.dataStore.edit { it[keepLoginKey] = v } }

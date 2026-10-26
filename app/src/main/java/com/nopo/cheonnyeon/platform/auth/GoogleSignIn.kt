@@ -37,7 +37,10 @@ object GoogleSignIn {
         val clientId = webClientId(context) ?: return GoogleResult.NotConfigured
         val manager = CredentialManager.create(context)
         fun request(filter: Boolean) = GetCredentialRequest.Builder()
-            .addCredentialOption(GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(filter).setServerClientId(clientId).setAutoSelectEnabled(false).build())
+            .addCredentialOption(
+                GetGoogleIdOption.Builder().setFilterByAuthorizedAccounts(filter).setServerClientId(clientId)
+                    .setAutoSelectEnabled(false).build()
+            )
             .build()
         return try {
             val result = try {

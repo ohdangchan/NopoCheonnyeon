@@ -93,7 +93,10 @@ private val Faqs = listOf(
 
 private fun mail(context: android.content.Context, email: String?) {
     val body = "\n\n---\n앱 버전 ${BuildConfig.VERSION_NAME}" + (if (!email.isNullOrBlank()) "\n계정 $email" else "")
-    val send = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$SUPPORT_EMAIL")).putExtra(Intent.EXTRA_SUBJECT, "[노포 패스포트] 문의").putExtra(Intent.EXTRA_TEXT, body)
+    val send = Intent(
+        Intent.ACTION_SENDTO,
+        Uri.parse("mailto:$SUPPORT_EMAIL")
+    ).putExtra(Intent.EXTRA_SUBJECT, "[노포 패스포트] 문의").putExtra(Intent.EXTRA_TEXT, body)
     runCatching { context.startActivity(send.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
 }
 
@@ -113,14 +116,20 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().background(Color(0xFFFBF6EB)).statusBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 940 + listH + 170) {
             MockPic(R.drawable.mk2_n_help_head, 760, 440, Modifier.at(0, 84))
-            Box(Modifier.at(670, 98).size(px(70), px(70)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "닫기" })
+            Box(Modifier.at(
+                670,
+                98
+            ).size(px(70), px(70)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "닫기" })
             MockInput(query, { query = it }, "궁금한 내용을 검색해보세요.", Modifier.at(100, 452).size(px(430), px(44)), sizePx = 22)
             Cats.forEachIndexed { i, c ->
                 val x = if (i % 2 == 0) 22 else 388
                 val y = 520 + (i / 2) * 118
                 val sel = cat == i
                 Row(
-                    Modifier.at(x, y).size(px(356), px(106)).clip(RoundedCornerShape(px(18))).background(if (sel) Color(0xFFF0F5D0) else CardWhite)
+                    Modifier.at(
+                        x,
+                        y
+                    ).size(px(356), px(106)).clip(RoundedCornerShape(px(18))).background(if (sel) Color(0xFFF0F5D0) else CardWhite)
                         .border(if (sel) 2.dp else 1.dp, if (sel) MockColors.Lime2 else Hairline, RoundedCornerShape(px(18)))
                         .clickable(role = Role.Button) { if (i == 0) mail(context, email) else { cat = if (sel) -1 else i; open = 0 } },
                     verticalAlignment = Alignment.CenterVertically,
@@ -134,26 +143,56 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
                 }
             }
             MockText(if (cat >= 0) "${Cats[cat].title} 질문" else "자주 묻는 질문", 31, Modifier.at(25, 884), weight = FontWeight.ExtraBold, font = MockSerif)
-            Box(Modifier.at(560, 880).size(px(180), px(50)).clickable(role = Role.Button) { all = !all }, contentAlignment = Alignment.CenterEnd) {
-                Row(verticalAlignment = Alignment.CenterVertically) { MockText(if (all) "접기" else "전체보기", 22); Box(Modifier.width(px(8))); ChevronRight(24) }
+            Box(
+                Modifier.at(560, 880).size(px(180), px(50)).clickable(role = Role.Button) { all = !all },
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) { MockText(
+                    if (all) "접기" else "전체보기",
+                    22
+                ); Box(Modifier.width(px(8))); ChevronRight(24) }
             }
             Column(
-                Modifier.at(22, 940).size(px(716), px(listH)).clip(RoundedCornerShape(px(20))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(20))).padding(horizontal = px(18), vertical = px(10)),
+                Modifier.at(
+                    22,
+                    940
+                ).size(px(716), px(listH)).clip(RoundedCornerShape(px(20))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(20))).padding(horizontal = px(18), vertical = px(10)),
             ) {
-                if (shown.isEmpty()) MockText(stringResource(com.nopo.cheonnyeon.R.string.help_01), 22, Modifier.padding(px(20)), color = Gray)
+                if (shown.isEmpty()) MockText(
+                    stringResource(com.nopo.cheonnyeon.R.string.help_01),
+                    22,
+                    Modifier.padding(px(20)),
+                    color = Gray
+                )
                 shown.forEachIndexed { i, f ->
                     val isOpen = open == i
-                    Row(Modifier.fillMaxWidth().height(px(66)).clickable(role = Role.Button) { open = if (isOpen) -1 else i }, verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(px(38)).clip(CircleShape).background(MockColors.Lime2), contentAlignment = Alignment.Center) { MockText("Q", 22, weight = FontWeight.ExtraBold) }
+                    Row(
+                        Modifier.fillMaxWidth().height(px(66)).clickable(role = Role.Button) { open = if (isOpen) -1 else i },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            Modifier.size(px(38)).clip(CircleShape).background(MockColors.Lime2),
+                            contentAlignment = Alignment.Center
+                        ) { MockText("Q", 22, weight = FontWeight.ExtraBold) }
                         MockText(f.q, 24, Modifier.weight(1f).padding(horizontal = px(16)), weight = FontWeight.ExtraBold)
                         Box(Modifier.rotate(if (isOpen) 180f else 0f)) { ChevronDown(24) }
                     }
-                    if (isOpen) MockText(f.a, 20, Modifier.padding(start = px(54), bottom = px(10), end = px(10)).height(px(90)), color = Gray, maxLines = 3, lineHeightPx = 29)
+                    if (isOpen) MockText(
+                        f.a,
+                        20,
+                        Modifier.padding(start = px(54), bottom = px(10), end = px(10)).height(px(90)),
+                        color = Gray,
+                        maxLines = 3,
+                        lineHeightPx = 29
+                    )
                     if (i < shown.lastIndex) Box(Modifier.fillMaxWidth().height(1.dp).background(Hairline))
                 }
             }
             Row(
-                Modifier.at(22, 940 + listH + 24).size(px(716), px(112)).clip(RoundedCornerShape(px(22))).background(Color(0xFFF3EDDA)).border(1.dp, Hairline, RoundedCornerShape(px(22)))
+                Modifier.at(
+                    22,
+                    940 + listH + 24
+                ).size(px(716), px(112)).clip(RoundedCornerShape(px(22))).background(Color(0xFFF3EDDA)).border(1.dp, Hairline, RoundedCornerShape(px(22)))
                     .clickable(role = Role.Button) { mail(context, email) },
                 verticalAlignment = Alignment.CenterVertically,
             ) {

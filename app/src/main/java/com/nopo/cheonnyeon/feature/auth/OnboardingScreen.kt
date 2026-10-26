@@ -113,8 +113,14 @@ private fun IntroPage(onStart: () -> Unit, onBrowse: () -> Unit) {
     Column(Modifier.fillMaxSize().background(Color(0xFFFBF6EB)).statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 1567) {
             MockPic(R.drawable.mk2_n_intro1, 760, 1567, Modifier.at(0, 84))
-            Box(Modifier.at(30, 1400).size(px(706), px(96)).clickable(role = Role.Button, onClick = onStart).semantics { contentDescription = "시작하기" })
-            Box(Modifier.at(235, 1510).size(px(290), px(76)).clickable(role = Role.Button, onClick = onBrowse).semantics { contentDescription = "둘러보기" })
+            Box(Modifier.at(30, 1400).size(px(706), px(96)).clickable(
+                role = Role.Button,
+                onClick = onStart
+            ).semantics { contentDescription = "시작하기" })
+            Box(Modifier.at(235, 1510).size(px(290), px(76)).clickable(
+                role = Role.Button,
+                onClick = onBrowse
+            ).semantics { contentDescription = "둘러보기" })
         }
     }
 }
@@ -139,11 +145,17 @@ private fun Badge(selected: Boolean, centerX: Int, centerY: Int) {
     val d = 46
     Box(
         Modifier.padding(start = px(centerX - d / 2), top = px(centerY - d / 2)).size(px(d)).clip(CircleShape)
-            .background(if (selected) MockColors.Lime2 else Color(0xB3808896)).border(3.dp, if (selected) MockColors.Lime2 else Color.White, CircleShape),
+            .background(if (selected) MockColors.Lime2 else Color(0xB3808896)).border(
+                3.dp,
+                if (selected) MockColors.Lime2 else Color.White,
+                CircleShape
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) Canvas(Modifier.size(px(24))) {
-            val p = Path().apply { moveTo(size.width * 0.12f, size.height * 0.55f); lineTo(size.width * 0.4f, size.height * 0.82f); lineTo(size.width * 0.9f, size.height * 0.2f) }
+            val p = Path().apply { moveTo(size.width * 0.12f, size.height * 0.55f);
+                 lineTo(size.width * 0.4f, size.height * 0.82f);
+                lineTo(size.width * 0.9f, size.height * 0.2f) }
             drawPath(p, MockColors.Navy, style = Stroke(size.width * 0.16f, cap = StrokeCap.Round, join = StrokeJoin.Round))
         }
     }
@@ -172,7 +184,13 @@ private fun PinGlyph() = Canvas(Modifier.size(px(40))) {
 private fun ForkGlyph() = Canvas(Modifier.size(px(40))) {
     val w = size.width
     val st = Stroke(w * 0.09f, cap = StrokeCap.Round)
-    for (x in listOf(0.2f, 0.33f, 0.46f)) drawLine(MockColors.Navy, Offset(w * x, w * 0.1f), Offset(w * x, w * 0.4f), w * 0.07f, StrokeCap.Round)
+    for (x in listOf(0.2f, 0.33f, 0.46f)) drawLine(
+        MockColors.Navy,
+        Offset(w * x, w * 0.1f),
+        Offset(w * x, w * 0.4f),
+        w * 0.07f,
+        StrokeCap.Round
+    )
     drawLine(MockColors.Navy, Offset(w * 0.2f, w * 0.38f), Offset(w * 0.46f, w * 0.38f), w * 0.07f, StrokeCap.Round)
     drawLine(MockColors.Navy, Offset(w * 0.33f, w * 0.38f), Offset(w * 0.33f, w * 0.92f), w * 0.1f, StrokeCap.Round)
     drawOval(MockColors.Navy, Offset(w * 0.64f, w * 0.08f), Size(w * 0.24f, w * 0.42f))
@@ -183,15 +201,30 @@ private fun ForkGlyph() = Canvas(Modifier.size(px(40))) {
 private fun CompassGlyph() = Canvas(Modifier.size(px(46))) {
     val w = size.width
     drawCircle(MockColors.Navy, w * 0.44f, Offset(w / 2, w / 2), style = Stroke(w * 0.07f))
-    val p = Path().apply { moveTo(w * 0.68f, w * 0.32f); lineTo(w * 0.56f, w * 0.56f); lineTo(w * 0.32f, w * 0.68f); lineTo(w * 0.44f, w * 0.44f); close() }
+    val p = Path().apply { moveTo(w * 0.68f, w * 0.32f);
+         lineTo(w * 0.56f, w * 0.56f);
+         lineTo(w * 0.32f, w * 0.68f);
+         lineTo(w * 0.44f, w * 0.44f);
+        close() }
     drawPath(p, MockColors.Navy)
 }
 
 @Composable
 private fun BigLimeButton(text: String, y: Int, onClick: () -> Unit) {
-    Box(Modifier.at(28, y).size(px(704), px(86)).clip(RoundedCornerShape(50)).background(MockColors.Lime2).clickable(role = Role.Button, onClick = onClick), contentAlignment = Alignment.Center) {
+    Box(
+        Modifier.at(28, y)
+            .size(px(704), px(86))
+            .clip(RoundedCornerShape(50))
+            .background(MockColors.Lime2)
+            .clickable(role = Role.Button, onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            CompassGlyph(); Box(Modifier.width(px(20))); MockText(text, 32, weight = FontWeight.ExtraBold); Box(Modifier.width(px(14))); ChevronRight(30)
+            CompassGlyph();
+                 Box(Modifier.width(px(20)));
+                 MockText(text, 32, weight = FontWeight.ExtraBold);
+                 Box(Modifier.width(px(14)));
+                ChevronRight(30)
         }
     }
 }
@@ -205,14 +238,33 @@ private fun PreferencePage(
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref2_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(2f / 3f, "2 / 3")
-            MockText(androidx.compose.ui.res.stringResource(R.string.onb_01), 54, Modifier.at(38, 288), font = MockSerif, weight = FontWeight.ExtraBold)
-            MockText(androidx.compose.ui.res.stringResource(R.string.onb_02), 54, Modifier.at(38, 358), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(
+                androidx.compose.ui.res.stringResource(R.string.onb_01),
+                54,
+                Modifier.at(38, 288),
+                font = MockSerif,
+                weight = FontWeight.ExtraBold
+            )
+            MockText(
+                androidx.compose.ui.res.stringResource(R.string.onb_02),
+                54,
+                Modifier.at(38, 358),
+                font = MockSerif,
+                weight = FontWeight.ExtraBold
+            )
             Underline(38, 436, 285)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_03), 24, Modifier.at(40, 478), color = Ink2)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_04), 24, Modifier.at(40, 516), color = Ink2)
 
             SectionHead({ PinGlyph() }, 572, "어떤 지역을 좋아하세요?", "여러 지역을 선택할 수 있어요.")
-            Box(Modifier.at(580, 596).size(px(152), px(52)).clip(RoundedCornerShape(50)).border(1.dp, Hairline, RoundedCornerShape(50)).background(CardWhite), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.at(580, 596)
+                    .size(px(152), px(52))
+                    .clip(RoundedCornerShape(50))
+                    .border(1.dp, Hairline, RoundedCornerShape(50))
+                    .background(CardWhite),
+                contentAlignment = Alignment.Center
+            ) {
                 MockText(androidx.compose.ui.res.stringResource(R.string.onb_05), 21, color = MockColors.Navy)
             }
             TasteRecommender.REGIONS.forEachIndexed { i, r ->
@@ -223,10 +275,27 @@ private fun PreferencePage(
                         .border(if (sel) 3.dp else 1.dp, if (sel) MockColors.Lime2 else Hairline, RoundedCornerShape(px(20)))
                         .clickable(role = Role.Checkbox) { onToggleRegion(r.key) }.semantics { contentDescription = r.label },
                 ) {
-                    Box(Modifier.padding(start = px(6), top = px(8)).size(px(128), px(140)).clip(RoundedCornerShape(px(14)))) { MockPic(RegionRes.getValue(r.key), 128, 140) }
+                    Box(Modifier.padding(start = px(6), top = px(8)).size(px(128), px(140)).clip(RoundedCornerShape(px(14)))) { MockPic(
+                        RegionRes.getValue(r.key),
+                        128,
+                        140
+                    ) }
                     Badge(sel, 6 + 103, 8 + 25)
-                    MockText(r.label, 26, Modifier.padding(start = px(12), top = px(160)), color = MockColors.Navy, weight = FontWeight.ExtraBold)
-                    MockText(r.desc, 18, Modifier.padding(start = px(12), top = px(200)).width(px(124)), color = Gray, maxLines = 2, lineHeightPx = 25)
+                    MockText(
+                        r.label,
+                        26,
+                        Modifier.padding(start = px(12), top = px(160)),
+                        color = MockColors.Navy,
+                        weight = FontWeight.ExtraBold
+                    )
+                    MockText(
+                        r.desc,
+                        18,
+                        Modifier.padding(start = px(12), top = px(200)).width(px(124)),
+                        color = Gray,
+                        maxLines = 2,
+                        lineHeightPx = 25
+                    )
                 }
             }
 
@@ -240,14 +309,27 @@ private fun PreferencePage(
                         .border(if (sel) 3.dp else 1.dp, if (sel) MockColors.Lime2 else Hairline, RoundedCornerShape(px(20)))
                         .clickable(role = Role.Checkbox) { onToggleFood(f.key) }.semantics { contentDescription = f.label },
                 ) {
-                    Box(Modifier.padding(start = px(6), top = px(8)).size(px(164), px(98)).clip(RoundedCornerShape(px(14)))) { MockPic(FoodRes.getValue(f.key), 164, 98) }
+                    Box(Modifier.padding(start = px(6), top = px(8)).size(px(164), px(98)).clip(RoundedCornerShape(px(14)))) { MockPic(
+                        FoodRes.getValue(f.key),
+                        164,
+                        98
+                    ) }
                     Badge(sel, 6 + 137, 8 + 25)
-                    MockText(f.label, 25, Modifier.padding(start = px(12), top = px(112)), color = MockColors.Navy, weight = FontWeight.ExtraBold)
+                    MockText(
+                        f.label,
+                        25,
+                        Modifier.padding(start = px(12), top = px(112)),
+                        color = MockColors.Navy,
+                        weight = FontWeight.ExtraBold
+                    )
                     MockText(f.desc, 17, Modifier.padding(start = px(12), top = px(146)).width(px(160)), color = Gray)
                 }
             }
             BigLimeButton("이 취향으로 추천받기", 1440, onNext)
-            Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater),
+                contentAlignment = Alignment.Center
+            ) {
                 MockText(androidx.compose.ui.res.stringResource(R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }
@@ -268,7 +350,13 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref3_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(1f, "3 / 3")
-            MockText(androidx.compose.ui.res.stringResource(R.string.onb_07), 58, Modifier.at(38, 296), font = MockSerif, weight = FontWeight.ExtraBold)
+            MockText(
+                androidx.compose.ui.res.stringResource(R.string.onb_07),
+                58,
+                Modifier.at(38, 296),
+                font = MockSerif,
+                weight = FontWeight.ExtraBold
+            )
             Underline(38, 380, 330)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_08), 25, Modifier.at(40, 426), color = Ink2)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_09), 25, Modifier.at(40, 466), color = Ink2)
@@ -276,13 +364,24 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
 
             SectionHead({ PinGlyph() }, 572, "선택한 지역", "이런 지역의 노포를 찾아드릴게요.")
             if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
-            Row(Modifier.at(0, 664).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(30)), horizontalArrangement = Arrangement.spacedBy(px(16))) {
+            Row(
+                Modifier.at(0, 664).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(30)),
+                horizontalArrangement = Arrangement.spacedBy(px(16))
+            ) {
                 picked.forEach { r ->
                     Row(
-                        Modifier.size(px(342), px(154)).clip(RoundedCornerShape(px(22))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(22))).background(CardWhite).padding(px(8)),
+                        Modifier.size(px(342), px(154))
+                            .clip(RoundedCornerShape(px(22)))
+                            .border(2.dp, MockColors.Lime2, RoundedCornerShape(px(22)))
+                            .background(CardWhite)
+                            .padding(px(8)),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Box(Modifier.size(px(138), px(138)).clip(RoundedCornerShape(px(14)))) { MockPic(RegionRes.getValue(r.key), 138, 138) }
+                        Box(Modifier.size(px(138), px(138)).clip(RoundedCornerShape(px(14)))) { MockPic(
+                            RegionRes.getValue(r.key),
+                            138,
+                            138
+                        ) }
                         Column(Modifier.padding(start = px(16)), verticalArrangement = Arrangement.spacedBy(px(4))) {
                             MockText(r.label, 27, color = MockColors.Navy, weight = FontWeight.ExtraBold)
                             MockText(r.desc, 18, Modifier.width(px(160)), color = Gray, maxLines = 2, lineHeightPx = 25)
@@ -292,12 +391,34 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             }
 
             SectionHead({ ForkGlyph() }, 836, "선택한 음식 취향", "이런 음식을 중심으로 추천해드릴게요.")
-            if (pickedFoods.isEmpty()) MockText(androidx.compose.ui.res.stringResource(R.string.onb_12), 22, Modifier.at(40, 940), color = Gray)
-            Row(Modifier.at(0, 930).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(28)), horizontalArrangement = Arrangement.spacedBy(px(10))) {
+            if (pickedFoods.isEmpty()) MockText(
+                androidx.compose.ui.res.stringResource(R.string.onb_12),
+                22,
+                Modifier.at(40, 940),
+                color = Gray
+            )
+            Row(
+                Modifier.at(0, 930).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(28)),
+                horizontalArrangement = Arrangement.spacedBy(px(10))
+            ) {
                 pickedFoods.forEach { f ->
-                    Box(Modifier.size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(2.dp, MockColors.Lime2, RoundedCornerShape(px(20))).background(CardWhite)) {
-                        Box(Modifier.padding(start = px(6), top = px(8)).size(px(160), px(96)).clip(RoundedCornerShape(px(14)))) { MockPic(FoodRes.getValue(f.key), 164, 98) }
-                        MockText(f.label, 25, Modifier.padding(start = px(12), top = px(110)), color = MockColors.Navy, weight = FontWeight.ExtraBold)
+                    Box(Modifier.size(px(172), px(176)).clip(RoundedCornerShape(px(20))).border(
+                        2.dp,
+                        MockColors.Lime2,
+                        RoundedCornerShape(px(20))
+                    ).background(CardWhite)) {
+                        Box(Modifier.padding(start = px(6), top = px(8)).size(px(160), px(96)).clip(RoundedCornerShape(px(14)))) { MockPic(
+                            FoodRes.getValue(f.key),
+                            164,
+                            98
+                        ) }
+                        MockText(
+                            f.label,
+                            25,
+                            Modifier.padding(start = px(12), top = px(110)),
+                            color = MockColors.Navy,
+                            weight = FontWeight.ExtraBold
+                        )
                         MockText(f.desc, 17, Modifier.padding(start = px(12), top = px(144)).width(px(156)), color = Gray)
                     }
                 }
@@ -309,15 +430,31 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                 val ratingMap by container.ratings.collectAsStateWithLifecycle()
                 val fix by container.lastFix.collectAsStateWithLifecycle()
                 val card = StoreCards.of(st, year, ratingMap, fix, emptySet())
-                Row(Modifier.at(20, 1218).size(px(722), px(206)).clip(RoundedCornerShape(px(22))).background(CardWhite).border(1.dp, Hairline, RoundedCornerShape(px(22)))) {
+                Row(Modifier.at(20, 1218).size(px(722), px(206)).clip(RoundedCornerShape(px(22))).background(CardWhite).border(
+                    1.dp,
+                    Hairline,
+                    RoundedCornerShape(px(22))
+                )) {
                     Box(Modifier.size(px(338), px(206)).clip(RoundedCornerShape(px(18)))) {
                         StorePhoto(st, Modifier.fillMaxSize())
-                        Box(Modifier.padding(start = px(284), top = px(14)).size(px(44)).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) { BookmarkIcon(26, color = MockColors.Navy) }
+                        Box(
+                            Modifier.padding(start = px(284), top = px(14)).size(px(44)).clip(CircleShape).background(Color.White),
+                            contentAlignment = Alignment.Center
+                        ) { BookmarkIcon(26, color = MockColors.Navy) }
                     }
-                    Column(Modifier.padding(start = px(18), top = px(10), end = px(10)), verticalArrangement = Arrangement.spacedBy(px(6))) {
+                    Column(
+                        Modifier.padding(start = px(18), top = px(10), end = px(10)),
+                        verticalArrangement = Arrangement.spacedBy(px(6))
+                    ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(px(10))) {
-                            listOfNotNull(st.sigungu.takeIf { it.isNotBlank() }, pickedFoods.firstOrNull { TasteRecommender.matchesFood(st, it) }?.label).forEach { t ->
-                                Box(Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFEFEBDD)).padding(horizontal = px(16), vertical = px(4))) { MockText(t, 18, color = Gray) }
+                            listOfNotNull(
+                                st.sigungu.takeIf { it.isNotBlank() },
+                                pickedFoods.firstOrNull { TasteRecommender.matchesFood(st, it) }?.label
+                            ).forEach { t ->
+                                Box(Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFEFEBDD)).padding(
+                                    horizontal = px(16),
+                                    vertical = px(4)
+                                )) { MockText(t, 18, color = Gray) }
                             }
                         }
                         MockText(st.name, 30, Modifier.width(px(330)), font = MockSerif, weight = FontWeight.ExtraBold)
@@ -327,7 +464,10 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                 }
             }
             BigLimeButton("노포 추천 받기", 1440, onStart)
-            Box(Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater),
+                contentAlignment = Alignment.Center
+            ) {
                 MockText(androidx.compose.ui.res.stringResource(R.string.onb_06), 27, color = Gray, weight = FontWeight.Medium)
             }
         }

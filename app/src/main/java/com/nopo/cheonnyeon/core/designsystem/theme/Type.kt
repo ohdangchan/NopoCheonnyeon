@@ -13,7 +13,11 @@ import androidx.compose.ui.unit.sp
 import com.nopo.cheonnyeon.R
 
 /** 업력·세월 숫자와 제목: 시안의 나눔명조 ExtraBold (옛 이름 BlackHanSans 유지) */
-val BlackHanSans = FontFamily(Font(R.font.nanum_myeongjo_extrabold, FontWeight.ExtraBold), Font(R.font.nanum_myeongjo_extrabold, FontWeight.Bold), Font(R.font.nanum_myeongjo_extrabold, FontWeight.Normal))
+val BlackHanSans = FontFamily(
+    Font(R.font.nanum_myeongjo_extrabold, FontWeight.ExtraBold),
+    Font(R.font.nanum_myeongjo_extrabold, FontWeight.Bold),
+    Font(R.font.nanum_myeongjo_extrabold, FontWeight.Normal)
+)
 
 /** 본문: Noto Sans KR TTF(10MB)는 APK 크기 때문에 넣지 않고 시스템 한글 글꼴을 쓴다 (S-102 허용 대체). */
 val NopoSans = FontFamily.SansSerif

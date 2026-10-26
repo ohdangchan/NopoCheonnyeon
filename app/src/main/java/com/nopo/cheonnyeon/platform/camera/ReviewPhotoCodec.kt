@@ -42,7 +42,9 @@ object ReviewPhotoCodec {
     fun fromUri(context: android.content.Context, uri: android.net.Uri): String? = runCatching {
         val bmp = if (Build.VERSION.SDK_INT >= 28) {
             // ImageDecoder는 회전(EXIF)을 알아서 반영한다
-            android.graphics.ImageDecoder.decodeBitmap(android.graphics.ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
+            android.graphics
+                .ImageDecoder
+                .decodeBitmap(android.graphics.ImageDecoder.createSource(context.contentResolver, uri)) { decoder, info, _ ->
                 val big = max(info.size.width, info.size.height)
                 if (big > MAX_SIDE * 2) decoder.setTargetSampleSize(big / MAX_SIDE)
                 decoder.allocator = android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE

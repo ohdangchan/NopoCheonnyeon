@@ -94,14 +94,27 @@ data class VerifyUiState(
 data class RecentVisit(val store: Store, val years: Int, val at: Long)
 
 /** 확인 화면에 보여 줄 영수증에서 읽은 값(없으면 null) */
-data class ReceiptInfo(val storeName: String, val paidAt: LocalDateTime?, val amount: Long?, val address: String, val hash: String?, val approval: String?)
+data class ReceiptInfo(
+    val storeName: String,
+    val paidAt: LocalDateTime?,
+    val amount: Long?,
+    val address: String,
+    val hash: String?,
+    val approval: String?
+)
 
 enum class ScanPhase { NONE, LASER, HIGHLIGHT }
 
 private val APPROVAL_REGEX = Regex("승\\s*인\\s*번\\s*호\\s*[:：]?\\s*([0-9]{4,})")
 
 /** AI 촬영 도우미에 보낼 요청(동의를 기다리는 동안 들고 있는다) */
-private class HintRequest(val storeName: String, val lines: List<String>, val reason: String, val imageBase64: String?, val subject: String = "영수증")
+private class HintRequest(
+    val storeName: String,
+    val lines: List<String>,
+    val reason: String,
+    val imageBase64: String?,
+    val subject: String = "영수증"
+)
 
 /** 방문 인증 화면 흐름 (S-603·S-606~S-609). 진행 단계·시도 횟수는 SavedStateHandle에 저장해 회전해도 이어진다. */
 class VerifyViewModel(
@@ -165,7 +178,11 @@ class VerifyViewModel(
             runCatching {
                 val list = container.database.myVisitDao().observeAll().first()
                     .filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedByDescending { it.lastVisitedAt }.take(5)
-                val rows = list.mapNotNull { v -> container.catalog.byId(v.storeId)?.let { RecentVisit(it, v.yearsAwarded, v.lastVisitedAt) } }
+                val rows = list.mapNotNull { v -> container.catalog.byId(v.storeId)?.let { RecentVisit(
+                    it,
+                    v.yearsAwarded,
+                    v.lastVisitedAt
+                ) } }
                 _state.update { it.copy(recent = rows) }
             }
         }
@@ -258,7 +275,12 @@ class VerifyViewModel(
         withContext(Dispatchers.Default) {
             try {
                 val scale = FRAME_SIDE.toFloat() / maxOf(bitmap.width, bitmap.height)
-                val frame = if (scale < 1f) Bitmap.createScaledBitmap(bitmap, (bitmap.width * scale).toInt(), (bitmap.height * scale).toInt(), true) else bitmap.copy(Bitmap.Config.ARGB_8888, false)
+                val frame = if (scale < 1f) Bitmap.createScaledBitmap(
+                    bitmap,
+                    (bitmap.width * scale).toInt(),
+                    (bitmap.height * scale).toInt(),
+                    true
+                ) else bitmap.copy(Bitmap.Config.ARGB_8888, false)
                 _state.update { it.copy(scanFrame = frame) }
                 // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
                 proofFile?.let { f ->
@@ -289,7 +311,8 @@ class VerifyViewModel(
         if (!container.ai.available) return
         val req = HintRequest(storeName, lines, hintReason(error), imageBase64, subject)
         viewModelScope.launch {
-            if (container.settings.aiConsent.first()) runHint(req) else { pendingHint = req; _state.update { it.copy(askAiConsent = true) } }
+            if (container.settings.aiConsent.first()) runHint(req) else { pendingHint = req;
+                _state.update { it.copy(askAiConsent = true) } }
         }
     }
 
@@ -360,11 +383,15 @@ class VerifyViewModel(
                 else -> {
                     val distance = GeoDistance.meters(fix.lat, fix.lng, lat, lng)
                     val err = PhotoMatcher.judgeLocation(distance, fix.accuracyM)
-                    val inRange = distance <= VerificationConfig.PHOTO_MAX_DISTANCE_M && fix.accuracyM <= VerificationConfig.PHOTO_MAX_ACCURACY_M
+                    val inRange = distance <= VerificationConfig.PHOTO_MAX_DISTANCE_M && fix
+                        .accuracyM <= VerificationConfig
+                        .PHOTO_MAX_ACCURACY_M
                     saved[KEY_IN_RANGE] = inRange
                     _state.update {
                         it.copy(
-                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(), myLat = fix.lat, myLng = fix.lng,
+                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(), myLat = fix
+                                .lat, myLng = fix
+                                .lng,
                             errorMeters = if (err == AppError.E_ACCURACY) fix.accuracyM.toInt() else distance.toInt(),
                         )
                     }
@@ -485,7 +512,12 @@ class VerifyViewModel(
         const val HIGHLIGHT_MS = 1_800L
         const val FAIL_HIGHLIGHT_MS = 700L
         const val FRAME_SIDE = 900
-        val HINT_ERRORS = setOf(AppError.E_RECEIPT_UNREADABLE, AppError.E_RECEIPT_MISMATCH, AppError.E_RECEIPT_NO_DATE, AppError.E_PHOTO_NO_MATCH)
+        val HINT_ERRORS = setOf(
+            AppError.E_RECEIPT_UNREADABLE,
+            AppError.E_RECEIPT_MISMATCH,
+            AppError.E_RECEIPT_NO_DATE,
+            AppError.E_PHOTO_NO_MATCH
+        )
         const val OCR_MAX_SIDE = 1_600
         const val RESTORE_WAIT_MS = 10_000L
     }
