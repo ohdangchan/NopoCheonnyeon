@@ -204,7 +204,7 @@ private fun PageBody(index: Int, page: BookPage?, stats: BookStats, onStamp: (Pa
         page.slots.forEachIndexed { i, s -> SlotAt(s, ColX[i % 3], 100 + (i / 3) * 122, 96, onStamp) }
         if (page.slots.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                MockText("영수증 인증으로\n첫 도장을 찍어 보세요", 22, color = Faint, align = TextAlign.Center, maxLines = 2, lineHeightPx = 32)
+                MockText(stringResource(R.string.ui_passportbo_03), 22, color = Faint, align = TextAlign.Center, maxLines = 2, lineHeightPx = 32)
             }
         }
         Box(Modifier.fillMaxWidth().offset(y = px(PAGE_H - 36)), contentAlignment = Alignment.TopCenter) { MockText("– ${index + 1} –", 20,

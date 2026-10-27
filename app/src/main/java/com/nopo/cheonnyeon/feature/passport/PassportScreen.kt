@@ -247,7 +247,7 @@ fun PassportScreen(
                     Box(Modifier.at(18, 1190).size(px(724),
                         px(230)).clip(RoundedCornerShape(px(20))).background(MockColors.Card).border(1.dp, MockColors.CardLine,
                         RoundedCornerShape(px(20))), contentAlignment = Alignment.Center) {
-                        MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center,
+                        MockText(stringResource(R.string.ui_passport_01), 24, color = MockColors.Hint, align = TextAlign.Center,
                             maxLines = 2, lineHeightPx = 36)
                     }
                 } else {
@@ -398,7 +398,7 @@ private fun PassportAll(
             }
         } else if (visited.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(px(30)), contentAlignment = Alignment.Center) {
-                MockText("아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!", 24, color = MockColors.Hint, align = TextAlign.Center, maxLines = 2,
+                MockText(stringResource(R.string.ui_passport_01), 24, color = MockColors.Hint, align = TextAlign.Center, maxLines = 2,
                     lineHeightPx = 36)
             }
         } else {

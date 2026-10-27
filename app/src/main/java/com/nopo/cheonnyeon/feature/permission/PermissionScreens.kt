@@ -226,22 +226,22 @@ private fun AlbumGlyph() {
 /** 시안 15: 카메라 권한이 필요해요 */
 @Composable
 fun CameraPermissionScreen(onAllow: () -> Unit, onLater: () -> Unit) =
-    StaticScreen(R.drawable.mk2_p_cam, 1384, 88, "나중에 하기", "카메라 허용하기", { CameraGlyph2() }, onLater, onAllow)
+    StaticScreen(R.drawable.mk2_p_cam, 1384, 88, stringResource(R.string.ui_permission_07), stringResource(R.string.ui_permission_08), { CameraGlyph2() }, onLater, onAllow)
 
 /** 시안 16: 알림을 받아볼까요? */
 @Composable
 fun NotificationPermissionScreen(onAllow: () -> Unit, onLater: () -> Unit) =
-    StaticScreen(R.drawable.mk2_p_notif, 1394, 88, "나중에", "알림 허용하기", { BellGlyph() }, onLater, onAllow)
+    StaticScreen(R.drawable.mk2_p_notif, 1394, 88, stringResource(R.string.ui_permission_09), stringResource(R.string.ui_permission_10), { BellGlyph() }, onLater, onAllow)
 
 /** 시안 20: 위치 권한이 필요해요 */
 @Composable
 fun LocationPermissionScreen(onAllow: () -> Unit, onLater: () -> Unit) =
-    StaticScreen(R.drawable.mk2_p_loc, 1422, 88, "지금 안 함", "허용하기", { PinGlyph() }, onLater, onAllow)
+    StaticScreen(R.drawable.mk2_p_loc, 1422, 88, stringResource(R.string.ui_permission_11), stringResource(R.string.ui_permission_12), { PinGlyph() }, onLater, onAllow)
 
 /** 시안 17: 권한이 꺼져 있어요 (설정에서 켜야 할 때) */
 @Composable
 fun PermissionOffScreen(onOpenSettings: () -> Unit, onLater: () -> Unit) =
-    StaticScreen(R.drawable.mk2_p_off, 1420, 88, "나중에", "설정 열기", { GearGlyph() }, onLater, onOpenSettings)
+    StaticScreen(R.drawable.mk2_p_off, 1420, 88, stringResource(R.string.ui_permission_09), stringResource(R.string.ui_permission_13), { GearGlyph() }, onLater, onOpenSettings)
 
 /** 처음 권한 안내에서 고를 수 있는 여섯 가지. 번호는 [PermissionIntroHost] 와 맞춘다. */
 class IntroPermRow(val title: String, val required: Boolean, val desc: String)
@@ -310,7 +310,7 @@ private fun IntroPermRowItem(index: Int, row: IntroPermRow, on: Boolean, onToggl
                 Box(
                     Modifier.clip(RoundedCornerShape(50)).background(if (row.required) RequiredTag else OptionalTag)
                         .padding(horizontal = px(14), vertical = px(3)),
-                ) { MockText(if (row.required) "필수" else "선택", 19, weight = FontWeight.Bold) }
+                ) { MockText(if (row.required) stringResource(R.string.ui_permission_24) else stringResource(R.string.ui_permission_25), 19, weight = FontWeight.Bold) }
             }
             MockText(row.desc, 20, color = BodyGray, maxLines = 2, lineHeightPx = 28)
         }
@@ -350,14 +350,14 @@ fun PermissionIntroScreen(
                 Modifier.fillMaxWidth().size(px(10), px(92)).clip(RoundedCornerShape(50)).background(MockColors.Navy)
                     .clickable(role = Role.Button, onClick = onAllowAll),
                 contentAlignment = Alignment.Center,
-            ) { MockText("모두 허용하고 시작하기  ›", 30, color = MockColors.Lime2, weight = FontWeight.ExtraBold) }
+            ) { MockText(stringResource(R.string.ui_permission_27), 30, color = MockColors.Lime2, weight = FontWeight.ExtraBold) }
             Box(
                 Modifier.fillMaxWidth()
                     .padding(top = px(8))
                     .clickable(role = Role.Button, onClick = onAllowSelected)
                     .padding(vertical = px(12)),
                 contentAlignment = Alignment.Center,
-            ) { MockText("선택한 권한만 허용", 24, weight = FontWeight.Bold, color = Color(0xFF374151)) }
+            ) { MockText(stringResource(R.string.ui_permission_28), 24, weight = FontWeight.Bold, color = Color(0xFF374151)) }
         }
     }
 }
@@ -437,10 +437,10 @@ fun PermissionManageScreen(states: List<Boolean>, onBack: () -> Unit, onRow: (In
             ) { AlbumGlyph() }
             MockText(stringResource(R.string.perm_01), 28, Modifier.at(142, ay + 20), weight = FontWeight.ExtraBold, font = MockSans)
             MockText(
-                "리뷰에 음식 사진을 올릴 때\n앨범에서 고를 수 있어요.", 20, Modifier.at(142, ay + 62).size(px(360), px(60)),
+                stringResource(R.string.ui_permission_29), 20, Modifier.at(142, ay + 62).size(px(360), px(60)),
                 color = BodyGray, maxLines = 2, lineHeightPx = 28,
             )
-            ManageRowControls(6, ay, albumOn, if (albumOn) "허용됨" else "허용 안 됨", onRow)
+            ManageRowControls(6, ay, albumOn, if (albumOn) stringResource(R.string.ui_permission_30) else stringResource(R.string.ui_permission_31), onRow)
             MockPic(R.drawable.mk2_pm_info, 736, 98, Modifier.at(12, 1550))
             Box(Modifier.at(12, 1550).size(px(736), px(98)).clickable(role = Role.Button, onClick = onInfo))
         }

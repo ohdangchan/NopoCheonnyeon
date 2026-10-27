@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.splash
 
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.LinearEasing
@@ -63,7 +64,7 @@ fun SplashScreen() {
             }
         }
         Box(Modifier.align(Alignment.TopCenter).offset(y = maxHeight * 0.940f - 12.dp)) {
-            MockText("맛있는 여정을 준비하고 있어요…", 24, color = Color(0xFF4B5563))
+            MockText(stringResource(R.string.ui_splash_01), 24, color = Color(0xFF4B5563))
         }
     }
 }

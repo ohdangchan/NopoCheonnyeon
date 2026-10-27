@@ -96,7 +96,7 @@ fun MockSettingsScreen(
                         .data(myVm.photoFile)
                         .memoryCacheKey("profile-$photoVersion")
                         .build(),
-                    contentDescription = "프로필 사진", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                    contentDescription = stringResource(R.string.ui_my_01), contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
                 ) else Canvas(Modifier.fillMaxSize()) {
                     val w = size.width
                     drawCircle(MockColors.Navy, w * 0.17f, Offset(w * 0.5f, w * 0.38f))
@@ -104,7 +104,7 @@ fun MockSettingsScreen(
                 }
             }
             MockText(
-                nickname.ifBlank { "노포여행자" },
+                nickname.ifBlank { stringResource(R.string.ui_my_02) },
                 34,
                 Modifier.at(198, 375).width(px(480)),
                 font = MockBrush,
@@ -148,7 +148,7 @@ fun MockSettingsScreen(
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             MockText(
-                if (granted) "허용됨" else "허용 안 됨",
+                if (granted) stringResource(R.string.ui_permission_30) else stringResource(R.string.ui_permission_31),
                 22,
                 Modifier.at(586, 1147).width(px(100)),
                 weight = FontWeight.Medium,

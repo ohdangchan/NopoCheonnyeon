@@ -58,6 +58,4 @@ internal val NopoMaterialTypography = Typography(
 @Immutable
 data class NopoExtraTypography(
     val metric: TextStyle = TextStyle(fontFamily = JetBrainsMono, fontWeight = FontWeight.SemiBold, fontSize = 13.sp),
-    val metricSmall: TextStyle = TextStyle(fontFamily = JetBrainsMono, fontWeight = FontWeight.SemiBold, fontSize = 11.sp),
-    val stampLabel: TextStyle = TextStyle(fontFamily = NopoSans, fontWeight = FontWeight.Bold, fontSize = 10.sp, lineHeight = 1.1.em),
 )

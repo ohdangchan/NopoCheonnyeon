@@ -1,5 +1,7 @@
 package com.nopo.cheonnyeon.feature.permission
 
+import com.nopo.cheonnyeon.R
+import androidx.compose.ui.res.stringResource
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -103,23 +105,23 @@ fun PermissionIntroHost(container: AppContainer) {
 
     if (asking == ASK_SHARE) AlertDialog(
         onDismissRequest = {},
-        title = { Text("방문 기록 공유") },
-        text = { Text("다른 사용자와 내 방문 기록을 공유하고 나만의 노포 여정을 보여줄까요? 설정에서 언제든 바꿀 수 있어요.") },
-        confirmButton = { TextButton({ saveVisibility(VISIBILITY_ALL); nextAsk(ASK_ANALYTICS) }) { Text("허용") } },
-        dismissButton = { TextButton({ saveVisibility(VISIBILITY_PRIVATE); nextAsk(ASK_ANALYTICS) }) { Text("허용 안 함") } },
+        title = { Text(stringResource(R.string.ui_permission_01)) },
+        text = { Text(stringResource(R.string.ui_permission_02)) },
+        confirmButton = { TextButton({ saveVisibility(VISIBILITY_ALL); nextAsk(ASK_ANALYTICS) }) { Text(stringResource(R.string.ui_permission_03)) } },
+        dismissButton = { TextButton({ saveVisibility(VISIBILITY_PRIVATE); nextAsk(ASK_ANALYTICS) }) { Text(stringResource(R.string.ui_permission_04)) } },
     )
     if (asking == ASK_ANALYTICS) AlertDialog(
         onDismissRequest = {},
-        title = { Text("앱 사용 데이터 수집") },
+        title = { Text(stringResource(R.string.ui_permission_05)) },
         text = {
-            Text("서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.")
+            Text(stringResource(R.string.ui_permission_06))
         },
         confirmButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(true) };
              asking = ASK_NONE;
-            finish() }) { Text("허용") } },
+            finish() }) { Text(stringResource(R.string.ui_permission_03)) } },
         dismissButton = { TextButton({ scope.launch { container.settings.setAnalyticsOn(false) };
              asking = ASK_NONE;
-            finish() }) { Text("허용 안 함") } },
+            finish() }) { Text(stringResource(R.string.ui_permission_04)) } },
     )
 }
 

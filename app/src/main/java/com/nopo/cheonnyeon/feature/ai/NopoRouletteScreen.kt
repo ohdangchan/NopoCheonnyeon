@@ -31,6 +31,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -400,11 +401,11 @@ private fun CondChip(text: String, modifier: Modifier) {
 /** 조건 네 칸(지역·가격대·음식 종류·도보 거리)과 눌렀을 때 뜨는 목록 */
 @Composable
 private fun ConditionRow(vm: NopoRouletteViewModel, state: NopoRouletteState, enabled: Boolean) {
-    var menu by remember { mutableStateOf(0) }
+    var menu by remember { mutableIntStateOf(0) }
     val labels = listOf(
         state.filter.sido?.let { "$it 전체" } ?: "전국",
         state.price,
-        state.filter.cuisine ?: "아무거나",
+        state.filter.cuisine ?: stringResource(R.string.ui_noporoulet_03),
         walkLabel(state.filter.walkMeters),
     )
     labels.forEachIndexed { i, label ->
@@ -442,7 +443,7 @@ private fun AnalysisNotice() {
         CircularProgressIndicator(Modifier.size(px(44)), color = MockColors.Navy, strokeWidth = 3.dp)
         Box(Modifier.width(px(18)))
         MockText(
-            "작성한 리뷰나 다녀온 가게를 분석해 AI가 취향 저격 맛집을 찾고 있어요! 조금만 기다려 주세요.",
+            stringResource(R.string.ui_noporoulet_07),
             22, color = MockColors.Navy, weight = FontWeight.Bold, maxLines = 3, lineHeightPx = 30,
         )
     }
@@ -462,7 +463,7 @@ private fun SpinButton(spinning: Boolean, onSpin: () -> Unit) {
             Box(Modifier.width(px(18)))
             MockPic(R.drawable.mk2_r_dice, 60, 58)
             Box(Modifier.width(px(14)))
-            MockText(if (spinning) "돌리는 중…" else "룰렛 돌리기", 33, weight = FontWeight.ExtraBold)
+            MockText(if (spinning) stringResource(R.string.ui_noporoulet_08) else stringResource(R.string.ui_noporoulet_09), 33, weight = FontWeight.ExtraBold)
         }
     }
 }
@@ -623,7 +624,7 @@ private fun PickInfoCard(card: StoreCardData, onBookmark: () -> Unit) {
     MockText(card.oneLiner, 22, Modifier.at(50, 1078).width(px(560)), color = RouletteInkGray)
     Row(Modifier.at(50, 1125), horizontalArrangement = Arrangement.spacedBy(px(12))) {
         val tags = listOfNotNull(RoulettePicker.cuisineOf(store), store.foundedYear?.let { "${it / 10 * 10}년대" },
-            store.sigungu.takeIf { it.isNotBlank() }, "노포")
+            store.sigungu.takeIf { it.isNotBlank() }, stringResource(R.string.ui_noporoulet_11))
         tags.forEach { t ->
             Box(Modifier.clip(RoundedCornerShape(50)).background(RouletteChipBg).padding(horizontal = px(20), vertical = px(7))) {
                 MockText(t, 21, color = RouletteInkGray)

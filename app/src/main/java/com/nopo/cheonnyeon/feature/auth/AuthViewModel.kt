@@ -50,8 +50,6 @@ class AuthViewModel(private val repo: AuthRepository, private val onKeepLogin: (
     fun googleSignIn(token: String) =
         run(keepBusy = true, onSuccess = { Analytics.login() }) { repo.signInWithGoogle(token) }
 
-    fun showMessage(error: AppError) = _state.update { it.copy(error = error) }
-
     fun createProfile(nickname: String) = run { repo.createProfile(nickname) }
 
     fun sendReset(email: String) =

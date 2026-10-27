@@ -82,6 +82,7 @@ import com.nopo.cheonnyeon.core.designsystem.theme.NopoTheme
 import com.nopo.cheonnyeon.core.util.GeoDistance
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.feature.common.StoreCards
+import java.util.Locale
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -183,7 +184,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 StarIcon(32)
                                 Box(Modifier.width(px(10)))
-                                MockText(String.format("%.1f", rating.average), 32, color = Color.White, weight = FontWeight.Bold)
+                                MockText(String.format(Locale.US, "%.1f", rating.average), 32, color = Color.White, weight = FontWeight.Bold)
                             }
                             MockText(stringResource(R.string.det_rating_n,
                                 "%,d".format(rating.count)), 19, color = Color(0xCCFFFFFF))
@@ -212,7 +213,7 @@ fun StoreDetailScreen(vm: StoreDetailViewModel, onBack: () -> Unit, onVerify: ()
                         it, state.years) } ?: stringResource(R.string.det_years_trad, state.years),
                     33, Modifier.at(189, 710).width(px(390)), font = MockSerif, weight = FontWeight.ExtraBold,
                 )
-                MockText("한 그릇에 담긴 세월,\n지금도 변함없는 맛으로\n사람들을 맞이합니다.", 22, Modifier.at(189, 758).width(px(380)),
+                MockText(stringResource(R.string.ui_storedetai_01), 22, Modifier.at(189, 758).width(px(380)),
                     color = MockColors.Ink2, maxLines = 3, lineHeightPx = 31)
 
                 // 대표 메뉴

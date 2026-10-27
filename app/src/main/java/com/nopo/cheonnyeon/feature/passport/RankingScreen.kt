@@ -116,7 +116,7 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                         Podium(top[2], 505, 556, 237, 425, Brush.verticalGradient(listOf(Color(0xFFF8DCC4), Color(0xFFFBEFE3))),
                             Color(0xFFB8692B), 3)
                     } else if (tab == 0) {
-                        MockText("아직 순위를 보여 줄 만큼 이용자가 모이지 않았어요.\n방문 인증을 하면 내 순위가 아래에 나와요.", 24, Modifier.at(40, 620).width(px(680)),
+                        MockText(stringResource(R.string.ui_ranking_01), 24, Modifier.at(40, 620).width(px(680)),
                             color = Gray, align = TextAlign.Center, maxLines = 3, lineHeightPx = 36)
                     } else {
                         MockText(if (tab == 1) "서울 랭킹은 준비 중이에요." else "친구 랭킹은 준비 중이에요.\n친구를 초대하면 함께 겨룰 수 있어요.", 24, Modifier.at(40,
@@ -132,7 +132,7 @@ fun RankingScreen(vm: HallOfFameViewModel, onBack: () -> Unit, onOpenStore: (Str
                             topEnd = px(26)))) {
                             Row(Modifier.fillMaxWidth().padding(horizontal = px(22), vertical = px(22)),
                                 verticalAlignment = Alignment.CenterVertically) {
-                                MockText("전체 랭킹", 28, font = MockSerif, weight = FontWeight.ExtraBold)
+                                MockText(stringResource(R.string.ui_ranking_02), 28, font = MockSerif, weight = FontWeight.ExtraBold)
                                 Box(Modifier.width(px(14)))
                                 MockText("TOP 100", 21, color = Gray)
                                 Box(Modifier.weight(1f))
@@ -204,10 +204,10 @@ private fun BoxScope.Podium(row: RankRow, x: Int, y: Int, w: Int, h: Int, bg: Br
     val cy = ny + 106
     MockText("${row.user.stores}곳", 22, Modifier.at(x + 14, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold,
         align = TextAlign.Center)
-    MockText("방문한 노포", 15, Modifier.at(x + 14, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
+    MockText(stringResource(R.string.ui_ranking_03), 15, Modifier.at(x + 14, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
     MockText("${titleCount(years)}개", 22, Modifier.at(x + w / 2, cy).width(px(w / 2 - 14)), weight = FontWeight.ExtraBold,
         align = TextAlign.Center)
-    MockText("수집한 칭호", 15, Modifier.at(x + w / 2, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
+    MockText(stringResource(R.string.ui_ranking_04), 15, Modifier.at(x + w / 2, cy + 34).width(px(w / 2 - 14)), color = Gray, align = TextAlign.Center)
 }
 
 @Composable
@@ -231,12 +231,12 @@ private fun RankLine(r: RankRow) {
         Column(Modifier.width(px(130)), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_store, 34,
                 33); Box(Modifier.width(px(8))); MockText("${r.user.stores}곳", 22, weight = FontWeight.ExtraBold) }
-            MockText("방문한 노포", 15, color = Gray)
+            MockText(stringResource(R.string.ui_ranking_03), 15, color = Gray)
         }
         Column(Modifier.width(px(130)), horizontalAlignment = Alignment.CenterHorizontally) {
             Row(verticalAlignment = Alignment.CenterVertically) { MockPic(R.drawable.mk2_k_ic_ticket, 34,
                 35); Box(Modifier.width(px(8))); MockText("${titleCount(r.user.years)}개", 22, weight = FontWeight.ExtraBold) }
-            MockText("수집한 칭호", 15, color = Gray)
+            MockText(stringResource(R.string.ui_ranking_04), 15, color = Gray)
         }
         ChevronRight(26)
     }

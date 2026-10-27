@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import com.nopo.cheonnyeon.R
+import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -420,7 +421,7 @@ fun RatingText(rating: Double?, count: Int?, sizePx: Int, modifier: Modifier = M
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         StarIcon(sizePx + 4)
         Spacer(Modifier.width(px(8)))
-        MockText(String.format("%.1f", rating), sizePx, weight = FontWeight.Medium)
+        MockText(String.format(Locale.US, "%.1f", rating), sizePx, weight = FontWeight.Medium)
         if (showCount && count != null) {
             Spacer(Modifier.width(px(6)))
             MockText("(${"%,d".format(count)})", sizePx - 2, color = MockColors.Hint)
@@ -434,19 +435,6 @@ fun Modifier.mockCardBox(radiusPx: Int = 18, fill: Color = MockColors.Card): Mod
     val shape = RoundedCornerShape(px(radiusPx))
     return this.clip(shape).background(fill).border(1.dp, MockColors.CardLine, shape)
 }
-
-/** 한 줄 가로 구분 여백 */
-@Composable
-fun VSpacePx(h: Int) = Spacer(Modifier.height(px(h)))
-
-@Composable
-fun HSpacePx(w: Int) = Spacer(Modifier.width(px(w)))
-
-@Composable
-fun Modifier.mockPadX(x: Int): Modifier = this.padding(horizontal = px(x))
-
-@Composable
-fun Modifier.fullWidth(): Modifier = this.fillMaxWidth()
 
 
 /** 북마크(저장하기) 버튼에 TalkBack 이 읽을 이름을 붙인다 */

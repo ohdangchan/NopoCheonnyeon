@@ -16,6 +16,7 @@ import coil3.toBitmap
 import com.naver.maps.map.overlay.OverlayImage
 import com.nopo.cheonnyeon.R
 import com.nopo.cheonnyeon.domain.model.Store
+import java.util.Locale
 
 /** 시안 지도의 사진 말풍선 마커: 동그란 가게 사진 + 상호 + 별점, 아래쪽에 남색 꼬리 */
 object BubbleIcons {
@@ -74,7 +75,7 @@ object BubbleIcons {
             tp.color = 0xFFF5B800.toInt()
             cv.drawText("★", cx + 32f, 92f, tp)
             tp.color = 0xFF061A31.toInt()
-            cv.drawText(String.format("%.1f", rating), cx + 66f, 92f, tp)
+            cv.drawText(String.format(Locale.US, "%.1f", rating), cx + 66f, 92f, tp)
         }
         return bmp
     }

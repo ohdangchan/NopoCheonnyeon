@@ -1,5 +1,6 @@
 package com.nopo.cheonnyeon.feature.auth
 
+import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -256,7 +257,7 @@ private fun PreferencePage(
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_03), 24, Modifier.at(40, 478), color = Ink2)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_04), 24, Modifier.at(40, 516), color = Ink2)
 
-            SectionHead({ PinGlyph() }, 572, "어떤 지역을 좋아하세요?", "여러 지역을 선택할 수 있어요.")
+            SectionHead({ PinGlyph() }, 572, stringResource(R.string.ui_onboarding_03), stringResource(R.string.ui_onboarding_04))
             Box(
                 Modifier.at(580, 596)
                     .size(px(152), px(52))
@@ -299,7 +300,7 @@ private fun PreferencePage(
                 }
             }
 
-            SectionHead({ ForkGlyph() }, 950, "어떤 음식을 좋아하세요?", "여러 가지를 선택할 수 있어요.")
+            SectionHead({ ForkGlyph() }, 950, stringResource(R.string.ui_onboarding_05), stringResource(R.string.ui_onboarding_06))
             TasteRecommender.FOODS.forEachIndexed { i, f ->
                 val sel = f.key in foods
                 val x = 24 + (i % 4) * 181
@@ -325,7 +326,7 @@ private fun PreferencePage(
                     MockText(f.desc, 17, Modifier.padding(start = px(12), top = px(146)).width(px(160)), color = Gray)
                 }
             }
-            BigLimeButton("이 취향으로 추천받기", 1440, onNext)
+            BigLimeButton(stringResource(R.string.ui_onboarding_07), 1440, onNext)
             Box(
                 Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater),
                 contentAlignment = Alignment.Center
@@ -362,7 +363,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_09), 25, Modifier.at(40, 466), color = Ink2)
             MockText(androidx.compose.ui.res.stringResource(R.string.onb_10), 25, Modifier.at(40, 506), color = Ink2)
 
-            SectionHead({ PinGlyph() }, 572, "선택한 지역", "이런 지역의 노포를 찾아드릴게요.")
+            SectionHead({ PinGlyph() }, 572, stringResource(R.string.ui_onboarding_08), stringResource(R.string.ui_onboarding_09))
             if (picked.isEmpty()) MockText(androidx.compose.ui.res.stringResource(R.string.onb_11), 22, Modifier.at(40, 700), color = Gray)
             Row(
                 Modifier.at(0, 664).fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = px(30)),
@@ -390,7 +391,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                 }
             }
 
-            SectionHead({ ForkGlyph() }, 836, "선택한 음식 취향", "이런 음식을 중심으로 추천해드릴게요.")
+            SectionHead({ ForkGlyph() }, 836, stringResource(R.string.ui_onboarding_10), stringResource(R.string.ui_onboarding_11))
             if (pickedFoods.isEmpty()) MockText(
                 androidx.compose.ui.res.stringResource(R.string.onb_12),
                 22,
@@ -424,7 +425,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                 }
             }
 
-            SectionHead({ StarIcon(36, color = MockColors.Navy) }, 1128, "이런 노포는 어떠세요?", "당신의 취향에 딱 맞는 노포를 엄선했어요.")
+            SectionHead({ StarIcon(36, color = MockColors.Navy) }, 1128, stringResource(R.string.ui_onboarding_12), stringResource(R.string.ui_onboarding_13))
             val st = pick
             if (st != null) {
                 val ratingMap by container.ratings.collectAsStateWithLifecycle()
@@ -463,7 +464,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
                     }
                 }
             }
-            BigLimeButton("노포 추천 받기", 1440, onStart)
+            BigLimeButton(stringResource(R.string.ui_onboarding_14), 1440, onStart)
             Box(
                 Modifier.at(250, 1548).size(px(260), px(60)).clickable(role = Role.Button, onClick = onLater),
                 contentAlignment = Alignment.Center

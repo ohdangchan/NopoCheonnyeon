@@ -123,12 +123,12 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                     }
                     MockPic(R.drawable.mk2_n_login_in1, 760, 92, Modifier.at(0, 870))
                     MockInput(
-                        email, { email = it }, "이메일을 입력하세요",
+                        email, { email = it }, stringResource(R.string.ui_mockauths_03),
                         Modifier.at(132, 897).size(px(520), px(46)), keyboard = KeyboardType.Email,
                     )
                     MockPic(R.drawable.mk2_n_login_in2, 760, 104, Modifier.at(0, 958))
                     MockInput(
-                        password, { password = it }, "비밀번호를 입력하세요",
+                        password, { password = it }, stringResource(R.string.ui_mockauths_04),
                         Modifier.at(132, 994).size(px(500), px(46)),
                         password = true, visible = showPw, ime = ImeAction.Done, onDone = submit,
                     )
@@ -150,7 +150,7 @@ fun LoginScreen(vm: AuthViewModel, onSignUp: () -> Unit, onReset: () -> Unit, on
                         }
                     }
                     MockLimeBar(
-                        if (state.busy) "로그인 중…" else "로그인  ›", 96, Modifier.at(40, 1130).size(px(682), px(96)),
+                        if (state.busy) stringResource(R.string.ui_mockauths_06) else stringResource(R.string.ui_mockauths_07), 96, Modifier.at(40, 1130).size(px(682), px(96)),
                         textPx = 32, enabled = ready, onClick = submit,
                     )
                     val msg = state.error?.message(context) ?: note
@@ -243,12 +243,12 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
             Column {
                 MockStage(originY = 0, heightPx = 1651) {
                     MockPic(R.drawable.mk2_su_hero, 760, 513, Modifier.at(0, 85))
-                    Box(Modifier.at(650, 90).size(px(80), px(80)).clickable(role = Role.Button, onClick = onBack).semantics0("닫기"))
+                    Box(Modifier.at(650, 90).size(px(80), px(80)).clickable(role = Role.Button, onClick = onBack).semantics0(stringResource(R.string.ui_noporoulet_06)))
 
                     // 닉네임
                     MockPic(R.drawable.mk2_su_in_nick, 760, 83, Modifier.at(0, 605))
                     MockInput(
-                        nick, { nick = it.take(20); vm.onNicknameChanged(it) }, "닉네임을 입력해주세요",
+                        nick, { nick = it.take(20); vm.onNicknameChanged(it) }, stringResource(R.string.ui_mockauths_10),
                         Modifier.at(112, 625).size(px(520), px(46)),
                     )
                     MockText(
@@ -267,36 +267,36 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                     // 이메일
                     MockPic(R.drawable.mk2_su_in_mail, 760, 86, Modifier.at(0, 728))
                     MockInput(
-                        email, { email = it }, "이메일을 입력해주세요",
+                        email, { email = it }, stringResource(R.string.ui_mockauths_11),
                         Modifier.at(112, 750).size(px(360), px(46)), keyboard = KeyboardType.Email,
                     )
                     // 시안의 "또는 휴대폰 번호" 칩은 가입을 지원하지 않아 같은 바탕색으로 덮는다
                     Box(Modifier.at(476, 744).size(px(236), px(60)).background(Color(0xFFFBF8F0)))
                     MockText(
-                        emailInvalid?.text() ?: "계정 인증 및 중요한 알림을 위해 사용돼요.", 20, Modifier.at(42, 817),
+                        emailInvalid?.text() ?: stringResource(R.string.ui_mockauths_12), 20, Modifier.at(42, 817),
                         color = if (emailInvalid != null) ErrorRed else HintGray,
                     )
 
                     // 비밀번호
                     MockPic(R.drawable.mk2_su_in_pw, 760, 83, Modifier.at(0, 855))
                     MockInput(
-                        password, { password = it }, "비밀번호를 입력해주세요",
+                        password, { password = it }, stringResource(R.string.ui_mockauths_13),
                         Modifier.at(112, 876).size(px(520), px(46)), password = true, visible = show1,
                     )
-                    MockPic(R.drawable.mk2_su_eye, 46, 40, Modifier.at(660, 880), onClick = { show1 = !show1 }, description = "비밀번호 보기")
+                    MockPic(R.drawable.mk2_su_eye, 46, 40, Modifier.at(660, 880), onClick = { show1 = !show1 }, description = stringResource(R.string.ui_mockauths_05))
                     MockText(
-                        pwInvalid?.text() ?: "영문, 숫자, 특수문자 포함 8자 이상 입력해주세요.", 20, Modifier.at(42, 943),
+                        pwInvalid?.text() ?: stringResource(R.string.ui_mockauths_14), 20, Modifier.at(42, 943),
                         color = if (pwInvalid != null) ErrorRed else HintGray,
                     )
                     MockPic(R.drawable.mk2_su_in_pw2, 760, 83, Modifier.at(0, 978))
                     MockInput(
-                        confirm, { confirm = it }, "비밀번호를 다시 입력해주세요",
+                        confirm, { confirm = it }, stringResource(R.string.ui_mockauths_15),
                         Modifier.at(112, 999).size(px(520), px(46)),
                         password = true, visible = show2, ime = ImeAction.Done, onDone = submit,
                     )
-                    MockPic(R.drawable.mk2_su_eye, 46, 40, Modifier.at(660, 1003), onClick = { show2 = !show2 }, description = "비밀번호 보기")
+                    MockPic(R.drawable.mk2_su_eye, 46, 40, Modifier.at(660, 1003), onClick = { show2 = !show2 }, description = stringResource(R.string.ui_mockauths_05))
                     MockText(
-                        confirmInvalid?.text() ?: "동일한 비밀번호를 한 번 더 입력해주세요.", 20, Modifier.at(42, 1066),
+                        confirmInvalid?.text() ?: stringResource(R.string.ui_mockauths_16), 20, Modifier.at(42, 1066),
                         color = if (confirmInvalid != null) ErrorRed else HintGray,
                     )
 
@@ -308,10 +308,10 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                         val y: Int, val label: String, val checked: Boolean, val onChange: (Boolean) -> Unit, val detail: String?,
                     )
                     listOf(
-                        ConsentRow(1180, "[필수] 만 14세 이상입니다.", age, { age = it }, null),
-                        ConsentRow(1221, "[필수] 이용약관에 동의합니다.", terms, { terms = it }, TermsText),
-                        ConsentRow(1262, "[필수] 개인정보 수집 및 이용에 동의합니다.", privacy, { privacy = it }, PrivacyKey),
-                        ConsentRow(1303, "[선택] 마케팅 알림 수신에 동의합니다.", marketing, { marketing = it }, MarketingDetail),
+                        ConsentRow(1180, stringResource(R.string.ui_mockauths_17), age, { age = it }, null),
+                        ConsentRow(1221, stringResource(R.string.ui_mockauths_18), terms, { terms = it }, TermsText),
+                        ConsentRow(1262, stringResource(R.string.ui_mockauths_19), privacy, { privacy = it }, PrivacyKey),
+                        ConsentRow(1303, stringResource(R.string.ui_mockauths_20), marketing, { marketing = it }, MarketingDetail),
                     ).forEach { r ->
                         MockCheck(r.checked, 30, Modifier.at(47, r.y)) { r.onChange(it) }
                         MockText(r.label, 21, Modifier.at(104, r.y + 3), color = Color(0xFF4B5563))
@@ -323,7 +323,7 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                         }
                     }
                     MockLimeBar(
-                        if (state.busy) "가입 중…" else "가입하고 시작하기", 82, Modifier.at(45, 1368).size(px(672), px(82)),
+                        if (state.busy) stringResource(R.string.ui_mockauths_21) else stringResource(R.string.ui_mockauths_22), 82, Modifier.at(45, 1368).size(px(672), px(82)),
                         textPx = 28, enabled = ready, onClick = submit,
                     )
                     (state.error?.message(context) ?: note)?.let {
@@ -342,7 +342,7 @@ fun SignUpScreen(vm: AuthViewModel, onBack: () -> Unit) {
                             .clickable(role = Role.Button) { scope.launch { doGoogle(context, vm) { note = it } } },
                     )
                     MockText(
-                        "Google로 시작하기", 20, Modifier.at(300, 1606).width(px(160)),
+                        stringResource(R.string.ui_mockauths_23), 20, Modifier.at(300, 1606).width(px(160)),
                         align = TextAlign.Center, color = Color(0xFF4B5563),
                     )
                     Box(

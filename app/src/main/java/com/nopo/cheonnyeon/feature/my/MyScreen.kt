@@ -216,7 +216,7 @@ fun MyScreen(
                             .data(vm.photoFile)
                             .memoryCacheKey("profile-$photoVersion")
                             .build(),
-                        contentDescription = "프로필 사진", contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
+                        contentDescription = stringResource(R.string.ui_my_01), contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize(),
                     )
                 } else DefaultAvatar()
             }
@@ -228,7 +228,7 @@ fun MyScreen(
                 contentAlignment = Alignment.Center
             ) { CameraIcon() }
             Row(Modifier.at(222, 268).clickable(role = Role.Button) { editOpen = true }, verticalAlignment = Alignment.CenterVertically) {
-                MockText(nickname.ifBlank { "노포여행자" }, 46, Modifier.widthIn(max = px(300)), font = MockBrush, weight = FontWeight.ExtraBold)
+                MockText(nickname.ifBlank { stringResource(R.string.ui_my_02) }, 46, Modifier.widthIn(max = px(300)), font = MockBrush, weight = FontWeight.ExtraBold)
                 ChevronRight(30)
             }
             MockPic(R.drawable.mk_my_tagline, 248, 64, Modifier.at(226, 338))
@@ -460,7 +460,7 @@ private fun SavedScreen(vm: MyViewModel, saved: List<Store>, bookmarks: Set<Stri
         SubHeader("저장한 노포 ${saved.size}", onBack)
         if (saved.isEmpty()) {
             Box(Modifier.fillMaxSize().padding(px(30)), contentAlignment = Alignment.Center) {
-                MockText("아직 저장한 노포가 없어요.\n가게 화면에서 '저장하기'를 눌러 보세요.", 24, color = MockColors.Hint, maxLines = 3, lineHeightPx = 36)
+                MockText(stringResource(R.string.ui_my_03), 24, color = MockColors.Hint, maxLines = 3, lineHeightPx = 36)
             }
         } else {
             LazyVerticalGrid(
