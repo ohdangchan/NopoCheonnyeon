@@ -11,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,7 +40,7 @@ fun rememberPermission(vararg permissions: String): PermissionHandle {
     val context = LocalContext.current
     val primary = permissions.first()
     var asked by rememberSaveable { mutableStateOf(false) }
-    var tick by rememberSaveable { mutableStateOf(0) }
+    var tick by rememberSaveable { mutableIntStateOf(0) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { tick++ }
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {

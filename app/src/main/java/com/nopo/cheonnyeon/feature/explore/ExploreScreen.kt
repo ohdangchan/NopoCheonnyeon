@@ -30,10 +30,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +81,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 
 /** 탐색 화면 칩: 이름 대신 검색어로 쓰는 음식 종류 (대표 메뉴·이름에서 찾는다). 맨 앞이 "전체" */
 val ExploreChips = listOf("전체", "국밥", "면", "고기", "분식", "카페")
@@ -192,7 +192,7 @@ fun ExploreScreen(vm: ExploreViewModel, onOpenStore: (String) -> Unit, onOpenCha
                                     .clickable(role = Role.Button) { regionMenu = true }.padding(horizontal = px(24)),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                MockText(region ?: "지역", 22, weight = FontWeight.Medium, color = MockColors.Navy)
+                                MockText(region ?: stringResource(R.string.ui_explore_02), 22, weight = FontWeight.Medium, color = MockColors.Navy)
                                 Box(Modifier.width(px(10)))
                                 ChevronDown(20)
                             }
@@ -257,8 +257,3 @@ fun ExploreCard(c: StoreCardData, onOpen: () -> Unit, onBookmark: () -> Unit, mo
         }
     }
 }
-
-/** (임시) 예전 화면이 쓰던 간단한 가게 카드 */
-@Composable
-fun StoreCard(store: Store, currentYear: Int, modifier: Modifier = Modifier, onClick: () -> Unit) =
-    ExploreCard(StoreCards.of(store, currentYear, emptyMap(), null, emptySet()), onClick, {}, modifier)

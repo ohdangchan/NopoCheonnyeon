@@ -120,7 +120,7 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
                 670,
                 98
             ).size(px(70), px(70)).clickable(role = Role.Button, onClick = onBack).semantics { contentDescription = "닫기" })
-            MockInput(query, { query = it }, "궁금한 내용을 검색해보세요.", Modifier.at(100, 452).size(px(430), px(44)), sizePx = 22)
+            MockInput(query, { query = it }, stringResource(R.string.ui_helpcenter_01), Modifier.at(100, 452).size(px(430), px(44)), sizePx = 22)
             Cats.forEachIndexed { i, c ->
                 val x = if (i % 2 == 0) 22 else 388
                 val y = 520 + (i / 2) * 118
@@ -148,7 +148,7 @@ fun HelpCenterScreen(email: String?, onBack: () -> Unit) {
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) { MockText(
-                    if (all) "접기" else "전체보기",
+                    if (all) stringResource(R.string.ui_helpcenter_02) else stringResource(R.string.ui_helpcenter_03),
                     22
                 ); Box(Modifier.width(px(8))); ChevronRight(24) }
             }

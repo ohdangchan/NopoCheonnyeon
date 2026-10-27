@@ -312,7 +312,7 @@ private fun MapContent(
         val fix = state.fix ?: return@LaunchedEffect
         map.locationOverlay.apply { isVisible = true; position = LatLng(fix.lat, fix.lng); circleRadius = fix.accuracyM.toInt() }
     }
-    var movedTick by rememberSaveable { mutableStateOf(0) }
+    var movedTick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(naverMap, state.recenter) {
         val map = naverMap ?: return@LaunchedEffect
         val fix = state.fix ?: return@LaunchedEffect

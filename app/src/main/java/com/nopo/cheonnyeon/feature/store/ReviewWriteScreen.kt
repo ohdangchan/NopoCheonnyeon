@@ -200,7 +200,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
                             color = MockColors.Navy),
                         modifier = Modifier.fillMaxSize().padding(px(22)),
                     )
-                    if (text.isEmpty()) MockText("예) 깊은 국물 맛이 정말 인상적이었어요.\n오랜 세월이 느껴지는 분위기와 친절한 사장님도 좋았습니다.\n다음에도 꼭 다시 방문하고 싶어요!",
+                    if (text.isEmpty()) MockText(stringResource(R.string.ui_reviewwrit_01),
                         20, Modifier.padding(px(22)).width(px(660)), color = Color(0xFF9AA0AB), maxLines = 3, lineHeightPx = 30)
                     MockText("${text.length}/500", 18, Modifier.align(Alignment.BottomEnd)
                         .padding(end = px(18), bottom = px(10)), color = Color(0xFF9AA0AB))
@@ -272,7 +272,7 @@ fun ReviewWriteScreen(vm: ReviewsViewModel, store: Store, onBack: () -> Unit, on
             contentAlignment = Alignment.Center,
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                PencilGlyph(); Box(Modifier.width(px(18))); MockText(if (state.saving) "등록 중…" else "후기 등록하기", 31,
+                PencilGlyph(); Box(Modifier.width(px(18))); MockText(if (state.saving) stringResource(R.string.ui_reviewwrit_03) else stringResource(R.string.ui_reviewwrit_04), 31,
                     weight = FontWeight.ExtraBold)
             }
         }

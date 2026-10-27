@@ -31,8 +31,6 @@ object GoogleSignIn {
         return if (id == 0) null else context.getString(id).takeIf { it.isNotBlank() }
     }
 
-    fun isConfigured(context: Context) = webClientId(context) != null
-
     suspend fun getIdToken(context: Context): GoogleResult {
         val clientId = webClientId(context) ?: return GoogleResult.NotConfigured
         val manager = CredentialManager.create(context)

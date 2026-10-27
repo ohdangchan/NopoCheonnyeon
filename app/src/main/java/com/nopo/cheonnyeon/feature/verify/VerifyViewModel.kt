@@ -6,6 +6,7 @@ import android.util.Base64
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.common.api.ResolvableApiException
 import com.nopo.cheonnyeon.app.AppContainer
 import com.nopo.cheonnyeon.core.common.Analytics
 import com.nopo.cheonnyeon.core.common.AppError
@@ -36,8 +37,10 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.Instant
 import java.time.LocalDateTime
+import kotlin.math.abs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -64,7 +67,7 @@ data class VerifyUiState(
     /** 하루 한도 등으로 인증 자체를 시작할 수 없음 */
     val blocked: Boolean = false,
     /** 기기 위치가 꺼져 있어 시스템 '위치 켜기' 대화상자를 띄워야 함 (S-605) */
-    val pendingResolution: com.google.android.gms.common.api.ResolvableApiException? = null,
+    val pendingResolution: ResolvableApiException? = null,
     /** 한도 안내 화면에 보여 줄 오늘 인증한 가게 (이름, 얻은 세월) */
     val todayVisits: List<Pair<String, Int>> = emptyList(),
     /** 기기 시계가 서버와 10분 넘게 어긋남 (영수증 24시간 판정이 틀릴 수 있다). 어긋난 분 */
@@ -141,9 +144,6 @@ class VerifyViewModel(
     /** 사용자 설정(FR-VER-11). 읽지 못하면 기본값 */
     @Volatile private var allowLocationOnly = VerificationConfig.ALLOW_LOCATION_ONLY_AFTER_OCR_FAIL
 
-    /** 인증 결과 화면의 "평점·리뷰 남기기": 가게 상세로 돌아가 리뷰 편집기를 열게 한다 */
-    fun requestReview() { container.pendingReviewStoreId.value = storeId }
-
     init {
         Analytics.verifyStart()
         loadRecent()
@@ -153,7 +153,7 @@ class VerifyViewModel(
         viewModelScope.launch {
             val skew = measureClockSkew()
             if (skew != null && ClockSkew.exceedsWarning(skew)) {
-                _state.update { it.copy(clockSkewMinutes = kotlin.math.abs(skew) / 60_000L) }
+                _state.update { it.copy(clockSkewMinutes = abs(skew) / 60_000L) }
             }
         }
         viewModelScope.launch {
@@ -178,11 +178,9 @@ class VerifyViewModel(
             runCatching {
                 val list = container.database.myVisitDao().observeAll().first()
                     .filter { !it.storeId.startsWith(Store.TEST_PREFIX) }.sortedByDescending { it.lastVisitedAt }.take(5)
-                val rows = list.mapNotNull { v -> container.catalog.byId(v.storeId)?.let { RecentVisit(
-                    it,
-                    v.yearsAwarded,
-                    v.lastVisitedAt
-                ) } }
+                val rows = list.mapNotNull { v ->
+                    container.catalog.byId(v.storeId)?.let { RecentVisit(it, v.yearsAwarded, v.lastVisitedAt) }
+                }
                 _state.update { it.copy(recent = rows) }
             }
         }
@@ -237,7 +235,7 @@ class VerifyViewModel(
             val scan = scanReceipt(camera)
             // 레이저가 최소 한 번은 훑고 지나가게 한다
             val wait = LASER_MIN_MS - (SystemClock.elapsedRealtime() - t0)
-            if (wait > 0) kotlinx.coroutines.delay(wait)
+            if (wait > 0) delay(wait)
             if (scan == null) {
                 _state.update { it.copy(busy = false, scanPhase = ScanPhase.NONE, error = AppError.E_RECEIPT_UNREADABLE) }
                 requestHint(store.name, emptyList(), AppError.E_RECEIPT_UNREADABLE, null)
@@ -248,7 +246,7 @@ class VerifyViewModel(
             val verdict = VerifyReceiptUseCase.verify(scan.lines, store, visits, container.clock.now())
             _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
             if (verdict is AppResult.Failure && verdict.error in HINT_ERRORS) requestHint(store.name, scan.lines, verdict.error, null)
-            kotlinx.coroutines.delay(if (verdict is AppResult.Failure) FAIL_HIGHLIGHT_MS else HIGHLIGHT_MS)
+            delay(if (verdict is AppResult.Failure) FAIL_HIGHLIGHT_MS else HIGHLIGHT_MS)
             when (val r = verdict) {
                 is AppResult.Failure -> {
                     _state.update { it.copy(busy = false, error = r.error) }
@@ -383,15 +381,13 @@ class VerifyViewModel(
                 else -> {
                     val distance = GeoDistance.meters(fix.lat, fix.lng, lat, lng)
                     val err = PhotoMatcher.judgeLocation(distance, fix.accuracyM)
-                    val inRange = distance <= VerificationConfig.PHOTO_MAX_DISTANCE_M && fix
-                        .accuracyM <= VerificationConfig
-                        .PHOTO_MAX_ACCURACY_M
+                    val inRange = distance <= VerificationConfig.PHOTO_MAX_DISTANCE_M &&
+                        fix.accuracyM <= VerificationConfig.PHOTO_MAX_ACCURACY_M
                     saved[KEY_IN_RANGE] = inRange
                     _state.update {
                         it.copy(
-                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(), myLat = fix
-                                .lat, myLng = fix
-                                .lng,
+                            busy = false, error = err, withinRange = inRange, distanceM = distance.toInt(),
+                            myLat = fix.lat, myLng = fix.lng,
                             errorMeters = if (err == AppError.E_ACCURACY) fix.accuracyM.toInt() else distance.toInt(),
                         )
                     }
@@ -412,11 +408,11 @@ class VerifyViewModel(
             val proof = File(container.appContext.filesDir, "proofs/" + store.id + ".jpg")
             val scan = scanReceipt(camera, proof)
             val wait = LASER_MIN_MS - (SystemClock.elapsedRealtime() - t0)
-            if (wait > 0) kotlinx.coroutines.delay(wait)
+            if (wait > 0) delay(wait)
             val lines = scan?.lines ?: emptyList()
             if (scan != null) {
                 _state.update { it.copy(scanPhase = ScanPhase.HIGHLIGHT, scanBoxes = scan.boxes) }
-                kotlinx.coroutines.delay(HIGHLIGHT_MS)
+                delay(HIGHLIGHT_MS)
             } else {
                 _state.update { it.copy(scanPhase = ScanPhase.NONE) }
             }
@@ -457,7 +453,7 @@ class VerifyViewModel(
 
     private suspend fun finish(store: Store, method: VerifyMethod, photoVerified: Boolean, hash: String?) {
         // 로그인 직후 서버 기록을 내려받는 중이면 끝난 뒤에 기록한다 (서버에 있는 가게를 첫 방문으로 세지 않게)
-        kotlinx.coroutines.withTimeoutOrNull(RESTORE_WAIT_MS) { container.restoring.first { !it } }
+        withTimeoutOrNull(RESTORE_WAIT_MS) { container.restoring.first { !it } }
         val award = container.visits.record(store, method, photoVerified, hash)
         // "리뷰 남기기"로 넘어온 인증이면 성공한 뒤 가게 상세에서 리뷰 편집기를 연다
         if (container.reviewIntentStoreId.value == store.id) {
@@ -474,27 +470,6 @@ class VerifyViewModel(
         }.getOrNull()
         _state.update { it.copy(busy = false, error = null, award = award, step = VerifyStep.DONE, region = region) }
         loadRecent()
-    }
-
-    /** 촬영 → 글자 줄 목록. 10초 제한, 이미지는 변환 직후 버린다. 실패하면 null */
-    private suspend fun readText(camera: CameraController, proofFile: File? = null): List<String>? = try {
-        val bitmap = withTimeout(OCR_TIMEOUT_MS) { camera.captureInMemory { it.toUprightBitmap(OCR_MAX_SIDE) } }
-        withContext(Dispatchers.Default) {
-            try {
-                // 가게 사진 인증의 인증샷은 기기 안에만 저장한다 (FR-VER-12). 영수증은 저장하지 않는다.
-                proofFile?.let { f ->
-                    f.parentFile?.mkdirs()
-                    f.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 85, it) }
-                }
-                withTimeout(OCR_TIMEOUT_MS) { recognizer.read(bitmap).lines }
-            } finally {
-                bitmap.recycle()
-            }
-        }
-    } catch (_: TimeoutCancellationException) {
-        null
-    } catch (_: Exception) {
-        null
     }
 
     override fun onCleared() {

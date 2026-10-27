@@ -5,6 +5,7 @@ import com.nopo.cheonnyeon.data.remote.StoreRating
 import com.nopo.cheonnyeon.domain.model.Store
 import com.nopo.cheonnyeon.domain.rule.YearsCalculator
 import com.nopo.cheonnyeon.platform.location.Fix
+import java.util.Locale
 
 /** 시안의 가게 카드 한 장에 필요한 값 */
 data class StoreCardData(
@@ -24,7 +25,7 @@ data class StoreCardData(
 object StoreCards {
     fun formatDistance(m: Double): String = when {
         m < 1000 -> "${m.toInt()}m"
-        m < 10_000 -> String.format("%.1fkm", m / 1000.0)
+        m < 10_000 -> String.format(Locale.US, "%.1fkm", m / 1000.0)
         else -> "${(m / 1000.0).toInt()}km"
     }
 

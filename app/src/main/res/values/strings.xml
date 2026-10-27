@@ -177,7 +177,6 @@
     <string name="err_auth_nick_taken">이미 사용 중인 닉네임이에요</string>
 
     <!-- 임시 화면 (E4~E5에서 교체) -->
-    <string name="placeholder_splash">노포 패스포트</string>
 
     <!-- 진단 사진 탭 (공식 사진 시험) -->
     <string name="diag_tab_photo">사진</string>
@@ -192,27 +191,15 @@
     <string name="cd_diag_photo">%1$s 공식 사진</string>
 
     <!-- 계정 (E4) -->
-    <string name="auth_login_title">노포 패스포트로 돌아오셨나요?</string>
-    <string name="auth_login_subtitle">가입한 이메일로 로그인하면 쌓은 세월과 도장이 그대로 돌아와요.</string>
-    <string name="auth_login_action">로그인</string>
     <string name="auth_working">잠시만요…</string>
     <string name="auth_email">이메일</string>
     <string name="auth_password">비밀번호</string>
-    <string name="auth_password_confirm">비밀번호 확인</string>
-    <string name="auth_password_hint">8자 이상, 영문과 숫자를 모두 넣어 주세요</string>
     <string name="auth_nickname">닉네임</string>
     <string name="auth_nickname_hint">2~12자, 한글·영문·숫자만 쓸 수 있어요</string>
     <string name="auth_nick_checking">확인하는 중…</string>
     <string name="auth_nick_available">사용할 수 있는 닉네임이에요</string>
     <string name="auth_nick_taken">이미 사용 중인 닉네임이에요</string>
-    <string name="auth_to_sign_up">처음이세요? 회원가입</string>
-    <string name="auth_to_reset">비밀번호를 잊으셨나요?</string>
     <string name="auth_to_login">이미 계정이 있어요 · 로그인</string>
-    <string name="auth_offline_note">인터넷이 불안정해도 앱에 들어 있는 노포 목록은 볼 수 있어요.</string>
-    <string name="auth_sign_up_title">새 여행자로 등록해요</string>
-    <string name="auth_sign_up_subtitle">닉네임은 리뷰와 패스포트에 보여요.</string>
-    <string name="auth_sign_up_action">시작하기</string>
-    <string name="auth_privacy_note">위치 좌표와 영수증 내용은 서버에 저장하지 않아요.</string>
     <string name="auth_reset_title">비밀번호 재설정</string>
     <string name="auth_reset_subtitle">가입한 이메일로 재설정 메일을 보내 드려요.</string>
     <string name="auth_reset_action">재설정 메일 보내기</string>
@@ -229,53 +216,12 @@
     <string name="auth_invalid_nick_chars">한글·영문·숫자만 쓸 수 있어요</string>
 
     <!-- 지도 탐색·가게 (E5) -->
-    <string name="region_stamps_count">지역 스탬프 %1$d개 수집</string>
-    <string name="region_stamps_next">다음 스탬프까지 %1$s 노포 %2$d곳을 더 방문해보세요!</string>
-    <string name="region_stamps_progress">%1$d / %2$d</string>
-    <string name="region_stamps_empty">한 지역의 노포를 %1$d곳 방문하면 그 지역 스탬프가 찍혀요.</string>
-    <string name="regions_stamp_row">%1$d / %2$d곳</string>
-    <string name="detail_save">☆ 저장하기</string>
-    <string name="detail_saved">★ 저장됨</string>
-    <string name="my_default_nickname">노포 여행자</string>
-    <string name="my_visited">방문한 노포</string>
-    <string name="my_total_years">쌓은 세월</string>
-    <string name="my_menu_collection">컬렉션</string>
-    <string name="my_menu_collection_body">도장과 지역 스탬프를 모아 보세요</string>
-    <string name="my_menu_settings">앱 환경 설정</string>
-    <string name="my_menu_settings_body">계정, 개인정보, 데이터 관리</string>
-    <string name="my_saved_title">저장한 노포 %1$d곳</string>
-    <string name="my_saved_empty">가게 상세에서 저장하기를 누르면 여기에 모여요.</string>
-    <string name="my_recent_title">최근 방문한 노포</string>
     <string name="tab_home">홈</string>
     <string name="tab_explore">탐색</string>
     <string name="tab_map">지도</string>
     <string name="tab_passport">컬렉션</string>
     <string name="tab_settings">마이페이지</string>
-    <string name="home_tagline">시간이 만든 맛, 지금도 사랑받는 노포를 찾아서</string>
-    <string name="home_search">검색</string>
-    <string name="home_hero_title">세월이 만든 진짜 맛집을 찾아보세요</string>
-    <string name="home_hero_body">오래된 시간 속, 지금도 사랑받는 노포가 있습니다.</string>
-    <string name="home_pick_label">오늘의 추천</string>
-    <string name="home_oldest_title">업력이 깊은 노포</string>
-    <string name="home_tour_title">노포 투어 코스</string>
-    <string name="home_tour_body">AI가 내 위치와 남은 세월에 맞춰 코스를 짜 드려요.</string>
     <string name="home_tour_prompt">지금 위치와 영업시간을 고려한 오늘의 노포 코스를 짜 줘</string>
-    <string name="explore_title">탐색</string>
-    <string name="explore_subtitle">전국의 특별한 노포를 발견해보세요.</string>
-    <string name="explore_search_hint">지역, 식당명, 메뉴로 검색해보세요.</string>
-    <string name="explore_chip_all">전체</string>
-    <string name="explore_empty">조건에 맞는 노포가 없어요.</string>
-    <string name="explore_years_tag">%1$d년 전통</string>
-    <string name="map_search_hint">가게 이름, 지역, 메뉴로 찾기</string>
-    <string name="map_chip_food">음식점만</string>
-    <string name="map_chip_baeknyeon">백년가게</string>
-    <string name="map_chip_orae">오래가게</string>
-    <string name="map_chip_unvisited">안 가 본 곳</string>
-    <string name="map_show_list">목록으로 보기</string>
-    <string name="map_show_map">지도로 보기</string>
-    <string name="map_my_location">내 위치</string>
-    <string name="map_locating">찾는 중…</string>
-    <string name="map_my_years">내 세월 %1$d년</string>
     <string name="map_marker_caption">%1$d년 %2$s</string>
     <string name="badge_baeknyeon">백년가게</string>
     <string name="badge_orae">오래가게</string>
@@ -292,55 +238,17 @@
     <string name="list_visited">방문 완료</string>
     <string name="detail_not_found">가게를 찾지 못했어요</string>
     <string name="detail_back">뒤로</string>
-    <string name="detail_directions">길찾기</string>
-    <string name="detail_verify">방문 인증하기</string>
-    <string name="detail_founded">%1$d년 개업</string>
     <string name="detail_source">출처 %1$s</string>
-    <string name="detail_reward_title">이 가게를 방문 인증하면 세월 +%1$d년!</string>
-    <string name="detail_reward_test">시험용 가게예요. 인증해도 세월과 하루 한도에는 들어가지 않아요.</string>
     <string name="reviews_test_store">시험용 가게예요. 내 리뷰는 이 기기에만 저장돼요.</string>
     <string name="photo_credit_google">사진: Google 지도</string>
     <string name="photo_credit_visitseoul">사진: 서울관광재단(비짓서울)</string>
-    <string name="auth_consent">개인정보 처리방침에 동의해요 (필수)</string>
-    <string name="auth_consent_view">처리방침 전체 보기</string>
-    <string name="passport_stat_stamps">도장</string>
-    <string name="passport_stat_regions">방문 지역</string>
-    <string name="passport_stat_oldest">가장 오래된 노포</string>
-    <string name="detail_reward_total">내 세월 %1$d년 → %2$d년</string>
-    <string name="detail_visited">방문 완료 · 단골 %1$d회</string>
-    <string name="detail_hours">영업시간</string>
-    <string name="detail_phone">전화</string>
-    <string name="detail_call">전화 걸기</string>
-    <string name="detail_amenities">이용 정보</string>
     <string name="detail_menu">대표 메뉴</string>
-    <string name="detail_category">업종</string>
 
     <!-- 방문 인증 (E6) -->
-    <string name="verify_receipt_title">영수증으로 인증</string>
-    <string name="verify_receipt_guide">24시간 안에 결제한 영수증을 평평하게 펴고, 가게 이름·전화번호·결제 날짜가 한 화면에 보이게 찍어 주세요. 사진은 저장하지 않아요.</string>
-    <string name="verify_receipt_capture">영수증 촬영하기</string>
-    <string name="verify_analyzing">글자 읽는 중…</string>
-    <string name="verify_no_receipt">영수증이 없어요 · 가게 사진으로 인증</string>
-    <string name="verify_locate_title">가게 근처인지 확인해요</string>
-    <string name="verify_locate_guide">가게 30m 안에서 위치를 확인한 뒤, 가게 이름이나 전화번호가 보이는 사진을 찍어요.</string>
-    <string name="verify_measure">내 위치 확인하기 (최대 15초)</string>
-    <string name="verify_measuring">위치 확인 중…</string>
     <string name="verify_locating">위치 확인 중 · 가장 정확한 값 ±%1$s m</string>
     <string name="verify_back_to_receipt">영수증으로 인증하기</string>
-    <string name="verify_photo_title">가게 사진 찍기</string>
-    <string name="verify_photo_guide">간판, 메뉴판, 출입문처럼 가게 이름이나 전화번호가 보이게 찍어 주세요.</string>
-    <string name="verify_photo_capture">가게 사진 촬영하기</string>
     <string name="verify_attempts">글자 확인 %1$d / %2$d회 실패</string>
-    <string name="verify_location_only_note">가게 앞에서 위치는 확인됐어요. 글자 확인 없이 위치만으로 도장을 찍을 수 있어요.</string>
     <string name="verify_location_only">위치 확인 도장 받기</string>
-    <string name="verify_cancel">그만두기</string>
-    <string name="verify_done_title">도장을 찍었어요</string>
-    <string name="verify_done_years">세월 +%1$d년</string>
-    <string name="verify_done_revisit">단골 방문이에요 (세월은 처음 한 번만 쌓여요)</string>
-    <string name="verify_done_total">내 세월 %1$d년</string>
-    <string name="verify_title_up">새 칭호: %1$s</string>
-    <string name="verify_done_location_only">위치로 확인한 도장이에요.</string>
-    <string name="verify_done_pending">기록은 연결되면 서버에 자동으로 올라가요.</string>
     <string name="verify_done_close">확인</string>
     <string name="verify_done_review">평점·리뷰 남기기</string>
 
@@ -351,10 +259,6 @@
     <string name="test_store_done">노포천년테스트식당을 만들었어요. 지도 탐색에서 찾아 보세요</string>
 
     <!-- 패스포트·도장 상세 (E7) -->
-    <string name="passport_title">내 패스포트</string>
-    <string name="passport_empty_title">아직 찍은 도장이 없어요</string>
-    <string name="passport_empty_body">가까운 노포에서 첫 세월을 모아 보세요.</string>
-    <string name="passport_next_slot">다음에 갈 노포 자리</string>
     <string name="passport_open_store">가게 보기</string>
     <string name="passport_close">닫기</string>
     <string name="stamp_first_visit">첫 방문일 %1$s</string>
@@ -370,7 +274,6 @@
     <string name="reviews_title">평점과 리뷰</string>
     <string name="reviews_none">아직 평점이 없어요</string>
     <string name="reviews_summary">%1$.1f · 평점 %2$d개</string>
-    <string name="reviews_need_visit">이 가게를 방문 인증한 사람만 평점을 남길 수 있어요.</string>
     <string name="reviews_write">리뷰 남기기</string>
     <string name="reviews_verify_first">리뷰는 방문 인증(영수증 촬영) 뒤에 남길 수 있어요. 버튼을 누르면 인증 화면으로 이동해요.</string>
     <string name="reviews_edit">내 리뷰 수정</string>
@@ -387,15 +290,6 @@
     <string name="signout_warn_body">서버에 올라가지 않은 방문 기록 %1$d개가 있어요. 지금 로그아웃하면 이 기록은 사라져요.</string>
 
     <!-- 온보딩·설정 (S-402·S-903) -->
-    <string name="onboarding_1_title">전국의 노포를 찾아가요</string>
-    <string name="onboarding_1_body">중소벤처기업부 백년가게와 서울시 오래가게 1,277곳을 지도에서 찾아볼 수 있어요.</string>
-    <string name="onboarding_2_title">방문하면 세월이 쌓여요</string>
-    <string name="onboarding_2_body">영수증이나 가게 사진으로 인증하면 가게의 업력만큼 세월을 얻고 도장이 찍혀요.</string>
-    <string name="onboarding_3_title">천 년을 모아 미식가가 되세요</string>
-    <string name="onboarding_3_body">세월이 쌓이면 칭호가 올라가요. 위치 좌표와 영수증 내용은 서버에 저장하지 않아요.</string>
-    <string name="onboarding_skip">건너뛰기</string>
-    <string name="onboarding_next">다음</string>
-    <string name="onboarding_start">시작하기</string>
     <string name="settings_app_info">앱 정보</string>
     <string name="settings_version">노포 패스포트 버전 %1$s</string>
     <string name="settings_catalog">노포 목록 %1$d곳 · 데이터 버전 %2$d</string>
@@ -428,26 +322,7 @@
     <string name="share_card_qr_line2">앱을 내려받을 수 있어요</string>
     <string name="share_card_message">노포 패스포트에서 쌓은 내 세월이에요. 앱 받기: %1$s</string>
     <string name="share_card_chooser">패스포트 카드 공유</string>
-    <string name="share_card_button">패스포트 카드 공유</string>
     <string name="share_card_failed">카드를 만들지 못했어요. 잠시 뒤 다시 해 주세요.</string>
-    <string name="passport_tab_regions">지역</string>
-    <string name="regions_title">지역별 진행도</string>
-    <string name="regions_row">%1$d / %2$d곳 · %3$d%%</string>
-    <string name="hall_title">식객 명예의 전당</string>
-    <string name="hall_button">식객 명예의 전당 보기</string>
-    <string name="hall_demo_note">시연용 예시 순위예요. 실제 이용자 순위가 아니에요.</string>
-    <string name="hall_empty">아직 집계된 순위가 없어요.</string>
-    <string name="hall_my_line">누적 세월 %1$d년 · 전체 %2$d위 · 상위 %3$d%%</string>
-    <string name="hall_my_progress">천년 미식가 도달률 %1$d%%</string>
-    <string name="hall_tab_years">누적 세월 순</string>
-    <string name="hall_tab_reviews">리뷰왕</string>
-    <string name="hall_tab_stores">인기 노포</string>
-    <string name="hall_top3">삼대 명예 식객</string>
-    <string name="hall_rank">%1$d위</string>
-    <string name="hall_years">%1$d년</string>
-    <string name="hall_reviews_count">리뷰 %1$d개</string>
-    <string name="hall_stores_count">%1$d곳 탐방</string>
-    <string name="hall_titles_note">칭호는 세월 100년마다 올라요: 첫술 식객 → 골목 단골 → 국밥 순례자 → 시장통 어르신 → 가마솥 감별사 → 노포 길잡이 → 맛의 장인 → 세월 지킴이 → 미식 도인 → 전설의 식객 → 천년 미식가(1,000년)</string>
     <string name="method_demo">시연용 예시</string>
     <string name="settings_demo_passport_fill">시연용 패스포트 채우기(737년)</string>
     <string name="settings_demo_passport_clear">시연용 패스포트 지우기</string>
@@ -461,9 +336,6 @@
     <string name="profile_stats">세월 %1$d년 · 방문 %2$d회 · 리뷰 %3$d개</string>
     <string name="profile_no_visits">아직 다녀온 노포가 없어요</string>
     <string name="profile_no_reviews">아직 남긴 평점이 없어요</string>
-    <string name="passport_tab_stamps">도장</string>
-    <string name="passport_tab_reviews">내 리뷰</string>
-    <string name="passport_my_profile">내 프로필 보기</string>
 
     <string name="reviews_report">신고</string>
     <string name="reviews_report_title">신고 사유를 골라 주세요</string>
@@ -479,8 +351,6 @@
     <string name="settings_delete_warn">내 리뷰, 방문 기록, 프로필이 모두 삭제되고 되돌릴 수 없어요. 확인을 위해 비밀번호를 입력해 주세요.</string>
     <string name="settings_delete_confirm">탈퇴하기</string>
 
-    <string name="stamp_pending">확인 중</string>
-    <string name="detail_years_checking">업력 확인 중</string>
     <string name="settings_account_info">내 계정</string>
     <string name="settings_nickname">닉네임 %1$s</string>
     <string name="settings_email">이메일 %1$s</string>
@@ -528,20 +398,6 @@
     <string name="dev_stamp_normal">연출 미리보기: 일반 도장</string>
     <string name="dev_stamp_red">연출 미리보기: 붉은 도장</string>
     <string name="dev_stamp_gold">연출 미리보기: 금빛 도장 + 칭호 승급</string>
-    <string name="roulette_button">AI 메뉴 룰렛</string>
-    <string name="roulette_title">AI 메뉴 룰렛</string>
-    <string name="roulette_intro">내가 리뷰를 남긴 가게의 메뉴와 올린 음식 사진을 AI가 분석해서, 입맛에 맞는 새 메뉴 3개를 골라 줘요. 마음에 안 들면 다시 돌려요(최대 10번, 서로 다른 메뉴 30개).</string>
-    <string name="roulette_used">리뷰 %1$d개 · 음식 사진 %2$d장으로 취향을 분석했어요</string>
-    <string name="roulette_reel_mine">내 리뷰 사진 %1$d장을 AI가 살펴봐요</string>
-    <string name="roulette_reel_visited">내가 다녀온 가게의 사진 %1$d장을 AI가 살펴봐요</string>
-    <string name="roulette_spin">룰렛 돌리기</string>
-    <string name="roulette_again">마음에 안 들어요, 다시 돌리기 (%1$d/%2$d)</string>
-    <string name="roulette_spinning">AI가 분석하는 중… (%1$d/%2$d)</string>
-    <string name="roulette_seen">지금까지 본 메뉴 %1$d / %2$d개</string>
-    <string name="roulette_done">서로 다른 메뉴 %1$d개를 모두 살펴봤어요. 처음부터 다시 돌릴 수 있어요.</string>
-    <string name="roulette_reset">처음부터 다시</string>
-    <string name="roulette_ingredients">주재료·구성 성분</string>
-    <string name="roulette_stores">이 메뉴가 있는 노포</string>
     <string name="ai_unavailable">AI 기능을 쓸 수 없는 빌드예요. (API 키가 없어요)</string>
     <string name="ai_consent_title">AI 분석 안내</string>
     <string name="ai_consent_body">AI 기능을 위해 내 리뷰 글·별점·올린 음식 사진과 가게 메뉴, 번역할 글, 챗봇에 쓴 말, 그리고 영수증 인식에 실패했을 때 방금 찍은 영수증 사진이 Google Gemini로 전송돼요(저장하지 않아요). 위치 좌표·이메일은 보내지 않아요. 계속할까요?</string>
@@ -558,11 +414,6 @@
     <string name="translate_do">번역</string>
     <string name="translate_loading">%1$s(으)로 번역하는 중…</string>
     <string name="translate_notice">AI가 %1$s(으)로 번역했어요. 실제와 조금 다를 수 있어요.</string>
-    <string name="map_search_hint_ai">가게·지역·메뉴 검색 또는 AI에게 말로 물어보기</string>
-    <string name="map_search_ai">AI</string>
-    <string name="map_search_ask_ai">AI 도우미에게 물어보기 ›</string>
-    <string name="chat_entry">AI 노포 도우미</string>
-    <string name="chat_entry_sub">말로 찾기 · 천년 경로 · 오늘의 코스</string>
     <string name="chat_title">AI 노포 도우미</string>
     <string name="chat_intro">‘비 오는 날 종로에서 혼자 먹기 좋은 국밥집’처럼 말로 찾거나, 1,000년까지 가장 빨리 가는 코스, 지금 위치로 짜는 반나절 노포 투어를 물어보세요.</string>
     <string name="chat_history_note">대화 기록은 이 기기에만 저장되고, 예전 기록을 모두 다시 볼 수 있어요.</string>
@@ -594,14 +445,12 @@
     <string name="insight_weaknesses">아쉬운 점</string>
     <string name="insight_best_for">이런 분께</string>
     <string name="insight_disclaimer">다른 이용자 리뷰를 AI가 요약한 내용이에요. 실제와 다를 수 있어요.</string>
-    <string name="insight_refresh">다시 분석</string>
     <string name="title_dex_title">칭호 도감</string>
     <string name="title_dex_hint">세월 100년마다 칭호가 올라요. 칭호를 누르면 승급 연출을 미리 볼 수 있어요.</string>
     <string name="title_dex_years">세월 %1$d년 이상</string>
     <string name="title_dex_current">지금 내 칭호</string>
     <string name="title_dex_done">얻음</string>
     <string name="title_dex_locked">%1$d년 더 쌓으면 얻어요</string>
-    <string name="cd_open_title_dex">칭호 도감 열기</string>
     <!-- 가게 정보 오류 제보 (FR-STORE-06, B-10) -->
     <string name="store_report_link">정보가 달라요? 제보하기</string>
     <string name="store_report_title">어떤 정보가 달라요?</string>
@@ -612,14 +461,11 @@
     <string name="store_report_other">기타</string>
     <string name="store_report_sent">제보해 주셔서 고마워요. 확인 후 반영할게요.</string>
     <!-- 하루 한도 안내 (시안 daily_limit) -->
-    <string name="verify_today_title">오늘 인증한 노포 %1$d곳</string>
-    <string name="verify_today_item">%1$d. %2$s · 세월 %3$d년</string>
     <string name="signout_warn_list">올라가지 않은 가게: %1$s</string>
     <string name="restoring_banner">서버에서 내 기록을 불러오는 중이에요…</string>
     <string name="settings_policy">개인정보 처리방침 전체 보기</string>
     <string name="settings_policy_hide">개인정보 처리방침 접기</string>
     <string name="privacy_policy_full">1. 서버에 저장하는 것\n이메일과 닉네임, 칭호·세월 합계, 방문 기록(가게·세월·인증 방법·방문 날짜와 횟수), 리뷰(별점·글), 영수증 중복 방지용 해시를 Firebase(서울 리전)에 저장해요. 방문 날짜는 서울 기준 날짜만 저장하고 시·분은 저장하지 않아요. 닉네임·칭호·세월·리뷰는 다른 로그인 사용자에게 보이고, 방문 기록은 설정의 공개 범위를 따라요.\n\n2. 서버에 저장하지 않는 것\n위치 좌표는 가게 앞 30m 확인 때 최대 15초 동안 기기 안에서만 계산하고 저장하거나 로그로 남기지 않아요. 영수증 사진은 기기 안에서 글자만 읽고 바로 지우며, 서버로 보내지 않아요. 영수증 해시에서 영수증 내용을 되돌릴 수는 없어요.\n\n3. 기기에만 저장하는 것\n가게 사진 인증의 사진(인증샷)은 이 기기에만 저장돼요. 로그아웃하거나 탈퇴하면 지워져요.\n\n4. 외부 서비스\n네이버 지도(지도 표시), Google Play 서비스(위치), Firebase(로그인·데이터·오류 보고·사용 통계)를 써요. 사용 통계는 가입·로그인·인증 시작·인증 결과와 오류 코드·도장 세월 등급·리뷰 저장 같은 기능 사용 횟수만 모으고 닉네임·이메일·위치·영수증·가게 이름은 보내지 않아요. 공식 가게 사진은 소상공인시장진흥공단 백년가게 사이트에서 불러오고, 영수증 인증 화면에서는 기기 시계가 맞는지 확인하려고 Google 서버에 내용 없는 요청을 한 번 보내요.\n\nAI 기능(메뉴 룰렛·리뷰 분석)을 쓰면 내 리뷰 글·별점·올린 음식 사진과 가게 메뉴, 가게에 달린 다른 이용자 리뷰 글이 Google Gemini로 전송돼 분석돼요(처음 쓸 때 동의를 받아요). 위치 좌표·이메일은 보내지 않아요. 번역을 쓰면 번역할 글이, 챗봇을 쓰면 내가 쓴 말이, 영수증 인식에 실패했을 때는 방금 찍은 영수증 사진이 전송돼요(저장하지 않아요).\n\n5. 삭제\n설정에서 회원 탈퇴를 하면 내 리뷰·방문 기록·프로필·닉네임과 계정이 삭제돼요.\n\n6. 알림\n이 앱은 중소벤처기업부·서울특별시와 관련이 없는 앱이며, 백년가게·오래가게 정보는 공개된 자료를 정리한 거예요.</string>
-    <string name="my_review_edit">수정·삭제하러 가기</string>
     <string-array name="licenses_list">
         <item>Naver Map Android SDK|네이버 약관 (NAVER Corp.)|지도 표시와 마커</item>
         <item>ML Kit Text Recognition (Korean)|Google ML Kit 약관 (Google LLC)|기기 안에서 영수증·간판 글자 인식</item>
@@ -639,7 +485,5 @@
     <string name="queue_empty">올라가지 않은 기록이 없어요.</string>
     <string name="queue_sync_now">지금 올리기</string>
     <string name="store_story_title">가게 이야기</string>
-    <string name="store_story_more">이야기 더 보기</string>
-    <string name="store_story_less">접기</string>
     <string name="store_story_source">출처: 소상공인마당 백년가게 소개글</string>
 </resources>

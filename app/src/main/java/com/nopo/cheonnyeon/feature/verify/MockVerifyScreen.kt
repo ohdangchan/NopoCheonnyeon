@@ -218,7 +218,7 @@ fun VerifyScreen(vm: VerifyViewModel, onClose: () -> Unit, onReview: () -> Unit 
         AlertDialog(
             onDismissRequest = { guide = false },
             title = { Text(androidx.compose.ui.res.stringResource(R.string.ver_01)) },
-            text = { Text("• 영수증 전체가 한 장에 들어오게 찍어 주세요.\n• 식당명, 날짜·시간, 금액이 잘 보여야 해요.\n• 흔들림 없이 밝은 곳에서 찍으면 더 정확해요.\n• 영수증은 방문한 당일 결제한 것만 인정돼요.") },
+            text = { Text(stringResource(R.string.ui_mockverify_01)) },
             confirmButton = { TextButton({ guide = false }) { Text(androidx.compose.ui.res.stringResource(R.string.ver_02)) } },
         )
     }
@@ -323,9 +323,9 @@ private fun CameraScreen(
         Box(Modifier.fillMaxWidth().height(px(150))) {
             MockStage(originY = 84, heightPx = 150) {
                 Box(Modifier.at(24, 108).size(px(76)).clip(CircleShape).background(Color(0xFFF1EDE0)).clickable(role = Role.Button,
-                    onClick = onBack).desc("뒤로"), contentAlignment = Alignment.Center) { BackChevron(34) }
+                    onClick = onBack).desc(stringResource(R.string.ui_permission_26)), contentAlignment = Alignment.Center) { BackChevron(34) }
                 MockPic(R.drawable.mk2_v10_hdr, 490, 145, Modifier.at(110, 90))
-                MockText("영수증 전체가 프레임 안에 들어오게 촬영해주세요.", 22, Modifier.at(40, 188).width(px(700)), color = Gray)
+                MockText(stringResource(R.string.ui_mockverify_02), 22, Modifier.at(40, 188).width(px(700)), color = Gray)
             }
         }
         Box(Modifier.weight(1f).fillMaxWidth().clip(RectangleShape)) {
@@ -358,7 +358,7 @@ private fun CameraScreen(
             .background(MockColors.Cream)) {
             Box(Modifier.align(Alignment.Center).size(px(126)).clip(CircleShape).background(MockColors.Navy)
                 .clickable(enabled = !state.busy && granted,
-                role = Role.Button) { vm.captureReceipt(camera) }.desc("영수증 촬영"), contentAlignment = Alignment.Center) {
+                role = Role.Button) { vm.captureReceipt(camera) }.desc(stringResource(R.string.ui_mockverify_03)), contentAlignment = Alignment.Center) {
                 Box(Modifier.size(px(108)).clip(CircleShape).background(MockColors.Cream), contentAlignment = Alignment.Center) {
                     Box(Modifier.size(px(96)).clip(CircleShape).background(if (state.busy) Color(0xFFD5DDA0) else MockColors.Lime2))
                 }
@@ -399,10 +399,10 @@ private fun ScanFrame(modifier: Modifier) {
 @Composable
 internal fun ConfirmScreen(state: VerifyUiState, onRetake: () -> Unit, onConfirm: () -> Unit) {
     val info = state.confirm ?: return
-    val unknown = "인식하지 못했어요"
+    val unknown = stringResource(R.string.ui_mockverify_04)
     Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).navigationBarsPadding()) {
         MockStage(originY = 84, heightPx = 1530) {
-            Box(Modifier.at(20, 100).size(px(70)).clickable(role = Role.Button, onClick = onRetake).desc("뒤로"),
+            Box(Modifier.at(20, 100).size(px(70)).clickable(role = Role.Button, onClick = onRetake).desc(stringResource(R.string.ui_permission_26)),
                 contentAlignment = Alignment.Center) { BackChevron(34) }
             MockText(androidx.compose.ui.res.stringResource(R.string.ver_10), 33, Modifier.at(0, 100).fillMaxWidth(), font = MockSerif,
                 weight = FontWeight.ExtraBold, align = TextAlign.Center)
@@ -451,7 +451,7 @@ internal fun ConfirmScreen(state: VerifyUiState, onRetake: () -> Unit, onConfirm
             Box(Modifier.at(335, 1493).size(px(397), px(92)).clip(RoundedCornerShape(px(28)))
                 .background(if (state.busy) Color(0xFFE2E8C4) else MockColors.Lime2).clickable(enabled = !state.busy, role = Role.Button,
                 onClick = onConfirm), contentAlignment = Alignment.Center) {
-                MockText(if (state.busy) "기록 중…" else "인증 정보 확정하기  →", 26, weight = FontWeight.ExtraBold)
+                MockText(if (state.busy) stringResource(R.string.ui_mockverify_05) else stringResource(R.string.ui_mockverify_06), 26, weight = FontWeight.ExtraBold)
             }
         }
     }
@@ -468,9 +468,9 @@ private fun FailScreen(state: VerifyUiState, blocked: Boolean, onRetry: () -> Un
         MockStage(originY = 84, heightPx = 1450) {
             VerifyHeader(onClose)
             MockPic(R.drawable.mk2_v4_hero, 760, 420, Modifier.at(0, 205))
-            MockText(if (blocked) "오늘은 더 인증할 수 없어요" else "아래와 같은 이유로 방문 인증이 실패했어요.", 23, Modifier.at(20, 636).fillMaxWidth(), color = Gray,
+            MockText(if (blocked) stringResource(R.string.ui_mockverify_07) else stringResource(R.string.ui_mockverify_08), 23, Modifier.at(20, 636).fillMaxWidth(), color = Gray,
                 align = TextAlign.Center)
-            MockText(msg.ifBlank { "다시 한 번 확인하고 인증을 시도해 주세요." }, 21, Modifier.at(40, 676).width(px(680)), color = Red,
+            MockText(msg.ifBlank { stringResource(R.string.ui_mockverify_09) }, 21, Modifier.at(40, 676).width(px(680)), color = Red,
                 align = TextAlign.Center, maxLines = 2, lineHeightPx = 28)
             if (blocked && state.todayVisits.isNotEmpty()) {
                 state.todayVisits.take(2).forEachIndexed { i, (name, years) -> MockText("${i + 1}. $name · 세월 +${years}년", 20,
@@ -483,7 +483,7 @@ private fun FailScreen(state: VerifyUiState, blocked: Boolean, onRetry: () -> Un
                 .clickable(role = Role.Button, onClick = onRetry), contentAlignment = Alignment.Center) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (!blocked) { Box(Modifier.size(px(52))) { RetryGlyph() }; Box(Modifier.width(px(18))) }
-                    MockText(if (blocked) "돌아가기" else "다시 인증하기", 31, weight = FontWeight.ExtraBold)
+                    MockText(if (blocked) stringResource(R.string.ui_mockverify_10) else stringResource(R.string.ui_mockverify_11), 31, weight = FontWeight.ExtraBold)
                 }
             }
             if (!blocked) {
@@ -519,11 +519,11 @@ private fun StepScreen(
     Column(Modifier.fillMaxSize().background(MockColors.Cream).statusBarsPadding().navigationBarsPadding()) {
         Box(Modifier.fillMaxWidth().height(px(232))) {
             MockStage(originY = 0, heightPx = 232) {
-                Box(Modifier.at(14, 14).size(px(70)).clickable(role = Role.Button, onClick = vm::backToReceipt).desc("뒤로"),
+                Box(Modifier.at(14, 14).size(px(70)).clickable(role = Role.Button, onClick = vm::backToReceipt).desc(stringResource(R.string.ui_permission_26)),
                     contentAlignment = Alignment.Center) { BackChevron(34) }
                 MockText(androidx.compose.ui.res.stringResource(R.string.det_09), 40, Modifier.at(90, 14), font = MockSerif,
                     weight = FontWeight.ExtraBold)
-                Box(Modifier.at(652, 14).size(px(76)).clickable(role = Role.Button, onClick = onClose).desc("닫기"),
+                Box(Modifier.at(652, 14).size(px(76)).clickable(role = Role.Button, onClick = onClose).desc(stringResource(R.string.ui_noporoulet_06)),
                     contentAlignment = Alignment.Center) { CloseX(36) }
                 MockPic(R.drawable.mk2_v5_steps, 725, 140, Modifier.at(20, 84))
             }
@@ -555,7 +555,7 @@ private fun StepScreen(
                 state.error != null -> "다시 시도해 주세요"
                 else -> "가게 사진 인증"
             }
-            val sub = state.error?.message(context, state.errorMeters) ?: "앱 안 카메라로 가게 간판이나 메뉴판의 글자가 보이게 찍어 주세요."
+            val sub = state.error?.message(context, state.errorMeters) ?: stringResource(R.string.ui_mockverify_12)
             MockText(statusTitle, 24, weight = FontWeight.ExtraBold)
             MockText(sub, 19, color = if (state.error != null) Red else Gray, maxLines = 2, lineHeightPx = 25)
             Box(
@@ -563,7 +563,7 @@ private fun StepScreen(
                     .clickable(enabled = !state.busy, role = Role.Button) { vm.capturePhoto(camera) },
                 contentAlignment = Alignment.Center,
             ) {
-                MockText(if (state.busy) "분석 중…" else "가게 사진 촬영하기", 28, color = Color.White, weight = FontWeight.ExtraBold)
+                MockText(if (state.busy) stringResource(R.string.ui_mockverify_13) else stringResource(R.string.ui_mockverify_14), 28, color = Color.White, weight = FontWeight.ExtraBold)
             }
             if (state.failedPhotoAttempts > 0) MockText(stringResource(R.string.verify_attempts, state.failedPhotoAttempts,
                 VerificationConfig.PHOTO_OCR_MAX_ATTEMPTS), 19, color = Red)
@@ -623,7 +623,7 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                     alpha = if (pop > 1.5f) 0.0f else 1f }) {
                     VisitStamp(store.name, store.foundedYear, award.grade)
                 }
-                MockText("좋은 식당은\n시간이 지나도\n변하지 않는다.", 20, Modifier.at(595, 730).width(px(150)), color = Gray, maxLines = 3,
+                MockText(stringResource(R.string.ui_mockverify_15), 20, Modifier.at(595, 730).width(px(150)), color = Gray, maxLines = 3,
                     lineHeightPx = 28)
 
                 // 가게 카드
@@ -665,7 +665,7 @@ internal fun DoneScreen(state: VerifyUiState, onReview: () -> Unit, onClose: () 
                     MockText("+1", 27, Modifier.padding(start = px(138), top = px(66)), weight = FontWeight.ExtraBold)
                     MockText(androidx.compose.ui.res.stringResource(R.string.ver_18), 21, Modifier.padding(start = px(138), top = px(104)),
                         weight = FontWeight.ExtraBold)
-                    MockText("노포 여권에\n스탬프가 추가되었어요.", 18, Modifier.padding(start = px(25), top = px(170)).width(px(220)), color = Gray,
+                    MockText(stringResource(R.string.ui_mockverify_16), 18, Modifier.padding(start = px(25), top = px(170)).width(px(220)), color = Gray,
                         maxLines = 2, lineHeightPx = 24)
                     Box(Modifier.padding(start = px(255), top = px(60)).size(1.dp, px(155)).background(Hairline))
                     // 2: 칭호

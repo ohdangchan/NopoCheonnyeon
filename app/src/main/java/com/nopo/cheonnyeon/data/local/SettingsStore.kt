@@ -26,7 +26,6 @@ class SettingsStore(private val context: Context) {
     private val bookmarksKey = stringSetPreferencesKey("bookmarks")
     private val permIntroKey = booleanPreferencesKey("perm_intro_done")
     private val marketingKey = booleanPreferencesKey("pref_marketing")
-    private val shareVisitsKey = booleanPreferencesKey("pref_share_visits")
     private val analyticsKey = booleanPreferencesKey("pref_analytics")
     private val prefRegionsKey = stringSetPreferencesKey("pref_regions")
     private val prefFoodsKey = stringSetPreferencesKey("pref_foods")
@@ -105,10 +104,8 @@ class SettingsStore(private val context: Context) {
     suspend fun setPermIntroDone() { context.dataStore.edit { it[permIntroKey] = true } }
     /** 권한 관리 화면의 선택 항목 (마케팅 수신·방문 기록 공유·사용 데이터 수집) */
     val marketing: Flow<Boolean> = context.dataStore.data.map { it[marketingKey] ?: false }
-    val shareVisits: Flow<Boolean> = context.dataStore.data.map { it[shareVisitsKey] ?: true }
     val analyticsOn: Flow<Boolean> = context.dataStore.data.map { it[analyticsKey] ?: true }
     suspend fun setMarketing(v: Boolean) { context.dataStore.edit { it[marketingKey] = v } }
-    suspend fun setShareVisits(v: Boolean) { context.dataStore.edit { it[shareVisitsKey] = v } }
     suspend fun setAnalyticsOn(v: Boolean) { context.dataStore.edit { it[analyticsKey] = v } }
 
     /** 처음 설치 때 고른 좋아하는 지역·음식 (추천에 쓴다) */

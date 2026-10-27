@@ -134,7 +134,7 @@ fun SettingsScreen(
                 }
             }
             // 대표 메뉴 사진 출처 (위키미디어 공용, CC0·CC BY): 작성자·라이선스·원본 링크
-            Text("대표 메뉴 사진 출처 (크기를 줄이고 잘라서 사용했어요)", color = c.ink, style = NopoTheme.typography.titleSmall)
+            Text(stringResource(R.string.ui_settings_01), color = c.ink, style = NopoTheme.typography.titleSmall)
             MenuPhotos.credits(context).values.forEach { cr ->
                 Column(
                     Modifier.fillMaxWidth().background(c.surface, NopoTheme.shapes.md).clickable(role = Role.Button) {

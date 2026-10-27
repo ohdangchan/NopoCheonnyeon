@@ -57,6 +57,10 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
             drawCircle(Color(0xFFC9A24A), r, c, style = Stroke(d * 0.012f))
             val inner = r * 0.84f
             drawCircle(Color(0xFF3A2E1E), inner, c)
+            val label = Paint().apply {
+                color = android.graphics.Color.WHITE; textSize = d * 0.058f; isAntiAlias = true; isFakeBoldText = true
+                textAlign = Paint.Align.CENTER; setShadowLayer(d * 0.01f, 0f, 0f, android.graphics.Color.BLACK)
+            }
             // 여섯 칸
             all.forEachIndexed { i, s ->
                 val start = -120f + i * 60f           // 첫 칸(국밥)이 위쪽 가운데
@@ -65,8 +69,8 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                     arcTo(Rect(c.x - inner, c.y - inner, c.x + inner, c.y + inner), start, 60f, false)
                     close()
                 }
+                val mid = Math.toRadians((start + 30f).toDouble())
                 clipPath(path) {
-                    val mid = Math.toRadians((start + 30f).toDouble())
                     val cx = c.x + (inner * 0.58f * cos(mid)).toFloat()
                     val cy = c.y + (inner * 0.58f * sin(mid)).toFloat()
                     val side = (inner * 1.25f).toInt()
@@ -75,14 +79,9 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
                     drawRect(Color(0x33000000), Offset(c.x - inner, c.y - inner), Size(inner * 2, inner * 2))
                 }
                 // 칸 이름
-                drawContext.canvas.nativeCanvas.apply {
-                    val p = Paint().apply {
-                        color = android.graphics.Color.WHITE; textSize = d * 0.058f; isAntiAlias = true; isFakeBoldText = true
-                        textAlign = Paint.Align.CENTER; setShadowLayer(d * 0.01f, 0f, 0f, android.graphics.Color.BLACK)
-                    }
-                    drawText(s.name, (c.x + inner * 0.78f * cos(mid(start))).toFloat(),
-                        (c.y + inner * 0.78f * sin(mid(start))).toFloat() + d * 0.02f, p)
-                }
+                drawContext.canvas.nativeCanvas.drawText(
+                    s.name, (c.x + inner * 0.78f * cos(mid)).toFloat(), (c.y + inner * 0.78f * sin(mid)).toFloat() + d * 0.02f, label,
+                )
             }
             // 칸 사이 금빛 선
             repeat(6) { i ->
@@ -109,6 +108,3 @@ fun RouletteWheel(modifier: Modifier = Modifier) {
         }
     }
 }
-
-private fun mid(start: Float): Double = Math.toRadians((start + 30f).toDouble())
-

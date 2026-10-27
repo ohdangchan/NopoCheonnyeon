@@ -144,4 +144,142 @@
     <string name="ver_21">전체 보기</string>
     <string name="ver_22">내 여권 보기</string>
     <string name="ver_23">다음 노포 찾기</string>
+
+
+    <!-- 화면 문구: noporoulet -->
+    <string name="ui_noporoulet_03">아무거나</string>
+    <string name="ui_noporoulet_06">닫기</string>
+    <string name="ui_noporoulet_07">작성한 리뷰나 다녀온 가게를 분석해 AI가 취향 저격 맛집을 찾고 있어요! 조금만 기다려 주세요.</string>
+    <string name="ui_noporoulet_08">돌리는 중…</string>
+    <string name="ui_noporoulet_09">룰렛 돌리기</string>
+    <string name="ui_noporoulet_11">노포</string>
+
+    <!-- 화면 문구: mockauths -->
+    <string name="ui_mockauths_03">이메일을 입력하세요</string>
+    <string name="ui_mockauths_04">비밀번호를 입력하세요</string>
+    <string name="ui_mockauths_05">비밀번호 보기</string>
+    <string name="ui_mockauths_06">로그인 중…</string>
+    <string name="ui_mockauths_07">로그인  ›</string>
+    <string name="ui_mockauths_10">닉네임을 입력해주세요</string>
+    <string name="ui_mockauths_11">이메일을 입력해주세요</string>
+    <string name="ui_mockauths_12">계정 인증 및 중요한 알림을 위해 사용돼요.</string>
+    <string name="ui_mockauths_13">비밀번호를 입력해주세요</string>
+    <string name="ui_mockauths_14">영문, 숫자, 특수문자 포함 8자 이상 입력해주세요.</string>
+    <string name="ui_mockauths_15">비밀번호를 다시 입력해주세요</string>
+    <string name="ui_mockauths_16">동일한 비밀번호를 한 번 더 입력해주세요.</string>
+    <string name="ui_mockauths_17">[필수] 만 14세 이상입니다.</string>
+    <string name="ui_mockauths_18">[필수] 이용약관에 동의합니다.</string>
+    <string name="ui_mockauths_19">[필수] 개인정보 수집 및 이용에 동의합니다.</string>
+    <string name="ui_mockauths_20">[선택] 마케팅 알림 수신에 동의합니다.</string>
+    <string name="ui_mockauths_21">가입 중…</string>
+    <string name="ui_mockauths_22">가입하고 시작하기</string>
+    <string name="ui_mockauths_23">Google로 시작하기</string>
+
+    <!-- 화면 문구: onboarding -->
+    <string name="ui_onboarding_03">어떤 지역을 좋아하세요?</string>
+    <string name="ui_onboarding_04">여러 지역을 선택할 수 있어요.</string>
+    <string name="ui_onboarding_05">어떤 음식을 좋아하세요?</string>
+    <string name="ui_onboarding_06">여러 가지를 선택할 수 있어요.</string>
+    <string name="ui_onboarding_07">이 취향으로 추천받기</string>
+    <string name="ui_onboarding_08">선택한 지역</string>
+    <string name="ui_onboarding_09">이런 지역의 노포를 찾아드릴게요.</string>
+    <string name="ui_onboarding_10">선택한 음식 취향</string>
+    <string name="ui_onboarding_11">이런 음식을 중심으로 추천해드릴게요.</string>
+    <string name="ui_onboarding_12">이런 노포는 어떠세요?</string>
+    <string name="ui_onboarding_13">당신의 취향에 딱 맞는 노포를 엄선했어요.</string>
+    <string name="ui_onboarding_14">노포 추천 받기</string>
+
+    <!-- 화면 문구: explore -->
+    <string name="ui_explore_02">지역</string>
+
+    <!-- 화면 문구: helpcenter -->
+    <string name="ui_helpcenter_01">궁금한 내용을 검색해보세요.</string>
+    <string name="ui_helpcenter_02">접기</string>
+    <string name="ui_helpcenter_03">전체보기</string>
+
+
+
+    <!-- 화면 문구: my -->
+    <string name="ui_my_01">프로필 사진</string>
+    <string name="ui_my_02">노포여행자</string>
+    <string name="ui_my_03">아직 저장한 노포가 없어요.\n가게 화면에서 \'저장하기\'를 눌러 보세요.</string>
+
+
+    <!-- 화면 문구: passportbo -->
+    <string name="ui_passportbo_03">영수증 인증으로\n첫 도장을 찍어 보세요</string>
+
+    <!-- 화면 문구: passport -->
+    <string name="ui_passport_01">아직 방문한 노포가 없어요.\n영수증 인증으로 첫 도장을 찍어 보세요!</string>
+
+    <!-- 화면 문구: ranking -->
+    <string name="ui_ranking_01">아직 순위를 보여 줄 만큼 이용자가 모이지 않았어요.\n방문 인증을 하면 내 순위가 아래에 나와요.</string>
+    <string name="ui_ranking_02">전체 랭킹</string>
+    <string name="ui_ranking_03">방문한 노포</string>
+    <string name="ui_ranking_04">수집한 칭호</string>
+
+    <!-- 화면 문구: permission -->
+    <string name="ui_permission_01">방문 기록 공유</string>
+    <string name="ui_permission_02">다른 사용자와 내 방문 기록을 공유하고 나만의 노포 여정을 보여줄까요? 설정에서 언제든 바꿀 수 있어요.</string>
+    <string name="ui_permission_03">허용</string>
+    <string name="ui_permission_04">허용 안 함</string>
+    <string name="ui_permission_05">앱 사용 데이터 수집</string>
+    <string name="ui_permission_06">서비스를 더 좋게 만들기 위해 앱 사용 데이터(화면 이용 등, 위치·영수증 내용은 제외)를 수집해도 될까요? 설정에서 언제든 끌 수 있어요.</string>
+    <string name="ui_permission_07">나중에 하기</string>
+    <string name="ui_permission_08">카메라 허용하기</string>
+    <string name="ui_permission_09">나중에</string>
+    <string name="ui_permission_10">알림 허용하기</string>
+    <string name="ui_permission_11">지금 안 함</string>
+    <string name="ui_permission_12">허용하기</string>
+    <string name="ui_permission_13">설정 열기</string>
+    <string name="ui_permission_24">필수</string>
+    <string name="ui_permission_25">선택</string>
+    <string name="ui_permission_26">뒤로</string>
+    <string name="ui_permission_27">모두 허용하고 시작하기  ›</string>
+    <string name="ui_permission_28">선택한 권한만 허용</string>
+    <string name="ui_permission_29">리뷰에 음식 사진을 올릴 때\n앨범에서 고를 수 있어요.</string>
+    <string name="ui_permission_30">허용됨</string>
+    <string name="ui_permission_31">허용 안 됨</string>
+
+
+    <!-- 화면 문구: settings -->
+    <string name="ui_settings_01">대표 메뉴 사진 출처 (크기를 줄이고 잘라서 사용했어요)</string>
+
+    <!-- 화면 문구: splash -->
+    <string name="ui_splash_01">맛있는 여정을 준비하고 있어요…</string>
+
+
+    <!-- 화면 문구: reviewwrit -->
+    <string name="ui_reviewwrit_01">예) 깊은 국물 맛이 정말 인상적이었어요.\n오랜 세월이 느껴지는 분위기와 친절한 사장님도 좋았습니다.\n다음에도 꼭 다시 방문하고 싶어요!</string>
+    <string name="ui_reviewwrit_03">등록 중…</string>
+    <string name="ui_reviewwrit_04">후기 등록하기</string>
+
+    <!-- 화면 문구: storedetai -->
+    <string name="ui_storedetai_01">한 그릇에 담긴 세월,\n지금도 변함없는 맛으로\n사람들을 맞이합니다.</string>
+
+
+    <!-- 화면 문구: gpsverify -->
+    <string name="ui_gpsverify_01">확인</string>
+    <string name="ui_gpsverify_02">먼저 왼쪽의 \'위치 확인\' 버튼을 눌러 현재 위치를 확인해 주세요.</string>
+    <string name="ui_gpsverify_03">AI가 10초 동안 정확한 위치를 찾고 있어요.</string>
+
+    <!-- 화면 문구: mockverify -->
+    <string name="ui_mockverify_01">• 영수증 전체가 한 장에 들어오게 찍어 주세요.\n• 식당명, 날짜·시간, 금액이 잘 보여야 해요.\n• 흔들림 없이 밝은 곳에서 찍으면 더 정확해요.\n• 영수증은 방문한 당일 결제한 것만 인정돼요.</string>
+    <string name="ui_mockverify_02">영수증 전체가 프레임 안에 들어오게 촬영해주세요.</string>
+    <string name="ui_mockverify_03">영수증 촬영</string>
+    <string name="ui_mockverify_04">인식하지 못했어요</string>
+    <string name="ui_mockverify_05">기록 중…</string>
+    <string name="ui_mockverify_06">인증 정보 확정하기  →</string>
+    <string name="ui_mockverify_07">오늘은 더 인증할 수 없어요</string>
+    <string name="ui_mockverify_08">아래와 같은 이유로 방문 인증이 실패했어요.</string>
+    <string name="ui_mockverify_09">다시 한 번 확인하고 인증을 시도해 주세요.</string>
+    <string name="ui_mockverify_10">돌아가기</string>
+    <string name="ui_mockverify_11">다시 인증하기</string>
+    <string name="ui_mockverify_12">앱 안 카메라로 가게 간판이나 메뉴판의 글자가 보이게 찍어 주세요.</string>
+    <string name="ui_mockverify_13">분석 중…</string>
+    <string name="ui_mockverify_14">가게 사진 촬영하기</string>
+    <string name="ui_mockverify_15">좋은 식당은\n시간이 지나도\n변하지 않는다.</string>
+    <string name="ui_mockverify_16">노포 여권에\n스탬프가 추가되었어요.</string>
+
+
+
 </resources>

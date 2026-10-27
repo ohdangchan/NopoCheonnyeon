@@ -32,8 +32,8 @@ android {
         applicationId = "com.nopo.cheonnyeon"
         minSdk = 26
         targetSdk = 37
-        versionCode = 3
-        versionName = "2.0.0"
+        versionCode = 4
+        versionName = "2.0.1"
 
         manifestPlaceholders["NAVER_MAP_KEY_ID"] = localProps.getProperty("NAVER_MAP_KEY_ID", "")
         buildConfigField("String", "NAVER_MAP_KEY_ID", "\"${localProps.getProperty("NAVER_MAP_KEY_ID", "")}\"")

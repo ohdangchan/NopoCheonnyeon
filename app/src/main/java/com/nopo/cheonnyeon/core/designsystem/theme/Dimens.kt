@@ -17,9 +17,6 @@ object NopoSpacing {
     val xxl = 24.dp
     val xxxl = 32.dp
 
-    /** 화면 좌우 기본 여백 */
-    val screen = lg
-
     /** 접근성 최소 터치 영역 */
     val minTouch = 48.dp
 }
@@ -29,7 +26,6 @@ object NopoShapes {
     val sm = RoundedCornerShape(8.dp)
     val md = RoundedCornerShape(16.dp)
     val card = RoundedCornerShape(18.dp)
-    val sheet = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
     val pill = RoundedCornerShape(percent = 50)
 }
 

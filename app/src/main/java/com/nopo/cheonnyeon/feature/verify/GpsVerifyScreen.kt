@@ -218,7 +218,7 @@ private fun FarAwayDialog(message: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         text = { Text(message, color = Red, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, lineHeight = 32.sp) },
-        confirmButton = { TextButton(onDismiss) { Text("확인", fontSize = 18.sp) } },
+        confirmButton = { TextButton(onDismiss) { Text(stringResource(R.string.ui_gpsverify_01), fontSize = 18.sp) } },
     )
 }
 
@@ -227,8 +227,8 @@ private fun FarAwayDialog(message: String, onDismiss: () -> Unit) {
 private fun NeedLocationDialog(onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        text = { Text("먼저 왼쪽의 '위치 확인' 버튼을 눌러 현재 위치를 확인해 주세요.") },
-        confirmButton = { TextButton(onDismiss) { Text("확인") } },
+        text = { Text(stringResource(R.string.ui_gpsverify_02)) },
+        confirmButton = { TextButton(onDismiss) { Text(stringResource(R.string.ui_gpsverify_01)) } },
     )
 }
 
@@ -241,7 +241,7 @@ private fun LocatingDialog() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 CircularProgressIndicator(Modifier.size(28.dp), color = MockColors.LimeDeep, strokeWidth = 3.dp)
                 Box(Modifier.width(16.dp))
-                Text("AI가 10초 동안 정확한 위치를 찾고 있어요.")
+                Text(stringResource(R.string.ui_gpsverify_03))
             }
         },
         confirmButton = {},
