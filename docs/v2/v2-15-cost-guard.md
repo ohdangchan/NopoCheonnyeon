@@ -21,3 +21,7 @@
 - Authentication 가입 할당량: 시간당 100(기본).
 - **Blaze로 올릴 때(Play 출시 등)는 먼저 예산 알림·Gemini 할당량 상한·App Check를 설정할 것.** 그 전에는 올리지 않는다.
 - 남는 위험: 무료 한도가 악의적 호출로 소진되어 정상 이용자의 AI가 잠시 막힐 수 있음(과금은 없음).
+
+## 추가 조치 (2026-10-28 저녁)
+- Firebase AI Logic **인증된 사용자 모드 적용**: 로그인 정보가 없는 요청은 차단. 폰 시험은 사용자가 로그인해서 AI 기능을 써 본다(막히면 콘솔 Firebase AI Logic → 설정에서 끈다).
+- `Android key`에 앱 제한(패키지+SHA-1) 설정, 웹용 `Browser key` 삭제. 자세한 내용은 `v2-16-security-audit.md`.

@@ -116,16 +116,33 @@ service cloud.firestore {
     }
 
     match /receiptHashes/{hash} {
-      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      // 방문 기록과 같은 묶음으로 올라간다. 필드·길이를 제한해 임의의 큰 문서를 쌓지 못하게 한다
+      allow create: if signedIn()
+        && hash.size() <= 128
+        && request.resource.data.keys().hasOnly(['uid', 'storeId', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.storeId is string && request.resource.data.storeId.size() <= 40
+        && request.resource.data.createdAt == request.time;
     }
 
     match /reports/{id} {
-      allow create: if signedIn() && request.resource.data.reporterUid == request.auth.uid;
+      // 리뷰 신고(reviewId)와 가게 정보 제보(kind, storeId). 사유는 고정 문구라 짧다
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['reviewId', 'kind', 'storeId', 'reason', 'reporterUid', 'createdAt'])
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 200
+        && (!('reviewId' in request.resource.data) || (request.resource.data.reviewId is string && request.resource.data.reviewId.size() <= 160))
+        && (!('storeId' in request.resource.data) || (request.resource.data.storeId is string && request.resource.data.storeId.size() <= 40))
+        && (!('kind' in request.resource.data) || request.resource.data.kind == 'STORE_INFO')
+        && request.resource.data.createdAt == request.time;
     }
 
     // 1일차 기능 검증(SPK-5)과 진단 화면의 쓰기·읽기 왕복 시험용
     match /diagnostics/{uid} {
-      allow read, write: if isMe(uid);
+      allow read: if isMe(uid);
+      allow write: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['model', 'sdk', 'at'])
+        && request.resource.data.model is string && request.resource.data.model.size() <= 80;
     }
   }
 }

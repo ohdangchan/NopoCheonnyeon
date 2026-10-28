@@ -36,3 +36,4 @@ ex_copy/
 # Firebase CLI 로그와 개인용 Claude 설정
 firebase-debug.log
 .claude/settings.local.json
+firestore-debug.log

@@ -52,6 +52,20 @@ function review(extra = {}) {
   await check("내 리뷰 삭제", assertSucceeds(deleteDoc(doc(alice, "reviews", rid(2)))));
   await check("삭제로 빈 슬롯 2에 다시 쓰기", assertSucceeds(setDoc(doc(alice, "reviews", rid(2)), review())));
 
+  // 영수증 해시·신고·진단 문서: 앱이 보내는 모양만 허용하고, 크기·필드를 제한한다
+  await check("영수증 해시: 앱이 보내는 모양은 허용", assertSucceeds(setDoc(doc(alice, "receiptHashes", "h".repeat(64)), { uid: ME, storeId: STORE, createdAt: serverTimestamp() })));
+  await check("영수증 해시: 남의 uid로는 거부", assertFails(setDoc(doc(alice, "receiptHashes", "h2"), { uid: "bob", storeId: STORE, createdAt: serverTimestamp() })));
+  await check("영수증 해시: 모르는 필드는 거부", assertFails(setDoc(doc(alice, "receiptHashes", "h3"), { uid: ME, storeId: STORE, createdAt: serverTimestamp(), blob: "x" })));
+  await check("영수증 해시: 아이디가 너무 길면 거부", assertFails(setDoc(doc(alice, "receiptHashes", "h".repeat(129)), { uid: ME, storeId: STORE, createdAt: serverTimestamp() })));
+  await check("신고: 리뷰 신고 모양은 허용", assertSucceeds(setDoc(doc(alice, "reports", "r1"), { reviewId: rid(1), reason: "광고", reporterUid: ME, createdAt: serverTimestamp() })));
+  await check("신고: 가게 정보 제보 모양은 허용", assertSucceeds(setDoc(doc(alice, "reports", "r2"), { kind: "STORE_INFO", storeId: STORE, reason: "폐업", reporterUid: ME, createdAt: serverTimestamp() })));
+  await check("신고: 남의 uid로는 거부", assertFails(setDoc(doc(alice, "reports", "r3"), { reviewId: "x", reason: "광고", reporterUid: "bob", createdAt: serverTimestamp() })));
+  await check("신고: 사유가 너무 길면 거부", assertFails(setDoc(doc(alice, "reports", "r4"), { reviewId: "x", reason: "가".repeat(201), reporterUid: ME, createdAt: serverTimestamp() })));
+  await check("신고: 모르는 필드는 거부", assertFails(setDoc(doc(alice, "reports", "r5"), { reviewId: "x", reason: "a", reporterUid: ME, createdAt: serverTimestamp(), blob: "x" })));
+  await check("진단: 내 문서에 앱 모양은 허용", assertSucceeds(setDoc(doc(alice, "diagnostics", ME), { model: "SM-G965N", sdk: 29, at: serverTimestamp() })));
+  await check("진단: 모르는 필드는 거부", assertFails(setDoc(doc(alice, "diagnostics", ME), { model: "x", sdk: 1, at: serverTimestamp(), blob: "x" })));
+  await check("진단: 남의 문서는 거부", assertFails(setDoc(doc(bob, "diagnostics", ME), { model: "x", sdk: 1, at: serverTimestamp() })));
+
   await env.cleanup();
   console.log(`\n통과 ${passed}, 실패 ${failed}`);
   process.exit(failed ? 1 : 0);
