@@ -186,7 +186,9 @@
     <string name="ui_onboarding_10">선택한 음식 취향</string>
     <string name="ui_onboarding_11">이런 음식을 중심으로 추천해드릴게요.</string>
     <string name="ui_onboarding_12">이런 노포는 어떠세요?</string>
-    <string name="ui_onboarding_13">당신의 취향에 딱 맞는 노포를 엄선했어요.</string>
+    <string name="ui_onboarding_13">취향이나 지역에 맞는 노포를 골랐어요.</string>
+    <string name="ui_onboarding_back">이전</string>
+    <string name="ui_onboarding_back_cd">이전 단계로 돌아가기</string>
     <string name="ui_onboarding_14">노포 추천 받기</string>
 
     <!-- 화면 문구: explore -->

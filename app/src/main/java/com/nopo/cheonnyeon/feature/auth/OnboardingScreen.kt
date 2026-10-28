@@ -103,9 +103,10 @@ fun OnboardingScreen(container: AppContainer, onDone: () -> Unit) {
             onToggleRegion = { k -> regions = if (k in regions) regions - k else regions + k },
             onToggleFood = { k -> foods = if (k in foods) foods - k else foods + k },
             onNext = { scope.launch { container.settings.setTaste(regions.toSet(), foods.toSet()) }; step = 2 },
+            onBack = { step = 0 },
             onLater = finish,
         )
-        else -> ReadyPage(container, regions, foods, onStart = finish, onLater = finish)
+        else -> ReadyPage(container, regions, foods, onStart = finish, onBack = { step = 1 }, onLater = finish)
     }
 }
 
@@ -133,7 +134,24 @@ private fun ProgressBar(fraction: Float, label: String) {
     Box(Modifier.at(38, 238).size(px(194 * fraction), px(14)).clip(CircleShape).background(MockColors.Lime2))
     Box(Modifier.at((38 + 194 * fraction - 9).toInt(), 235).size(px(20)).clip(CircleShape).background(MockColors.Lime2))
     Box(Modifier.at((38 + 194 * fraction - 5).toInt(), 239).size(px(12)).clip(CircleShape).background(Color(0xFF2B3A18)))
-    MockText(label, 24, Modifier.at((38 + 194 + 18).toInt(), 228), color = MockColors.Navy, weight = FontWeight.Medium)
+    MockText(label, 24, Modifier.at(38 + 194 + 34, 228), color = MockColors.Navy, weight = FontWeight.Medium)
+}
+
+/** 이전 단계로 돌아가는 알약 버튼. 진행 막대 줄 오른쪽에 둔다 */
+@Composable
+private fun BackPill(onBack: () -> Unit) {
+    val desc = stringResource(R.string.ui_onboarding_back_cd)
+    Box(
+        Modifier.at(412, 220).size(px(128), px(56))
+            .clip(RoundedCornerShape(50))
+            .border(1.dp, Hairline, RoundedCornerShape(50))
+            .background(CardWhite)
+            .clickable(role = Role.Button, onClick = onBack)
+            .semantics { contentDescription = desc },
+        contentAlignment = Alignment.Center,
+    ) {
+        MockText("‹  " + stringResource(R.string.ui_onboarding_back), 24, color = MockColors.Navy, weight = FontWeight.ExtraBold)
+    }
 }
 
 @Composable
@@ -232,13 +250,15 @@ private fun BigLimeButton(text: String, y: Int, onClick: () -> Unit) {
 
 @Composable
 private fun PreferencePage(
-    regions: List<String>, foods: List<String>, onToggleRegion: (String) -> Unit, onToggleFood: (String) -> Unit, onNext: () -> Unit, onLater: () -> Unit,
+    regions: List<String>, foods: List<String>, onToggleRegion: (String) -> Unit, onToggleFood: (String) -> Unit,
+    onNext: () -> Unit, onBack: () -> Unit, onLater: () -> Unit,
 ) {
     Column(Modifier.fillMaxSize().background(Color(0xFFFBF6EB)).statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState())) {
         MockStage(originY = 84, heightPx = 1575) {
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref2_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(2f / 3f, "2 / 3")
+            BackPill(onBack)
             MockText(
                 androidx.compose.ui.res.stringResource(R.string.onb_01),
                 54,
@@ -338,7 +358,9 @@ private fun PreferencePage(
 }
 
 @Composable
-private fun ReadyPage(container: AppContainer, regions: List<String>, foods: List<String>, onStart: () -> Unit, onLater: () -> Unit) {
+private fun ReadyPage(
+    container: AppContainer, regions: List<String>, foods: List<String>, onStart: () -> Unit, onBack: () -> Unit, onLater: () -> Unit,
+) {
     val year = remember { LocalDate.now(SeoulZone).year }
     val pick by produceState<Store?>(null, regions, foods) {
         val all = container.catalog.all()
@@ -351,6 +373,7 @@ private fun ReadyPage(container: AppContainer, regions: List<String>, foods: Lis
             MockPic(R.drawable.mk2_n_pref_foot, 760, 151, Modifier.at(0, 1500))
             MockPic(R.drawable.mk2_n_pref3_head, 760, 506, Modifier.at(0, 84))
             ProgressBar(1f, "3 / 3")
+            BackPill(onBack)
             MockText(
                 androidx.compose.ui.res.stringResource(R.string.onb_07),
                 58,
