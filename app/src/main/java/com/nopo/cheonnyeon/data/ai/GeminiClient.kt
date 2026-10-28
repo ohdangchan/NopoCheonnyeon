@@ -72,12 +72,14 @@ private object FirebaseTransport : GeminiTransport {
 class GeminiClient(
     private val model: String = DEFAULT_MODEL,
     private val transport: GeminiTransport = FirebaseTransport,
+    private val quota: AiQuota? = null,
 ) {
     val available: Boolean get() = model.isNotBlank()
 
     /** [schema]는 응답 JSON 모양(Gemini responseSchema 형식). 성공하면 모델이 만든 JSON 문자열을 돌려준다 */
     suspend fun generateJson(parts: List<GeminiPart>, schema: JsonElement, temperature: Double = 0.9): AppResult<String> {
         if (!available) return AppError.E_AI_FAILED.asFailure()
+        if (quota?.tryAcquire() == false) return AppError.E_AI_LIMIT.asFailure()
         val withSchema = parts + GeminiPart.Text("반드시 아래 JSON 스키마(OpenAPI 형식)를 그대로 지키는 JSON 하나만 답해. 설명·코드블록 금지.\n$schema")
         return try {
             val text = try {

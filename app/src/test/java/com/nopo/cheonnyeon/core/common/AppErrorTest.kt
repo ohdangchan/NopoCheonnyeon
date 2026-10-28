@@ -11,7 +11,7 @@ class AppErrorTest {
 
     private fun stringName(e: AppError) = "err_" + e.code.lowercase()
 
-    @Test fun `PRD 7-4의 오류 코드 27개가 모두 정의돼 있다`() = assertEquals(27, AppError.entries.size)
+    @Test fun `PRD 7-4의 오류 코드 27개와 AI 하루 한도 코드가 정의돼 있다`() = assertEquals(28, AppError.entries.size)
 
     @Test fun `모든 오류 코드에 strings xml 문구가 있다`() {
         AppError.entries.forEach { e ->

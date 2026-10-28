@@ -167,6 +167,7 @@
     <string name="err_e_already_today">오늘 이미 인증한 가게예요</string>
     <string name="err_e_network">네트워크에 연결되지 않았어요</string>
     <string name="err_e_visit_syncing">방문 기록을 올리는 중이에요. 잠시 후 다시 시도해 주세요</string>
+    <string name="err_e_ai_limit">오늘 AI 기능을 너무 많이 썼어요. 내일 다시 이용해 주세요</string>
     <string name="err_e_ai_failed">AI 분석을 가져오지 못했어요. 잠시 뒤 다시 해 주세요</string>
     <string name="err_e_review_limit">한 가게에는 리뷰를 5개까지 남길 수 있어요. 이전 리뷰를 고치거나 지운 뒤 다시 써 주세요</string>
     <string name="err_e_review_offline">인터넷에 연결되면 저장할 수 있어요. 쓰던 글은 그대로 둘게요</string>
