@@ -14,3 +14,10 @@
 3. Firebase 콘솔 → Authentication → 설정: 이메일 열거 보호 켜기, 같은 IP의 가입 제한 확인.
 4. Firebase 콘솔 → Firestore → 규칙: `firebase/firestore.rules`가 배포돼 있는지 확인(`firebase deploy --only firestore:rules`).
 5. (선택) Firebase 콘솔 → 사용량 및 결제에서 Blaze 요금제 예산 한도 확인.
+
+## 콘솔 확인 결과 (2026-10-28)
+- Firebase 요금제는 **Spark(무료)**이고 Google Cloud 프로젝트 `nopocheonnyeon`에 **결제 계정이 연결돼 있지 않다**(예산 화면의 결제 계정 목록이 비어 있음). 결제 수단이 없으므로 어떤 호출이 폭주해도 청구되지 않고, 무료 한도를 넘으면 요청이 거부될 뿐이다. 위 1·2·5번(예산·할당량·결제)은 **지금은 필요 없다.**
+- Firestore 규칙: 콘솔 배포본이 `firebase/firestore.rules`와 같음(10-21 게시).
+- Authentication 가입 할당량: 시간당 100(기본).
+- **Blaze로 올릴 때(Play 출시 등)는 먼저 예산 알림·Gemini 할당량 상한·App Check를 설정할 것.** 그 전에는 올리지 않는다.
+- 남는 위험: 무료 한도가 악의적 호출로 소진되어 정상 이용자의 AI가 잠시 막힐 수 있음(과금은 없음).
