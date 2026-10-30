@@ -8,6 +8,7 @@
 - **최우선 목표: APK를 실제 폰에 설치했을 때 모든 기능이 버그 없이 동작**
 
 ## 문서 (필요한 부분만 읽기)
+- **버전2(브랜치 `redesign/v1`, 앱 이름 노포 패스포트) 작업이면 먼저 `docs/v2/v2-dev-status.md`(5장이 최신) → `docs/v2/v2-16-security-audit.md`**
 - **이어받는 에이전트는 먼저**: `docs/handoff-conversation-log.md`(사용자와의 대화·결정·약속 정리) → `docs/dev-status.md` 맨 위
 - 요구사항: `docs/nopo-01-PRD.md`
 - 구조·규칙·보안 규칙: `docs/nopo-02-architecture.md`
